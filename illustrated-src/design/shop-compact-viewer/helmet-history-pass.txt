@@ -1,0 +1,69 @@
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+{
+  "passed": true,
+  "baseline": "5acb81cc030480d87dc59ad59758b3c35168ae8a",
+  "build": "270",
+  "productionWearableSuits": [
+    "flight",
+    "iontrim",
+    "copper",
+    "frost",
+    "voidsuit",
+    "ember",
+    "robo",
+    "ghost",
+    "bigbooty",
+    "gemmie",
+    "sammie",
+    "seraph",
+    "leviathan",
+    "verdant",
+    "cryostar",
+    "eclipse",
+    "cinderforge",
+    "groveguard",
+    "cosmic",
+    "sunforged",
+    "abyssal"
+  ],
+  "highOrbitPromotions": [
+    "cinderforge",
+    "groveguard",
+    "cosmic",
+    "sunforged",
+    "abyssal"
+  ],
+  "sourceImagesChecked": 339,
+  "sourceImagesUnchanged": 153,
+  "eclipseTransfers": [
+    "verdant",
+    "cryostar"
+  ],
+  "naturalFlights": [
+    "iontrim",
+    "copper",
+    "frost",
+    "voidsuit",
+    "ember",
+    "ghost",
+    "gemmie",
+    "sammie",
+    "leviathan"
+  ],
+  "repaintedGlass": [
+    "helms/clear.png"
+  ],
+  "comparisons": 2429,
+  "soloFrames": 3824,
+  "pixelComparisons": 149,
+  "motionFrames": 432,
+  "tapFrames": 64,
+  "acceptedTaps": 155,
+  "gameplayFrames": 3720,
+  "previewFrames": 2016,
+  "bodyDraws": 73337,
+  "helmetDraws": 6253,
+  "limitation": "Native Canvas regression proves unchanged body animation; helmet fit still requires visual review."
+}

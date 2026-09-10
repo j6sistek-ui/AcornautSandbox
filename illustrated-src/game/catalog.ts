@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "269";
+export const ART_VER = "270";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -942,7 +942,11 @@ for (const bundle of BUNDLES) bundleQuote(bundle, () => false);
 // HOW MUCH OF THE CATALOGUE IS ON SALE TODAY. Deliberately small: the shelf
 // is a reason to come back, not an inventory. Trails are never sold singly
 // for now - they arrive free with their set.
-export const SHOP_CYCLE = { suits: 3, helms: 4, pals: 1, trails: 0 };
+export const SHOP_CYCLE = {
+  maxItems: 4, suits: 2, premiumSuits: 1, minHelms: 1, helms: 2, pals: 1, trails: 0,
+  excludedIds: ["raccoon", "ferret", "hedgehog"],
+  excludedBundleIds: ["bundle-critters"],
+};
 
 
 // STAR DUST is the premium currency. Acorns are earned by flying and buy

@@ -1,0 +1,39 @@
+{
+  "checkedAt": "2026-09-10T08:18:14.509Z",
+  "build": 270,
+  "baseline": "5acb81cc030480d87dc59ad59758b3c35168ae8a",
+  "toolchain": {
+    "image": "acornaut-own001-checks:latest",
+    "node": "22.23.2",
+    "network": "none"
+  },
+  "initialFailure": {
+    "exitCode": 1,
+    "stage": "git archive of historical modules before any renderer comparison",
+    "cause": "Common Git object store references a Windows absolute alternate object directory unavailable inside Linux",
+    "log": "helmet-history-diagnostic.txt",
+    "sha256": "de257bde077242752ab32e7c0df324134e97294e141659c3da16b1d24bf00f8b"
+  },
+  "correction": {
+    "sourceEdits": false,
+    "gitEdits": false,
+    "networkHydration": false,
+    "mount": "C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects -> /alternate-objects (read-only)",
+    "environment": {
+      "GIT_ALTERNATE_OBJECT_DIRECTORIES": "/alternate-objects"
+    }
+  },
+  "finalResult": {
+    "exitCode": 0,
+    "passed": true,
+    "sourceImages": 339,
+    "comparisons": 2429,
+    "soloFrames": 3824,
+    "pixelComparisons": 149,
+    "bodyDraws": 73337,
+    "helmetDraws": 6253,
+    "log": "helmet-history-pass.txt",
+    "sha256": "608020f565d5c7fc6e879c598efd4d7ed22f386750e0deb88cc154458fb6f851"
+  },
+  "note": "The unresolved Windows alternates path still logs a nonfatal warning; the explicitly mounted alternate supplies all required objects and the unchanged test completes."
+}

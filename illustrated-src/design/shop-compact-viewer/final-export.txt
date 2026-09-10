@@ -1,0 +1,81 @@
+
+> acornaut@1.0.12 build
+> node illustrated-src/export-sandbox.mjs && node illustrated-src/build-lab.mjs
+
+Exported 10 whole regenerated helmets with continuous painted glass.
+nacre:16 complete frames; one scale 0.696721; fallback exactly frame0
+porcelain:16 complete frames; one scale 0.693069; fallback exactly frame0
+origamist:16 complete frames; one scale 0.714286; fallback exactly frame0
+Zone art: 129/129 exported; 0 masters pending
+Arcflash fallback portrait exported from the shipping rig
+Shop marketing: 10 images, 9.59 MiB; gameplay art untouched
+exported js + js270 to docs (+ beta page)
+built lab: docs/lab/rig/js, docs/lab/skytest/js, docs/lab/ship/js (487 heads, 30 helmets, art v270)
+
+> acornaut@1.0.12 build:flight-studio
+> node illustrated-src/build-flight-studio.mjs
+
+Flight Studio: 34 models, 7 cut rigs, 3 full-body sheet banks, 15 source modules. No app output changed.
+Created two in-memory Shop review fixtures; user storage is not used.
+
+> acornaut@1.0.12 typecheck
+> tsc illustrated-src/game/*.ts illustrated-src/lab/rig.ts --noEmit --module es2015 --target es2020 --skipLibCheck --moduleResolution bundler --strict false
+
+
+> acornaut@1.0.12 art
+> python3 illustrated-src/verify-art.py
+
+Acornaut illustrated art QA
+  OK  docs/art holds 1617 shipping files
+  OK  decoded all 1604 raster assets
+  OK  validated runtime dimensions/alpha contract for 1451 runtime sprites
+  OK  catalog/load contract (34 suits x 30 helmets, 20 pals)
+  OK  pal cutouts have no remote components (cometsprite (59, 16, 199, 141), pocketmoon (66, 14, 189, 146))
+  OK  heavy rosters stay off the boot load, and the sweep walks both
+  OK  all 367 UI classes are styled in the page and its beta
+  OK  every scrollable flex column scrolls rather than squashing
+  OK  the guided step's coach sits in the shelf and measures its own fold
+  OK  every production-reachable suit has its art off the beta flag
+  OK  free unclaimed suits ask to be collected; fixed helmets speak once
+  OK  all 1 dev instruments sit where the table says
+  OK  the pause menu can always be left, however tall it gets
+  OK  one shipping tree: docs/
+  OK  Vanguard: 16 unique 512px RGBA poses, measured registration, exact fallback
+  OK  velocity-indexed pose banks complete for 17 suits (anchor per frame, radius held except 0 art-locked larger heads), 2 with a declared dead tap bank
+  OK  all 34 suits carry their own lean dial
+  OK  the wormhole answers to one control, with its numbers settled
+  OK  dust badge sheet is 8x4 cells of 128px, in step with the CSS
+  OK  all 9 base helmet display scales remain within 5% of their reviewed head fits
+  OK  per-pose dome tables complete for 3 suits (48 anchors, one radius each)
+  OK  no tap bank skips frames
+  OK  no per-suit motion release table
+  OK  objectives pinned, mission restart gated, acorn continue wired at both prices
+  OK  8 frames carry a painted dome; every other anchor is bare-headed bank art
+  OK  bank frame spread: 33 banks, 14 frame(s) flagged for the owner:
+      ember-asc-7: size -17%, width -17%, pixels -0%
+      ember-asc-8: size -15%, width -18%, pixels +9%
+      ember-desc-2: size +13%, width +13%, pixels -7%
+      ember-desc-3: size +17%, width +17%, pixels -9%
+      ember-desc-4: size +15%, width +15%, pixels -3%
+      iontrim-desc-3: size +14%, width +14%, pixels -10%
+      leviathan-asc-7: size -14%, width -14%, pixels +3%
+      leviathan-asc-8: size -15%, width -15%, pixels +8%
+      leviathan-desc-8: size -19%, width -23%, pixels +0%
+      sammie-asc-8: size -24%, width -24%, pixels +1%
+      sammie-desc-7: size -14%, width -14%, pixels -4%
+      sammie-desc-8: size -19%, width -19%, pixels -7%
+      seraph-desc-8: size -12%, width -12%, pixels +5%
+      voidsuit-desc-7: size +12%, width +12%, pixels -6%
+  OK  Natural-flight pixels passed: 192 poses, nine fixed skulls and tail-work boundaries, plus three owner-approved companion loops with localized Quill repair.
+  OK  Natural flight anatomy: both original crown defects rejected; bounded repairs pass
+  OK  repaired suit material continuity held: iontrim S/V 0.017/0.016
+  OK  PASS: 32 Eclipse pose matches, skull regions, transparent edges and 64 local armor-insert samples.
+  OK  reviewed raster cutouts have clean, antialiased edges
+  OK  rig-tail audit passed for 9 active rigs
+
+PASS: shipping art passed 32 QA groups
+
+> acornaut@1.0.12 bridge
+> node illustrated-src/test-platform-bridge.mjs
+
+platform bridge: 52 files clean

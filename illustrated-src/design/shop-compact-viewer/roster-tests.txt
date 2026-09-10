@@ -1,0 +1,58 @@
+{
+  "suite": "daily Shop roster",
+  "result": "PASS",
+  "cases": 2111,
+  "matchedHelmetCases": 1789,
+  "matchedPalCases": 1601,
+  "randomPalDays": 236,
+  "emptyPalDays": 195,
+  "seen": {
+    "suits": [
+      "arcflash",
+      "cryostar",
+      "cyber",
+      "eclipse",
+      "gemmie",
+      "leviathan",
+      "nacre",
+      "origamist",
+      "porcelain",
+      "robo",
+      "sammie",
+      "seraph",
+      "verdant",
+      "volt"
+    ],
+    "helms": [
+      "amethyst",
+      "cryostar",
+      "eclipse",
+      "gemmie",
+      "ivoryguard",
+      "leviathan",
+      "reactor",
+      "sammie",
+      "seraph",
+      "verdant"
+    ],
+    "pals": [
+      "astrafox",
+      "babyalien",
+      "clockling",
+      "magnetar",
+      "nightglider",
+      "prismwing",
+      "satellite",
+      "spacepuppy",
+      "switchback"
+    ],
+    "features": [
+      "bundle-aurora",
+      "bundle-circuit",
+      "bundle-cosmic-companions",
+      "bundle-regalia",
+      "bundle-starlight-companions",
+      "bundle-visor-collection"
+    ]
+  }
+}

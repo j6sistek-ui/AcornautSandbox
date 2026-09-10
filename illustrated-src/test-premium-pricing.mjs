@@ -26,6 +26,7 @@ win.HTMLElement.prototype.getBoundingClientRect=function(){return {x:0,y:0,left:
 win.HTMLElement.prototype.scrollIntoView=function(){};
 win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasElement.prototype.releasePointerCapture=function(){};
 const C=await import('../docs/js/catalog.js'),S=await import('../docs/js/save.js'),H=await import('../docs/js/high-orbit-config.js');
+const {selectShopCycle}=await import('../docs/js/shop-cycle.js');
 const initial=S.defaultSave();Object.assign(initial,{tutorialDone:true,guide:'done',introOff:true,musicOff:true,sfxOff:true,motionOff:true});S.writeSave(initial);
 const {bootStandalone}=await import('../docs/js/standalone.js'),app=document.createElement('main');document.body.append(app);await bootStandalone(app);
 const e=win.__sandbox;assert(e);const baseline=structuredClone(e.save),trio=C.BUNDLES.find(b=>b.id==='bundle-premium-trio');
@@ -34,7 +35,7 @@ assert.equal(trio.alwaysAvailable,true,'trio has a permanent offer alongside its
 assert.equal(C.featurePrice(trio,()=>false),2500,'trio retains its owner-set price');
 assert.equal(C.alaCarteTotal(ids,()=>false),3000,'three separately purchased suits cost 3,000');
 for(const id of ids){
-  assert(C.FIXED_SHOP_SUIT_IDS.includes(id),id+' retains its permanent individual shelf slot');
+  assert(C.FIXED_SHOP_SUIT_IDS.includes(id),id+' retains its fixed individual price');
   assert(C.isIap(id),id+' remains purchasable without a singleton bundle');assert.equal(C.idDust(id),1000);
   assert(!C.BUNDLES.some(b=>b.items.length===1&&b.items[0].id===id),'individual pilots are not advertised as bundles');
 }
@@ -44,7 +45,7 @@ const trioCard=()=>app.querySelector('[data-bundle-id="bundle-premium-trio"]');
 const singleTile=id=>[...app.querySelectorAll('.ac-shoptile')].find(node=>node.querySelector('.ac-tilename')?.textContent===C.SUITS.find(s=>s.id===id).name);
 const clock=Date.now;
 try{
-  // The pack and every unowned single stay buyable across the daily rotation.
+  // The pack stays available; one premium single rotates alongside a cheaper suit.
   const days=[20000,20001,20017,20101],dailyFeatures=new Set();
   let day=days[0];Date.now=()=>day*86400000+3600000;
   for(day of days){
@@ -56,11 +57,14 @@ try{
     assert.equal(daily.length,1,'the regular daily feature remains beside the permanent trio');
     assert.equal(daily[0].previousElementSibling?.textContent,'FEATURED PACK');
     dailyFeatures.add(daily[0].dataset.bundleId);
-    for(const id of ids)assert(singleTile(id),id+' remains individually available every day');
+    const cycle=selectShopCycle(day,id=>S.ownsPremium(e.save,id));
+    for(const id of ids)assert.equal(!!singleTile(id),cycle.suits.includes(id),id+' follows its daily individual slot');
   }
   assert(dailyFeatures.size>1,'daily feature still rotates while the trio stays available');
   for(const id of ids){
     reset();e.save.starDust=1000;
+    day=Array.from({length:366},(_,i)=>20000+i).find(d=>selectShopCycle(d,item=>S.ownsPremium(e.save,item)).suits.includes(id));
+    assert(Number.isInteger(day),id+' reaches the daily premium slot');e.open('shop');
     const tile=singleTile(id);
     assert(tile,id+' remains individually available alongside its trio pack');
     assert(tile.querySelector('.ac-tileprice')?.textContent.includes('1,000'),id+' single tile shows 1,000');tile.click();
@@ -88,7 +92,11 @@ try{
       assert.equal(C.bundlePrice(trio,has),expected);assert.equal(C.featurePrice(trio,has),expected);
       if(expected){
         assert(trioCard()?.querySelector('.ac-modprice')?.textContent.includes(expected.toLocaleString()),'permanent offer shows the correct ownership credit');
-        for(const id of ids.filter(id=>!has(id)))assert(singleTile(id),id+' remains separately available with partial ownership');
+        const cycle=selectShopCycle(day,id=>S.ownsPremium(e.save,id));
+        for(const id of ids.filter(id=>!has(id))){
+          assert.equal(!!singleTile(id),cycle.suits.includes(id),id+' follows the daily slot under partial ownership');
+          assert(Array.from({length:366},(_,i)=>20000+i).some(d=>selectShopCycle(d,item=>S.ownsPremium(e.save,item)).suits.includes(id)),id+' still reaches an individual slot under partial ownership');
+        }
       }else assert.equal(trioCard(),null,'fully owned permanent pack leaves the shelf');
       if(expected){e.save.starDust=expected-1;const before=JSON.stringify(e.save);assert.equal(e[path](trio.id),'poor');assert.equal(JSON.stringify(e.save),before,'unfunded pack leaves the save unchanged');}
       e.save.starDust=expected;assert.equal(e[path](trio.id),expected?'ok':'owned');assert.equal(e.save.starDust,0);assert(ownsAll(e.save));

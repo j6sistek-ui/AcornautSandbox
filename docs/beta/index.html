@@ -867,6 +867,56 @@
     .ac-swipe .ac-ctrlsub { color: #ffc080; font-size: 11px; font-weight: 700; }
     .ac-mid { text-align: center; }
     .ac-helprow { display: flex; align-items: center; gap: 12px; padding: 7px 2px; }
+    /* Help-only control cards share the premium button finish. Runtime pads
+       and the launch briefing retain their own layout and event handlers. */
+    .ac-helpdeck > .ac-menuhead, .ac-helpdeck > .ac-sheet-scroll {
+      width: 100%; max-width: 760px; margin-inline: auto; }
+    .ac-helpdeck .ac-helpmode { margin: 2px 0 18px; }
+    .ac-helpdeck .ac-helpheading { margin: 0 0 9px; color: #f3d492;
+      font: 900 14px/1.2 Figtree, sans-serif; letter-spacing: .035em; }
+    .ac-helpdeck .ac-helpcontrols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .ac-helpdeck .ac-helpcontrol { --pad-light: var(--mb, #a9f5ff); --pad-edge: var(--m1, #2f9fe9);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+      min-width: 0; min-height: 112px; padding: 12px 6px; text-align: center;
+      border: 1px solid #e3bc70; border-radius: 16px;
+      background: radial-gradient(ellipse at top, var(--mw2, #294d70), transparent 80%), linear-gradient(#17213d, #080b1c);
+      box-shadow: inset 0 1px 0 #fff0bc66, inset 0 0 16px var(--mw, #2f9fe933), 0 0 10px var(--mw, #2f9fe933); }
+    .ac-helpdeck .ac-help-dive { --pad-light: #ffd490; --pad-edge: #e39a55;
+      background: radial-gradient(ellipse at top, #794527, transparent 85%), linear-gradient(#32223b, #100c23); }
+    .ac-helpdeck .ac-helpglyph { color: var(--pad-light); font: 900 23px/1 Figtree, sans-serif;
+      text-shadow: 0 0 12px var(--pad-edge); }
+    .ac-helpdeck .ac-helpcontrol b, .ac-helpdeck .ac-spillhelp-controls b {
+      font: 900 13px/1.15 Figtree, sans-serif; letter-spacing: .035em; color: var(--pad-light);
+      text-shadow: 0 0 12px var(--pad-edge); }
+    .ac-helpdeck .ac-helpaction, .ac-helpdeck .ac-spillhelp-controls span {
+      color: #f3d492; font: 800 10px/1.2 Figtree, sans-serif; letter-spacing: .04em; }
+    .ac-helpdeck .ac-helpkeys, .ac-helpdeck .ac-spillhelp-controls small,
+    .ac-helpdeck .ac-spillhelp-extra { margin: 0; color: #d3b8f2; font: 700 10px/1.3 Figtree, sans-serif; }
+    .ac-helpdeck .ac-spillhelp-controls { margin: 0; gap: 8px; }
+    .ac-helpdeck .ac-spillhelp-controls > .ac-spillhelp-pad {
+      min-height: 88px; justify-content: center; border: 1px solid #e3bc70;
+      background: linear-gradient(155deg, #273647, #100d27 70%);
+      box-shadow: inset 0 1px 0 #fff0bc66, inset 0 0 14px #a276d333, 0 0 10px #a276d333; }
+    @supports (background: color-mix(in srgb, #fff 10%, #000)) {
+      .ac-helpdeck .ac-helpcontrol, .ac-helpdeck .ac-spillhelp-controls > .ac-spillhelp-pad {
+        background: radial-gradient(ellipse at 50% 0, color-mix(in srgb, var(--pad-edge) 72%, #19243a), transparent 88%), linear-gradient(#1d1c35, #08091a);
+        box-shadow: inset 0 1px 0 #fff0bc66, inset 0 0 15px color-mix(in srgb, var(--pad-light) 22%, transparent),
+          0 0 12px color-mix(in srgb, var(--pad-edge) 32%, transparent); }
+    }
+    .ac-helpdeck .ac-helpextras { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 8px; margin-top: 8px; }
+    .ac-menu.ac-helpdeck .ac-helpbriefing, .ac-menu.ac-helpdeck .ac-replay {
+      min-height: 44px; padding: 10px 18px; border: 1px solid #e3bc70; border-radius: 999px; color: #ffe2a0;
+      background: radial-gradient(ellipse at top, #6e3da0, #1b113c 80%);
+      box-shadow: inset 0 1px 0 #fff0bc66, inset 0 0 12px #c390ee66, 0 0 10px #ac65e966;
+      font: 900 11px/1.2 Figtree, sans-serif; letter-spacing: .06em; }
+    .ac-helpdeck .ac-backbtn { min-width: 44px; min-height: 44px; border-color: #e3bc70; color: #ffe2a0;
+      background: radial-gradient(ellipse at top, #6e3da0, #1b113c 80%); box-shadow: inset 0 0 10px #c390ee55, 0 0 8px #ac65e955; }
+    .ac-helpdeck .ac-helpitemsheading { margin-top: 20px; }
+    .ac-helpdeck .ac-helprow > canvas { flex: none; }
+    .ac-helpdeck .ac-helprow > div > p:first-child { color: #f3d492; font-weight: 900; }
+    .ac-helpdeck .ac-helprow .ac-sub { color: #c9bbe3; font-size: 12px; line-height: 1.35; }
+    .ac-helpdeck button:focus-visible { outline: 2px solid #fff1b2; outline-offset: 3px; }
     @keyframes ac-pulse { 0%,100% { box-shadow: 0 0 8px rgba(232,164,74,.18); } 50% { box-shadow: 0 0 18px rgba(232,164,74,.4); } }
     .ac-playbar { display: flex; justify-content: flex-end; padding: calc(12px + env(safe-area-inset-top, 0px)) 12px 12px; }
     /* the first flight can be left; the button sits beside pause and is
@@ -953,33 +1003,43 @@
     /* ONE bar for the whole top rail (owner's call): the capsule background
        that used to sit on each cluster now wraps the group, and every item
        inside carries its own slight pill so the spacing reads as one unit. */
-    .ac-hub-rail { flex: none; display: flex; align-items: center; gap: 6px; background: rgba(22,14,48,.92);
-      border: 1.5px solid rgba(170,140,240,.3); border-radius: 22px; padding: 5px 6px; }
+    .ac-hub-rail { flex: none; display: flex; align-items: center; gap: 6px;
+      background: linear-gradient(180deg, rgba(55,32,81,.96), rgba(19,11,40,.96));
+      border: 1.5px solid rgba(220,178,102,.7); border-radius: 22px; padding: 5px 6px;
+      box-shadow: inset 0 1px 1px rgba(255,226,165,.22), 0 4px 16px rgba(7,2,19,.3); }
     .ac-hub-railgap { flex: 1; }
-    .ac-hub-sq { position: relative; width: 44px; height: 44px; border-radius: 12px; background: rgba(8,10,24,.5);
-      border: 1px solid rgba(170,140,240,.18); display: flex; align-items: center; justify-content: center; color: #cfd8ea; }
-    .ac-hub-sq img { width: 34px; height: 34px; mix-blend-mode: screen; border-radius: 10px; }
+    .ac-hub-sq { position: relative; width: 44px; height: 44px; border-radius: 12px;
+      background: radial-gradient(ellipse at 50% 0, rgba(197,139,239,.23), transparent 72%), linear-gradient(#342046, #150b29);
+      border: 1px solid rgba(229,189,114,.65); display: flex; align-items: center; justify-content: center; color: #f6e5bc;
+      box-shadow: inset 0 1px 1px rgba(255,232,183,.25), inset 0 -2px 3px rgba(5,2,13,.6), 0 3px 8px rgba(5,2,13,.35); }
+    .ac-hub-sq img { width: 34px; height: 34px; mix-blend-mode: screen; border-radius: 10px;
+      filter: drop-shadow(0 1px 3px rgba(225,166,78,.25)); }
     .ac-hub-sq canvas { width: 36px; height: 36px; }
     .ac-hub-wordmark { margin-top: 10px; text-align: center; }
     .ac-hub-title { font-family: Fraunces, serif; font-weight: 800; font-size: 40px; line-height: .95;
       background: linear-gradient(#fff 25%, #cfd6f2 60%, #9aa6d8 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
       filter: drop-shadow(0 3px 14px rgba(20,10,50,.9)); }
-    .ac-hub-kicker { margin-top: 5px; font-size: 10px; font-weight: 800; letter-spacing: .3em; text-transform: uppercase;
+    .ac-hub-kicker { margin-top: 5px; font-size: 10px; font-weight: 800; letter-spacing: .18em; line-height: 1.45;
+      text-transform: uppercase; text-wrap: balance;
       color: #c9b1ff; text-shadow: 0 1px 8px rgba(10,5,30,.9); }
     .ac-hub-space { flex: 1 1 auto; min-height: 60px; }
     .ac-hub-tiles { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
     .ac-hubtile { position: relative; border-radius: 20px; padding: 12px 8px 10px; display: flex; flex-direction: column;
       align-items: center; gap: 5px; color: #fff;
-      background: linear-gradient(180deg, var(--t1,#1a1f3a), var(--t2,#0e1122));
-      border: 2px solid var(--tb, rgba(170,140,240,.3));
-      box-shadow: 0 9px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.28), inset 0 -3px 0 rgba(0,0,0,.28); }
-    .ac-hubtile:active { transform: translateY(1px) scale(.99); }
+      background: radial-gradient(ellipse at 50% 0, rgba(255,234,190,.25), transparent 64%),
+        linear-gradient(155deg, rgba(255,235,200,.08), transparent 45%), linear-gradient(180deg, var(--t1,#1a1f3a), var(--t2,#0e1122));
+      border: 2px solid color-mix(in srgb, var(--tb,#b799df) 38%, #e4bd70);
+      box-shadow: 0 9px 22px rgba(0,0,0,.5), 0 0 16px rgba(168,107,223,.14),
+        inset 0 2px 0 rgba(255,233,188,.42), inset 0 0 0 1px rgba(255,223,155,.12), inset 0 -3px 0 rgba(0,0,0,.3); }
+    .ac-hubtile:active { transform: translateY(1px) scale(.99);
+      box-shadow: inset 0 2px 8px rgba(8,3,22,.55), inset 0 0 0 1px rgba(255,225,164,.35), 0 3px 9px rgba(0,0,0,.4); }
     /* BIG TYPE ON BIG TILES (owner, 7 Sep 2026: "the buttons are big but
        the content on them is small") */
     .ac-hubtile b { font-size: 19px; font-weight: 900; letter-spacing: .05em; text-shadow: 0 2px 4px rgba(0,0,0,.55); }
     .ac-hubsub { font-size: 12.5px; color: rgba(255,255,255,.88); font-weight: 700; margin-top: -3px; text-shadow: 0 1px 3px rgba(0,0,0,.5); }
     .ac-hubic { width: 62px; height: 62px; display: flex; align-items: center; justify-content: center;
-      background: rgba(8,10,24,.38); border-radius: 14px; box-shadow: inset 0 2px 5px rgba(0,0,0,.35); }
+      background: radial-gradient(ellipse at 50% 15%, rgba(255,214,151,.13), rgba(8,10,24,.5) 75%); border-radius: 14px;
+      box-shadow: inset 0 1px 0 rgba(255,230,172,.23), inset 0 0 0 1px rgba(255,223,166,.16), inset 0 -3px 6px rgba(0,0,0,.3); }
     .ac-hubic img, .ac-hubic canvas { max-width: 58px; max-height: 58px; object-fit: contain; }
     .ac-hubic .ac-hubic-img { mix-blend-mode: screen; border-radius: 12px; }
     .ac-hubdot { position: absolute; top: 9px; right: 10px; width: 11px; height: 11px; border-radius: 50%;
@@ -1023,6 +1083,18 @@
     .ac-hub-track i { display: block; height: 100%; background: linear-gradient(90deg, #c07f1f, #ffd76a); border-radius: 999px; }
     .ac-hub-track em { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-style: normal;
       font-size: 9.5px; font-weight: 900; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8); letter-spacing: .05em; }
+    .ac-hubtile, .ac-hub-bar, .ac-hub-sq { transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+    .ac-hub-sq:active, .ac-hub-bar:active { transform: translateY(1px);
+      box-shadow: inset 0 2px 8px rgba(8,3,22,.6), 0 2px 7px rgba(0,0,0,.35); }
+    .ac-hub button:focus-visible, .ac-hub-sq:focus-visible { outline: 2px solid #fff0ba; outline-offset: 3px; }
+    @media (hover: hover) {
+      .ac-hubtile:hover:not(:active), .ac-hub-bar:hover:not(:active), .ac-hub-sq:hover:not(:active) { border-color: #ffe5a5;
+        box-shadow: inset 0 1px 1px rgba(255,238,197,.5), 0 0 0 1px rgba(230,184,103,.25), 0 0 20px rgba(177,113,230,.35), 0 8px 22px rgba(0,0,0,.4); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ac-hubtile, .ac-hub-bar, .ac-hub-sq { transition: none; }
+      .ac-hubtile:active, .ac-hub-bar:active, .ac-hub-sq:active { transform: none; }
+    }
     /* landscape: five tiles in one row, launch back to a column */
     @media (orientation: landscape) {
       .ac-hub { padding: 12px 22px 14px; }
@@ -1037,6 +1109,8 @@
     }
     /* ---- MODES: one saturated row per way to fly ---- */
     .ac-modecard { gap: 9px; max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .ac-modecard > .ac-menuhead { padding: 0 0 3px; justify-content: flex-start; align-items: center; }
+    .ac-modecard .ac-backbtn { width: 44px; height: 44px; }
     .ac-moderow { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; text-align: left;
       border-radius: 18px; padding: 10px 12px; color: #f3efe4;
       background: linear-gradient(100deg, var(--mw, rgba(30,38,64,.55)), rgba(12,8,28,.5) 64%);
@@ -1090,11 +1164,6 @@
       color: #9aa6c4; padding: 11px 14px; box-shadow: none; }
     .ac-modedoor .ac-moderowtxt b { font-size: 12px; font-weight: 800; letter-spacing: .1em; }
     .ac-modedoor svg { flex: none; opacity: .65; }
-    body.ac-beta .ac-modeback { margin-top: 6px; border-radius: 999px; padding: 15px;
-      font: 900 15px/1 Figtree, sans-serif; letter-spacing: .12em; color: #fff;
-      border: 1px solid rgba(206,186,255,.5);
-      background: linear-gradient(180deg, #8a5ae4, #4a279c);
-      box-shadow: 0 10px 26px -10px rgba(138,90,228,.85), inset 0 1px 0 rgba(255,255,255,.3); }
     /* ---- the chapter map ---- */
     .ac-chartmapwrap { display: flex; justify-content: center; padding: 4px 0 14px; }
     .ac-chartmap { position: relative; }
@@ -1162,6 +1231,40 @@
     .ac-hub-idacorns { display: flex; align-items: center; gap: 6px; color: #ffdf9a; min-height: 34px;
       background: rgba(8,10,24,.5); border: 1px solid rgba(170,140,240,.18); border-radius: 999px;
       font-size: 15px; font-weight: 800; padding: 0 11px 0 8px; }
+    .ac-hub-rail :is(.ac-hub-idport, .ac-hub-idnut, .ac-hub-iddust) {
+      border-color: rgba(229,189,114,.65);
+      box-shadow: inset 0 1px 1px rgba(255,232,183,.25), inset 0 -2px 3px rgba(5,2,13,.6), 0 3px 8px rgba(5,2,13,.35); }
+    /* Profile shares the Shop's violet surfaces and gold edges without
+       changing the pilot's controls, inventory or destructive-action state. */
+    body .ac-menu.ac-profile { color: #f6efff;
+      background: radial-gradient(ellipse at 50% 0, rgba(123,63,166,.28), transparent 52%), linear-gradient(#180d2d, #0c071b); }
+    .ac-profile > .ac-menuhead { width: 100%; max-width: 760px; margin-inline: auto; border-bottom: 1px solid rgba(232,193,113,.24); }
+    .ac-profile .ac-menutitle { color: #ffe7a8; text-shadow: 0 2px 0 #593c13, 0 0 22px rgba(225,170,65,.2); }
+    .ac-profile > .ac-sheet-scroll { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 760px;
+      margin-inline: auto; padding-top: 12px; }
+    .ac-profile > .ac-sheet-scroll > * { flex: none; }
+    .ac-profile .ac-secthead { margin: 8px 0 0; color: #e9c68d; }
+    body .ac-profile .ac-idcard, body .ac-profile .ac-tile, body .ac-profile .ac-rows {
+      margin-top: 0; border-color: rgba(220,178,102,.64); background: linear-gradient(145deg, #28163f, #130b25);
+      box-shadow: inset 0 1px 1px rgba(255,226,165,.16), 0 5px 18px rgba(6,2,16,.25); }
+    .ac-profile .ac-tiles { gap: 10px; }
+    .ac-profile .ac-tilenum { color: #ffe4a5; }
+    .ac-profile .ac-tilelabel, .ac-profile .ac-setsub, .ac-profile .ac-sub { color: #c5b5d9; }
+    body .ac-profile .ac-rows .ac-row { min-height: 52px; border-bottom-color: rgba(223,184,112,.2); gap: 12px; }
+    .ac-profile .ac-idface { border-color: #caa867; background: radial-gradient(ellipse at 50% 24%, #58336e, #130b25 75%); }
+    .ac-profile .ac-idtxt, .ac-profile .ac-socialtxt { flex: 1; min-width: 0; }
+    .ac-profile .ac-idname, .ac-profile .ac-socialtxt { overflow-wrap: anywhere; }
+    .ac-profile .ac-idnameedit, .ac-profile .ac-idnameok, .ac-profile .ac-invuse {
+      min-width: 44px; min-height: 44px; border: 1px solid #d5b16f; color: #ffebbd;
+      background: linear-gradient(#4c2b6c, #27163f); box-shadow: inset 0 1px 0 #ffe9b32b; }
+    .ac-profile .ac-idnameinput { min-height: 44px; color: #fff3da; border-color: #ba9963; background: #140b26; }
+    body .ac-profile .ac-switch { border-color: #9b79bd; background: #27163e; }
+    body .ac-profile .ac-switch.on { border-color: #edc784; background: linear-gradient(#8d5abb, #542b80); }
+    .ac-profile .ac-socialmark { border-color: #d5b16f; background: #39214f; color: #ffdf9e; }
+    .ac-profile .ac-reset { margin-top: 8px; }
+    .ac-profile .ac-resetnote { margin-bottom: 10px; }
+    .ac-profile button:focus-visible, .ac-profile a:focus-visible, .ac-profile input:focus-visible {
+      outline: 2px solid #fff0ba; outline-offset: 3px; }
     /* hub icons that carry their own painted plate: no blend, just rounding */
     .ac-hubic .ac-hubic-art { width: 100%; height: 100%; max-width: none; max-height: none;
       object-fit: cover; border-radius: 14px; }
@@ -1989,6 +2092,18 @@ body .ac-loadout .ac-card {
 }
 .ac-loadout .ac-asgrid .ac-shelfrow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .ac-loadout .ac-shelfhead { color: #d9c4fa; text-shadow: 0 0 10px #a869df66; }
+.ac-loadout .ac-unlocktag {
+  display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 3px;
+  max-width: 100%; min-height: 26px; margin-top: 3px; padding: 3px 6px;
+  border: 1px solid #dfbd77; border-radius: 999px; background: linear-gradient(#46321d, #24152b);
+  box-shadow: inset 0 1px 0 #ffe6ac33; color: #ffe5a1; font: 800 10px/1.2 Figtree, sans-serif;
+  white-space: normal; text-align: center;
+}
+.ac-loadout .ac-unlocktag > span { min-width: 0; overflow-wrap: anywhere; }
+.ac-loadout .ac-unlocktag .ac-boostart { flex: none; width: 18px; height: 18px; object-fit: contain; }
+.ac-loadout .ac-cardoff:has(> .ac-unlocktag) { opacity: 1; filter: none; }
+.ac-loadout .ac-cardoff:has(> .ac-unlocktag) > canvas,
+.ac-loadout .ac-cardoff:has(> .ac-unlocktag) > img { opacity: .45; filter: grayscale(.6); }
 body .ac-loadout .ac-card.ac-premium {
   border-color: #f3ca75;
   box-shadow: inset 0 0 0 1px #ffdf8d55, inset 0 0 14px #daa74e22, 0 0 8px #e7b45555;
@@ -2008,7 +2123,7 @@ body .ac-loadout .ac-viewbtn.on {
   color: #fff; background: linear-gradient(#238f88, #114c55);
   box-shadow: inset 0 0 0 1px #82ffe9, inset 0 0 8px #62ffdcaa, 0 0 9px #53ffdc99;
 }
-body .ac-loadout .ac-backbtn, body .ac-loadout .ac-casefold, body .ac-loadout .ac-helpdot {
+body .ac-loadout .ac-backbtn, body .ac-loadout .ac-casefold {
   border: 1px solid #ce95ff; color: #f6edff;
   background: radial-gradient(ellipse at top, #572579, #170d2e 72%);
   box-shadow: inset 0 0 7px #c97eff55, 0 0 9px #c97eff66;
@@ -2061,6 +2176,93 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
   .ac-loadout .ac-caseeyebrow { padding: 4px 10px; }
 }
 </style>
+<style id="ac-shop-layout-css">/* Compact Shop only. The actual game painters and Loadout layout are shared unchanged. */
+.ac-shopcompact > .ac-sheet-scroll { overflow-anchor: none; }
+.ac-shopcompact .ac-daily {
+  min-height: 44px; gap: 8px; margin-bottom: 6px; padding: 6px 9px; border-radius: 12px;
+}
+.ac-shopcompact .ac-dailybadge { width: 28px; height: 28px; }
+.ac-shopcompact .ac-dailytxt { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 3px 8px; }
+.ac-shopcompact .ac-dailytxt .ac-modname { margin: 0; font-size: 9px; line-height: 1.1; }
+.ac-shopcompact .ac-daily .ac-pips { margin: 0; gap: 3px; justify-content: flex-end; }
+.ac-shopcompact .ac-daily .ac-pip { width: 8px; height: 8px; }
+.ac-shopcompact .ac-daily .ac-pip.big { width: 10px; height: 10px; margin-top: -1px; }
+.ac-shopcompact .ac-dailytxt .ac-sub { grid-column: 1 / -1; margin: 0; font-size: 10px; line-height: 1.2; }
+.ac-shopcompact .ac-dailygot { gap: 3px; font-size: 12px; }
+
+.ac-shopcompact .ac-shopcase.ac-shopviewer {
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) 98px;
+  width: 100%; max-width: none; height: 288px; margin: 0 0 8px; border-radius: 16px;
+}
+.ac-shopcompact .ac-shopviewer .ac-caseplate {
+  grid-column: 1; grid-row: 1; min-width: 0; align-items: flex-start; text-align: left;
+  padding: 8px 9px 3px; gap: 2px; border-top: 0;
+  background: linear-gradient(115deg, rgba(36,16,58,.96), rgba(22,12,45,.35));
+}
+.ac-shopcompact .ac-shopviewer .ac-caseeyebrow { font-size: 7px; letter-spacing: .14em; }
+.ac-shopcompact .ac-shopviewer .ac-caseplate b { font-size: 14px; line-height: 1.1; }
+.ac-shopcompact .ac-shopviewer .ac-casesub { font-size: 9px; line-height: 1.15; }
+.ac-shopcompact .ac-shopviewer .ac-casetag {
+  position: static; max-width: 100%; margin: 0; padding: 2px 4px;
+  font-size: 7px; line-height: 1.1; letter-spacing: .035em;
+}
+.ac-shopcompact .ac-shopviewer .ac-casepane { grid-column: 1; grid-row: 2; min-width: 0; min-height: 0; padding: 0; overflow: hidden; }
+.ac-shopcompact .ac-shopviewer .ac-casecanvas {
+  width: 100% !important; height: 100% !important; max-width: 240px; max-height: 160px; object-fit: contain;
+}
+.ac-shopcompact .ac-shopviewer .ac-casecorner { width: 10px; height: 10px; opacity: .45; }
+.ac-shopcompact .ac-shopviewer .ac-casefloor { bottom: 5px; }
+.ac-shopcompact .ac-shopitems {
+  grid-column: 1; grid-row: 3; min-width: 0; overflow: hidden;
+  border-top: 1px solid rgba(221,188,126,.6); background: linear-gradient(#251638, #100822);
+  box-shadow: inset 0 1px 0 rgba(255,233,181,.08);
+}
+.ac-shopcompact .ac-shopitemrail {
+  display: flex; align-items: flex-start; gap: 6px; height: 96px; padding: 1px 5px 0;
+  overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: thin;
+  scrollbar-color: #9d75c3 transparent; -webkit-overflow-scrolling: touch;
+}
+.ac-shopcompact .ac-shopitemrail::-webkit-scrollbar { display: block; height: 3px; }
+.ac-shopcompact .ac-shopitemrail::-webkit-scrollbar-thumb { background: #9d75c3; border-radius: 4px; }
+.ac-shopcompact .ac-shopviewer .ac-card.ac-shoptile {
+  flex: 0 0 auto; width: 60px; min-width: 60px; height: 80px; min-height: 80px;
+  gap: 2px; padding: 3px; border-radius: 8px;
+}
+.ac-shopcompact .ac-shopviewer .ac-shoptile .ac-tilename {
+  flex: none; min-height: 20px; height: 20px; overflow: hidden; overflow-wrap: anywhere; font-size: 9px; line-height: 1.1;
+}
+.ac-shopcompact .ac-shopviewer .ac-shopitemart { flex: none; width: 34px; height: 34px; aspect-ratio: 1; border-radius: 5px; }
+.ac-shopcompact .ac-shopviewer .ac-shoptile .ac-tileprice { flex: none; min-height: 14px; height: 14px; font-size: 10px; border-radius: 4px; }
+.ac-shopcompact .ac-shopviewer .ac-tickbadge { top: auto; left: auto; right: 3px; bottom: 18px; width: 13px; height: 13px; font-size: 8px; }
+.ac-shopcompact .ac-shopviewer .ac-caseheld { grid-column: 1 / -1; grid-row: 4; padding: 6px 8px; }
+.ac-shopcompact .ac-shopviewer:has(.ac-caseheld) { height: auto; grid-template-rows: auto 124px 98px auto; }
+.ac-shopcompact .ac-caseheldgo { min-width: 44px; min-height: 44px; }
+
+.ac-shopcompact .ac-combobar { min-height: 50px; padding: 7px 9px; gap: 7px; border-radius: 12px; }
+.ac-shopcompact .ac-combotxt b { font-size: 11px; }
+.ac-shopcompact .ac-combotxt span { font-size: 10px; line-height: 1.25; }
+.ac-shopcompact .ac-cartclear { flex: none; align-self: center; min-width: 44px; min-height: 44px; margin: 0; padding: 5px; }
+.ac-shopcompact .ac-combobuy { min-width: 64px; min-height: 44px; padding: 10px; font-size: 13px; }
+.ac-shopcompact .ac-shopviewer button:focus-visible { outline-offset: -3px; }
+.ac-shopcompact .ac-shopoffer { flex-shrink: 0; }
+.ac-shopcompact .ac-card.ac-boostcard { min-height: 52px; padding: 8px; gap: 8px; }
+.ac-shopcompact .ac-boostcard + .ac-boostcard { margin-top: 8px; }
+.ac-shopcompact .ac-boostcard .ac-boostart { width: 34px; height: 34px; }
+.ac-shopcompact .ac-boostcard .ac-sub { font-size: 11px; line-height: 1.3; }
+
+@media (min-width: 700px) {
+  .ac-shopcompact .ac-shopviewer .ac-caseplate b { font-size: 17px; }
+  .ac-shopcompact .ac-shopviewer .ac-casesub { font-size: 10px; }
+  .ac-shopcompact .ac-shopviewer .ac-casecanvas { max-width: 264px; max-height: 176px; }
+  .ac-shopcompact .ac-shopviewer .ac-card.ac-shoptile { width: 64px; min-width: 64px; }
+  .ac-shopcompact .ac-card.ac-shopoffer { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) auto; gap: 12px; }
+  .ac-shopcompact .ac-shopoffer > .ac-bundlebanner { grid-column: 1; grid-row: 1; }
+  .ac-shopcompact .ac-shopoffer > .ac-modname { grid-column: 2; grid-row: 1; padding: 14px 0; }
+  .ac-shopcompact .ac-shopoffer > .ac-modprice { grid-column: 3; grid-row: 1; margin-left: 0; }
+  .ac-shopcompact .ac-offersavings { top: 6px; left: 6px; right: auto; padding: 5px 7px; font-size: 9px; }
+}
+</style>
 </head>
 <body>
   <div id="app"></div>
@@ -2087,7 +2289,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js269/standalone.js")
+    import("../js270/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

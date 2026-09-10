@@ -1,0 +1,70 @@
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+fatal: unable to access 'https://github.com/j6sistek-ui/AcornautSandbox.git/': Could not resolve host: github.com
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+fatal: unable to access 'https://github.com/j6sistek-ui/AcornautSandbox.git/': Could not resolve host: github.com
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+fatal: unable to access 'https://github.com/j6sistek-ui/AcornautSandbox.git/': Could not resolve host: github.com
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+fatal: unable to access 'https://github.com/j6sistek-ui/AcornautSandbox.git/': Could not resolve host: github.com
+fatal: not a tree object: 5acb81cc030480d87dc59ad59758b3c35168ae8a
+node:internal/errors:983
+  const err = new Error(message);
+              ^
+
+Error: Command failed: git archive 5acb81cc030480d87dc59ad59758b3c35168ae8a docs/js
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+fatal: unable to access 'https://github.com/j6sistek-ui/AcornautSandbox.git/': Could not resolve host: github.com
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+fatal: unable to access 'https://github.com/j6sistek-ui/AcornautSandbox.git/': Could not resolve host: github.com
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+fatal: unable to access 'https://github.com/j6sistek-ui/AcornautSandbox.git/': Could not resolve host: github.com
+error: unable to normalize alternate object path: /repo-git/objects/C:/Users/j6sis/acornaut/tmp/tap-audit-main/.git/objects
+fatal: unable to access 'https://github.com/j6sistek-ui/AcornautSandbox.git/': Could not resolve host: github.com
+fatal: not a tree object: 5acb81cc030480d87dc59ad59758b3c35168ae8a
+
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:916:11)
+    at execFileSync (node:child_process:952:15)
+    at modules (file:///work/illustrated-src/test-helmet-animation.mjs:73:19)
+    at file:///work/illustrated-src/test-helmet-animation.mjs:88:22
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  status: 128,
+  signal: null,
+  output: [
+    null,
+    Buffer(0) [Uint8Array] [],
+    Buffer(1143) [Uint8Array] [
+      101, 114, 114, 111, 114,  58,  32, 117, 110,  97,  98, 108,
+      101,  32, 116, 111,  32, 110, 111, 114, 109,  97, 108, 105,
+      122, 101,  32,  97, 108, 116, 101, 114, 110,  97, 116, 101,
+       32, 111,  98, 106, 101,  99, 116,  32, 112,  97, 116, 104,
+       58,  32,  47, 114, 101, 112, 111,  45, 103, 105, 116,  47,
+      111,  98, 106, 101,  99, 116, 115,  47,  67,  58,  47,  85,
+      115, 101, 114, 115,  47, 106,  54, 115, 105, 115,  47,  97,
+       99, 111, 114, 110,  97, 117, 116,  47, 116, 109, 112,  47,
+      116,  97, 112,  45,
+      ... 1043 more items
+    ]
+  ],
+  pid: 42,
+  stdout: Buffer(0) [Uint8Array] [],
+  stderr: Buffer(1143) [Uint8Array] [
+    101, 114, 114, 111, 114,  58,  32, 117, 110,  97,  98, 108,
+    101,  32, 116, 111,  32, 110, 111, 114, 109,  97, 108, 105,
+    122, 101,  32,  97, 108, 116, 101, 114, 110,  97, 116, 101,
+     32, 111,  98, 106, 101,  99, 116,  32, 112,  97, 116, 104,
+     58,  32,  47, 114, 101, 112, 111,  45, 103, 105, 116,  47,
+    111,  98, 106, 101,  99, 116, 115,  47,  67,  58,  47,  85,
+    115, 101, 114, 115,  47, 106,  54, 115, 105, 115,  47,  97,
+     99, 111, 114, 110,  97, 117, 116,  47, 116, 109, 112,  47,
+    116,  97, 112,  45,
+    ... 1043 more items
+  ]
+}
+
+Node.js v22.23.2

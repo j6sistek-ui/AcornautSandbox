@@ -47,10 +47,17 @@ localStorage.setItem('acornaut_star_map_sample_v1',JSON.stringify({sentinel:'arc
 const {bootStandalone}=await import('../docs/js/standalone.js');const app=document.createElement('main');document.body.append(app);await bootStandalone(app);const e=win.__sandbox;assert(e);
 const tick=()=>{now+=1000/60;const batch=[...frames.values()];frames.clear();batch.forEach(fn=>fn(now));};
 const button=text=>[...app.querySelectorAll('button')].find(b=>b.textContent.includes(text));
-function chart(){e.open('log');tick();tick();return app.querySelector('.ac-chartmap');}
+function chart(){
+  e.open('log');tick();tick();
+  assert(![...app.querySelectorAll('button')].some(b=>/return to pilot/i.test(b.textContent)),'the retired Return to pilot action is absent');
+  assert(app.querySelector('.ac-menuhead .ac-backbtn'),'Star Chart retains the standard header Back action');
+  return app.querySelector('.ac-chartmap');
+}
 // Production flies the same 260-mission road as the beta (STAR_MAP_LIVE);
 // only the PREVIEW rewards stay beta-only, which the next line still pins.
 chart();assert.equal(app.querySelectorAll('.ac-mapnode').length,C.CHART_LEVELS.length);
+const beforeHeaderBack=JSON.stringify(e.save);app.querySelector('.ac-menuhead .ac-backbtn').click();
+assert.equal(e.world.screen,'title');assert.equal(JSON.stringify(e.save),beforeHeaderBack,'the retained header Back does not change progress');chart();
 assert.equal(C.CHART_LEVELS.length,260);
 assert.equal(app.querySelectorAll('.ac-palmark.planned').length,mode==='production'?0:25);
 assert.equal(app.querySelectorAll('.ac-palmark.planned.earned').length,0);

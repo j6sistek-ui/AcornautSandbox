@@ -182,16 +182,18 @@ async function integrationChecks(){
   win.HTMLElement.prototype.scrollIntoView=function(){};
   win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasElement.prototype.releasePointerCapture=function(){};
   const S=await import('../docs/js/save.js'),C=await import('../docs/js/catalog.js'),Config=await import('../docs/js/high-orbit-config.js');
+  const {selectShopCycle}=await import('../docs/js/shop-cycle.js');
   const Sim=await import('../docs/js/sim.js'),Race=await import('../docs/js/race.js');
   const save=S.defaultSave();Object.assign(save,{tutorialDone:true,guide:'done',introOff:true,musicOff:true,sfxOff:true,motionOff:true});S.writeSave(save);
   const {bootStandalone}=await import('../docs/js/standalone.js');const app=document.createElement('main');document.body.append(app);await bootStandalone(app);const e=win.__sandbox;assert(e);
   e.save.unlocked.push('ion');e.save.equipped='ion';e.save.unlockedTrails.push('ion');e.save.equippedTrail='ion';
   const clock=Date.now;
   try{
-    for(const day of [0,17]){
-      Date.now=()=>1_800_000_000_000+day*86400000;e.open('shop');
+    for(const day of [20000,20017]){
+      Date.now=()=>day*C.SHOP_DAY_MS+3600000;e.open('shop');
       const listed=[...app.querySelectorAll('.ac-shoptile .ac-tilename')].map(node=>node.textContent);
-      for(const id of ids)assert(listed.includes(C.SUITS.find(s=>s.id===id).name),id+' available on actual storefront day '+day);
+      const cycle=selectShopCycle(day,id=>S.ownsPremium(e.save,id));
+      for(const id of ids)assert.equal(listed.includes(C.SUITS.find(s=>s.id===id).name),cycle.suits.includes(id),id+' follows actual storefront day '+day);
     }
   }finally{Date.now=clock;}
   const results=[];
@@ -210,12 +212,16 @@ async function integrationChecks(){
     e.save.starDust=price-1;const beforePoor=JSON.stringify(e.save);assert.equal(e.buyShopItem(id),'poor');assert.equal(JSON.stringify(e.save),beforePoor,'unfunded purchase has no side effects');
     // Exercise the real storefront card and cart button, then restore this
     // synthetic fixture to independently exercise the individual transaction.
-    const beforeShop=structuredClone(e.save);e.save.starDust=price;e.open('shop');
+    const beforeShop=structuredClone(e.save);e.save.starDust=price;
+    const availableDay=Array.from({length:366},(_,i)=>20000+i).find(day=>selectShopCycle(day,item=>S.ownsPremium(e.save,item)).suits.includes(id));
+    assert(Number.isInteger(availableDay),id+' reaches an eligible daily slot');
+    Date.now=()=>availableDay*C.SHOP_DAY_MS+3600000;e.open('shop');
     const tile=[...app.querySelectorAll('.ac-shoptile')].find(node=>node.querySelector('.ac-tilename')?.textContent===suit.name);assert(tile,id+' real shop tile');tile.click();
     assert(app.textContent.includes(C.fixedHeadTag(suit)),id+' shop preview states fixed head rule');
     assert.equal(e.save.equipped,'ion','trying a suit never overwrites selected helmet');
     const checkout=app.querySelector('.ac-combobuy');assert(checkout,id+' can be placed in cart');checkout.click();
     assert.equal(e.save.starDust,0,id+' actual storefront charges its advertised sticker');assert(S.suitRevealed(e.save,id)&&S.trailUnlocked(e.save,trail));
+    Date.now=clock;
     Object.assign(e.save,beforeShop);
     e.save.starDust=price;assert.equal(e.buyShopItem(id),'ok');assert.equal(e.save.starDust,0);
     assert(S.suitRevealed(e.save,id)&&S.trailUnlocked(e.save,trail));assert.equal(e.buyShopItem(id),'owned');assert.equal(e.save.starDust,0);
