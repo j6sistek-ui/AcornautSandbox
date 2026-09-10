@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "256";
+export const ART_VER = "257";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -270,9 +270,9 @@ export const SUITS: Suit[] = [
   // ARCFLASH IS SOLD (owner, 7 Sep 2026): production, 1,850 star dust,
   // its blue electrical wake built in - see bundle-arcflash and DUST_STICKER.
   { id: "arcflash", name: "Arcflash", cost: 0, ownHead: true, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
-  { id: "porcelain", name: "Porcelain Paragon", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Sovereign Shell", fur: "#c7ccd3", furDark: "#767e8d", belly: "#fff8e9", suit: "#efe8d7", suitLite: "#fffdf3", suitDark: "#38567b", trim: "#466bb4", glow: "#b9d8ff", dust: null },
-  { id: "nacre", name: "Nacre Envoy", cost: 0, ownHead: true, headPolicy: "helmetless", fur: "#cfb1df", furDark: "#8e709f", belly: "#f5d8dc", suit: "#e4d6dc", suitLite: "#fff0df", suitDark: "#4a315d", trim: "#d4a2d8", glow: "#e5a8ed", dust: null },
-  { id: "origamist", name: "Foldspace Origamist", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Facet Shell", fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
+  { id: "porcelain", name: "Percy", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Sovereign Shell", fur: "#c7ccd3", furDark: "#767e8d", belly: "#fff8e9", suit: "#efe8d7", suitLite: "#fffdf3", suitDark: "#38567b", trim: "#466bb4", glow: "#b9d8ff", dust: null },
+  { id: "nacre", name: "Envoy", cost: 0, ownHead: true, headPolicy: "helmetless", fur: "#cfb1df", furDark: "#8e709f", belly: "#f5d8dc", suit: "#e4d6dc", suitLite: "#fff0df", suitDark: "#4a315d", trim: "#d4a2d8", glow: "#e5a8ed", dust: null },
+  { id: "origamist", name: "Patriot", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Facet Shell", fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
   { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
   { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
   { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
@@ -626,10 +626,10 @@ export const BUNDLES: {
   // design is inseparable; these packs never advertise a removable helmet.
   // Latest owner price: 1,000 each, or all three for 2,500 Stardust.
   // Preserve the existing singleton ids for purchase compatibility.
-  { id: "bundle-porcelain", name: "Porcelain Paragon", blurb: "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "porcelain" }] },
-  { id: "bundle-nacre", name: "Nacre Envoy", blurb: "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "nacre" }] },
-  { id: "bundle-origamist", name: "Foldspace Origamist", blurb: "Folded composite and the permanent Facet Shell. Foldspace Ribbon wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "origamist" }] },
-  { id: "bundle-premium-trio", name: "Premium Pilot Trio", blurb: "Porcelain Paragon, Nacre Envoy and Foldspace Origamist, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
+  { id: "bundle-porcelain", name: "Percy", blurb: "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "porcelain" }] },
+  { id: "bundle-nacre", name: "Envoy", blurb: "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "nacre" }] },
+  { id: "bundle-origamist", name: "Patriot", blurb: "Folded composite and the permanent Facet Shell. Foldspace Ribbon wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "origamist" }] },
+  { id: "bundle-premium-trio", name: "Premium Pilot Trio", blurb: "Percy, Envoy and Patriot, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
   { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
   { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
   { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
@@ -995,7 +995,7 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   { title: "EXOTIC", ids: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"] },
   // premium suits the pilot owns; each one not yet bought shows as a door
   // to the shop instead of a locked card that answers nothing
-  { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash"], shop: true },
+  { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash", ...PREMIUM_SUIT_IDS], shop: true },
   // the cat eats no acorns, so no amount of them buys it: it is the
   // 300-star prize, the full Star Chart, and nothing less
   // the critters are premium: unowned ones show as doors to the shop
@@ -1004,7 +1004,6 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   // rewards where gaps are missing... all tap animations fixed so they can
   // go live now"): the five former beta suits fill the ladder above 300.
   { title: "HIGH ORBIT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
-  { title: "PREMIUM ATELIER", ids: [...PREMIUM_SUIT_IDS], shop: true },
 ];
 
 // The helmet wall groups by what the GLASS does, because that is how a

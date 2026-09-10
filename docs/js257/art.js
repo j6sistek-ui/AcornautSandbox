@@ -1,8 +1,8 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=252";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=252";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=252";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=252";
-import { HIGH_ORBIT_IDS, isHighOrbit } from "./high-orbit-config.js?v=252";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=257";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=257";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=257";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=257";
+import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumSuit, isHighOrbitRig } from "./high-orbit-config.js?v=257";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -384,7 +384,7 @@ const LAZY_SUIT_IDS = [...new Set([
         // Arcflash is SOLD on production (7 Sep 2026): its parts atlas must load
         // there too, or the suit flies as a flat body sticker off the live page.
         "arcflash",
-        ...HIGH_ORBIT_IDS,
+        ...ORBIT_PILOT_IDS,
         ...Object.keys(LOOP_BANKS),
         ...RIGGED_SUITS,
         ...Object.keys(TAP_BANKS), ...Object.keys(TAIL_TAP_BANKS),
@@ -400,7 +400,20 @@ export function loadSuitBank(bank, id) {
     const base = artBase();
     const layer = (suffix) => loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
     const p = (async () => {
-        if (isHighOrbit(id)) {
+        if (isPremiumSuit(id)) {
+            try {
+                const sheet = await loadImg(`${base}/suits/${id}/flight.png?v=${ART_VER}`);
+                if (sheet.naturalWidth !== 1024 || sheet.naturalHeight !== 1024)
+                    throw new Error("Invalid premium flight sheet");
+                // One decoded image publishes all sixteen poses atomically.
+                (bank.premiumFlight ?? (bank.premiumFlight = {}))[id] = sheet;
+            }
+            catch {
+                suitBankLoads.delete(id);
+            }
+            return;
+        }
+        if (isHighOrbitRig(id)) {
             try {
                 const atlas = await loadImg(`${base}/suits/${id}/parts.png?v=${ART_VER}`);
                 if (atlas.naturalWidth !== 1024 || atlas.naturalHeight !== 768)
@@ -634,6 +647,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "raccoon", "ferret", "hedgehog",
         // HIGH ORBIT (7 Sep 2026): star rewards on production, so they load there
         "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
+        ...PREMIUM_SUIT_IDS,
         // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
         // 2026), so its sheet loads there rather than only on the beta host
         "briellacat",

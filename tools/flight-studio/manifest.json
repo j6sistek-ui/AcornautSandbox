@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "256",
-  "sourceCommit": "fe59f68b66d9eac0fba6bca115e93a0e7a6d003d",
+  "artVer": "257",
+  "sourceCommit": "95aefc52cb37d9451ade3db906f9ef97cb37479e",
   "models": [
     {
       "id": "flight",
@@ -128,13 +128,13 @@
         "loop": []
       },
       "hashes": {
-        "suits/arcflash/body.png": "f20dee34d666ee8c48894b7df27729231e980bb4eee578d4bf54793d0826d69a",
+        "suits/arcflash/body.png": "1c7f0c52e4ba575169ce4af23022ad6de4fe8cd4591d195384729b50cf636be6",
         "suits/arcflash/parts.png": "3b243a739643dedd4f7e27c650e7a2071473aeac99111f46a91f20afa963f0aa"
       }
     },
     {
       "id": "porcelain",
-      "name": "Porcelain Paragon",
+      "name": "Percy",
       "key": "suit:porcelain",
       "file": "suits/porcelain.png",
       "dome": [
@@ -456,7 +456,7 @@
     },
     {
       "id": "nacre",
-      "name": "Nacre Envoy",
+      "name": "Envoy",
       "key": "suit:nacre",
       "file": "suits/nacre.png",
       "dome": [
@@ -778,7 +778,7 @@
     },
     {
       "id": "origamist",
-      "name": "Foldspace Origamist",
+      "name": "Patriot",
       "key": "suit:origamist",
       "file": "suits/origamist.png",
       "dome": [
@@ -5786,11 +5786,11 @@
     "control-constants": "84f86ecba6eeab23a8a322a7602ed871f436c7cc7cb9d184a2bcd145e43bfd16",
     "helmet-openings": "928214a80a98c8711533e58129babf435fe52958c3cbae0cfccdff56c67f5b80",
     "high-orbit": "0a4d14f1e6b76eb8d83aeb1f08ac09a633ef0bfc4449c91dabcf5aa00a78738c",
-    "high-orbit-config": "f7cd482ab2be7e337db36d3376b1922fb1c37eb3d82b3e812e4f88dcc6107232",
+    "high-orbit-config": "07ecb9b97faf6a5f65049bb183f095aa97fc5a6139c3db65f32b966ddd7777fc",
     "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
     "high-orbit-motion": "e01e337504e596aa7acb3128dabdb8237d66273cd52b6cfd5246a605567878b0",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",
-    "premium-flight": "5e2b2f654cbdb06cefed4b6026bf99db7a1eb2f6a245647c620805221a52a4fb",
+    "premium-flight": "83e1690bfff99a59347c58dc1ca29cfcbb65ec55ecbb792980d14f10d4b21719",
     "premium-flight-frames": "d130d90ee5ea9c28a2425fe67f269d84c0619b91db5207250fc253675d355e0c",
     "rig-limb-fit": "3a4f500e7f35bdfa2f8a97e21f9457e3bdb846ab8da9ff3d540fb909d1e035f3",
     "vanguard-maneuver": "1696459041c422554c4060d758e94cba6a6002151b4c575f2faf6140e9ce23bc",

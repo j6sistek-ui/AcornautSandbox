@@ -1,27 +1,27 @@
-import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=252";
-import { suitPitchFor } from "./save.js?v=252";
-import { platform } from "./platform.js?v=252";
-import { spillAppearance } from "./spill-appearance.js?v=252";
-import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=252";
-import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=252";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=252";
-import { addChartScenery } from "./star-map-view.js?v=252";
-import { mapDebrisIndex } from "./zone-visuals.js?v=252";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=252";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=252";
-import { suitLean } from "./control-constants.js?v=252";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=252";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, OWN_HEAD_TAG, OWN_HEAD_LINE, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=252";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=252";
-import { drawSprite as drawSpriteOn } from "./art.js?v=252";
-import { createEngine } from "./engine.js?v=252";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=252";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=252";
-import { formatRaceTicks } from "./race.js?v=252";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=252";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=252";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=252";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=252";
+import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=257";
+import { suitPitchFor } from "./save.js?v=257";
+import { platform } from "./platform.js?v=257";
+import { spillAppearance } from "./spill-appearance.js?v=257";
+import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=257";
+import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=257";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=257";
+import { addChartScenery } from "./star-map-view.js?v=257";
+import { mapDebrisIndex } from "./zone-visuals.js?v=257";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=257";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=257";
+import { suitLean } from "./control-constants.js?v=257";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=257";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, alaCarteTotal, featurePrice, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=257";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=257";
+import { drawSprite as drawSpriteOn } from "./art.js?v=257";
+import { createEngine } from "./engine.js?v=257";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=257";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=257";
+import { formatRaceTicks } from "./race.js?v=257";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=257";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=257";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=257";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=257";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1767,7 +1767,12 @@ export async function bootStandalone(root) {
         // Fit the painted subject's measured bounds instead of shrinking its
         // whole source canvas (whose transparent margins vary from suit to suit).
         const { c, ctx } = miniCanvas(px, px);
-        if (ctx)
+        // The cut-rig fallback is bare so a selected helmet can be fitted once.
+        // A sealed costume must still show its helmet on the suit shelf.
+        const sealed = HELMETS.find(h => h.suitOnly === suit.id && h.opaqueVisor);
+        if (ctx && sealed)
+            paintPortrait(ctx, engine.art, sealed, suit, px * .44, px * .46, px * .68);
+        else if (ctx)
             drawSpriteOn(ctx, engine.art?.suits?.[suit.id] ?? null, px / 2, px / 2, px * 0.88);
         return c;
     }
@@ -1876,6 +1881,7 @@ export async function bootStandalone(root) {
         },
         locked: () => "Locked. Earn more stars to open this.",
         suitOnly: () => "This one belongs to another suit.",
+        fixedHead: () => "This pilot's head design stays as shown. Equip another suit to change helmets.",
         missing: () => "That item is not in this build.",
         unknown: () => "That item is not in this build.",
         owned: () => "Already yours.",
@@ -1942,15 +1948,18 @@ export async function bootStandalone(root) {
         const previewShip = spillPreviewState(shipPick);
         const suit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
         const trail = TRAILS.find((t) => t.id === trailWornBy(s.equippedTrail, s.equippedSuit)) ?? TRAILS[0];
-        const box = el("div", "ac-menu");
+        const box = el("div", "ac-menu ac-loadout");
+        // Recolor the existing galaxy artwork around the live pilot. These
+        // colors belong to the whole loadout, rather than a display case.
+        box.style.setProperty("--loadout-glow", suit.glow ?? suit.trim ?? "#c4a0ff");
+        box.style.setProperty("--loadout-lite", suit.suitLite ?? "#8a5ae4");
+        box.style.setProperty("--loadout-deep", suit.suitDark ?? "#160f34");
+        box.style.setProperty("--loadout-sky", `url("${artRootUrl()}/sky.jpg?v=${ART_VER}")`);
+        box.style.setProperty("--loadout-sky-wide", `url("${artRootUrl()}/sky-wide.jpg?v=${ART_VER}")`);
         box.append(header("Suits & gear", "Loadout", headAside(s.acorns)));
-        // ONE PILOT, AND IT MOVES. The loadout showed the equipped rig TWICE:
-        // a static portrait in a banner, then the animated stage right beneath
-        // it. Two pictures of the same squirrel, and the still one held the top
-        // of the screen - while the flap is the whole thing that tells two suits
-        // apart. So the banner goes and the animation takes the slot, wearing
-        // the shop's case: the pilot has already learned to read that frame
-        // there, and the name, helmet, trail and pal ride its plate.
+        // One live pilot, with the existing gear details and fold control.
+        // The loadout stylesheet opens this stage onto the surrounding sky;
+        // the shop retains its separate display-case treatment.
         {
             const wornSuit = SUITS.find((u) => u.id === s.equippedSuit) ?? SUITS[0];
             const wornHelm = helmetWornBy(s.equipped, s.equippedSuit);
@@ -1990,7 +1999,7 @@ export async function bootStandalone(root) {
                 pane.append(el("i", `ac-casecorner ac-c-${corner}`));
             }
             if (ownHead)
-                pane.append(el("span", "ac-tonohelm ac-casetag", wornSuit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG));
+                pane.append(el("span", "ac-tonohelm ac-casetag", fixedHeadTag(wornSuit)));
             stage.append(pane);
             const plate = el("div", "ac-caseplate");
             const fold = el("button", "ac-casefold", s.heroExpanded ? "\u25B4" : "\u25BE");
@@ -2004,25 +2013,8 @@ export async function bootStandalone(root) {
                 plate.append(el("span", "ac-casesub", `${shipPlan ? previewShip.utilities.map(id => SPILL_UTILITIES[id].name).join(" + ") || "No utilities" : s.spillStarter ? SPILL_UTILITIES[s.spillStarter].name : "No starting utility"} · ${wornSuit.name} aboard`));
             }
             else {
-                plate.append(el("span", "ac-caseeyebrow", "EQUIPPED"));
                 plate.append(el("b", "", wornSuit.name + (ownHead ? "" : ` \u00b7 ${wornHelm.name}`)));
                 plate.append(el("span", "ac-casesub", `${trail.name} \u00b7 ${palsWorn.length ? palsWorn.map((p) => p.name).join(" + ") : "No pal"}`));
-            }
-            // THE NEXT-RUN SHIELD LIVES ON THE PLATE (owner, 2 Sep 2026: "find a
-            // home elsewhere in the loadout, maybe a small button on the
-            // animator"). One small control under the name: armed, it is the
-            // blue tag it always was; not armed and unlocked, it is the button
-            // that arms it for MOD_SHIELD_COST acorns.
-            if (engine.shopTab !== "ship" && s.startShield) {
-                const tags = el("div", "ac-rigtags");
-                tags.append(el("span", "ac-tagpill ac-tagblue", "+1 SHIELD \u00b7 NEXT RUN"));
-                plate.append(tags);
-            }
-            else if (engine.shopTab !== "ship" && startShieldUnlocked(s)) {
-                const arm = el("button", "ac-platebtn");
-                arm.append(el("span", "", "\u25C8"), el("span", "", `SHIELD NEXT RUN \u00b7 ${MOD_SHIELD_COST}`));
-                arm.onclick = (e) => { e.stopPropagation(); spend(arm, "a shield for your next run", MOD_SHIELD_COST, false, () => engine.toggleMod("shield"), "arm"); };
-                plate.append(arm);
             }
             stage.append(plate);
             box.append(stage);
@@ -2053,6 +2045,9 @@ export async function bootStandalone(root) {
                 requestAnimationFrame(tick);
             }
         }
+        // A quiet surface behind browsing keeps the galaxy around the live pilot.
+        const selection = el("div", "ac-loadout-selection");
+        box.append(selection);
         const tabs = el("div", "ac-cats");
         for (const t of ["suits", "helmets", "trails", "pals", "ship"]) {
             const b = el("button", t === engine.shopTab ? "ac-cat on" : "ac-cat", t.toUpperCase());
@@ -2067,13 +2062,29 @@ export async function bootStandalone(root) {
             b.onclick = () => engine.setShopTab(t);
             tabs.append(b);
         }
-        box.append(tabs);
+        selection.append(tabs);
+        // The existing shield action shares the shelf-view row; selection state
+        // is already on the cards, so no duplicate EQUIPPED badge is needed above.
+        const controls = el("div", "ac-loadout-controls");
+        if (engine.shopTab !== "ship" && s.startShield) {
+            const tags = el("div", "ac-rigtags");
+            tags.append(el("span", "ac-tagpill ac-tagblue", "+1 SHIELD \u00b7 NEXT RUN"));
+            controls.append(tags);
+        }
+        else if (engine.shopTab !== "ship" && startShieldUnlocked(s)) {
+            const arm = el("button", "ac-platebtn");
+            arm.append(el("span", "", "\u25C8"), el("span", "", `SHIELD NEXT RUN \u00b7 ${MOD_SHIELD_COST}`));
+            arm.onclick = (e) => { e.stopPropagation(); spend(arm, "a shield for your next run", MOD_SHIELD_COST, false, () => engine.toggleMod("shield"), "arm"); };
+            controls.append(arm);
+        }
         if (engine.shopTab === "suits" || engine.shopTab === "helmets")
-            box.append(shelfToggle());
+            controls.append(shelfToggle());
+        if (controls.childElementCount)
+            selection.append(controls);
         denyEl = el("p", "ac-deny");
         denyEl.setAttribute("role", "status");
         denyEl.setAttribute("aria-live", "polite");
-        box.append(denyEl);
+        selection.append(denyEl);
         const scroll = el("div", "ac-sheet-scroll");
         const grid = el("div", "ac-grid");
         if (engine.shopTab === "helmets") {
@@ -2083,7 +2094,7 @@ export async function bootStandalone(root) {
             const locked = wearsOwnHead(suit);
             if (locked) {
                 const note = el("div", "ac-lockednote");
-                note.append(el("p", "ac-lockedhead", `${suit.name}: ${suit.id === "arcflash" ? "integrated look" : OWN_HEAD_LINE}`), el("p", "ac-sub", suit.id === "arcflash" ? "Arcflash's blue eyes and bare head are part of its look. Equip another suit to change helmets." : "The helmet is part of the character. Equip another suit to change helmets."));
+                note.append(el("p", "ac-lockedhead", `${suit.name}: ${fixedHeadLine(suit)}`), el("p", "ac-sub", fixedHeadDescription(suit)));
                 scroll.append(note);
             }
             // grouped by what the GLASS does. A suit-locked helmet is not listed
@@ -2110,7 +2121,7 @@ export async function bootStandalone(root) {
                 const helmState = premium ? (owned ? "OWNED" : "PREMIUM")
                     : !open ? `\u2605 ${STAR_UNLOCKS.helmets[h.id]}`
                         : owned ? "OWNED" : "";
-                b.append(helmCardOf(h, 64), document.createTextNode(`${h.name}\n${helmState}`));
+                b.append(helmCardOf(h, 88), document.createTextNode(`${h.name}\n${helmState}`));
                 if (claim)
                     b.append(collectTag());
                 if (!premium && open && !owned && h.cost > 0)
@@ -2171,7 +2182,7 @@ export async function bootStandalone(root) {
                 b.setAttribute("aria-pressed", String(s.equippedSuit === u.id));
                 b.dataset.focus = `suit:${u.id}`;
                 const claim = !premium && open && !owned && u.cost <= 0;
-                b.append(suitCardOf(u, 64), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
+                b.append(suitCardOf(u, 88), document.createTextNode(`${u.name}\n${premium ? (owned ? "OWNED" : "PREMIUM")
                     : !open ? (STAR_UNLOCKS.suits[u.id] !== undefined ? `\u2605 ${STAR_UNLOCKS.suits[u.id]}` : "LOCKED")
                         : owned ? "OWNED" : ""}`));
                 if (claim)
@@ -2181,7 +2192,7 @@ export async function bootStandalone(root) {
                 // a fixed head takes no helmet; the card says so up front
                 if (wearsOwnHead(u)) {
                     const nh = el("span", "ac-nohelm");
-                    nh.title = u.id === "arcflash" ? "Integrated look · cannot change" : OWN_HEAD_LINE;
+                    nh.title = fixedHeadLine(u);
                     b.append(nh);
                 }
                 // owned premium keeps its bloom; unowned premium never reaches here
@@ -2528,9 +2539,9 @@ export async function bootStandalone(root) {
             host.addEventListener("scroll", arrow, { passive: true });
         }
         else if (s.guide === "levels") {
-            box.append(coach("Suited up! Head back \u2039 and fly Mission 1 on the STAR CHART"));
+            selection.append(coach("Suited up! Head back \u2039 and fly Mission 1 on the STAR CHART"));
         }
-        box.append(scroll);
+        selection.append(scroll);
         if (spendAsk)
             box.append(drawSpendSheet());
         return box;
@@ -3512,7 +3523,7 @@ export async function bootStandalone(root) {
     // pieces that make it are bought underneath, and the featured pack sits
     // below as the bulk alternative.
     let devRollOpen = false;
-    let featureOpen = null; // the featured pack, opened
+    let featureOpen = null; // the featured or always-available pack, opened
     // STAR CHART BOOSTS. A boost is bought in the Shop and spent on the
     // chart: a held Level Skip lands on a mission from its sheet, a held Star
     // Unlock on a reward from the rail. Both are hold-to-confirm.
@@ -3547,13 +3558,12 @@ export async function bootStandalone(root) {
         const owns = (i) => ownsPremium(s, i);
         const day = shopDayIndex();
         // ONE featured pack, never one already owned outright
-        const open = BUNDLES.filter((b) => !b.fixed && !bundleIds(b).every(owns));
+        const open = BUNDLES.filter((b) => !b.fixed && !b.alwaysAvailable && !bundleIds(b).every(owns));
         const feature = open.length ? open[day % open.length] : null;
-        // THE CATCH. What the pack holds cannot also be bought singly today.
-        // You can put it on the squirrel and look at it; you cannot have it
-        // unless you take the pack, or wait for the cycle to hand it over
-        // on its own later.
-        const held = new Set(feature ? bundleIds(feature) : []);
+        const always = BUNDLES.filter((b) => b.alwaysAvailable && !bundleIds(b).every(owns));
+        // Most featured packs reserve their contents for the day. A pack can
+        // explicitly keep its singles available alongside it.
+        const held = new Set(feature && !feature.keepSingles ? bundleIds(feature) : []);
         const shelfOf = (ids) => ids.filter((i) => !held.has(i) && !owns(i));
         const suitPool = shelfOf(SUITS.filter((u) => isIap(u.id)).map((u) => u.id));
         const helmPool = shelfOf(HELMETS.filter((h) => isIap(h.id)).map((h) => h.id));
@@ -3571,7 +3581,7 @@ export async function bootStandalone(root) {
         const pinned = suitPool.filter((i) => DUST_STICKER[i] !== undefined && !helms.includes(i));
         const suits = [...pinned, ...dealFrom(suitPool.filter((i) => !helms.includes(i) && !pinned.includes(i)), SHOP_CYCLE.suits, day * 7 + 1)];
         const pals = dealFrom(palPool, SHOP_CYCLE.pals, day * 17 + 9);
-        return { day, feature, held, suits, helms, pals, owns };
+        return { day, feature, always, held, suits, helms, pals, owns };
     }
     /** the price of the look currently on the stage, minus anything owned */
     /** WHAT YOU TICKED IS WHAT YOU BUY.
@@ -3660,7 +3670,7 @@ export async function bootStandalone(root) {
             pane.append(el("i", `ac-casecorner ac-c-${corner}`));
         }
         if (ownHead)
-            pane.append(el("span", "ac-tonohelm ac-casetag", suit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG));
+            pane.append(el("span", "ac-tonohelm ac-casetag", fixedHeadTag(suit)));
         stage.append(pane);
         const plate = el("div", "ac-caseplate");
         plate.append(el("span", "ac-caseeyebrow", "NOW SHOWING"));
@@ -3894,14 +3904,16 @@ export async function bootStandalone(root) {
             scroll.append(row);
         }
         scroll.append(el("p", "ac-fine", "A boost stays in your account until you spend it: open the Star Chart, pick the mission or the reward, and hold to confirm."));
-        // ---- THE FEATURED PACK.
-        if (cy.feature) {
-            const bn = cy.feature;
+        // ---- THE DAILY FEATURE AND ALWAYS-AVAILABLE PACKS.
+        for (const bn of [...(cy.feature ? [cy.feature] : []), ...cy.always]) {
             const full = alaCarteTotal(bundleIds(bn), cy.owns);
             const due = featurePrice(bn, cy.owns);
             const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
-            scroll.append(el("p", "ac-shelfhead ac-featurehead", "FEATURED PACK"));
+            scroll.append(el("p", "ac-shelfhead ac-featurehead", bn.alwaysAvailable ? "PREMIUM PILOT BUNDLE" : "FEATURED PACK"));
             const card = el("button", "ac-card ac-featurecard");
+            if (bn.id === "bundle-premium-trio")
+                card.classList.add("ac-premiumtrio");
+            card.dataset.bundleId = bn.id;
             const strip = el("div", "ac-bundlestrip");
             const faces = bn.items.filter((it) => it.kind === "suit").slice(0, 3);
             for (const it of faces) {
@@ -3926,7 +3938,9 @@ export async function bootStandalone(root) {
             card.append(el("span", "ac-bundlecount", `${bn.items.length} items`));
             card.onclick = () => { featureOpen = bn.id; confirmBuy = false; render(); };
             scroll.append(card);
-            scroll.append(el("p", "ac-fine", "Everything in the pack is off the single shelf while it is featured. It comes back around on its own later."));
+            scroll.append(el("p", "ac-fine", bn.keepSingles
+                ? "These pilots are also available individually on the single shelf."
+                : "Everything in the pack is off the single shelf while it is featured. It comes back around on its own later."));
         }
         // ---- TOP UP.
         scroll.append(el("p", "ac-shelfhead", "STAR DUST"));
@@ -3996,10 +4010,9 @@ export async function bootStandalone(root) {
         // one. It stays rolled up to a single line until it is asked for, so
         // it costs a player who never opens it nothing but a row of small type.
         box.append(drawCycleRoll(cy));
-        // and the sheet only ever shows the pack TODAY is featuring: the
-        // featured price belongs to the cycle, not to whatever was open when
-        // the day rolled over (audit, Sep 2026)
-        if (featureOpen && featureOpen !== cy.feature?.id) {
+        // A daily feature closes when it rotates out. Always-available packs
+        // keep their sheet and sticker price across the date boundary.
+        if (featureOpen && featureOpen !== cy.feature?.id && !BUNDLES.find((b) => b.id === featureOpen)?.alwaysAvailable) {
             featureOpen = null;
             confirmBuy = false;
         }
@@ -4007,10 +4020,8 @@ export async function bootStandalone(root) {
             box.append(drawFeatureSheet(featureOpen));
         return box;
     }
-    /** THE PACK, OPENED. Every character in it goes on the squirrel — and
-     *  none of them is for sale on its own. That IS the offer: you see
-     *  exactly what you are missing, and the only door to it is the pack.
-     *  The patient get it on the single shelf after it rotates out. */
+    /** The opened pack previews every wearable and states whether its contents
+     *  remain available on the single shelf during this feature. */
     function drawFeatureSheet(id) {
         const wrap = el("div", "ac-lvlsheet");
         const bn = BUNDLES.find((b) => b.id === id);
@@ -4022,7 +4033,7 @@ export async function bootStandalone(root) {
         const full = alaCarteTotal(bundleIds(bn), owns);
         const due = featurePrice(bn, owns);
         const off = full > 0 ? Math.round((1 - due / full) * 100) : 0;
-        sheet.append(el("p", "ac-kicker", "FEATURED PACK"), el("h2", "ac-lvlname", bn.name));
+        sheet.append(el("p", "ac-kicker", bn.alwaysAvailable ? "PREMIUM PILOT BUNDLE" : "FEATURED PACK"), el("h2", "ac-lvlname", bn.name));
         sheet.append(el("p", "ac-sub", bn.blurb));
         const group = (title, kind) => {
             const items = bn.items.filter((it) => it.kind === kind);
@@ -4099,7 +4110,9 @@ export async function bootStandalone(root) {
         group("HELMETS", "helm");
         group("TRAILS", "trail");
         group("PALS", "pal");
-        sheet.append(el("p", "ac-fine", "Tap any of them to wear it on the stage. None of it is sold separately while this pack is featured."));
+        sheet.append(el("p", "ac-fine", bn.keepSingles
+            ? "Tap any pilot to preview it. Each is also available individually on the single shelf."
+            : "Tap any of them to wear it on the stage. None of it is sold separately while this pack is featured."));
         // the sheet covers the page, so it carries its own status line - the
         // one up in the menu would be announced to nobody
         const sheetDeny = el("p", "ac-deny");

@@ -1,7 +1,7 @@
-import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=252";
-import { platform } from "./platform.js?v=252";
-import { HIGH_ORBIT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=252";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=252";
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=257";
+import { platform } from "./platform.js?v=257";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=257";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=257";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -17,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=252";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "252";
+export const ART_VER = "257";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-09 17:57 UTC";
+export const BUILD_TIME = "2026-09-09 23:48 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -204,6 +204,9 @@ export const SUITS = [
     // ARCFLASH IS SOLD (owner, 7 Sep 2026): production, 1,850 star dust,
     // its blue electrical wake built in - see bundle-arcflash and DUST_STICKER.
     { id: "arcflash", name: "Arcflash", cost: 0, ownHead: true, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
+    { id: "porcelain", name: "Percy", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Sovereign Shell", fur: "#c7ccd3", furDark: "#767e8d", belly: "#fff8e9", suit: "#efe8d7", suitLite: "#fffdf3", suitDark: "#38567b", trim: "#466bb4", glow: "#b9d8ff", dust: null },
+    { id: "nacre", name: "Envoy", cost: 0, ownHead: true, headPolicy: "helmetless", fur: "#cfb1df", furDark: "#8e709f", belly: "#f5d8dc", suit: "#e4d6dc", suitLite: "#fff0df", suitDark: "#4a315d", trim: "#d4a2d8", glow: "#e5a8ed", dust: null },
+    { id: "origamist", name: "Patriot", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Facet Shell", fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
     { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
     { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
     { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
@@ -255,7 +258,7 @@ if (!IS_BETA) {
 }
 const SUIT_BUILT_IN_TRAILS = {
     vanguard: "vanguardwake", arcflash: "arcflashwake",
-    ...Object.fromEntries(HIGH_ORBIT_IDS.map(id => [id, HIGH_ORBIT_PROFILES[id].trail])),
+    ...Object.fromEntries(ORBIT_PILOT_IDS.map(id => [id, HIGH_ORBIT_PROFILES[id].trail])),
 };
 export const builtInTrailSuit = (trail) => Object.keys(SUIT_BUILT_IN_TRAILS).find(id => SUIT_BUILT_IN_TRAILS[id] === trail);
 export function trailWornBy(equippedTrail, equippedSuit) {
@@ -268,7 +271,7 @@ export const TRAILS = [
     { id: "sparks", name: "Rocket Sparks", cost: 0, colors: ["#ffe080", "#ff8030", "#ff4020"] },
     { id: "vanguardwake", name: "AcorNut Wake", cost: 0, colors: ["#85edff", "#edc780", "#fff1d0"] },
     { id: "arcflashwake", name: "Arcflash Wake", cost: 0, colors: ["#dcfaff", "#36c8ff", "#155cff"] },
-    ...HIGH_ORBIT_IDS.map(id => ({ id: HIGH_ORBIT_PROFILES[id].trail, name: HIGH_ORBIT_PROFILES[id].wake, cost: 0, colors: [...HIGH_ORBIT_PROFILES[id].colors] })),
+    ...ORBIT_PILOT_IDS.map(id => ({ id: HIGH_ORBIT_PROFILES[id].trail, name: HIGH_ORBIT_PROFILES[id].wake, cost: 0, colors: [...HIGH_ORBIT_PROFILES[id].colors] })),
     { id: "ion", name: "Ion Stream", cost: 0, colors: ["#b8f4ff", "#4ad8ff", "#1b6f92"] },
     { id: "bubble", name: "Bubble Jets", cost: 0, colors: ["#d8f6ff", "#7ad8ff", "#3aa0c8"] },
     { id: "bloom", name: "Nebula Bloom", cost: 0, colors: ["#ffb0ff", "#c060ff", "#6a2a9a"] },
@@ -468,6 +471,14 @@ export const BUNDLES = [
     // The wake is not an item - it is the only trail Arcflash can wear and it
     // arrives with the suit (trailUnlocked), so it is not listed or priced.
     { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
+    // One authored pilot and its signature wake per purchase. The selected head
+    // design is inseparable; these packs never advertise a removable helmet.
+    // Latest owner price: 1,000 each, or all three for 2,500 Stardust.
+    // Preserve the existing singleton ids for purchase compatibility.
+    { id: "bundle-porcelain", name: "Percy", blurb: "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "porcelain" }] },
+    { id: "bundle-nacre", name: "Envoy", blurb: "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "nacre" }] },
+    { id: "bundle-origamist", name: "Patriot", blurb: "Folded composite and the permanent Facet Shell. Foldspace Ribbon wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "origamist" }] },
+    { id: "bundle-premium-trio", name: "Premium Pilot Trio", blurb: "Percy, Envoy and Patriot, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
     { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
     { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
     { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
@@ -590,6 +601,27 @@ export function bundlePrice(b, owns) {
  *  character was drawn with one. One phrasing, in one place. */
 export const OWN_HEAD_TAG = "CUSTOM HELMET \u00b7 CANNOT CHANGE";
 export const OWN_HEAD_LINE = "Custom helmet: cannot change";
+export function fixedHeadTag(suit) {
+    if (suit.headPolicy === "helmetless")
+        return "HELMETLESS BY DESIGN";
+    if (suit.fixedHelmet)
+        return `${suit.fixedHelmet.toUpperCase()} · ALWAYS ON`;
+    return suit.id === "arcflash" ? "INTEGRATED LOOK · CANNOT CHANGE" : OWN_HEAD_TAG;
+}
+export function fixedHeadLine(suit) {
+    if (suit.headPolicy === "helmetless")
+        return "Helmetless by design";
+    if (suit.fixedHelmet)
+        return `${suit.fixedHelmet}: always on`;
+    return suit.id === "arcflash" ? "Integrated look · cannot change" : OWN_HEAD_LINE;
+}
+export function fixedHeadDescription(suit) {
+    if (suit.headPolicy === "helmetless")
+        return `${suit.name} always flies without a helmet. Equip another suit to change helmets.`;
+    if (suit.fixedHelmet)
+        return `${suit.fixedHelmet} is part of ${suit.name} and always stays on. Equip another suit to change helmets.`;
+    return suit.id === "arcflash" ? "Arcflash's blue eyes and bare head are part of its look. Equip another suit to change helmets." : "The helmet is part of the character. Equip another suit to change helmets.";
+}
 /** THE LEAD-IN: open, straight, empty corridor at the mouth of a wormhole.
  *  A Lost in Space pilot is thrown in mid-flight with no READY screen, at a
  *  distance scaled to their gate - so the walls were already narrow and
@@ -673,9 +705,8 @@ export function idWeight(id) {
         w += ITEM_WEIGHT.trail;
     return w;
 }
-/** STICKER PRICES. An id here sells singly at this number instead of the
- *  weight rate - for a suit whose price was set by the owner, not derived. */
-export const DUST_STICKER = { arcflash: 1850 };
+/** Explicit premium sticker prices replace the catalog's generic weight rate. */
+export const DUST_STICKER = { arcflash: 1850, porcelain: 1000, nacre: 1000, origamist: 1000 };
 export function idDust(id) {
     if (DUST_STICKER[id] !== undefined)
         return DUST_STICKER[id];
@@ -731,7 +762,7 @@ export function alaCarteTotal(ids, owns) {
  *  price, which is the owner's call and not an audit's. */
 export const FEATURE_DISCOUNT = 0.5;
 export function featurePrice(b, owns) {
-    if (b.fixed)
+    if (b.fixed || b.featuredAtSticker)
         return bundlePrice(b, owns);
     const due = weightTotal(bundleIds(b), owns);
     if (due <= 0)
@@ -786,7 +817,7 @@ export const SUIT_SHELF = [
     { title: "EXOTIC", ids: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"] },
     // premium suits the pilot owns; each one not yet bought shows as a door
     // to the shop instead of a locked card that answers nothing
-    { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash"], shop: true },
+    { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash", ...PREMIUM_SUIT_IDS], shop: true },
     // the cat eats no acorns, so no amount of them buys it: it is the
     // 300-star prize, the full Star Chart, and nothing less
     // the critters are premium: unowned ones show as doors to the shop

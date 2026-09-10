@@ -1,5 +1,5 @@
 {
- "artVer": "256",
+ "artVer": "257",
  "suits": [
   {
    "id": "flight",
@@ -46,7 +46,7 @@
   },
   {
    "id": "porcelain",
-   "name": "Porcelain Paragon",
+   "name": "Percy",
    "key": "suit:porcelain",
    "file": "suits/porcelain.png",
    "dome": [
@@ -60,7 +60,7 @@
   },
   {
    "id": "nacre",
-   "name": "Nacre Envoy",
+   "name": "Envoy",
    "key": "suit:nacre",
    "file": "suits/nacre.png",
    "dome": [
@@ -74,7 +74,7 @@
   },
   {
    "id": "origamist",
-   "name": "Foldspace Origamist",
+   "name": "Patriot",
    "key": "suit:origamist",
    "file": "suits/origamist.png",
    "dome": [
