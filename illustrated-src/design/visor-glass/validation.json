@@ -1,7 +1,7 @@
 {
-  "date": "2026-09-10",
-  "base_commit": "11a1b88df55ab0664fc413cb07a384ae15e3e704",
-  "art_stamp": 263,
+  "date": "2026-09-10T06:50:28.274Z",
+  "base_commit": "daad832642b7af5cda4358fb60f4ce40026c638d",
+  "art_stamp": 267,
   "docker": {
     "engine": "29.7.2",
     "node": "22.23.2",
@@ -26,12 +26,15 @@
       "total_bytes": 262144,
       "max_channel_delta": 28,
       "first_byte": 64900,
-      "reproduced_on_unchanged_base": true
+      "reproduced_on_unchanged_base": true,
+      "baseline_commit": "daad832642b7af5cda4358fb60f4ce40026c638d",
+      "evidence": "baseline-high-orbit.txt; unchanged main Docker reproduction retained from the same-day Shop validation."
     }
   },
   "supplementary_windows": {
     "canvas": "0.1.100",
-    "test_high_orbit": "pass"
+    "test_high_orbit": "pass",
+    "evidence_scope": "Original candidate92aeeda; historical supplementary run, not repeated after main integration."
   },
   "targeted": {
     "regenerated_artwork": "10 pass",
@@ -56,12 +59,22 @@
       "eclipse"
     ],
     "page_errors": 0,
-    "storage": "disposable synthetic ownership"
+    "storage": "disposable synthetic ownership",
+    "art_stamp": 267,
+    "evidence": "browser-after-conflicts.json"
   },
   "limitations": [
     "Not tested on iPhone or App Store build",
     "Existing suit/frame registration retained; Rose/Ember ear protrusion remains visible",
     "Artwork requires owner visual acceptance",
     "Full Docker gate remains nonzero due to verified baseline High Orbit failure"
-  ]
+  ],
+  "tested_commit": "6407485a11929ec7ec4559effefaa09e4b5ea9e3",
+  "conflict_resolution": {
+    "previous_head": "92aeedad68d71a82e472713ec94af634d2bb8968",
+    "helmet_assets_and_masters_identical": true,
+    "painters_and_registration_identical": true,
+    "current_main_profile_help_privacy_preserved": true,
+    "final_receipt_changes_only_review_files": true
+  }
 }

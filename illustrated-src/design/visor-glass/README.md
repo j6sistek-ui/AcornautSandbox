@@ -23,7 +23,7 @@ shells, jewels, filigree, flowers and chin guards opaque and correctly colored.
 The game and Flight Studio use the same boundaries. No suit artwork, DOME
 socket, animation bank, motion timing, save key or gameplay rule is changed.
 The other twenty helmet images, including the nine repairs in #216, are intact.
-Art stamp 263 refreshes cached sprites and modules.
+Art stamp 267 refreshes cached sprites and modules.
 
 ## Source and reproducible export
 
@@ -43,7 +43,12 @@ an SVG mis-detection in that library; original master bytes are retained.
 
 ## Validation and review
 
-The branch is based on main `11a1b88df55ab0664fc413cb07a384ae15e3e704`.
+Current main `daad832642b7af5cda4358fb60f4ce40026c638d` is integrated. The conflict resolution
+preserves all helmet images, source masters, registrations and painters from
+`92aeedad68d71a82e472713ec94af634d2bb8968` byte-for-byte. Generated outputs
+were rebuilt at stamp 267, above main 265 and the separate Shop draft 266.
+Runtime checks bind to `6407485a11929ec7ec4559effefaa09e4b5ea9e3`; the final
+receipt changes only review files.
 The original Royal defect was also reproduced on acornaut.app build 1.0.12.262.
 
 - The artwork regression checks exact ten-helmet scope, source/export hashes,
@@ -75,9 +80,12 @@ Browser captures: [Royal](royal-after.png), [Chronarch](chronarch-after.png),
 
 The unchanged main commit produces the identical Docker failure: Cinderforge
 fallback differs in 22 of 262144 bytes (maximum channel delta 28, first byte
-64900). The same test passes with Windows Canvas 0.1.100. Docker uses Linux
+64900). The original candidate passed the same test with Windows Canvas 0.1.100;
+that supplementary historical run was not repeated after this integration. Docker uses Linux
 Canvas 0.1.100. No High Orbit source, reference image or assertion was changed.
-This draft is not an all-green release approval.
+See [unchanged-main baseline result](baseline-high-orbit.txt) and the
+[fresh browser receipt](browser-after-conflicts.json). This draft is not an
+all-green release approval.
 
 Normalization preserves existing suit registrations. It does not resolve all
 existing fit issues: the Ember comparisons still show ears outside Rose's
