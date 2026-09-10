@@ -1,28 +1,28 @@
-import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=258";
-import { suitPitchFor } from "./save.js?v=258";
-import { platform } from "./platform.js?v=258";
-import { spillAppearance } from "./spill-appearance.js?v=258";
-import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=258";
-import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=258";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=258";
-import { addChartScenery } from "./star-map-view.js?v=258";
-import { mapDebrisIndex } from "./zone-visuals.js?v=258";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=258";
-import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=258";
-import { suitLean } from "./control-constants.js?v=258";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=258";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=258";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=258";
-import { bundleQuote } from "./catalog.js?v=258";
-import { drawSprite as drawSpriteOn } from "./art.js?v=258";
-import { createEngine } from "./engine.js?v=258";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=258";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=258";
-import { formatRaceTicks } from "./race.js?v=258";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=258";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=258";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=258";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=258";
+import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=262";
+import { suitPitchFor } from "./save.js?v=262";
+import { platform } from "./platform.js?v=262";
+import { spillAppearance } from "./spill-appearance.js?v=262";
+import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=262";
+import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=262";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=262";
+import { addChartScenery } from "./star-map-view.js?v=262";
+import { mapDebrisIndex } from "./zone-visuals.js?v=262";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=262";
+import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=262";
+import { suitLean } from "./control-constants.js?v=262";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=262";
+import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=262";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=262";
+import { bundleQuote } from "./catalog.js?v=262";
+import { drawSprite as drawSpriteOn } from "./art.js?v=262";
+import { createEngine } from "./engine.js?v=262";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=262";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=262";
+import { formatRaceTicks } from "./race.js?v=262";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=262";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=262";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=262";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=262";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -1461,7 +1461,7 @@ export async function bootStandalone(root) {
         }
         const planet = miniCanvas(50, 50);
         if (planet.ctx)
-            drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
+            drawSpriteOn(planet.ctx, engine.art?.planets?.[HUB_PLANET] ?? null, 25, 25, 46);
         // no dot: a badge should mean something NEW is inside, and nothing
         // in the mode sheet changes on its own
         tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`, () => { modesOpen = true; render(); });
@@ -4824,6 +4824,18 @@ export async function bootStandalone(root) {
             engine.startOver();
         };
         scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
+        // THE PRIVACY POLICY, REACHABLE FROM INSIDE THE GAME. App Store Connect
+        // takes a URL, but Apple also expects the policy to be reachable in the
+        // app itself, and this panel is where a pilot already comes to erase
+        // their save - the one other place their own data is discussed.
+        const policy = el("p", "ac-fine ac-labnote");
+        const link = document.createElement("a");
+        link.href = "privacy.html";
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = "Privacy policy";
+        policy.append(link);
+        scroll.append(policy);
         return box;
     }
     /** ESCAPE CLOSES THE SHEET, NOT THE SCREEN (audit, Sep 2026). Every

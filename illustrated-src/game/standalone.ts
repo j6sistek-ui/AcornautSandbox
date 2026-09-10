@@ -4585,6 +4585,18 @@ export async function bootStandalone(root: HTMLElement) {
       engine.startOver();
     };
     scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
+    // THE PRIVACY POLICY, REACHABLE FROM INSIDE THE GAME. App Store Connect
+    // takes a URL, but Apple also expects the policy to be reachable in the
+    // app itself, and this panel is where a pilot already comes to erase
+    // their save - the one other place their own data is discussed.
+    const policy = el("p", "ac-fine ac-labnote");
+    const link = document.createElement("a");
+    link.href = "privacy.html";
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "Privacy policy";
+    policy.append(link);
+    scroll.append(policy);
     return box;
   }
 
