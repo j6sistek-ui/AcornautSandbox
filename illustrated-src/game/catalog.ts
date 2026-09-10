@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "264";
+export const ART_VER = "266";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -147,13 +147,6 @@ export const PHYS = {
   magnetR: 200,
   squirrelR: 16,
 };
-
-export const NEWS = [
-  "THE STAR CHART: 260 missions, three stars each.",
-  "Stars unlock pals, mods, suits and modes.",
-  "Golden acorns still bounce off planets. Debris phases.",
-  "Debris kills. Planets bounce. Swipe cancels a bounce.",
-];
 
 
 export type Helmet = {

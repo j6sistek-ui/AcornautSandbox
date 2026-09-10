@@ -11,7 +11,7 @@ import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-pr
 import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog.js?v=264";
 import { suitLean } from "./control-constants.js?v=264";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=264";
-import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=264";
+import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=264";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=264";
 import { bundleQuote } from "./catalog.js?v=264";
 import { drawSprite as drawSpriteOn } from "./art.js?v=264";
@@ -253,15 +253,11 @@ export async function bootStandalone(root) {
         });
     };
     let disposeChart = () => { };
-    // TAP TO FLY (owner, 10 Sep 2026). The centre pad is THRUST: one press,
-    // one kick, exactly what a tap on the field does. The Throttle it
-    // replaced was a hold - pointer capture, an owner per finger or key, a
-    // release watched on the window - and all of that went with it. Hyper
-    // Run keeps hold-to-rise; the field flies like the other modes now.
-    const thrust = el("button", "ac-thrust");
+    let throttleOwner = null;
+    const throttle = el("button", "ac-throttle");
     const diveButton = el("button", "ac-dive");
     const lungeButton = el("button", "ac-lunge");
-    for (const [kind, button] of [["dive", diveButton], ["thrust", thrust], ["lunge", lungeButton]]) {
+    for (const [kind, button] of [["dive", diveButton], ["throttle", throttle], ["lunge", lungeButton]]) {
         button.innerHTML = spillControlArt(kind);
         const box = SPILL_CONTROL_LAYOUT[kind];
         button.style.left = `${box.x / SPILL_CONTROL_LAYOUT.width * 100}%`;
@@ -271,50 +267,85 @@ export async function bootStandalone(root) {
     }
     const lungeStatus = el("span", "ac-control-status");
     lungeButton.append(lungeStatus);
-    thrust.setAttribute("aria-label", "Thrust: tap to fly");
+    throttle.setAttribute("aria-label", "Throttle: hold to rise, release to fall");
     diveButton.setAttribute("aria-label", "Dive: downward burst");
-    for (const b of [thrust, diveButton, lungeButton]) {
+    for (const b of [throttle, diveButton, lungeButton]) {
         b.addEventListener("keydown", e => { if (e.code === "Space" || e.code.startsWith("Arrow") || e.code === "Enter")
             e.stopPropagation(); });
         b.addEventListener("keyup", e => { if (e.code === "Space" || e.code.startsWith("Arrow") || e.code === "Enter")
             e.stopPropagation(); });
         b.addEventListener("contextmenu", e => e.preventDefault());
     }
-    // The kick fires on the press, not the click, so the pad answers as fast
-    // as a tap on the field. A pointer press still synthesises a click, which
-    // arrives with detail >= 1 and is ignored; a click-only assistive input
-    // arrives with detail 0 and is the one click that counts.
-    thrust.onpointerdown = e => {
-        if (e.pointerType === "mouse" && e.button !== 0)
+    const releaseThrottle = () => {
+        const owner = throttleOwner;
+        throttleOwner = null;
+        engine.spillThrottle(false);
+        throttle.classList.remove("held");
+        throttle.setAttribute("aria-pressed", "false");
+        if (typeof owner === "number")
+            try {
+                throttle.releasePointerCapture(owner);
+            }
+            catch { /* already cancelled */ }
+    };
+    throttle.onpointerdown = e => {
+        if (throttleOwner !== null || (e.pointerType === "mouse" && e.button !== 0))
             return;
         e.preventDefault();
-        engine.spillThrust();
+        throttleOwner = e.pointerId;
+        try {
+            throttle.setPointerCapture(e.pointerId);
+        }
+        catch { /* release also watched on window */ }
+        engine.spillThrottle(true);
         updateSpillControls();
     };
-    thrust.onkeydown = e => {
+    const endThrottle = (e) => { if (throttleOwner === e.pointerId)
+        releaseThrottle(); };
+    throttle.addEventListener("lostpointercapture", endThrottle);
+    window.addEventListener("pointerup", endThrottle);
+    window.addEventListener("pointercancel", endThrottle);
+    throttle.onkeydown = e => {
         if (!["Space", "Enter"].includes(e.code))
             return;
         e.preventDefault();
-        // a key held on the pad is one tap, never a stream of them
-        if (e.repeat)
+        if (e.repeat || throttleOwner !== null)
             return;
-        engine.spillThrust();
+        throttleOwner = e.code;
+        engine.spillThrottle(true);
         updateSpillControls();
     };
-    thrust.onclick = e => { if (e.detail === 0) {
-        engine.spillThrust();
-        updateSpillControls();
+    throttle.onkeyup = e => { if (throttleOwner === e.code) {
+        e.preventDefault();
+        releaseThrottle();
     } };
+    throttle.onblur = () => { if (typeof throttleOwner === "string")
+        releaseThrottle(); };
+    // Click-only assistive input can toggle the same throttle; keyboard/pointer holds suppress their native click.
+    throttle.onclick = e => {
+        if (e.detail === 0) {
+            if (throttleOwner !== null)
+                releaseThrottle();
+            else {
+                throttleOwner = "assistive";
+                engine.spillThrottle(true);
+                updateSpillControls();
+            }
+        }
+    };
     diveButton.onclick = () => engine.spillDive();
     lungeButton.onclick = () => engine.spillLunge();
-    spillControls.append(diveButton, thrust, lungeButton);
+    spillControls.append(diveButton, throttle, lungeButton);
     function updateSpillControls() {
         const sp = engine.world.spill;
         const visible = engine.world.screen === "play" && sp && !engine.save.spillButtonsOff
             && ["countdown", "wave", "drain"].includes(sp.phase);
         spillControls.hidden = !visible;
-        if (!visible)
+        if (!visible) {
+            if (throttleOwner !== null)
+                releaseThrottle();
             return;
+        }
         const manual = sp.phase !== "countdown" || sp.manual;
         diveButton.disabled = !manual;
         lungeButton.disabled = !manual || sp.lungeCharges <= 0;
@@ -322,9 +353,8 @@ export async function bootStandalone(root) {
         const cap = sp.up.thrusters >= 2 ? 2 : 1;
         lungeStatus.textContent = sp.lungeCharges ? `${sp.lungeCharges}/${cap} READY` : "RECHARGING";
         lungeButton.setAttribute("aria-label", `Lunge: forward dash, ${sp.lungeCharges} of ${cap} charges ready`);
-        // the pad glows for the length of the kick's plume, so a press is seen
-        // to land even when the ship is already at the top of a hop
-        thrust.classList.toggle("firing", (sp.thrustT ?? 0) > 0);
+        throttle.classList.toggle("held", throttleOwner !== null && sp.held);
+        throttle.setAttribute("aria-pressed", String(throttleOwner !== null && sp.held));
     }
     const paint = () => {
         disposeChart();
@@ -480,10 +510,10 @@ export async function bootStandalone(root) {
                     settings.append(b);
                     return b;
                 };
-                option("On-screen buttons", "Thrust, Dive and Lunge. Taps and swipes also work.", !engine.save.spillButtonsOff, () => engine.setSpillButtonsOff(!engine.save.spillButtonsOff));
+                option("On-screen buttons", "Throttle, Dive and Lunge. Gestures also work.", !engine.save.spillButtonsOff, () => engine.setSpillButtonsOff(!engine.save.spillButtonsOff));
                 const prompts = option("Instructional prompts", engine.save.helpOff ? "Help is disabled in Settings." : "Control tips and wave lessons. Hazard warnings stay visible.", !engine.save.spillPromptsOff && !engine.save.helpOff, () => engine.setSpillPromptsOff(!engine.save.spillPromptsOff));
                 prompts.disabled = !!engine.save.helpOff;
-                settings.append(el("p", "ac-sub", "Tap to fly: every tap is a kick upward and gravity brings you down. Dive gives a downward burst. Lunge dashes forward and recharges."));
+                settings.append(el("p", "ac-sub", "Hold Throttle to rise; release to fall. Dive gives a downward burst. Lunge dashes forward and recharges."));
                 sheet.append(settings);
             }
             // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
@@ -1314,7 +1344,7 @@ export async function bootStandalone(root) {
         boardBtn.append(hubIcon("trophy"));
         boardBtn.onclick = () => engine.open("scores");
         const gear = el("button", "ac-hub-sq");
-        gear.setAttribute("aria-label", "Settings and help");
+        gear.setAttribute("aria-label", "Help and controls");
         // THE OWNER'S ACORN-GEAR (8 Sep 2026: "keep in a square background
         // like the leaderboard and shop. current button has white box that
         // disrupts the bar's look"). Same painted-on-dark treatment as the
@@ -1674,7 +1704,7 @@ export async function bootStandalone(root) {
         overlay.querySelector('[data-spill-control="setup-guide"], [data-spill-briefing]')?.focus({ preventScroll: true });
     }
     function spillHelpSheet() {
-        return drawSpillGuideSheet(engine, closeSpillHelp, engine.world.screen === "help" ? "BACK TO HELP" : "BACK TO LAUNCH");
+        return drawSpillGuideSheet(engine, closeSpillHelp, engine.world.screen === "help" ? "BACK TO HELP" : "BACK TO SHIP");
     }
     function drawSpillPrep() { return drawSpillLaunchSetup(engine, openSpillHelp); }
     function drawDepot(_sp) { return drawDepotWorkshop(engine, depotView, render); }
@@ -4560,6 +4590,12 @@ export async function bootStandalone(root) {
         // are least useful. A record belongs where you choose the mode.
         // Settings left this screen for the hub's gear button, where they sit
         // with Help.
+        // SETTINGS LIVE WITH THE PILOT (owner, 10 Sep 2026: "move settings and
+        // toggles to profile ... the existing button is just help / controls").
+        // They were under the gear button because settings and help once shared
+        // it; they are a property of this pilot, so they sit with the pilot's
+        // own screen and the gear goes back to being one thing.
+        scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settingsRows());
         scroll.append(el("p", "ac-kicker ac-secthead", "Community"));
         const social = el("div", "ac-rows");
         // A real anchor rather than a scripted navigation: it middle-clicks,
@@ -4601,14 +4637,38 @@ export async function bootStandalone(root) {
         mail.append(mwrap, mtxt, el("span", "ac-socialgo", "\u2197"));
         social.append(mail);
         scroll.append(social);
-        scroll.append(el("p", "ac-kicker ac-secthead", "News"));
-        const news = el("div", "ac-rows");
-        for (const line of NEWS) {
-            const r = el("div", "ac-row ac-rownote");
-            r.append(el("span", "ac-sub", line));
-            news.append(r);
-        }
-        scroll.append(news, el("p", "ac-fine ac-mid", BUILD));
+        // NEWS IS GONE (owner, 10 Sep 2026: "eliminate news. got idea for that
+        // later"). It was four hard-coded lines that could only ever restate
+        // what the game already teaches, and nothing wrote to it.
+        // STARTING OVER LIVES WITH THE PILOT IT ERASES. It used to sit under
+        // the gear button beside the sound switches, which put the one
+        // irreversible action in the room next to the volume. It erases this
+        // pilot, so it belongs on the pilot's own screen, at the bottom, after
+        // everything it would destroy. Two taps, and the armed state disarms on
+        // any re-render.
+        const reset = el("button", "ac-ghost ac-reset", "START OVER");
+        let armed = false;
+        reset.onclick = () => {
+            if (!armed) {
+                armed = true;
+                reset.textContent = "ERASE SAVE AND START OVER?";
+                reset.classList.add("ac-resetarmed");
+                return;
+            }
+            engine.startOver();
+        };
+        scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
+        // The privacy policy follows it for the same reason: this screen is
+        // where a pilot's own data is shown, named and deleted. App Store
+        // Connect takes the URL, but Apple expects it reachable in the app.
+        const policy = el("p", "ac-fine ac-labnote");
+        const link = document.createElement("a");
+        link.href = "privacy.html";
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = "Privacy policy";
+        policy.append(link);
+        scroll.append(policy, el("p", "ac-fine ac-mid", BUILD));
         box.append(scroll);
         return box;
     }
@@ -4676,11 +4736,12 @@ export async function bootStandalone(root) {
     }
     function drawHelp() {
         const box = el("div", "ac-menu");
-        box.append(header("Flight deck", "Settings & Help"));
+        // ONE THING ONLY (owner, 10 Sep 2026: "the existing button is just
+        // help / controls"). The settings switches and START OVER moved to the
+        // Profile, where the pilot they belong to lives; what is left here is
+        // how to fly and what will kill you.
+        box.append(header("Flight deck", "Help & Controls"));
         const scroll = el("div", "ac-sheet-scroll");
-        // music moved here from the Profile — settings and help share the
-        // hub's gear button
-        scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settingsRows());
         const spillHelp = drawSpillFlightHelp();
         const briefing = el("button", "ac-ghost ac-replay", "DEBRIS FIELD BRIEFING");
         briefing.dataset.spillBriefing = "";
@@ -4779,21 +4840,8 @@ export async function bootStandalone(root) {
         replay.onclick = () => engine.replayTutorial();
         scroll.append(replay);
         // the prototype doors live on the beta's MODES sheet only
-        // Starting over is a real feature, not a debug door: progression can
-        // be flown from zero, in either build, without touching the browser.
-        // Two taps, and the armed state disarms on any re-render.
-        const reset = el("button", "ac-ghost ac-reset", "START OVER");
-        let armed = false;
-        reset.onclick = () => {
-            if (!armed) {
-                armed = true;
-                reset.textContent = "ERASE SAVE AND START OVER?";
-                reset.classList.add("ac-resetarmed");
-                return;
-            }
-            engine.startOver();
-        };
-        scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
+        // START OVER and the privacy link moved to the Profile with the rest
+        // of the pilot's own affairs.
         return box;
     }
     /** ESCAPE CLOSES THE SHEET, NOT THE SCREEN (audit, Sep 2026). Every

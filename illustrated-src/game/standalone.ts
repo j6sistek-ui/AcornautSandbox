@@ -11,7 +11,7 @@ import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-pr
 import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog";
 import { suitLean } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
-import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
+import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
 import { bundleQuote, type BundleItem } from "./catalog";
 import { drawSprite as drawSpriteOn } from "./art";
@@ -1266,12 +1266,13 @@ export async function bootStandalone(root: HTMLElement) {
     boardBtn.append(hubIcon("trophy"));
     boardBtn.onclick = () => engine.open("scores");
     const gear = el("button", "ac-hub-sq");
-    gear.setAttribute("aria-label", "Settings and help");
+    gear.setAttribute("aria-label", "Help and controls");
     // THE OWNER'S ACORN-GEAR (8 Sep 2026: "keep in a square background
     // like the leaderboard and shop. current button has white box that
     // disrupts the bar's look"). Same painted-on-dark treatment as the
     // gift and the trophy: screen-blended into the rail's own square.
-    gear.append(hubIcon("settings"));
+    // The gear became a question mark when settings moved to the Profile.
+    gear.append(hubIcon("help"));
     gear.onclick = () => engine.open("help");
     rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
     box.append(rail);
@@ -4339,6 +4340,13 @@ export async function bootStandalone(root: HTMLElement) {
 
     // Settings left this screen for the hub's gear button, where they sit
     // with Help.
+    // SETTINGS LIVE WITH THE PILOT (owner, 10 Sep 2026: "move settings and
+    // toggles to profile ... the existing button is just help / controls").
+    // They were under the gear button because settings and help once shared
+    // it; they are a property of this pilot, so they sit with the pilot's
+    // own screen and the gear goes back to being one thing.
+    scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settingsRows());
+
     scroll.append(el("p", "ac-kicker ac-secthead", "Community"));
     const social = el("div", "ac-rows");
     // A real anchor rather than a scripted navigation: it middle-clicks,
@@ -4385,14 +4393,40 @@ export async function bootStandalone(root: HTMLElement) {
 
     scroll.append(social);
 
-    scroll.append(el("p", "ac-kicker ac-secthead", "News"));
-    const news = el("div", "ac-rows");
-    for (const line of NEWS) {
-      const r = el("div", "ac-row ac-rownote");
-      r.append(el("span", "ac-sub", line));
-      news.append(r);
-    }
-    scroll.append(news, el("p", "ac-fine ac-mid", BUILD));
+    // NEWS IS GONE (owner, 10 Sep 2026: "eliminate news. got idea for that
+    // later"). It was four hard-coded lines that could only ever restate
+    // what the game already teaches, and nothing wrote to it.
+
+    // STARTING OVER LIVES WITH THE PILOT IT ERASES. It used to sit under
+    // the gear button beside the sound switches, which put the one
+    // irreversible action in the room next to the volume. It erases this
+    // pilot, so it belongs on the pilot's own screen, at the bottom, after
+    // everything it would destroy. Two taps, and the armed state disarms on
+    // any re-render.
+    const reset = el("button", "ac-ghost ac-reset", "START OVER");
+    let armed = false;
+    reset.onclick = () => {
+      if (!armed) {
+        armed = true;
+        reset.textContent = "ERASE SAVE AND START OVER?";
+        reset.classList.add("ac-resetarmed");
+        return;
+      }
+      engine.startOver();
+    };
+    scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
+
+    // The privacy policy follows it for the same reason: this screen is
+    // where a pilot's own data is shown, named and deleted. App Store
+    // Connect takes the URL, but Apple expects it reachable in the app.
+    const policy = el("p", "ac-fine ac-labnote");
+    const link = document.createElement("a");
+    link.href = "privacy.html";
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = "Privacy policy";
+    policy.append(link);
+    scroll.append(policy, el("p", "ac-fine ac-mid", BUILD));
 
     box.append(scroll);
     return box;
@@ -4468,12 +4502,13 @@ export async function bootStandalone(root: HTMLElement) {
 
   function drawHelp() {
     const box = el("div", "ac-menu");
-    box.append(header("Flight deck", "Settings & Help"));
+    // ONE THING ONLY (owner, 10 Sep 2026: "the existing button is just
+    // help / controls"). The settings switches and START OVER moved to the
+    // Profile, where the pilot they belong to lives; what is left here is
+    // how to fly and what will kill you.
+    box.append(header("Flight deck", "Help & Controls"));
     const scroll = el("div", "ac-sheet-scroll");
 
-    // music moved here from the Profile — settings and help share the
-    // hub's gear button
-    scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settingsRows());
     const spillHelp = drawSpillFlightHelp();
     const briefing = el("button", "ac-ghost ac-replay", "DEBRIS FIELD BRIEFING");
     briefing.dataset.spillBriefing = ""; briefing.onclick = openSpillHelp;
@@ -4562,21 +4597,8 @@ export async function bootStandalone(root: HTMLElement) {
     scroll.append(replay);
 
     // the prototype doors live on the beta's MODES sheet only
-    // Starting over is a real feature, not a debug door: progression can
-    // be flown from zero, in either build, without touching the browser.
-    // Two taps, and the armed state disarms on any re-render.
-    const reset = el("button", "ac-ghost ac-reset", "START OVER");
-    let armed = false;
-    reset.onclick = () => {
-      if (!armed) {
-        armed = true;
-        reset.textContent = "ERASE SAVE AND START OVER?";
-        reset.classList.add("ac-resetarmed");
-        return;
-      }
-      engine.startOver();
-    };
-    scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
+    // START OVER and the privacy link moved to the Profile with the rest
+    // of the pilot's own affairs.
     return box;
   }
 

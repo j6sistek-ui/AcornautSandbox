@@ -14,7 +14,7 @@ import { TUTORIAL_SUIT } from "./catalog.js?v=264";
 import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=264";
 import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=264";
 import { raceViewport, raceViewportY } from "./race-viewport.js?v=264";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillTap, stepSpill, } from "./spill.js?v=264";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=264";
 import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=264";
 import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=264";
 export const TUNNEL_PATTERNS = [
@@ -2537,11 +2537,11 @@ export function flap(w, save) {
     }
     if (w.ready)
         w.ready = false;
-    // THE SPILL flies its own ship, and its tap is the same kick skyward it
-    // is everywhere else. A tap its phase refuses - the Depot, the respawn
-    // freeze, the autopilot before a hand takes the stick - is not a tap, so
-    // nothing below counts it or animates it.
-    if (w.spill && !spillTap(w.spill))
+    // THE SPILL flies its own ship, and its tap is the hand going ON the
+    // thrust: it stays on until spillRelease. A press its phase refuses - the
+    // countdown, the Depot, the respawn freeze - or a press while already
+    // held is not a tap, so nothing below counts it or animates it.
+    if (w.spill && !spillHold(w.spill, true))
         return "none";
     // the road's contracts fly on both pages: these modifiers follow the mission, not the page
     if (!w.tut && w.flight === "fly") {
@@ -3151,6 +3151,11 @@ const SPILL_TONES = {
     lunge: ["#8fd6ff", "#cfefff"],
     graze: ["#9fe8ff"],
 };
+/** the hand comes OFF the thrust: pointer up, key up, focus lost */
+export function spillRelease(w) {
+    if (w.spill)
+        spillHold(w.spill, false);
+}
 /** a swipe up: the kick skyward. The swipe down is dive() */
 export function spillBurstUp(w) {
     if (!w.spill || w.screen !== "play" || w.ready)
