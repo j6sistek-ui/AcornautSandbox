@@ -2,6 +2,7 @@
 // This module and the exported preset form the integration contract; game
 // simulation remains the authority when applying a tuned profile later.
 import {createHighOrbitMotion,stepHighOrbit,highOrbitTap,PREMIUM_FLIGHT_DURATION} from './game/high-orbit-motion.mjs';
+import {PREMIUM_FLIGHT_CURVE} from './game/premium-flight.mjs';
 import {createArcflashMotion,stepArcflash,arcflashTap,arcflashDive} from './game/arcflash-motion.mjs';
 import {createManeuverMotion,stepManeuver,maneuverTap} from './game/vanguard-maneuver.mjs';
 export const VERSION=1,STEP=1/120;
@@ -22,7 +23,7 @@ export function defaultProfile(model){
   const n=tapSource==='still'?1:model.banks[tapSource].length;
   const premium=model.family==='premium-flight';
   return {basePitch:model.family==='acornut'?12:0,tapPitch:premium?[0,0,0,0,0]:[0,-8,-3,0,0],risePitch:0,fallPitch:0,pitchResponse:.10,
-    tapSeconds:premium?PREMIUM_FLIGHT_DURATION:1,tapEase:1,retrigger:premium?'queue':'restart',finishTap:true,tapPath:tapSource==='asc'?'out-back':'forward',returnAt:.625,loopContinuous:false,velocityFilter:.05,descentThreshold:40,
+    tapSeconds:premium?PREMIUM_FLIGHT_DURATION:1,tapEase:premium?PREMIUM_FLIGHT_CURVE:1,retrigger:premium?'queue':'restart',finishTap:true,tapPath:tapSource==='asc'?'out-back':'forward',returnAt:.625,loopContinuous:false,velocityFilter:.05,descentThreshold:40,
     descentFull:500,descentDelay:.08,descentSeconds:.55,descentEase:1,rigSpeed:1,
     tapSource,tapOrder:Array.from({length:n},(_,i)=>i),tapWeights:Array(n).fill(1),tapOffsets:Array(n).fill(0),
     descOrder:Array.from({length:model.banks.desc.length},(_,i)=>i),descOffsets:Array(model.banks.desc.length).fill(0),

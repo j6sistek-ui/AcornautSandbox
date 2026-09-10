@@ -67,7 +67,15 @@ async function renderChecks(){
       assert(ink>1000,id+' frame '+frame+' has a complete visible character');
       assert(left>0&&top>0&&right<255&&bottom<255,id+' frame '+frame+' has transparent canvas padding');
       bounds.push({frame,ink,left,top,right,bottom});hashes.push(createHash('sha256').update(pixels).digest('hex'));
-      const state=M.createHighOrbitMotion(id);state.frames={age:(frame+.5)*M.PREMIUM_FLIGHT_DURATION/16,active:true,queued:false};
+      // Sample the middle of the slice this frame actually occupies. The
+      // clock is front-loaded (premium-flight.ts PREMIUM_FLIGHT_CURVE), so
+      // the midpoint of an even sixteenth no longer lands inside frame N -
+      // the old (frame+.5)/16 age was asserting a FLAT clock, not
+      // addressability. Inverting the curve keeps the real property under
+      // any curve value, and the frame-rate sweep below is what now holds
+      // the line on frames actually being SEEN.
+      const age=Math.pow((frame+.5)/16,1/P.PREMIUM_FLIGHT_CURVE)*M.PREMIUM_FLIGHT_DURATION;
+      const state=M.createHighOrbitMotion(id);state.frames={age,active:true,queued:false};
       assert.equal(P.premiumFlightFrame(id,state),frame,id+' every authored frame is addressable');
       const explicit=surface();P.paintPremiumFlightFrame(explicit.getContext('2d'),art,id,128,128,192,frame,state,undefined,false);same(explicit,expected,id+' exact complete frame '+frame+' from public painter');
       let overlays=0;const routed=surface();R.paintHighOrbit(routed.getContext('2d'),art,id,128,128,192,state,undefined,false,0,()=>overlays++,true);
@@ -111,6 +119,21 @@ async function renderChecks(){
       assert.deepEqual(sequence.slice(0,16),Array.from({length:16},(_,i)=>i),id+' authored frame order preserved');
       if(!rapid)assert(!state.frames.active,id+' one tap completes without an unrequested replay');
       const before=structuredClone(state);for(const [dt,vy] of [[0,0],[-1,0],[NaN,0],[.01,NaN]])M.stepHighOrbit(state,id,dt,vy);for(const impulse of [0,-1,NaN,Infinity])M.highOrbitTap(state,impulse);assert.deepEqual(state,before,id+' invalid input or paused clock does not advance');
+    }
+    // Reachable at 120fps is not reachable everywhere. Front-loading the
+    // clock buys the earlier first move by giving the opening frames fewer
+    // ticks, and pushed far enough it drops an authored frame entirely.
+    // Measured on this bank: every frame survives down to 24fps, and frame
+    // 3 is the first to go at 20. The floor is held at 30 - well under
+    // anything the game ships at, well over where the curve starts to bite.
+    // A failure here means PREMIUM_FLIGHT_CURVE went too low, not that the
+    // art is wrong.
+    for(const fps of [30,60,120]){
+      const s=M.createHighOrbitMotion(id),seen=new Set();M.highOrbitTap(s,40);
+      seen.add(P.premiumFlightFrame(id,s));
+      for(let tick=0;tick<fps;tick++){M.stepHighOrbit(s,id,1/fps,-200);seen.add(P.premiumFlightFrame(id,s));}
+      assert.deepEqual([...Array(16).keys()].filter(f=>!seen.has(f)),[],
+        id+' shows every authored frame at '+fps+'fps');
     }
     const rates=[30,60,120].map(fps=>{const s=M.createHighOrbitMotion(id);M.highOrbitTap(s);for(let tick=0;tick<fps*2;tick++){if(tick===fps/2)M.highOrbitTap(s);M.stepHighOrbit(s,id,1/fps,-200);}return s;});
     for(const s of rates.slice(1)){assert.equal(P.premiumFlightFrame(id,s),P.premiumFlightFrame(id,rates[0]),id+' frame rate independent playback');assert.equal(s.frames.active,rates[0].frames.active);assert(Math.abs(s.frames.age-rates[0].frames.age)<1e-8);}
