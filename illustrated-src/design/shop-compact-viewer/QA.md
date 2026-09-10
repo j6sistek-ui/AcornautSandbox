@@ -62,6 +62,22 @@ The local pages use the shipping compiled modules, authored styles and artwork w
 
 The adjacent geometry JSON files preserve actual browser measurements. Raw responsive captures made after resizing the in-app browser include compositor scaling/letterboxing; they are visual inspection records, not native-device pixel-size proofs. Use the geometry files for sizing claims and the local preview for interactive review. Home, Profile, Loadout and Modes captures retain their actual UI state. The temporary day-tab prototype and local fixture HTML are not shipped.
 
+## Owner-requested cosmetic follow-up
+
+On 2026-09-10 the owner requested matching gold trim around the Home top-bar
+Profile, Acorn and Stardust controls, and explicitly requested no further tests.
+The three controls now use the right-hand buttons' exact border color and inset
+highlights. The source exporter completed and regenerated both page shells and
+the build timestamp. No tests, gates or browser checks were rerun for this change.
+The earlier receipts and screenshots above describe implementation `e0a6a9b`;
+their shell hashes predate these three additional CSS lines. Runtime behavior,
+prices and artwork were not edited for this follow-up.
+
+PR270's copy-only change targets the old daily shelf paragraph. This PR already
+removes that paragraph with the superseded shelf layout, addressing issue267's
+long-copy concern without restoring a footer. PR271 is the consolidated review;
+PR270's generated files and redundant validation are not imported.
+
 ## Historical helmet test environment
 
 The initial container run of `test-helmet-animation.mjs` failed while running `git archive`, before any renderer comparison. Its shared Git directory referred to an alternate object store by a Windows absolute path that Linux could not resolve. Both pinned revisions already existed locally. Mounting that existing object store read-only and providing `GIT_ALTERNATE_OBJECT_DIRECTORIES` let the unchanged test pass with **339 images, 2,429 comparisons, 3,824 solo frames and 149 pixel comparisons**. No source edit, Git data edit or network hydration was needed. The original diagnostic and passing output are pinned in [helmet-history-verification.json](helmet-history-verification.json).
