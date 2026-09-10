@@ -1,0 +1,192 @@
+[
+  {
+    "id": "royal",
+    "masterSha256": "d4a8174d88d523bb6390fa43046050dc3ef11a0538d55887ddfa0111d1f3bbaa",
+    "referenceSha256": "7e2f8ae710b312ce29d08dec6f2a94ae87eb54e1396ee0512987070d1e2494c9",
+    "spriteSha256": "b5911883746be4918fed013d50d4b0ae9243194fbd5d6de3ec2311a252667367",
+    "width": 256,
+    "height": 256,
+    "glass": [
+      128,
+      136,
+      80
+    ],
+    "sourceGlass": [
+      124,
+      156,
+      98
+    ],
+    "exteriorOnly": true
+  },
+  {
+    "id": "chronarch",
+    "masterSha256": "d72b405d4ceef90447e7a2c8acb67d231832e833ea2398dfcba77c6fb515cc09",
+    "referenceSha256": "42d44767e0c644e4fa623f2a0d8f75530d0b4bef70fb23d72e6e08f544b3c34f",
+    "spriteSha256": "7772f41efc631f702906cb54765cdc152dc9d9d1aa1d588fe960e3a0c6775ec5",
+    "width": 256,
+    "height": 256,
+    "glass": [
+      128,
+      136,
+      80
+    ],
+    "sourceGlass": [
+      127.1,
+      120.5,
+      125.6
+    ],
+    "exteriorOnly": true
+  },
+  {
+    "id": "sammie",
+    "masterSha256": "f3918f18cd1a057ba66c37f4e39097bcec4c7474838a3efc077bd0f20fa153a5",
+    "referenceSha256": "16f3b1659aa8aefa9c728db9189297519eb3e55e7fcbb0a35b721ab969aad86f",
+    "spriteSha256": "121c8d0d30fe88302117e507d6f171451472f4cae9bea4eccd26287c602bf083",
+    "width": 256,
+    "height": 256,
+    "glass": [
+      128,
+      136,
+      80
+    ],
+    "sourceGlass": [
+      138,
+      103,
+      108.2
+    ],
+    "exteriorOnly": true
+  },
+  {
+    "id": "princess",
+    "masterSha256": "4ac1e8bf2cf86a460f5c44b29dc20ecd7e27f7ce4eafd919bad21d4a9507dc4d",
+    "referenceSha256": "bfec9b292814d124bef3b9339ca0265ccff9d0cea8a5c12f4d64f387df4755fe",
+    "spriteSha256": "7b3362ca757c3abbe14a8de6170ff4cece5f81c2335f4ea34fe94f09f82e0383",
+    "width": 256,
+    "height": 256,
+    "glass": [
+      128,
+      136,
+      80
+    ],
+    "sourceGlass": [
+      127.3,
+      96.8,
+      126
+    ],
+    "exteriorOnly": true
+  },
+  {
+    "id": "phoenix",
+    "masterSha256": "73ad1e8e4d1904bed13939f1afc3d001c153dde680e215a1cc25d5241226423b",
+    "referenceSha256": "ae417b3eda52b26fa3aa1486d93df0bc0822a6120892bd9e2bdcb25c1e662d00",
+    "spriteSha256": "65d27a3f55bfab4ff88dd4ce80b6fcde8f31802879b2e783dfa9e7b18cef2df8",
+    "width": 256,
+    "height": 256,
+    "glass": [
+      128,
+      136,
+      80
+    ],
+    "sourceGlass": [
+      130,
+      116,
+      129.2
+    ],
+    "exteriorOnly": true
+  },
+  {
+    "id": "seraph",
+    "masterSha256": "d236f4f307cf9511cc9d1fda4a178cf5e894165f321b54f6454b1c3fb02ef0da",
+    "referenceSha256": "8182f9b6f8fb5216966b53cf931b667922828cd2d797e52824643a11aa7b6e68",
+    "spriteSha256": "169f5ddb968b3d39fc168c900b2a0b21e01917b2fbfe6b1133d24ed2d81fc5ce",
+    "width": 256,
+    "height": 256,
+    "glass": [
+      128,
+      136,
+      80
+    ],
+    "sourceGlass": [
+      125,
+      151,
+      110
+    ],
+    "exteriorOnly": true
+  },
+  {
+    "id": "cryostar",
+    "masterSha256": "f36a5df201b92a27b319e3f0291c85987344d28f7cf8ab6f13d721b414758869",
+    "referenceSha256": "30d3cb156fb827d820f6ead49e2c37861ee0902311e560b374d51888dbcd4070",
+    "spriteSha256": "3bb54626e3c63e4ef6007960e63a79c0a95080a699dccc00835f4c2ffd54e43a",
+    "width": 256,
+    "height": 256,
+    "glass": [
+      128,
+      136,
+      80
+    ],
+    "sourceGlass": [
+      126,
+      121,
+      134.6
+    ],
+    "exteriorOnly": true
+  },
+  {
+    "id": "verdant",
+    "masterSha256": "ee314a17016f27b76003d45be4c48ed7b3b18f990b77998dd154e6d253e8f7e2",
+    "referenceSha256": "7fbf3fef673abf854788cc5e4ec71eca976e444d39bee9933004152d3a5cbc8b",
+    "spriteSha256": "ab9c37cea2ed98de1d301763592d6c5fb1fdb6a4b7b584375b9a01d3b48df630",
+    "width": 256,
+    "height": 256,
+    "glass": [
+      128,
+      136,
+      80
+    ],
+    "sourceGlass": [
+      141,
+      116,
+      126.6
+    ],
+    "exteriorOnly": true
+  },
+  {
+    "id": "eclipse",
+    "masterSha256": "fd0dc6b0cfb651489e6804c55accb76acec630c7c0b224b2a93d0e35d6ba7d17",
+    "referenceSha256": "eaa1a81c3b93483a8879dbc88e3305bd280ce670d338b36360edebf01d4b1003",
+    "spriteSha256": "fe1ca52cd215fb1bf514c70f64ea22edb49ff36f3be5d8043d017e88f1d7fa89",
+    "width": 256,
+    "height": 256,
+    "glass": [
+      128,
+      136,
+      80
+    ],
+    "sourceGlass": [
+      127,
+      129,
+      138.4
+    ],
+    "exteriorOnly": true
+  },
+  {
+    "id": "leviathan",
+    "masterSha256": "c2056895283e6b6128403f9b44fee7168c2e28f7995de8b50f27133d5830cd83",
+    "referenceSha256": "d44676e75c69bbb250d59bcfc6081370c5edf50770bf9acfa00e2e3a932b429e",
+    "spriteSha256": "10f905d2f50fd39a8e6a6ea83c06974ef5802e0e13e53dcccfb10ab04cf6414a",
+    "width": 256,
+    "height": 256,
+    "glass": [
+      128,
+      136,
+      80
+    ],
+    "sourceGlass": [
+      129.8,
+      110.6,
+      103.6
+    ],
+    "exteriorOnly": true
+  }
+]

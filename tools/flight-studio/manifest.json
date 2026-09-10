@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "265",
-  "sourceCommit": "a78dc82973625a682e82e5a18abe74c9c32e0395",
+  "artVer": "267",
+  "sourceCommit": "92aeedad68d71a82e472713ec94af634d2bb8968",
   "models": [
     {
       "id": "flight",
@@ -2715,9 +2715,9 @@
       "name": "Royal",
       "file": "helms/royal.png",
       "glass": [
-        124,
-        156,
-        98,
+        128,
+        136,
+        80,
         0
       ]
     },
@@ -2770,9 +2770,9 @@
       "name": "Phoenix",
       "file": "helms/phoenix.png",
       "glass": [
-        130,
-        116,
-        129.2,
+        128,
+        136,
+        80,
         -2
       ]
     },
@@ -2781,9 +2781,9 @@
       "name": "Samurai",
       "file": "helms/sammie.png",
       "glass": [
-        138,
-        103,
-        108.2,
+        128,
+        136,
+        80,
         0
       ]
     },
@@ -2792,9 +2792,9 @@
       "name": "Seraph",
       "file": "helms/seraph.png",
       "glass": [
-        125,
-        151,
-        110,
+        128,
+        136,
+        80,
         0
       ]
     },
@@ -2803,9 +2803,9 @@
       "name": "Chronarch",
       "file": "helms/chronarch.png",
       "glass": [
-        127.1,
-        120.5,
-        125.6,
+        128,
+        136,
+        80,
         0
       ]
     },
@@ -2814,9 +2814,9 @@
       "name": "Leviathan",
       "file": "helms/leviathan.png",
       "glass": [
-        129.8,
-        110.6,
-        103.6,
+        128,
+        136,
+        80,
         12
       ],
       "suitOnly": "leviathan"
@@ -2826,9 +2826,9 @@
       "name": "Rose",
       "file": "helms/princess.png",
       "glass": [
-        127.3,
-        96.8,
-        126,
+        128,
+        136,
+        80,
         0
       ]
     },
@@ -2837,9 +2837,9 @@
       "name": "Verdant",
       "file": "helms/verdant.png",
       "glass": [
-        141,
-        116,
-        126.6,
+        128,
+        136,
+        80,
         0
       ]
     },
@@ -2848,9 +2848,9 @@
       "name": "Cryostar",
       "file": "helms/cryostar.png",
       "glass": [
-        126,
-        121,
-        134.6,
+        128,
+        136,
+        80,
         0
       ]
     },
@@ -2859,9 +2859,9 @@
       "name": "Eclipse",
       "file": "helms/eclipse.png",
       "glass": [
-        127,
-        129,
-        138.4,
+        128,
+        136,
+        80,
         0
       ]
     },
@@ -2964,7 +2964,10 @@
     "sammie",
     "seraph",
     "chronarch",
-    "princess"
+    "princess",
+    "cryostar",
+    "verdant",
+    "eclipse"
   ],
   "anchors": {
     "suit:flight": [
@@ -5784,7 +5787,7 @@
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
     "control-constants": "84f86ecba6eeab23a8a322a7602ed871f436c7cc7cb9d184a2bcd145e43bfd16",
-    "helmet-openings": "928214a80a98c8711533e58129babf435fe52958c3cbae0cfccdff56c67f5b80",
+    "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
     "high-orbit": "0a4d14f1e6b76eb8d83aeb1f08ac09a633ef0bfc4449c91dabcf5aa00a78738c",
     "high-orbit-config": "07ecb9b97faf6a5f65049bb183f095aa97fc5a6139c3db65f32b966ddd7777fc",
     "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",

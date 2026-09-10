@@ -1,5 +1,5 @@
 {
- "artVer": "265",
+ "artVer": "267",
  "suits": [
   {
    "id": "flight",
@@ -7290,9 +7290,9 @@
    "name": "Royal",
    "file": "helms/royal.png",
    "glass": [
-    124,
-    156,
-    98,
+    128,
+    136,
+    80,
     0
    ]
   },
@@ -7345,9 +7345,9 @@
    "name": "Phoenix",
    "file": "helms/phoenix.png",
    "glass": [
-    130,
-    116,
-    129.2,
+    128,
+    136,
+    80,
     -2
    ]
   },
@@ -7356,9 +7356,9 @@
    "name": "Samurai",
    "file": "helms/sammie.png",
    "glass": [
-    138,
-    103,
-    108.2,
+    128,
+    136,
+    80,
     0
    ]
   },
@@ -7367,9 +7367,9 @@
    "name": "Seraph",
    "file": "helms/seraph.png",
    "glass": [
-    125,
-    151,
-    110,
+    128,
+    136,
+    80,
     0
    ]
   },
@@ -7378,9 +7378,9 @@
    "name": "Chronarch",
    "file": "helms/chronarch.png",
    "glass": [
-    127.1,
-    120.5,
-    125.6,
+    128,
+    136,
+    80,
     0
    ]
   },
@@ -7389,9 +7389,9 @@
    "name": "Leviathan",
    "file": "helms/leviathan.png",
    "glass": [
-    129.8,
-    110.6,
-    103.6,
+    128,
+    136,
+    80,
     12
    ],
    "suitOnly": "leviathan"
@@ -7401,9 +7401,9 @@
    "name": "Rose",
    "file": "helms/princess.png",
    "glass": [
-    127.3,
-    96.8,
-    126,
+    128,
+    136,
+    80,
     0
    ]
   },
@@ -7412,9 +7412,9 @@
    "name": "Verdant",
    "file": "helms/verdant.png",
    "glass": [
-    141,
-    116,
-    126.6,
+    128,
+    136,
+    80,
     0
    ]
   },
@@ -7423,9 +7423,9 @@
    "name": "Cryostar",
    "file": "helms/cryostar.png",
    "glass": [
-    126,
-    121,
-    134.6,
+    128,
+    136,
+    80,
     0
    ]
   },
@@ -7434,9 +7434,9 @@
    "name": "Eclipse",
    "file": "helms/eclipse.png",
    "glass": [
-    127,
-    129,
-    138.4,
+    128,
+    136,
+    80,
     0
    ]
   },

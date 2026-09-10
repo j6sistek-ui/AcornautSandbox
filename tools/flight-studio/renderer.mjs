@@ -2,7 +2,7 @@ import {paintHighOrbit,highOrbitLandmarks} from './game/high-orbit.mjs';
 import {paintPremiumFlightFrame} from './game/premium-flight.mjs';
 import {paintArcflash} from './game/arcflash.mjs';
 import {paintManeuver} from './game/vanguard-maneuver.mjs';
-import {clearHelmetRearCollar} from './game/helmet-openings.mjs';
+import {clipHelmetGlass} from './game/helmet-openings.mjs';
 const DEG=Math.PI/180;
 export class StudioRenderer{
   constructor(manifest,makeImage=()=>new Image(),makeCanvas=()=>document.createElement('canvas')){
@@ -28,7 +28,7 @@ export class StudioRenderer{
       spr=this.makeCanvas();spr.width=raw.width;spr.height=raw.height;const c=spr.getContext('2d');c.drawImage(raw,0,0);
       if(!h.opaqueVisor){const g=h.glass,strong=this.manifest.lightOpaqueVisors.includes(id),grad=c.createRadialGradient(g[0],g[1],g[2]*.1,g[0],g[1],g[2]*(strong?.88:.82));
         grad.addColorStop(0,`rgba(0,0,0,${strong?.88:.55})`);grad.addColorStop(.7,`rgba(0,0,0,${strong?.62:.3})`);grad.addColorStop(1,'rgba(0,0,0,0)');
-        c.globalCompositeOperation='destination-out';c.fillStyle=grad;c.fillRect(0,0,spr.width,spr.height);c.globalCompositeOperation='source-over';clearHelmetRearCollar(c,id);}
+        c.save();clipHelmetGlass(c,id);c.globalCompositeOperation='destination-out';c.fillStyle=grad;c.fillRect(0,0,spr.width,spr.height);c.restore();c.globalCompositeOperation='source-over';}
       this.helmets.set(id,spr);
     }
     const g=h.glass,scale=r*1.04/g[2];ctx.save();ctx.translate(x,y);ctx.rotate((angle+(g[3]||0))*DEG);

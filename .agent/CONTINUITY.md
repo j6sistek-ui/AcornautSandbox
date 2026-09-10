@@ -22,3 +22,7 @@
 [OUTCOMES]
 - 2026-09-09T23:36Z [TOOL] Shop implementation verified at8497029/build257 with current main95aefc52 integrated: full56pass/0fail/0skip,32artgroups,typecheck,bridge,lab/Studio and mobile/beta browser receipts. All1606baseline art/35ownershipIDs preserved;8real bundles with full-credit pricing and actual individual previews. Source frozen; final evidence/Shop PR publication follows. No merge authorized.
 - 2026-09-09T22:25Z [TOOL] PR252 merged; Shop refresh remains in progress and unverified. No Shop PR or merge yet.
+
+[OUTCOMES]
+- 2026-09-10T05:22Z [CODE] Issue #262 candidate regenerates ten complete visor paintings, closes Rose chin, removes rear-collar cuts and normalizes to 256px with [128,136,80] head registration. Game/Studio use matching pane translucency; stamp263 generated. Docker builds/typecheck/32 art groups/bridge and56/57tests pass; sole High Orbit failure identical on unchanged11a1b88 base, test passes on Windows. Evidence/limitations in illustrated-src/design/visor-glass. Draft review required; no merge/deployment.
+- 2026-09-10T06:50:28.274Z [TOOL] Resolved PR264 conflicts against main daad832, regenerated stamp267. Runtime6407485 preserves all ten helmet assets/masters/painters and current main Profile/Help/privacy changes. Docker builds/typecheck/32art/bridge pass; harness56/57, sole identical unchanged-main High Orbit failure. Six Loadout captures at390px pass, no page errors; visor compositor30matches. Review-only receipt follows; no merge or release authorized.

@@ -1,51 +1,28 @@
-// Check the real compiled artwork-mask helper against all shipped helmets.
+// Validate the real regenerated artwork and its normalized registration.
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {readFileSync,readdirSync,writeFileSync,mkdirSync} from 'node:fs';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 const require=createRequire(import.meta.url);
 const {createCanvas,loadImage}=require(process.env.ACORNAUT_CANVAS||'@napi-rs/canvas');
-const root=fileURLToPath(new URL('../',import.meta.url));
-const code=readFileSync(root+'docs/js/helmet-openings.js','utf8');
-const {clearHelmetRearCollar}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
-// Independent probes placed on the visibly obstructing rear arcs.
-const probes={sammie:[120,159],princess:[176,150],chronarch:[125,186],phoenix:[130,185],
- seraph:[135,199],cryostar:[137,187],verdant:[129,188],eclipse:[130,188],
- royal:[125,206],leviathan:[145,143]};
-const results=[];
-const bubbleIds=new Set(['clear','aurora','cherry','chrono','comet','ion','lunar','meteor','solar']);
-for(const file of readdirSync(root+'docs/art/helms').filter(n=>n.endsWith('.png'))){
- const id=file.slice(0,-4),im=await loadImage(root+'docs/art/helms/'+file);
- const c=createCanvas(im.width,im.height),g=c.getContext('2d');g.drawImage(im,0,0);
- const before=g.getImageData(0,0,c.width,c.height);clearHelmetRearCollar(g,id);
- const after=g.getImageData(0,0,c.width,c.height);let changed=0;
- for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){
-  const i=(y*c.width+x)*4;
-  const differs=before.data.slice(i,i+4).some((v,j)=>v!==after.data[i+j]);
-  if(differs){changed++;assert(after.data[i+3]<=before.data[i+3],id+': must only remove opacity');}
-  if(y<100||x<45)assert(!differs,id+': changed upper shell or side fitting');
- }
- // The lowest opaque outline along the front collar must survive the cutout.
- for(let x=85;x<170;x+=5){
-  let y=c.height-1;while(y>=0&&before.data[(y*c.width+x)*4+3]<240)y--;
-  if(y<0)continue;const i=(y*c.width+x)*4;
-  assert.deepEqual(after.data.slice(i,i+4),before.data.slice(i,i+4),id+': changed external collar outline');
- }
- // Painted bubble repairs must retain a continuous pane, including the old
- // rear-arc location; an alpha-zero probe would reward the original gap bug.
- if(bubbleIds.has(id))for(const [x,y] of [[125,184],[100,197],[120,207],[140,215],[160,223]]){
-  const i=(y*c.width+x)*4;
-  assert(before.data[i+3]>0,id+': lower-pane probe must hit original artwork');
-  assert.deepEqual(after.data.slice(i,i+4),before.data.slice(i,i+4),id+': erased lower glass pane');
- }
- if(probes[id]){
-  const [x,y]=probes[id],i=(y*c.width+x)*4;
-  assert(before.data[i+3]>0,id+': probe must hit original art');
-  assert.equal(after.data[i+3],0,id+': rear ring probe must be see-through');
-  assert(changed>100&&changed<7000,id+': cutout extent');
- }else assert.equal(changed,0,id+': unaffected helmet changed');
- results.push({helmet:id,clearedRearArc:!!probes[id],changedPixels:changed});
+const root=fileURLToPath(new URL('../',import.meta.url)),src=root+'art-src/visor-glass/';
+const records=JSON.parse(readFileSync(src+'export-review.json','utf8'));
+const probes={royal:[125,206],chronarch:[125,186],sammie:[120,159],princess:[176,150],phoenix:[130,185],seraph:[135,199],cryostar:[137,187],verdant:[129,188],eclipse:[130,188],leviathan:[145,143]};
+assert.deepEqual(records.map(r=>r.id).sort(),Object.keys(probes).sort(),'exact ten-helmet repair scope');
+const hash=b=>createHash('sha256').update(b).digest('hex');
+for(const r of records){
+ assert.equal(hash(readFileSync(src+r.id+'-master.png')),r.masterSha256,r.id+': master provenance');
+ assert.equal(hash(readFileSync(src+r.id+'-reference.png')),r.referenceSha256,r.id+': original reference provenance');
+ const bytes=readFileSync(root+'docs/art/helms/'+r.id+'.png');assert.equal(hash(bytes),r.spriteSha256,r.id+': deterministic export receipt');
+ const im=await loadImage(bytes);assert.equal(im.width,256);assert.equal(im.height,256);assert.deepEqual(r.glass,[128,136,80]);
+ const c=createCanvas(256,256),g=c.getContext('2d');g.drawImage(im,0,0);const p=g.getImageData(0,0,256,256).data;
+ const [sx,sy,sr]=r.sourceGlass,point=(x,y)=>[Math.round(128+(x-sx)*80/sr),Math.round(136+(y-sy)*80/sr)];
+ const [x,y]=point(...probes[r.id]);
+ for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)assert.equal(p[((y+dy)*256+x+dx)*4+3],255,r.id+': lower glass must be continuous solid paint before runtime translucency');
+ for(let x=0;x<256;x++){assert.equal(p[x*4+3],0,r.id+': top decoration must fit the canvas');assert.equal(p[(255*256+x)*4+3],0,r.id+': collar must fit the canvas');}
+ for(let y=0;y<256;y++){assert.equal(p[(y*256)*4+3],0,r.id+': left edge margin');assert.equal(p[(y*256+255)*4+3],0,r.id+': right edge margin');}
+ if(r.id==='princess'){const [x,y]=point(155,195);assert.equal(p[(y*256+x)*4+3],255,'Rose chin is closed, not a dangling strap with an opening');}
+ if(r.id==='seraph'){const [x,y]=point(115,29);assert.equal(p[(y*256+x)*4+3],0,'space inside Seraph halo stays transparent');}
 }
-const out=root+'art-src/flight-refresh/helmet-openings/';mkdirSync(out,{recursive:true});
-writeFileSync(out+'pixel-review.json',JSON.stringify(results,null,2)+'\n');
-console.log(`PASS ${results.length} helmet assets: ${Object.keys(probes).length} rear arcs clear; other helmets (including Gemmie), upper shells, side fittings and external collar outlines unchanged.`);
+console.log('PASS 10 whole regenerated helmets: source receipts, 256px canvas, shared head registration, intact glass, closed Rose chin and unclipped decorations.');
