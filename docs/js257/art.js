@@ -1,5 +1,5 @@
 import { VANGUARD_FRAMES } from "./vanguard.js?v=257";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=257";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=257";
 import { prepareDepotBear } from "./spill-depot-bear.js?v=257";
 import { SPILL_UTILITY_IDS } from "./spill-content.js?v=257";
 import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumSuit, isHighOrbitRig } from "./high-orbit-config.js?v=257";
@@ -613,7 +613,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         "cryostar",
         "eclipse",
         "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
-        ...(IS_BETA ? ["amethyst", "ivoryguard", "reactor"] : []),
+        "amethyst", "ivoryguard", "reactor",
     ];
     const suitIds = [
         "vanguard",

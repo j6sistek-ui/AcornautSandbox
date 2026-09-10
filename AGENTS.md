@@ -1,5 +1,29 @@
 # Repository checks
 
+## Shop bundle rule
+
+Every `BUNDLES` entry must contain at least three distinct products. Shared
+suit/helmet IDs and free wakes do not inflate that count. Single products
+belong on the individual shelf, never in the bundle registry.
+Every bundle must have a complete kit: a dedicated banner at
+`docs/art/shop/<bundle-id>.png`, its source master and creation brief, and
+an editable `kit.discountDust` in `game/catalog.ts`. A new bundle without
+these assets and pricing is incomplete. Run the standard exporter and the
+bundle-kit/Shop checks before creating the PR.
+
+Bundle exteriors show the banner, short name, current price and actual
+bundle savings. Put included products and concise bonus counts in the
+contents popup. Individual item cards and item previews use actual game
+art and painters; generated marketing artwork belongs to bundle banners.
+
+Use `bundleQuote` for both display and checkout. Credit the full individual
+retail already owned, count shared IDs and free wakes once, and clamp the
+remaining charge at zero. A zero-cost remainder still requires an explicit
+claim; it never creates a currency refund. See
+`illustrated-src/design/shop-refresh/PRICING.md` for configuration and tests.
+
+## Build workflow
+
 Use the container workflow by default; do not install system packages on the host.
 
 ```sh

@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "257";
+export const ART_VER = "258";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -605,50 +605,29 @@ export const WARP_GATES = 15;
  *  read the same list and cannot disagree about what is in it. */
 export type BundleItem = { kind: "suit" | "helm" | "trail" | "pal"; id: string };
 
-export const BUNDLES: {
+/** Editable presentation and exact Stardust saving for one complete kit. */
+export type BundleKit = { banner: string; discountDust: number };
+export type Bundle = {
   id: string; name: string; blurb: string; dust: number; items: BundleItem[];
-  /** a sticker price the shop never discounts: kept out of the featured
-   *  rotation, and sold singly at the same number (DUST_STICKER) */
+  kit: BundleKit;
+  /** Kept out of the featured rotation; its single uses DUST_STICKER. */
   fixed?: boolean;
-  /** A pack with an owner-set price uses its prorated sticker,
-   *  rather than the usual featured discount. */
+  /** Legacy owner-set-price marker, retained for catalog compatibility.
+   *  All purchase paths now use the kit quote. */
   featuredAtSticker?: boolean;
   /** Offered every day on its own card, outside the featured rotation. */
   alwaysAvailable?: boolean;
   /** Its unowned contents remain purchasable singly while featured. */
   keepSingles?: boolean;
-}[] = [
-  // ARCFLASH (owner, 7 Sep 2026): one suit, one price, its wake included.
-  // The wake is not an item - it is the only trail Arcflash can wear and it
-  // arrives with the suit (trailUnlocked), so it is not listed or priced.
-  { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
-  // One authored pilot and its signature wake per purchase. The selected head
-  // design is inseparable; these packs never advertise a removable helmet.
-  // Latest owner price: 1,000 each, or all three for 2,500 Stardust.
-  // Preserve the existing singleton ids for purchase compatibility.
-  { id: "bundle-porcelain", name: "Percy", blurb: "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "porcelain" }] },
-  { id: "bundle-nacre", name: "Envoy", blurb: "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "nacre" }] },
-  { id: "bundle-origamist", name: "Patriot", blurb: "Folded composite and the permanent Facet Shell. Foldspace Ribbon wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "origamist" }] },
-  { id: "bundle-premium-trio", name: "Premium Pilot Trio", blurb: "Percy, Envoy and Patriot, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
-  { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
-  { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
-  { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
-  { id: "bundle-spacepuppy", name: "Space Puppy Companion", blurb: "A pink axolotl in a harness. The run becomes a bounce house: giant planets, no debris, no score, just bounces.", dust: 90, items: [{ kind: "pal", id: "spacepuppy" }] },
-  { id: "bundle-astrafox", name: "AstraFox Companion", blurb: "A starlit fox that runs the sky faster: the gates swing wide and the world scrolls at 1.2x.", dust: 90, items: [{ kind: "pal", id: "astrafox" }] },
-  { id: "bundle-switchback", name: "Stopwatch Companion", blurb: "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
-  // THE THREE STANDALONE VISORS (owner, 8 Sep 2026: "Add them to the shop,
-  // premium purchases, in the rotations"). They came off the beta host, and
-  // premium HERE means being in a bundle - IAP_ITEMS is derived from this
-  // table, isIap reads that, and the shop's helmet rotation deals from
-  // HELMETS.filter(isIap). One helmet apiece, priced like the companions
-  // they most resemble: every other premium helmet shares its id with a
-  // suit and carries that set's weight, but these three are visors and
-  // nothing else, so idWeight makes them 90 dust singly.
-  { id: "bundle-amethyst", name: "Amethyst Visor", blurb: "Violet glass under a gold rim.", dust: 90, items: [{ kind: "helm", id: "amethyst" }] },
-  { id: "bundle-ivoryguard", name: "Ivoryguard Visor", blurb: "Pale ice, steel trim, a cold blue light.", dust: 90, items: [{ kind: "helm", id: "ivoryguard" }] },
-  { id: "bundle-reactor", name: "Reactor Visor", blurb: "Acid green, and it glows in the dark of the run.", dust: 90, items: [{ kind: "helm", id: "reactor" }] },
+};
+/** Single pilots remain premium without pretending to be bundles. */
+export const FIXED_SHOP_SUIT_IDS = ["arcflash", "porcelain", "nacre", "origamist"] as const;
+
+export const BUNDLES: Bundle[] = [
+  { id: "bundle-premium-trio", kit: { banner: "shop/bundle-premium-trio.png", discountDust: 500 }, name: "Premium Pilot Trio", blurb: "Percy, Envoy and Patriot, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
   {
     id: "bundle-aurora",
+    kit: { banner: "shop/bundle-aurora.png", discountDust: 450 },
     name: "Aurora Pack",
     blurb: "Ice, growth and eclipse \u2014 three skies, worn.",
     dust: 900,
@@ -661,6 +640,7 @@ export const BUNDLES: {
   },
   {
     id: "bundle-regalia",
+    kit: { banner: "shop/bundle-regalia.png", discountDust: 720 },
     name: "Regalia Pack",
     blurb: "Gemcut, seraphim and the deep \u2014 the ceremonial set.",
     dust: 1200,
@@ -675,6 +655,7 @@ export const BUNDLES: {
   },
   {
     id: "bundle-circuit",
+    kit: { banner: "shop/bundle-circuit.png", discountDust: 450 },
     name: "Circuit Pack",
     blurb: "Chrome, current and code. All three come with custom helmets.",
     dust: 750,
@@ -685,6 +666,7 @@ export const BUNDLES: {
   },
   {
     id: "bundle-critters",
+    kit: { banner: "shop/bundle-critters.png", discountDust: 400 },
     name: "Critter Pack",
     blurb: "Bandit, Noodle and Quill. Three more who eat no acorns.",
     dust: 750,
@@ -692,28 +674,29 @@ export const BUNDLES: {
       { kind: "suit", id: "raccoon" }, { kind: "suit", id: "ferret" }, { kind: "suit", id: "hedgehog" },
     ],
   },
-  // The small packs. They overlap the big ones ON PURPOSE: a pilot who owns
-  // Robo should meet a Robo pack that has already taken his suit off the
-  // price, which is the whole reason the pricing below exists.
   {
-    id: "bundle-robo",
-    name: "Robo & Glider",
-    blurb: "One machine, one wing. A short pack for a long night.",
-    dust: 300,
-    items: [
-      { kind: "suit", id: "robo" },
-      { kind: "pal", id: "nightglider" },
-    ],
+    id: "bundle-cosmic-companions",
+    kit: { banner: "shop/bundle-cosmic-companions.png", discountDust: 70 },
+    name: "Cosmic Companions",
+    blurb: "Magnetar, Baby Alien and Satellite: three companions with their own flight effects.",
+    dust: 200,
+    items: [{ kind: "pal", id: "magnetar" }, { kind: "pal", id: "babyalien" }, { kind: "pal", id: "satellite" }],
   },
   {
-    id: "bundle-cyber",
-    name: "Cyber & Clockwork",
-    blurb: "Circuit chrome, trailing gearlight.",
-    dust: 300,
-    items: [
-      { kind: "suit", id: "cyber" },
-      { kind: "trail", id: "clockwork" },
-    ],
+    id: "bundle-starlight-companions",
+    kit: { banner: "shop/bundle-starlight-companions.png", discountDust: 70 },
+    name: "Starlight Companions",
+    blurb: "Space Puppy, AstraFox and Stopwatch: three companions with their own flight effects.",
+    dust: 200,
+    items: [{ kind: "pal", id: "spacepuppy" }, { kind: "pal", id: "astrafox" }, { kind: "pal", id: "switchback" }],
+  },
+  {
+    id: "bundle-visor-collection",
+    kit: { banner: "shop/bundle-visor-collection.png", discountDust: 70 },
+    name: "Visor Collection",
+    blurb: "Amethyst, Ivoryguard and Reactor: three distinct visors for the wardrobe.",
+    dust: 200,
+    items: [{ kind: "helm", id: "amethyst" }, { kind: "helm", id: "ivoryguard" }, { kind: "helm", id: "reactor" }],
   },
 ];
 
@@ -732,23 +715,14 @@ export const bundleIds = (b: (typeof BUNDLES)[number]) =>
 export const bundleWeight = (b: (typeof BUNDLES)[number]) =>
   b.items.reduce((n, i) => n + ITEM_WEIGHT[i.kind], 0);
 
-/** WHAT A PACK COSTS YOU, given what you already own.
- *
- *  Packs overlap on purpose - that is what makes a rotating shelf worth
- *  watching - so a pack whose suit you bought last week must not charge you
- *  for it twice. The price falls with the WEIGHT still owed rather than the
- *  item count, so clearing a suit out of a pack takes three helmets' worth
- *  off what is left. Rounded to ten so a discounted price still reads as a
- *  price and not as a calculation. */
+/** The legacy bundle checkout shares the actual Shop quote. `dust` remains
+ *  historical catalog data; it no longer asks a different price from the
+ *  featured card for the same kit. */
 export function bundlePrice(
-  b: (typeof BUNDLES)[number],
+  b: Bundle,
   owns: (id: string) => boolean,
 ) {
-  const total = bundleWeight(b);
-  const owed = b.items.reduce((n, i) => n + (owns(i.id) ? 0 : ITEM_WEIGHT[i.kind]), 0);
-  if (owed <= 0) return 0;                 // nothing left to sell
-  if (owed >= total) return b.dust;
-  return Math.max(10, Math.round((b.dust * owed) / total / 10) * 10);
+  return bundleQuote(b, owns).due;
 }
 
 
@@ -848,7 +822,7 @@ export function shopBundles(now: number, owns: (id: string) => boolean) {
     .slice(0, SHOP_SLOTS);
 }
 
-export const IAP_ITEMS = [...new Set(BUNDLES.flatMap(bundleIds))];
+export const IAP_ITEMS = [...new Set([...FIXED_SHOP_SUIT_IDS, ...BUNDLES.flatMap(bundleIds)])];
 
 // ------------------------------------------------------- A LA CARTE
 // The storefront sells single items as well as packs, so a single item
@@ -897,13 +871,13 @@ export function idGrants(id: string) {
   return t ? [id, t] : [id];
 }
 
-/** THE WEIGHT SUM: every unowned id at its sticker or its weight rate, a
- *  set trail included. This is the base the featured price has always been
- *  struck off, and the owner set the shelf around the numbers it gives
- *  (Aurora 720, Regalia 900), so the audit left it exactly where it stood
- *  and corrected only what the card CLAIMS you are saving. */
-function weightTotal(ids: string[], owns: (id: string) => boolean) {
-  return ids.filter((i) => !owns(i)).reduce((n, i) => n + idDust(i), 0);
+/** A bundle needs three distinct products. A matching suit and helmet
+ *  share one ownership key, and a set's free wake is a bonus, not another
+ *  product that can turn a singleton or duo into a bundle. */
+export function bundleProductIds(b: Bundle): string[] {
+  const ids = bundleIds(b);
+  const bonuses = new Set(ids.map(id => SET_TRAIL[id]).filter(Boolean));
+  return ids.filter(id => !bonuses.has(id) && !builtInTrailSuit(id));
 }
 
 /** what the ids you do NOT own would cost bought one at a time.
@@ -918,28 +892,49 @@ function weightTotal(ids: string[], owns: (id: string) => boolean) {
  *  that is the only case zeroed.
  */
 export function alaCarteTotal(ids: string[], owns: (id: string) => boolean) {
-  const owed = ids.filter((i) => !owns(i));
+  const owed = [...new Set(ids)].filter((i) => !owns(i));
   const free = new Set(owed.map((i) => SET_TRAIL[i]).filter(Boolean));
   return owed.reduce((n, i) => n + (free.has(i) ? 0 : idDust(i)), 0);
 }
 
-/** THE FEATURED PACK. One at a time, and always the best deal on the
- *  shelf: half of what its remaining contents would cost singly. Half of
- *  what REMAINS, so a pack whose suit you already bought quietly costs
- *  less rather than charging for it twice. Half of the WEIGHT SUM, not of
- *  the shelf total above it: the free trail sits inside the base these
- *  packs were priced against, and taking it out would cut every featured
- *  price, which is the owner's call and not an audit's. */
-export const FEATURE_DISCOUNT = 0.5;
+/** One quote for cards and both checkout paths. The kit discount is an
+ *  exact editable amount against the original individual retail value.
+ *  Ownership then credits the full retail value already covered, including
+ *  shared IDs and free set trails once. Credit never pays currency back:
+ *  if it covers the offer, the remaining contents can be claimed for zero.
+ *  `savings` and `discountPercent` describe the original kit discount;
+ *  `credit` is shown separately and is never called an extra sale. */
+export function bundleQuote(b: Bundle, owns: (id: string) => boolean) {
+  const ids = bundleIds(b);
+  // Signature wakes are inseparable suit effects, derived by the review UI.
+  // Listing one as a product would invent a separately chargeable entitlement.
+  if (ids.some(id => builtInTrailSuit(id))) {
+    throw new Error(`Invalid bundle kit: ${b.id}; built-in wakes must not be listed as products`);
+  }
+  const retail = alaCarteTotal(ids, () => false);
+  const discount = b.kit?.discountDust;
+  if (bundleProductIds(b).length < 3 || !b.kit || b.kit.banner !== `shop/${b.id}.png` ||
+      !Number.isFinite(discount) || !Number.isInteger(discount) || discount < 0 || discount > retail) {
+    throw new Error(`Invalid bundle kit: ${b.id}`);
+  }
+  const offer = retail - discount;
+  const credit = retail - alaCarteTotal(ids, owns);
+  return {
+    retail, offer, credit, due: Math.max(0, offer - credit), savings: discount,
+    discountPercent: retail > 0 ? Math.round(discount / retail * 1000) / 10 : 0,
+  };
+}
+
 export function featurePrice(
-  b: (typeof BUNDLES)[number],
+  b: Bundle,
   owns: (id: string) => boolean,
 ) {
-  if (b.fixed || b.featuredAtSticker) return bundlePrice(b, owns);
-  const due = weightTotal(bundleIds(b), owns);
-  if (due <= 0) return 0;
-  return Math.max(10, Math.round((due * FEATURE_DISCOUNT) / 10) * 10);
+  return bundleQuote(b, owns).due;
 }
+
+// Fail immediately when an edited kit has an invalid banner or discount.
+// The standard build's catalog tests import this module before shipping.
+for (const bundle of BUNDLES) bundleQuote(bundle, () => false);
 
 // HOW MUCH OF THE CATALOGUE IS ON SALE TODAY. Deliberately small: the shelf
 // is a reason to come back, not an inventory. Trails are never sold singly

@@ -1037,10 +1037,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (!bn) return "missing";
     const ids = bundleIds(bn);
     if (ids.every((i) => ownsPremium(save, i))) return "owned";
-    // the price the SHELF is showing, not the sticker: a pack whose suit
-    // the pilot already owns - bought, keyed or earned on the road - costs
-    // less, and charging the sticker here would take dust the card never
-    // asked for
+    // Both entry points charge the displayed kit quote, with full retail
+    // ownership credit. Zero due can still complete an unowned kit; only
+    // the ownership check above means there is nothing left to grant.
     const due = bundlePrice(bn, (i) => ownsPremium(save, i));
     if (save.starDust < due) return "poor";
     save.starDust -= due;
@@ -1069,8 +1068,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     return "ok";
   }
 
-  // The featured pack charges the FEATURED price - half of what is left -
-  // not the sticker on the BUNDLES entry, which is what the shelf shows.
+  // The same kit quote as direct checkout. Credit is a price reduction,
+  // never a currency refund; an explicit zero-due completion still grants
+  // the missing contents and their set trails.
   function buyFeature(id: string) {
     const bn = BUNDLES.find((b) => b.id === id);
     if (!bn) return "missing";

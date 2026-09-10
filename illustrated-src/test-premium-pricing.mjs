@@ -34,9 +34,9 @@ assert.equal(trio.alwaysAvailable,true,'trio has a permanent offer alongside its
 assert.equal(C.featurePrice(trio,()=>false),2500,'trio retains its owner-set price');
 assert.equal(C.alaCarteTotal(ids,()=>false),3000,'three separately purchased suits cost 3,000');
 for(const id of ids){
-  const single=C.BUNDLES.find(b=>b.id==='bundle-'+id);assert(single,'existing singleton bundle id remains valid');
-  assert.deepEqual(single.items,[{kind:'suit',id}]);assert.equal(single.dust,1000);assert.equal(C.idDust(id),1000);
-  assert.equal(C.featurePrice(single,()=>false),1000);
+  assert(C.FIXED_SHOP_SUIT_IDS.includes(id),id+' retains its permanent individual shelf slot');
+  assert(C.isIap(id),id+' remains purchasable without a singleton bundle');assert.equal(C.idDust(id),1000);
+  assert(!C.BUNDLES.some(b=>b.items.length===1&&b.items[0].id===id),'individual pilots are not advertised as bundles');
 }
 const reset=()=>{Object.assign(e.save,structuredClone(baseline));e.open('hangar');e.open('shop');app.querySelector('.ac-cartclear')?.click();};
 const ownsAll=save=>ids.every(id=>S.suitRevealed(save,id)&&S.trailUnlocked(save,H.HIGH_ORBIT_PROFILES[id].trail));
@@ -49,7 +49,7 @@ try{
   let day=days[0];Date.now=()=>day*86400000+3600000;
   for(day of days){
     reset();
-    assert(trioCard()?.textContent.includes(trio.name),'trio appears every sampled day');
+    assert.equal(trioCard()?.querySelector('.ac-modname')?.textContent,'Premium Trio','compact trio offer appears every sampled day');
     assert(trioCard()?.querySelector('.ac-modprice')?.textContent.includes('2,500'),'permanent card advertises 2,500');
     assert.equal(trioCard().previousElementSibling?.textContent,'PREMIUM PILOT BUNDLE');
     const daily=[...app.querySelectorAll('.ac-featurecard')].filter(node=>node.dataset.bundleId!==trio.id);
@@ -82,7 +82,7 @@ try{
 
   // Ownership credit is consistent across direct and featured transactions.
   for(let mask=0;mask<8;mask++){
-    const owned=ids.filter((id,i)=>mask&(1<<i)),expected=[2500,1670,830,0][owned.length];
+    const owned=ids.filter((id,i)=>mask&(1<<i)),expected=[2500,1500,500,0][owned.length];
     for(const path of ['buyBundle','buyFeature']){
       day=days[mask%days.length];reset();e.save.purchased.push(...owned);e.open('shop');const has=id=>owned.includes(id);
       assert.equal(C.bundlePrice(trio,has),expected);assert.equal(C.featurePrice(trio,has),expected);
@@ -95,8 +95,8 @@ try{
       assert.equal(e[path](trio.id),'owned');assert.equal(e.save.starDust,0,'repeat purchase cannot charge again');
     }
   }
-  // Existing singleton identifiers still grant precisely their original suit.
-  for(const id of ids){reset();e.save.starDust=1000;assert.equal(e.buyBundle('bundle-'+id),'ok');assert.equal(e.save.starDust,0);assert(S.suitRevealed(e.save,id));}
+  // The original individual product identifiers still grant their suit.
+  for(const id of ids){reset();e.save.starDust=1000;assert.equal(e.buyShopItem(id),'ok');assert.equal(e.save.starDust,0);assert(S.suitRevealed(e.save,id));}
 }finally{Date.now=clock;}
 console.log(`PASS premium pricing ${mode}: daily 1,000 singles and permanent 2,500 trio, independent daily feature, date rollover, actual cart/pack checkouts, all ownership subsets, included wakes, reload and repeat-purchase protection.`);
 process.exit(0);

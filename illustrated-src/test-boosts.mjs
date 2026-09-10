@@ -135,13 +135,19 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.
     reach(s, magnetar.stars); settleStarRewards(s);
     ok(s.rewardSubs[Prog2.rewardId(magnetar)]?.kind === "acorns", "and its rung pays acorns, not dust");
   }
-  // earned on the road: owned, nothing paid, and gone from the shop
+  // Earned on the road: the single is owned, and its group credits it fully.
   {
     const s = defaultSave();
     reach(s, magnetar.stars); settleStarRewards(s);
     ok(ownsPremium(s, "magnetar") && !s.rewardSubs[Prog2.rewardId(magnetar)], "a road-earned pal is owned and its rung paid no substitute");
-    const shelf = C.shopBundles(Date.now(), (i) => ownsPremium(s, i));
-    ok(!shelf.some((b) => b.id === "bundle-magnetar"), "the Magnetar pack leaves the shelf once the road handed it over");
+    const group = C.BUNDLES.find(b => b.id === "bundle-cosmic-companions");
+    ok(group, "Magnetar belongs to the actual Cosmic Companions group");
+    if (group) {
+      const quote = C.bundleQuote(group, id => ownsPremium(s, id));
+      ok(quote.offer === 200 && quote.credit === 90 && quote.due === 110,
+        "the earned Magnetar credits its full 90 retail against the 200 companion offer");
+      ok(!C.bundleIds(group).every(id => ownsPremium(s, id)), "the other companions remain available to buy in the group");
+    }
     ok(!C.IAP_ITEMS.some((i) => i === "magnetar" && !ownsPremium(s, i)), "and the id reads as owned for the single shelf");
   }
   // the substitute is flat, whatever the rung and whichever way the item arrived

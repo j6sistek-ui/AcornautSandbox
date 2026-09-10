@@ -1,0 +1,181 @@
+{
+  "mode": "built-in image generation",
+  "scope": "True group bundle banners only; individual draft banners excluded",
+  "jobs": [
+    {
+      "id": "bundle-aurora",
+      "name": "Aurora Pack",
+      "items": [
+        {
+          "kind": "suit",
+          "id": "cryostar"
+        },
+        {
+          "kind": "suit",
+          "id": "verdant"
+        },
+        {
+          "kind": "suit",
+          "id": "eclipse"
+        },
+        {
+          "kind": "helm",
+          "id": "cryostar"
+        },
+        {
+          "kind": "helm",
+          "id": "verdant"
+        },
+        {
+          "kind": "helm",
+          "id": "eclipse"
+        },
+        {
+          "kind": "trail",
+          "id": "celestialtide"
+        },
+        {
+          "kind": "trail",
+          "id": "verdantflourish"
+        },
+        {
+          "kind": "trail",
+          "id": "eclipseglyph"
+        },
+        {
+          "kind": "pal",
+          "id": "prismwing"
+        }
+      ],
+      "refs": [
+        "docs/art/suits/cryostar.png",
+        "docs/art/suits/verdant.png",
+        "docs/art/suits/eclipse.png",
+        "docs/art/helms/cryostar.png",
+        "docs/art/helms/verdant.png",
+        "docs/art/helms/eclipse.png",
+        "docs/art/solo/prismwing.png"
+      ],
+      "prompt": "Use case: ads-marketing. Create one finished premium mobile-game BUNDLE BANNER, wide landscape exactly 2:1 aspect ratio, suitable for 1024x512. Reference images identify the EXACT products included; preserve their species, faces, materials, color patterns and helmets. This is marketing art for a bundle, not a redesigned individual game asset. THREE distinct orange squirrel pilots in a close group, left Cryostar icy white/blue crystal suit and icy streaked orange tail, center Verdant emerald-and-gold botanical suit and green-lit orange tail, right Eclipse deep-purple/gold star suit and magenta-lit orange tail. Each wears its corresponding matching transparent dome helmet shown in refs4,5,6; faces remain visible. Include ONE small iridescent Prismwing hummingbird from ref7 near lower edge. Exactly three squirrels and one bird, none duplicated.\nComposition: close, confident product-group portrait filling 80-85% of width/height, generous safe margins for complete heads/ears and major tails, compact animal proportions. For solo products show a large central hero with graceful asymmetric light and motion. For multi-pilot groups arrange all equally important faces across the width and let lower bodies crop at bottom. Premium polished stylized 3D/illustrated finish, exquisite materials and crisp silhouettes readable at 340x170. Background: midnight indigo/violet cosmic studio with restrained cool glacier blue and emerald aurora, soft sparse stars and luminous fine arcs, rich contrast. Consistent elegant premium cosmic Shop family. No text, letters, price, numbers, logos, discount labels, badges, buttons, UI, borders, ground shadows or platforms. No extra characters or accessories beyond the specified contents. Do not copy transparent checkerboards or black source backgrounds. Keep each included product recognizable and faithful; prioritize identity over decorative effects."
+    },
+    {
+      "id": "bundle-regalia",
+      "name": "Regalia Pack",
+      "items": [
+        {
+          "kind": "suit",
+          "id": "gemmie"
+        },
+        {
+          "kind": "suit",
+          "id": "sammie"
+        },
+        {
+          "kind": "suit",
+          "id": "seraph"
+        },
+        {
+          "kind": "suit",
+          "id": "leviathan"
+        },
+        {
+          "kind": "helm",
+          "id": "gemmie"
+        },
+        {
+          "kind": "helm",
+          "id": "sammie"
+        },
+        {
+          "kind": "helm",
+          "id": "seraph"
+        },
+        {
+          "kind": "helm",
+          "id": "leviathan"
+        },
+        {
+          "kind": "trail",
+          "id": "opalfeather"
+        },
+        {
+          "kind": "trail",
+          "id": "clockwork"
+        },
+        {
+          "kind": "trail",
+          "id": "phoenixplume"
+        },
+        {
+          "kind": "pal",
+          "id": "clockling"
+        }
+      ],
+      "refs": [
+        "docs/art/suits/gemmie.png",
+        "docs/art/suits/sammie.png",
+        "docs/art/suits/seraph.png",
+        "docs/art/suits/leviathan.png",
+        "docs/art/helms/gemmie.png",
+        "docs/art/helms/sammie.png",
+        "docs/art/helms/seraph.png",
+        "docs/art/helms/leviathan.png",
+        "docs/art/solo/clockling.png"
+      ],
+      "prompt": "Use case: ads-marketing. Create one finished premium mobile-game BUNDLE BANNER, wide landscape exactly 2:1 aspect ratio, suitable for 1024x512. Reference images identify the EXACT products included; preserve their species, faces, materials, color patterns and helmets. This is marketing art for a bundle, not a redesigned individual game asset. FOUR distinct compact animal pilots in a group: Gemmie orange squirrel in pearlescent faceted armor and prism tail; Sammie orange squirrel in red/black/gold suit; Seraph orange squirrel in ivory/gold angelic armor with small wings; Leviathan teal aquatic squirrel-like pilot with fish-fin tail and teal scales. Wear corresponding helmet refs5-8 (Gemmie clear pearl dome, Sammie pale glass/red rim, Seraph clear cream dome with halo, Leviathan CLOSED teal opaque diving helmet). ONE small ornate gold/blue Clockling turtle companion ref9 in front. Exactly four distinct pilots and one turtle; all heads visible.\nComposition: close, confident product-group portrait filling 80-85% of width/height, generous safe margins for complete heads/ears and major tails, compact animal proportions. For solo products show a large central hero with graceful asymmetric light and motion. For multi-pilot groups arrange all equally important faces across the width and let lower bodies crop at bottom. Premium polished stylized 3D/illustrated finish, exquisite materials and crisp silhouettes readable at 340x170. Background: midnight indigo/violet cosmic studio with restrained pearl and rose-gold radiance, soft sparse stars and luminous fine arcs, rich contrast. Consistent elegant premium cosmic Shop family. No text, letters, price, numbers, logos, discount labels, badges, buttons, UI, borders, ground shadows or platforms. No extra characters or accessories beyond the specified contents. Do not copy transparent checkerboards or black source backgrounds. Keep each included product recognizable and faithful; prioritize identity over decorative effects."
+    },
+    {
+      "id": "bundle-circuit",
+      "name": "Circuit Pack",
+      "items": [
+        {
+          "kind": "suit",
+          "id": "cyber"
+        },
+        {
+          "kind": "suit",
+          "id": "volt"
+        },
+        {
+          "kind": "suit",
+          "id": "robo"
+        },
+        {
+          "kind": "pal",
+          "id": "nightglider"
+        }
+      ],
+      "refs": [
+        "docs/art/suits/cyber.png",
+        "docs/art/suits/volt.png",
+        "docs/art/suits/robo.png",
+        "docs/art/solo/nightglider.png"
+      ],
+      "prompt": "Use case: ads-marketing. Create one finished premium mobile-game BUNDLE BANNER, wide landscape exactly 2:1 aspect ratio, suitable for 1024x512. Reference images identify the EXACT products included; preserve their species, faces, materials, color patterns and helmets. This is marketing art for a bundle, not a redesigned individual game asset. THREE distinct exact squirrels: Cyber luminous violet/cyan robotic suit with two yellow-tipped antennae and neon violet tail; Volt olive-gold armored squirrel with lime-green electric tail, green face/eye in its gold helmet; Robo fully robotic silver squirrel with blue eyes and silver fluffy tail. Keep each authored head exactly as references. Include ONE small violet/blue crescent-wing Nightglider ray companion on lower edge. No generic new suits.\nComposition: close, confident product-group portrait filling 80-85% of width/height, generous safe margins for complete heads/ears and major tails, compact animal proportions. For solo products show a large central hero with graceful asymmetric light and motion. For multi-pilot groups arrange all equally important faces across the width and let lower bodies crop at bottom. Premium polished stylized 3D/illustrated finish, exquisite materials and crisp silhouettes readable at 340x170. Background: midnight indigo/violet cosmic studio with restrained electric cyan and violet, soft sparse stars and luminous fine arcs, rich contrast. Consistent elegant premium cosmic Shop family. No text, letters, price, numbers, logos, discount labels, badges, buttons, UI, borders, ground shadows or platforms. No extra characters or accessories beyond the specified contents. Do not copy transparent checkerboards or black source backgrounds. Keep each included product recognizable and faithful; prioritize identity over decorative effects."
+    },
+    {
+      "id": "bundle-critters",
+      "name": "Critter Pack",
+      "items": [
+        {
+          "kind": "suit",
+          "id": "raccoon"
+        },
+        {
+          "kind": "suit",
+          "id": "ferret"
+        },
+        {
+          "kind": "suit",
+          "id": "hedgehog"
+        }
+      ],
+      "refs": [
+        "docs/art/suits/raccoon.png",
+        "docs/art/suits/ferret.png",
+        "docs/art/suits/hedgehog.png"
+      ],
+      "prompt": "Use case: ads-marketing. Create one finished premium mobile-game BUNDLE BANNER, wide landscape exactly 2:1 aspect ratio, suitable for 1024x512. Reference images identify the EXACT products included; preserve their species, faces, materials, color patterns and helmets. This is marketing art for a bundle, not a redesigned individual game asset. THREE exact woodland space pilots side by side: gray-black masked RACCOON with striped tail and pale steel/cyan suit; cream/brown FERRET with long compact body and mustard/gold suit; brown HEDGEHOG with short spines and dark forest-green/brass suit. No cats, tigers, squirrels or redesigned faces. All three different species clearly readable.\nComposition: close, confident product-group portrait filling 80-85% of width/height, generous safe margins for complete heads/ears and major tails, compact animal proportions. For solo products show a large central hero with graceful asymmetric light and motion. For multi-pilot groups arrange all equally important faces across the width and let lower bodies crop at bottom. Premium polished stylized 3D/illustrated finish, exquisite materials and crisp silhouettes readable at 340x170. Background: midnight indigo/violet cosmic studio with restrained warm amber and soft teal starlight, soft sparse stars and luminous fine arcs, rich contrast. Consistent elegant premium cosmic Shop family. No text, letters, price, numbers, logos, discount labels, badges, buttons, UI, borders, ground shadows or platforms. No extra characters or accessories beyond the specified contents. Do not copy transparent checkerboards or black source backgrounds. Keep each included product recognizable and faithful; prioritize identity over decorative effects."
+    }
+  ]
+}

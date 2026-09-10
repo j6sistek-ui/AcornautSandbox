@@ -21,6 +21,9 @@ import {
   isIap,
   TRAILS,
   BUNDLES,
+  FIXED_SHOP_SUIT_IDS,
+  bundleQuote,
+  idDust,
   IS_BETA,
   GUIDE_SUIT,
   GUIDE_HELM,
@@ -35,6 +38,16 @@ import {
   type BoostId,
 } from "./catalog";
 import { platform } from "./platform";
+
+// Pinned to the shipped pre-regrouping catalog (9 Sep 2026). These are
+// historical grant amounts, not the price of the new bundle layout.
+export const BETA_DUST_GRANT_FLOOR = 12360;
+export const BETA_LEGACY_DUST_GRANT_TOTAL = 7510;
+export function betaDustGrantTarget(): number {
+  const kits = BUNDLES.reduce((total, bundle) => total + bundleQuote(bundle, () => false).offer, 0);
+  const singles = FIXED_SHOP_SUIT_IDS.reduce((total, id) => total + idDust(id), 0);
+  return Math.max(BETA_DUST_GRANT_FLOOR, kits + singles);
+}
 
 export type SaveData = {
   campaignProgress?: CampaignProgress;
@@ -86,9 +99,9 @@ export type SaveData = {
    *  is why it is not defaulted to the fallback: a name the player picked
    *  and a name we picked for them are different facts. */
   pilotName: string;
-  /** beta only: the one-time "here is enough dust for every pack" grant */
+  /** beta only: the one-time funding grant for testing Shop purchases */
   betaDustGrant: boolean;
-  /** the pack total the beta grant was last brought up to */
+  /** the funding total the beta grant was last brought up to */
   betaDustGrantTotal?: number;
   // A save written before the wormhole was settled still carries `tune` and
   // `tunnelControl`. They are simply not read any more - the dials are folded
@@ -480,24 +493,23 @@ export function loadSave(): SaveData {
     s.xp = Math.round(4 * (s.highScore + s.deepBest + s.lostBest) + s.acorns + 200 * owned);
   }
   if (BETA_UNLOCK_GATES && s.acorns < 10000) s.acorns = 10000;
-  // BETA STARTING DUST: exactly the price of every pack, summed from
-  // BUNDLES rather than written as a number, so re-pricing a pack can never
-  // leave a tester unable to afford the set. Granted ONCE - a tester who
-  // spends it is meant to stay spent, or the ledger is untestable too.
+  // Regrouping singles and duos must not reduce an existing beta grant or
+  // change the historical amount used for a save without its grant total.
+  // Future kit/single prices may raise funding; the beta's existing floor
+  // stays intact. Granted once: a tester who spends it stays spent.
   if (IS_BETA) {
-    const total = BUNDLES.reduce((n, b) => n + b.dust, 0);   // every pack, at sticker price
+    const total = betaDustGrantTarget();
     if (!s.betaDustGrant) {
       s.starDust += total;
       s.betaDustGrant = true;
       s.betaDustGrantTotal = total;
     } else {
-      // A PACK ADDED LATER TOPS THE GRANT UP (7 Sep 2026: Arcflash's 1,850
-      // arrived after testers had their grant, and none of them could buy
-      // it). A save that never recorded its grant got the packs that
-      // existed before the fixed-price ones, so that is the baseline.
+      // A later funding increase tops up only the difference. A save that
+      // never recorded its total received the historical non-fixed packs;
+      // the current bundle grouping cannot reconstruct that old amount.
       const had = typeof s.betaDustGrantTotal === "number" && isFinite(s.betaDustGrantTotal)
         ? s.betaDustGrantTotal
-        : BUNDLES.filter((b) => !b.fixed).reduce((n, b) => n + b.dust, 0);
+        : BETA_LEGACY_DUST_GRANT_TOTAL;
       if (total > had) s.starDust += total - had;
       s.betaDustGrantTotal = Math.max(had, total);
     }
@@ -875,4 +887,3 @@ export function suitPitchFor(save: SaveData | null | undefined, id: string): num
   const v = save?.suitPitch?.[id];
   return typeof v === "number" && isFinite(v) ? v : suitPitchDefault(id);
 }
-

@@ -1,0 +1,162 @@
+[
+  {
+    "id": "bundle-premium-trio",
+    "source": "art-src/premium-marketing/trio.png",
+    "sourceSize": [
+      1774,
+      887
+    ],
+    "sourceSha256": "f508a91a0837a95eacd14b7955c957e2f968d816e719aa26495f7e9b656fa53c",
+    "output": "docs/art/shop/bundle-premium-trio.png",
+    "outputSize": [
+      1024,
+      512
+    ],
+    "outputSha256": "cde5bcba25625de611533adc7d1aa16cab6248070792e7c11312248c7a83c355",
+    "bytes": 1053190
+  },
+  {
+    "id": "bundle-aurora",
+    "source": "art-src/premium-marketing/bundles/bundle-aurora.png",
+    "sourceSize": [
+      1774,
+      887
+    ],
+    "sourceSha256": "e5541c07966d8de49dd4b80714303093a6a5df0ff6f8c7435cc8201cdfcba594",
+    "output": "docs/art/shop/bundle-aurora.png",
+    "outputSize": [
+      1024,
+      512
+    ],
+    "outputSha256": "8aaa6e5789d4e5c71be640fa213f3bc6c3d401060ec43213987651037ad312f5",
+    "bytes": 1230882
+  },
+  {
+    "id": "bundle-regalia",
+    "source": "art-src/premium-marketing/bundles/bundle-regalia.png",
+    "sourceSize": [
+      1774,
+      887
+    ],
+    "sourceSha256": "57edf9e5d8c1b65fe3b91870bbd1ce5982e892b7f7bd0c2d8179f919d7f08cfe",
+    "output": "docs/art/shop/bundle-regalia.png",
+    "outputSize": [
+      1024,
+      512
+    ],
+    "outputSha256": "1dcf76c2ccb23463ea400774cece499d02f7f79951014cb985f6991ef588fd54",
+    "bytes": 1191195
+  },
+  {
+    "id": "bundle-circuit",
+    "source": "art-src/premium-marketing/bundles/bundle-circuit.png",
+    "sourceSize": [
+      1774,
+      887
+    ],
+    "sourceSha256": "61dbbced0076945480f8e6329d2a2b47c577f61d98735886193c88491e3db21f",
+    "output": "docs/art/shop/bundle-circuit.png",
+    "outputSize": [
+      1024,
+      512
+    ],
+    "outputSha256": "de676994650f7a159f515b2df7642ce7971c10eede6036ab5bcca297d2e3f303",
+    "bytes": 1078988
+  },
+  {
+    "id": "bundle-critters",
+    "source": "art-src/premium-marketing/bundles/bundle-critters.png",
+    "sourceSize": [
+      1774,
+      887
+    ],
+    "sourceSha256": "283d900ae7e9c8c657ac4dcd3403e26a2916b4dba0c1211e17b0002e976301eb",
+    "output": "docs/art/shop/bundle-critters.png",
+    "outputSize": [
+      1024,
+      512
+    ],
+    "outputSha256": "79fb66675ddfefc6ec898f7cba98a0f3e35f5e9cceebf870409be90e0a056b54",
+    "bytes": 1047507
+  },
+  {
+    "id": "bundle-cosmic-companions",
+    "source": "art-src/premium-marketing/bundles/bundle-cosmic-companions.png",
+    "sourceSize": [
+      1774,
+      887
+    ],
+    "sourceSha256": "da09763c55f2c9f0eb289ab331b158541a3470853b1c0afe1b69b7e88205b512",
+    "output": "docs/art/shop/bundle-cosmic-companions.png",
+    "outputSize": [
+      1024,
+      512
+    ],
+    "outputSha256": "e03f52e590aa32b2ab98b499e238cfa6e13df31301e2a7ea159ac38e0769971a",
+    "bytes": 1137027
+  },
+  {
+    "id": "bundle-starlight-companions",
+    "source": "art-src/premium-marketing/bundles/bundle-starlight-companions.png",
+    "sourceSize": [
+      1774,
+      887
+    ],
+    "sourceSha256": "e19cefa90862f317f00e1d04bf411e6a21d8b9f2405aa066760ad5267c4ccd5f",
+    "output": "docs/art/shop/bundle-starlight-companions.png",
+    "outputSize": [
+      1024,
+      512
+    ],
+    "outputSha256": "8ad1a82bdefb3eb3aa5a919ab9e3867cd9dd46319bdde02973187f7252508685",
+    "bytes": 1066152
+  },
+  {
+    "id": "bundle-visor-collection",
+    "source": "art-src/premium-marketing/bundles/bundle-visor-collection.png",
+    "sourceSize": [
+      1774,
+      887
+    ],
+    "sourceSha256": "ececcd732a4c2fbed9a61778c445cd233daa8340d63da3c3a29b5c89fbc0ee7b",
+    "output": "docs/art/shop/bundle-visor-collection.png",
+    "outputSize": [
+      1024,
+      512
+    ],
+    "outputSha256": "8301dc05bce6b374895f2e4111ad820f160d63c03b1387d2e92b6fe849946a03",
+    "bytes": 1026678
+  },
+  {
+    "id": "stardust-emblem",
+    "source": "art-src/premium-marketing/stardust-emblem.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceSha256": "9885e3f1c374663bee0ea0901e8aa47b721a4332b7a94454f09f8efc6d9659a8",
+    "output": "docs/art/shop/stardust-emblem.png",
+    "outputSize": [
+      256,
+      256
+    ],
+    "outputSha256": "e7778de68bd6c5d7d64cd8147c12ece158b117290297c8498cffe5ddc4d568b9",
+    "bytes": 133798
+  },
+  {
+    "id": "shop-nebula",
+    "source": "art-src/premium-marketing/shop-nebula.png",
+    "sourceSize": [
+      1536,
+      1024
+    ],
+    "sourceSha256": "5a2c9e4d30f560711a4debed539e5dfb7f030b2b51280a75e93e713440158a7b",
+    "output": "docs/art/shop/shop-nebula.png",
+    "outputSize": [
+      1200,
+      800
+    ],
+    "outputSha256": "449f290f1d5bfcf1088960bc657f293ce01ef1de3039a8bda840e7b77215ceb6",
+    "bytes": 1085362
+  }
+]
