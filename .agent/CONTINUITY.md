@@ -22,3 +22,6 @@
 [OUTCOMES]
 - 2026-09-09T23:36Z [TOOL] Shop implementation verified at8497029/build257 with current main95aefc52 integrated: full56pass/0fail/0skip,32artgroups,typecheck,bridge,lab/Studio and mobile/beta browser receipts. All1606baseline art/35ownershipIDs preserved;8real bundles with full-credit pricing and actual individual previews. Source frozen; final evidence/Shop PR publication follows. No merge authorized.
 - 2026-09-09T22:25Z [TOOL] PR252 merged; Shop refresh remains in progress and unverified. No Shop PR or merge yet.
+
+[OUTCOMES]
+- 2026-09-10T05:55Z [CODE] Issue #265 candidate adds 8px Shop heading clearance and10px Stardust card separation in two CSS rules; stamp264. Production/beta browser geometry at390/320 passes. Docker builds/typecheck/32 art groups/bridge pass; full harness 55/56 with one known unchanged-base High Orbit raster failure and no skips. Candidate remains unpublished until shipping gate is resolved; evidence in illustrated-src/design/shop-spacing.
