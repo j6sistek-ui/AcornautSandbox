@@ -4,6 +4,7 @@ import { spillAppearance } from "./spill-appearance";
 import { SUITS } from "./catalog";
 import { paintShipPreview, type ShipPick } from "./draw";
 import { writeSave } from "./save";
+import { SPILL_CONTROL_COLORS } from "./spill-control-art";
 import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES,
   spillEngineColor, spillContractOffers, type SpillUtility, type SpillSpecialty } from "./spill-content";
 import { spillBuildFromState } from "./spill-presentation";
@@ -177,20 +178,30 @@ export function drawSpillGuideSheet(engine: Engine, onClose: () => void, closeLa
 
 /** TAP TO FLY, in three cards. The instructions sheet, Settings & Help and
  *  the briefing replay all draw these, so the hand is described once. */
+// Each card names the PAD it describes and wears that pad's colour. All
+// three were the same slab, so the panel teaching the controls looked
+// nothing like the controls (owner, 10 Sep 2026: "the debris field buttons
+// in help are too generic ... match same colors as buttons used in debris
+// field for tap, dive, thrust"). The tints are READ from
+// SPILL_CONTROL_COLORS, the table spillControlArt paints the real pads
+// with, so repainting a pad repaints its card.
 const FLIGHT_CONTROLS = [
-  ["TAP", "Fly", "Tap the field · Thrust pad · Space"],
-  ["SWIPE DOWN", "Dive", "Drag down · ↓ key"],
-  ["LUNGE", "Dash forward", "Swipe right · → key"],
+  ["TAP", "Fly", "Tap · Space", "thrust"],
+  ["SWIPE DOWN", "Dive", "Swipe down · ↓", "dive"],
+  ["LUNGE", "Dash forward", "Swipe right · →", "lunge"],
 ] as const;
 function flightControlCards() {
   const controls = el("div", "ac-spillhelp-controls");
-  for (const [input, action, note] of FLIGHT_CONTROLS) {
-    const card = el("div");
+  for (const [input, action, note, pad] of FLIGHT_CONTROLS) {
+    const card = el("div", `ac-spillhelp-pad ac-spillhelp-${pad}`);
+    const { light, edge } = SPILL_CONTROL_COLORS[pad];
+    card.style.setProperty("--pad-light", light);
+    card.style.setProperty("--pad-edge", edge);
     card.append(el("b", "", input), el("span", "", action), el("small", "ac-sub", note)); controls.append(card);
   }
   return controls;
 }
-const harderKickNote = () => el("small", "ac-sub ac-spillhelp-extra", "Swipe up for a harder kick · W key");
+const harderKickNote = () => el("small", "ac-sub ac-spillhelp-extra", "Swipe up · harder kick · W");
 
 /** The same instructions in Settings & Help and the replayable briefing. */
 export function drawSpillFlightHelp() {

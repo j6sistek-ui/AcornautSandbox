@@ -29,9 +29,9 @@ assert.deepEqual([...app.querySelectorAll('.ac-helprow')].slice(0,3).map(r=>r.qu
 const TAP_CARDS=['TAP','SWIPE DOWN','LUNGE'],HOLD_WORDS=['HOLD','RELEASE','Throttle','throttle','hold to','Let go'];
 function cardsOf(root){return [...root.querySelectorAll('.ac-spillhelp-controls > div')].map(c=>c.querySelector('b').textContent);}
 const helpFlight=app.querySelector('.ac-spillflighthelp');assert(helpFlight);assert.deepEqual(cardsOf(helpFlight),TAP_CARDS);
-assert(helpFlight.textContent.includes('Thrust pad'));assert(helpFlight.textContent.includes('Drag down'));assert(helpFlight.textContent.includes('Swipe right'));
-assert(helpFlight.querySelector('small.ac-sub').textContent.includes('Thrust pad'));
-assert(helpFlight.textContent.includes('Swipe up for a harder kick · W key'));assert(helpFlight.textContent.includes('Depot every 5 waves · spend Acorn Coins · first upgrade free.'));
+assert(helpFlight.textContent.includes('Tap · Space'));assert(helpFlight.textContent.includes('Swipe down'));assert(helpFlight.textContent.includes('Swipe right'));
+assert(helpFlight.querySelector('small.ac-sub').textContent.includes('Space'));
+assert(helpFlight.textContent.includes('Swipe up · harder kick · W'));assert(helpFlight.textContent.includes('Depot every 5 waves · spend Acorn Coins · first upgrade free.'));
 for(const word of HOLD_WORDS) assert(!helpFlight.textContent.includes(word),`Help never says ${word} about the Debris Field`);
 const beforeHelp=JSON.stringify(engine.save);
 button('DEBRIS FIELD BRIEFING').click();assert(app.querySelector('.ac-spillhelpwrap'));
@@ -59,7 +59,7 @@ button('SHOW LAUNCH SHIP').click();assert.equal(ship('tier','plating-0').getAttr
 // ONE INSTRUCTIONS SHEET before an endless run: how to fly, the loop, the ship. Nothing to choose.
 engine.fly('spill');const setup=app.querySelector('.ac-spillsetup');assert(setup);assert(setup.querySelector('h2').textContent==='How to fly');assert(!app.textContent.includes('Your next ship'));
 assert.deepEqual(cardsOf(setup),TAP_CARDS,'the instructions sheet shows the three tap-to-fly cards');
-const setupNotes=[...setup.querySelectorAll('.ac-spillhelp-controls small.ac-sub')].map(n=>n.textContent);assert.deepEqual(setupNotes,['Tap the field · Thrust pad · Space','Drag down · ↓ key','Swipe right · → key']);
+const setupNotes=[...setup.querySelectorAll('.ac-spillhelp-controls small.ac-sub')].map(n=>n.textContent);assert.deepEqual(setupNotes,['Tap · Space','Swipe down · ↓','Swipe right · →']);
 for(const word of HOLD_WORDS) assert(!setup.textContent.includes(word),`the instructions sheet never says ${word}`);
 for(const line of ['Survive the waves','Collect Acorn Coins','Depot every 5 waves · upgrade your ship · first upgrade free']) assert(setup.textContent.includes(line),`the loop says ${line}`);
 assert(setup.querySelector('.ac-setup-loop .ac-workshop-coin'),'the coin sits where Acorn Coins are named');assert(setup.textContent.includes('aboard'));assert(setup.querySelector('.ac-launch-ship canvas'));
