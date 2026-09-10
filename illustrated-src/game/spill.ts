@@ -49,20 +49,31 @@ export const SPILL = {
   lungeSpeed: 320,
   lungeTime: 0.15,
   lungeCooldown: 0.55,
-  /** the hand. The field has its own gravity, gentler than flight's 1300,
-   *  and holding beats it by a fixed net acceleration: a quarter second of
-   *  hold is a nudge of a few pixels, a full second a climb. The first
-   *  hand (2200 net, 1300 down) reached its cap in a fifth of a second and
-   *  the owner could not hold a line with it. Both directions are capped.
-   *  A burst is an instant velocity past the caps, the way a tap and a
-   *  dive are in every other mode; the caps only stop the hand from
-   *  building past them, never a burst from carrying */
-  gravity: 600,
-  holdAccel: 720,
-  riseCap: 330,
-  fallCap: 390,
-  burstUp: 480,
-  burstDown: 480,
+  /** THE HAND: TAP TO FLY (owner, 10 Sep 2026: "tap to fly instead of
+   *  hold to rise"). A tap is an instant kick skyward and gravity has the
+   *  ship the rest of the time - the same contract as normal flight and
+   *  the Wormhole, so a thumb trained on one mode is trained on all three.
+   *  Hyper Run alone keeps hold-to-rise. The numbers sit between those two
+   *  hands: flight is 450 against 1300 (a 78px hop, apex in 0.35s), the
+   *  corridor 315 against 975 (51px, 0.32s); the field, denser and flown in
+   *  a ship twice the pilot's length, takes 400 against 1000 (80px, 0.40s)
+   *  so a hop clears a spinner and two taps clear a hulk. CHOSEN BY SWEEP:
+   *  seven candidate hands from 900/360 to 1300/450 were flown by the
+   *  test's tapping bot over twelve seeds; this one cleared wave 3 on all
+   *  twelve and wave 5 on eight, flight's own 1300/450 cleared wave 3 on
+   *  six, and the floatier 900/360 bought two more wave-5 clears at the
+   *  cost of no longer feeling like the other modes. Taps never stack: a
+   *  second tap mid-hop resets the climb to the kick, it does not add to
+   *  it. The fall is capped so a descent stays readable; a dive is an
+   *  instant velocity past that cap that only decays back to it, the way
+   *  a swipe down carries in every other mode. The hold model (600 down,
+   *  720 net hold, climb capped at 330) was flown against this and retired
+   *  with the owner's note that the field should feel like the other modes */
+  gravity: 1000,
+  tapVy: 400,
+  fallCap: 420,
+  burstUp: 520,
+  burstDown: 520,
   /** how fast a burst's speed past the cap bleeds back to the cap */
   burstDecay: 600,
   /** A brush is free. Sustained contact goes through ordinary protection
@@ -128,15 +139,15 @@ export const SPILL_MOD_INFO: Record<SpillMod, { name: string; teach: string; sho
   },
   lowg: {
     name: "LOW-G", short: "low gravity",
-    teach: "LOW-G: lighter · hold less · swipe down to drop",
+    teach: "LOW-G: lighter · tap less · swipe down to drop",
   },
   heavy: {
     name: "HEAVY", short: "heavy gravity",
-    teach: "HEAVY: heavier · hold longer · swipe up to recover",
+    teach: "HEAVY: heavier · tap more · swipe up to recover",
   },
   cross: {
     name: "CROSSWIND", short: "crosswind",
-    teach: "CROSSWIND: pushed to the wall · lunge to hold",
+    teach: "CROSSWIND: pushed to the wall · lunge to hold your lane",
   },
   blackout: {
     name: "BLACKOUT", short: "blackout",
@@ -152,7 +163,7 @@ export const SPILL_MOD_INFO: Record<SpillMod, { name: string; teach: string; sho
   },
 };
 
-export const SPILL_CONTROL_HINT = "CONTROLS: hold ▲ rise · release ▼ fall · swipe ▶ lunge";
+export const SPILL_CONTROL_HINT = "CONTROLS: tap ▲ fly · swipe ▼ dive · swipe ▶ lunge";
 
 // ------------------------------------------------------------ the ladder
 
@@ -363,11 +374,10 @@ export type SpillState = {
   /** a mission: the wave that must be cleared. 0 for the endless mode */
   target: number;
   pilot: { x: number; y: number; vx: number; vy: number; rot: number };
-  /** the hand is on the thrust */
-  held: boolean;
-  /** the finger is down, whatever the phase. What GO reads */
-  pressed: boolean;
-  /** the count is being flown by hand: a press took the stick early */
+  /** the tap's flash, for the plume: seconds left on the kick's glow.
+   *  Optional so a checkpoint written before tap-to-fly still restores */
+  thrustT?: number;
+  /** the count is being flown by hand: a tap took the stick early */
   manual: boolean;
   /** inputs made while the control hint showed */
   hintInputs: number;
@@ -491,8 +501,6 @@ export function createSpill(W: number, H: number, seed: number, target = 0, hint
     t: 0,
     target: Math.max(0, Math.floor(target)),
     pilot: { x: W * SPILL.homeX, y: H * 0.45, vx: 0, vy: 0, rot: 0 },
-    held: false,
-    pressed: false,
     manual: false,
     hintInputs: 0,
     burstT: 0,
@@ -853,35 +861,31 @@ function noteInput(s: SpillState) {
   if (s.hintInputs >= SPILL.hintInputs) s.hintT = 1;
 }
 
-/** the hand goes on or off the thrust. A press on the ready card launches;
- *  a press during the count takes the stick from the autopilot early, so
- *  the ship is never dropped on the GO into a hand that was waiting.
- *  Returns whether the press did anything, so the sim can sound it */
-export function spillHold(s: SpillState, held: boolean) {
-  if (held && s.phase === "ready") {
-    s.pressed = true;
+/** THE TAP. On the ready card it launches; during the count it takes the
+ *  stick from the autopilot early and kicks, so the ship is never dropped
+ *  on the GO into a hand that was waiting; in flight it is the kick
+ *  skyward. Taps never stack - a tap mid-hop resets the climb to the kick.
+ *  Returns whether the tap did anything, so the sim can sound it */
+export function spillTap(s: SpillState) {
+  if (s.phase === "ready") {
     if (s.openingEnabled !== false) { s.welcome = true; s.freeUpgrade = true; s.wave = 0; beginDocking(s); }
     else beginCountdown(s, 1);
     return true;
   }
-  const wasPressed = s.pressed;
-  s.pressed = held;
-  if (held && !wasPressed && s.phase === "countdown" && !s.manual) {
+  if (s.phase === "countdown" && !s.manual) {
     s.manual = true;
     s.pilot.vy = 0;
   }
-  const was = s.held;
-  s.held = held && handOn(s);
-  if (s.held && !was) {
-    noteInput(s);
-    burst(s, s.pilot.x - 16, s.pilot.y + 4, 3, "thrust", 0.4);
-    cue(s, "press");
-    return true;
-  }
-  return false;
+  if (!handOn(s)) return false;
+  noteInput(s);
+  s.pilot.vy = Math.min(s.pilot.vy, -SPILL.tapVy);
+  s.thrustT = 0.22;
+  burst(s, s.pilot.x - 16, s.pilot.y + 4, 4, "thrust", 0.45);
+  cue(s, "press");
+  return true;
 }
 
-/** a swipe: up is a kick skyward, down is the dive. Instant, like a tap */
+/** a swipe: up is a harder kick than the tap, down is the dive. Instant */
 export function spillBurst(s: SpillState, dir: -1 | 1) {
   if (!handOn(s)) return false;
   noteInput(s);
@@ -900,7 +904,7 @@ export function spillBurst(s: SpillState, dir: -1 | 1) {
  * Forward only — a backward lunge was a free retreat into a corner.
  */
 export function spillLunge(s: SpillState) {
-  if (s.phase === "ready") return spillHold(s, true);
+  if (s.phase === "ready") return spillTap(s);
   if (!handOn(s) || s.lungeCharges <= 0) return false;
   noteInput(s);
   s.lunge = SPILL.lungeTime;
@@ -961,10 +965,11 @@ export function spillPulse(s: SpillState) {
 function beginWave(s: SpillState) {
   s.phase = "wave";
   s.phaseT = 0;
-  // a finger already down is a hand already on the thrust: the GO hands
-  // over a ship that is rising, never one that drops into a waiting thumb
+  // the GO hands over a level ship at rest: gravity starts from zero, so
+  // the first tap can land on a readable fall rather than a drop already
+  // under way. A hand that took the stick during the count keeps whatever
+  // climb it had
   s.manual = false;
-  s.held = s.pressed;
   s.waveT = 0;
   s.modRamp = 0;
   s.surgeT = 0;
@@ -989,7 +994,6 @@ function beginCountdown(s: SpillState, n: number) {
   s.modRamp = 0;
   s.phase = "countdown";
   s.phaseT = 0;
-  s.held = false;
   s.manual = false;
   s.lunge = 0;
   s.knock = 0;
@@ -1030,7 +1034,6 @@ function endWave(s: SpillState) {
   s.stipend += SPILL.clearOre;
   settleContract(s);
   if (s.wave === 20) s.expeditionDone = true;
-  s.held = false;
   cue(s, "clear");
   if (s.wave % SPILL_DEPOT_EVERY === 0) cue(s, "milestone");
   if (s.target && s.wave >= s.target) {
@@ -1055,7 +1058,6 @@ function beginDocking(s: SpillState) {
   s.phase = "docking";
   s.phaseT = 0;
   s.depotGag = undefined;
-  s.held = false;
   s.lunge = 0;
   s.knock = 0;
   s.pilot.vx = 0;
@@ -1256,7 +1258,6 @@ function lose(s: SpillState, cause: "STRUCK" | "GROUNDED") {
     s.respawnPhaseT = s.phaseT;
     s.phase = "respawn";
     s.phaseT = 0;
-    s.held = false;
     s.iframes = 0;
     s.floorT = 0;
     burst(s, s.pilot.x, s.pilot.y, 30, "hit", 1.5);
@@ -1267,7 +1268,6 @@ function lose(s: SpillState, cause: "STRUCK" | "GROUNDED") {
   s.phase = "over";
   s.phaseT = 0;
   s.deadFor = 0;
-  s.held = false;
   s.cause = cause;
   s.shake = 1;
   burst(s, s.pilot.x, s.pilot.y, 34, "hit", 1.5);
@@ -1276,17 +1276,16 @@ function lose(s: SpillState, cause: "STRUCK" | "GROUNDED") {
 
 // ----------------------------------------------------------------- step
 
-/** THE HAND. Held, the thrust beats gravity by a fixed net acceleration;
- *  released, gravity has the ship. Both are capped, but a burst that
- *  started past a cap keeps its momentum and only decays: the cap stops
- *  the hand from building speed, never a swipe from carrying. THRUSTERS
- *  never touch the hold - a steadier hand is not a faster one */
+/** THE HAND. Gravity has the ship between taps; a tap set the velocity
+ *  itself, so there is nothing to integrate upward. The fall is capped,
+ *  but a dive that started past the cap keeps its momentum and only
+ *  decays: the cap stops gravity from building speed, never a swipe from
+ *  carrying. THRUSTERS never touch the tap - a steadier hand is not a
+ *  faster one; they sharpen the swipes */
 function handVertical(s: SpillState, dt: number) {
   const g = gravityOf(s);
   const prev = s.pilot.vy;
-  if (s.held) s.pilot.vy -= (g + SPILL.holdAccel) * dt;
   s.pilot.vy += g * dt;
-  if (s.pilot.vy < -SPILL.riseCap) s.pilot.vy = Math.max(s.pilot.vy, Math.min(-SPILL.riseCap, prev + SPILL.burstDecay * dt));
   if (s.pilot.vy > SPILL.fallCap) s.pilot.vy = Math.min(s.pilot.vy, Math.max(SPILL.fallCap, prev - SPILL.burstDecay * dt));
   s.pilot.y += s.pilot.vy * dt;
   s.pilot.rot = Math.max(-0.5, Math.min(0.9, s.pilot.vy / 700)) + s.pilot.vx / 2600;
@@ -1329,6 +1328,7 @@ function stepSpillBody(s: SpillState, dt: number) {
   if (s.shieldFlash > 0) s.shieldFlash = Math.max(0, s.shieldFlash - dt * 2);
   if (s.shake > 0) s.shake = Math.max(0, s.shake - dt * 2.2);
   if (s.burstT > 0) s.burstT = Math.max(0, s.burstT - dt);
+  if (s.thrustT) s.thrustT = Math.max(0, s.thrustT - dt);
 
   if (s.phase === "ready") return;
 
@@ -1676,7 +1676,7 @@ export function spillCheckpoint(s: SpillState): SpillCheckpoint | null {
   const state: SpillState = JSON.parse(JSON.stringify(s));
   delete state.depotGag; delete state.depotGagReady;
   state.rocks = []; state.nuts = []; state.bursts = []; state.cues = [];
-  state.held = false; state.pressed = false; state.manual = false;
+  state.thrustT = 0; state.manual = false;
   state.pilot.vx = 0; state.pilot.vy = 0;
   state.depot!.arm = SPILL.depotArm;
   return { version: 1, state };

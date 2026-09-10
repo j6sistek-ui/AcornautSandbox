@@ -27,7 +27,7 @@ import {
   resizeSpill,
   spillBurst,
   spillCleared,
-  spillHold,
+  spillTap,
   stepSpill,
   type SpillCue,
   type SpillState,
@@ -3027,11 +3027,11 @@ export function flap(w: World, save: SaveData) {
     return "none";
   }
   if (w.ready) w.ready = false;
-  // THE SPILL flies its own ship, and its tap is the hand going ON the
-  // thrust: it stays on until spillRelease. A press its phase refuses - the
-  // countdown, the Depot, the respawn freeze - or a press while already
-  // held is not a tap, so nothing below counts it or animates it.
-  if (w.spill && !spillHold(w.spill, true)) return "none";
+  // THE SPILL flies its own ship, and its tap is the same kick skyward it
+  // is everywhere else. A tap its phase refuses - the Depot, the respawn
+  // freeze, the autopilot before a hand takes the stick - is not a tap, so
+  // nothing below counts it or animates it.
+  if (w.spill && !spillTap(w.spill)) return "none";
   // the road's contracts fly on both pages: these modifiers follow the mission, not the page
   if (!w.tut && w.flight === "fly") {
     // SWITCHBACK (owner, 7 Sep 2026): the companion makes every tap toggle
@@ -3621,11 +3621,6 @@ const SPILL_TONES: Record<string, string[]> = {
   lunge: ["#8fd6ff", "#cfefff"],
   graze: ["#9fe8ff"],
 };
-
-/** the hand comes OFF the thrust: pointer up, key up, focus lost */
-export function spillRelease(w: World) {
-  if (w.spill) spillHold(w.spill, false);
-}
 
 /** a swipe up: the kick skyward. The swipe down is dive() */
 export function spillBurstUp(w: World) {

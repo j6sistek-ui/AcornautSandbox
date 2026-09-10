@@ -5,7 +5,7 @@ const S=await import('../docs/js/spill.js');
 const Save=await import('../docs/js/save.js');
 const step=(s,seconds)=>{for(let n=0;n<Math.ceil(seconds*60);n++)S.stepSpill(s,1/60);};
 for(const target of [0,1,20]) for(const choice of ['plating','shield','thrusters','pulse']) {
- const s=S.createSpill(390,844,123,target); assert(S.spillHold(s,true));
+ const s=S.createSpill(390,844,123,target); assert(S.spillTap(s));
  assert.equal(s.phase,'docking');assert.equal(s.wave,0);assert(!S.spillLeaveDepot(s));
  step(s,S.spillDockDuration(s)+.1);assert.equal(s.phase,'depot');assert.equal(s.depotVisits,0);
  assert.equal(S.spillBuy(s,choice),'arming');step(s,1);

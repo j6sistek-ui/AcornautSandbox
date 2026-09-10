@@ -9,7 +9,7 @@ ctx.fillStyle='#e5e4ec';ctx.font='bold 14px sans-serif';ctx.fillText('DEBRIS FIE
 ctx.fillStyle='#a5b4cb';ctx.font='11px sans-serif';ctx.fillText('Native SVG proof · 390px and 320px viewports',20,47);
 for(const [width,top] of [[358,65],[288,185]]) {
  const x=(390-width)/2,scale=width/L.width;
- for(const kind of ['dive','throttle','lunge']) {
+ for(const kind of ['dive','thrust','lunge']) {
   const box=L[kind],im=await loadImage(Buffer.from(spillControlArt(kind)));
   ctx.drawImage(im,x+box.x*scale,top+box.y*scale,box.width*scale,box.height*scale);
  }

@@ -2,6 +2,8 @@
 
 Owner: “they stacked to the right, I wanted high quality buttons in this layout” and “You have to scroll down to start … Maybe just offer the 4 possible upgrades.”
 
+**Update, 10 September 2026:** the centre pad is now THRUST, a tap-to-fly kick, and the Throttle hold it replaced is retired along with pointer capture and held state; `render-controls.mjs` renders the `thrust` kind. The layout below is unchanged.
+
 The flight pads now form one centered bottom row: Dive, circular Throttle, Lunge. The wing arcs follow the central circle, and their glyphs and labels are centered in each usable wing. Vector surfaces remain sharp at different widths. Native buttons retain pointer capture, keyboard operation, accessible names, held state and charge feedback.
 
 The entrance is a compact ship preview with a visible Start footer. It has no utility or upgrade picker. After landing, the opening Depot offers only Health, Shields, Thrusters and Pulse; the pilot chooses one free upgrade there as before. The utility shelf first appears at the wave 5 Depot. Earned starting utilities and engine colors remain equipped through Loadout.

@@ -3,8 +3,8 @@
  *
  *  spill.ts owns the rules and knows nothing about a canvas, so every rule
  *  worth arguing about is asserted here against the built module: the wave
- *  ladder climbs and teaches in order, debris never overlaps debris, the
- *  hand holds to rise and releases to fall, DRIFT tilts the field slowly
+ *  ladder climbs and teaches in order, debris never overlaps debris, a
+ *  tap kicks the ship skyward and gravity brings it back, DRIFT tilts the field slowly
  *  and never further than it says, the count hands control back on the GO
  *  and never before, the Depot docks, arms, sells fixed meters at flat
  *  prices, an unlocked PULSE fires itself at an impact and banks an echo
@@ -49,14 +49,13 @@ const immune = (s) => { s.iframes = 9; s.floorT = 0; };
 const advance = (s) => { immune(s); if (s.phase === "depot" && s.depot.arm <= 0) S.spillLeaveDepot(s); };
 /** hold the ship mid-air with no rocks about, so a wait is only a wait */
 const hover = (s) => { s.rocks = []; s.pilot.y = s.H * 0.45; s.pilot.vy = 0; };
-/** press on the ready card, then wait out the count */
+/** tap the ready card, then wait out the count */
 const launch = (seed, target = 0) => {
   const s = S.createSpill(W, H, seed, target);
-  ok(S.spillHold(s, true) === true, "the first press launches");
-  ok(s.phase === "countdown", `the first press opens the count, got ${s.phase}`);
+  ok(S.spillTap(s) === true, "the first tap launches");
+  ok(s.phase === "countdown", `the first tap opens the count, got ${s.phase}`);
   ok(S.stepSpill(s, DT).includes("wave"), "the launch's wave cue reaches the first frame");
   until(s, (x) => x.phase === "wave", 5);
-  S.spillHold(s, false);
   return s;
 };
 const rockAt = (s, x, y, r = 20) => {
@@ -103,30 +102,32 @@ const dock = (seed) => {
 
 // ------------------------------------------------------------- the hand
 {
-  // hold to rise, release to fall; both answer within a few frames
+  // TAP TO FLY: a tap is an instant kick skyward, gravity brings the ship
+  // back, and the whole hop reads like a flap in the other modes
   const s = launch(2);
   hover(s);
-  ok(!s.held, "the hand starts off the thrust");
-  const y0 = s.pilot.y;
-  ok(S.spillHold(s, true) === true && s.held, "a press puts the hand on the thrust");
-  ok(S.spillHold(s, true) === false, "holding on is not a second press");
-  until(s, () => false, 0.25, (x) => { x.rocks = []; });
-  // a quarter second is a nudge: a line can be held by feathering the thumb
-  ok(s.pilot.vy < -120 && s.pilot.vy > -260 && s.pilot.y < y0 - 10 && s.pilot.y > y0 - 40,
-    `a quarter second of hold is a nudge, not a launch (vy ${s.pilot.vy.toFixed(0)}, dy ${(s.pilot.y - y0).toFixed(0)})`);
-  until(s, () => false, 1, (x) => { x.rocks = []; x.pilot.y = x.H * 0.6; });
-  ok(Math.abs(s.pilot.vy + S.SPILL.riseCap) < 1e-6, `a long hold is a climb at the cap (${s.pilot.vy.toFixed(0)} vs ${S.SPILL.riseCap})`);
-  // THRUSTERS never touch the hold
+  ok(S.spillTap(s) === true && Math.abs(s.pilot.vy + S.SPILL.tapVy) < 1e-6, `a tap kicks the ship to the tap speed (${s.pilot.vy.toFixed(0)})`);
+  ok(s.cues.includes("press") && (s.thrustT ?? 0) > 0, "and is reported, with a plume");
+  S.stepSpill(s, DT);
+  ok(S.spillTap(s) === true && Math.abs(s.pilot.vy + S.SPILL.tapVy) < 1e-6, `a second tap mid-hop resets the climb, it never stacks (${s.pilot.vy.toFixed(0)})`);
+  hover(s);
+  S.spillTap(s);
+  let top = s.pilot.y, apexAt = 0, t = 0;
+  while (s.pilot.vy < 0 && t < 2) { s.rocks = []; S.stepSpill(s, DT); t += DT; if (s.pilot.y < top) { top = s.pilot.y; apexAt = t; } }
+  const hop = s.H * 0.45 - top;
+  ok(hop > 60 && hop < 110, `a tap hops a readable height, near flight's 78px (${hop.toFixed(0)}px)`);
+  ok(apexAt > 0.25 && apexAt < 0.5, `and peaks about when a flap does (${apexAt.toFixed(2)}s)`);
+  // THRUSTERS never touch the tap
   s.up.thrusters = 3;
-  until(s, () => false, 0.5, (x) => { x.rocks = []; x.pilot.y = x.H * 0.6; });
-  ok(Math.abs(s.pilot.vy + S.SPILL.riseCap) < 1e-6, `THRUSTERS III holds the same line (${s.pilot.vy.toFixed(0)})`);
+  hover(s);
+  S.spillTap(s);
+  ok(Math.abs(s.pilot.vy + S.SPILL.tapVy) < 1e-6, `THRUSTERS III taps the same kick (${s.pilot.vy.toFixed(0)})`);
   s.up.thrusters = 0;
-  S.spillHold(s, false);
-  ok(!s.held, "a release takes the hand off");
+  hover(s);
   until(s, (x) => x.pilot.vy > 0, 1, (x) => { x.rocks = []; });
-  ok(s.pilot.vy > 0, "released, gravity has the ship");
+  ok(s.pilot.vy > 0, "left alone, gravity has the ship");
   until(s, () => false, 1, (x) => { x.rocks = []; x.pilot.y = x.H * 0.3; });
-  ok(s.pilot.vy <= S.SPILL.fallCap + 1e-6, `the fall is capped (${s.pilot.vy.toFixed(0)} vs ${S.SPILL.fallCap})`);
+  ok(Math.abs(s.pilot.vy - S.SPILL.fallCap) < 1e-6, `the fall is capped (${s.pilot.vy.toFixed(0)} vs ${S.SPILL.fallCap})`);
 }
 {
   // bursts are instant, like a tap and a dive in every other mode
@@ -143,12 +144,10 @@ const dock = (seed) => {
   ok(s.pilot.vy < v1, "and only decays");
   hover(s);
   S.spillBurst(s, -1);
-  S.spillHold(s, true);
-  S.stepSpill(s, DT);
-  ok(s.pilot.vy > -S.SPILL.burstUp && s.pilot.vy < -S.SPILL.riseCap, `a hold under a burst up cannot build past it, only ride it down (${s.pilot.vy.toFixed(0)})`);
-  until(s, (x) => x.pilot.vy >= -S.SPILL.riseCap, 1, (x) => { x.rocks = []; x.pilot.y = x.H * 0.6; });
-  ok(Math.abs(s.pilot.vy + S.SPILL.riseCap) < 1e-6, `and the burst settles to the held climb (${s.pilot.vy.toFixed(0)})`);
-  S.spillHold(s, false);
+  S.spillTap(s);
+  ok(s.pilot.vy <= -S.SPILL.burstUp, `a tap under a burst up cannot slow it (${s.pilot.vy.toFixed(0)})`);
+  until(s, (x) => x.pilot.vy >= 0, 2, (x) => { x.rocks = []; x.pilot.y = x.H * 0.6; });
+  ok(s.pilot.vy >= 0, "and gravity brings the burst back like any hop");
   s.up.thrusters = 1; hover(s);
   S.spillBurst(s, -1);
   ok(s.pilot.vy < -S.SPILL.burstUp, `THRUSTERS sharpen the burst (${s.pilot.vy.toFixed(0)})`);
@@ -158,37 +157,34 @@ const dock = (seed) => {
   const s = S.createSpill(W, H, 4, 0);
   ok(S.spillBurst(s, -1) === false, "a burst on the ready card is refused");
   ok(S.spillLunge(s) === true && s.phase === "countdown", `a lunge on the ready card launches (${s.phase})`);
-  ok(!s.manual, "the launching press does not take the stick");
+  ok(!s.manual, "the launching tap does not take the stick");
   ok(S.spillBurst(s, 1) === false && S.spillLunge(s) === false, "bursts and lunges wait for a hand on the stick");
 }
 {
-  // a press during the count takes the stick from the autopilot early
+  // a tap during the count takes the stick from the autopilot early
   const s = S.createSpill(W, H, 41, 0);
-  S.spillHold(s, true); S.spillHold(s, false);
+  S.spillTap(s);
   until(s, () => false, 1);
   const y0 = s.pilot.y;
-  ok(S.spillHold(s, true) === true && s.manual && s.held, "a new press in the count takes the stick");
-  until(s, () => false, 0.6);
-  ok(s.phase === "countdown" && s.pilot.y < y0 - 30 && s.rocks.length === 0, `and the ship climbs the empty field before the GO (${(s.pilot.y - y0).toFixed(0)}px)`);
-  S.spillHold(s, false);
-  until(s, () => false, 1.2);
-  ok(s.phase === "countdown" && s.pilot.y <= s.H - 80 + 1e-6, `released, the ship cannot be parked in the killzone before the GO (${s.pilot.y.toFixed(0)} of ${s.H})`);
-  S.spillHold(s, true);
+  ok(S.spillTap(s) === true && s.manual && s.pilot.vy < 0, "a new tap in the count takes the stick, and kicks");
+  until(s, () => false, 0.3);
+  ok(s.phase === "countdown" && s.pilot.y < y0 - 30 && s.rocks.length === 0, `and the ship hops the empty field before the GO (${(s.pilot.y - y0).toFixed(0)}px)`);
+  until(s, () => false, 1.4);
+  ok(s.phase === "countdown" && s.pilot.y <= s.H - 80 + 1e-6, `left alone, the ship cannot be parked in the killzone before the GO (${s.pilot.y.toFixed(0)} of ${s.H})`);
   ok(S.spillBurst(s, 1) === true, "bursts answer a hand on the stick");
   until(s, (x) => x.phase === "wave", 3);
-  ok(s.phase === "wave" && s.held && !s.manual, `the GO keeps the hand on the thrust (held ${s.held})`);
+  ok(s.phase === "wave" && !s.manual, "the GO opens the wave to the hand that took the stick");
 }
 {
-  // a finger still down from the launch is a hand on the thrust at the GO:
-  // the ship rises on the GO, it never drops into a waiting thumb
+  // the GO hands over a level ship at rest: gravity starts from zero, so
+  // the first tap lands on a readable fall, never on a drop already under way
   const s = S.createSpill(W, H, 42, 0);
-  S.spillHold(s, true);
+  S.spillTap(s);
   until(s, (x) => x.phase === "wave", 5);
-  ok(s.held && !s.manual, "the GO reads the finger");
+  ok(!s.manual && Math.abs(s.pilot.vy) < 1e-6, `the GO hands over a level ship at rest (vy ${s.pilot.vy.toFixed(0)})`);
   until(s, () => false, 0.3, (x) => { x.rocks = []; });
-  ok(s.pilot.vy < -100, `and the ship is rising (${s.pilot.vy.toFixed(0)})`);
-  S.spillHold(s, false);
-  ok(!s.held && !s.pressed, "a release lets go");
+  ok(s.pilot.vy > 0 && s.pilot.vy < S.SPILL.fallCap, `then gravity has it, readably (${s.pilot.vy.toFixed(0)})`);
+  ok(S.spillTap(s) === true && s.pilot.vy < 0, "and the first tap answers");
 }
 {
   // the control hint leaves after three inputs, or five seconds
@@ -197,15 +193,14 @@ const dock = (seed) => {
   hover(s);
   S.spillBurst(s, -1); S.spillBurst(s, 1);
   ok(s.hintT > 3, "two inputs keep it");
-  S.spillHold(s, true);
+  S.spillTap(s);
   ok(s.hintT <= 1, `the third sends it away (${s.hintT.toFixed(1)}s)`);
-  S.spillHold(s, false);
 }
 
 // --------------------------------------------------- the count and the GO
 {
   const s = S.createSpill(W, H, 5, 0);
-  S.spillHold(s, true);
+  S.spillTap(s);
   ok(S.spillCount(s) === 3, `the count opens at three (${S.spillCount(s)})`);
   const y = s.pilot.y = s.H * 0.9;
   const counts = [];
@@ -221,9 +216,7 @@ const dock = (seed) => {
   ok(JSON.stringify(counts) === "[2,1]", `the count ticks down (${JSON.stringify(counts)})`);
   ok(s.pilot.y < y - 100, `the autopilot flew the ship home during the count (${s.pilot.y.toFixed(0)} from ${y.toFixed(0)})`);
   ok(s.rocks.length === 0, "nothing spawns before the GO");
-  ok(s.held, "the finger down since the launch is on the thrust at the GO");
-  S.spillHold(s, false);
-  ok(!s.held && S.spillHold(s, true) === true && s.held, "control is back on the GO");
+  ok(S.spillTap(s) === true && s.pilot.vy < 0, "control is back on the GO");
 }
 
 // ------------------------------------------- debris never meets debris
@@ -563,18 +556,15 @@ const dock = (seed) => {
   ok(w.spill !== null && w.tut === null && w.flight === "spill", "a spill run carries its own state and no tutorial");
   ok(w.shieldCharges === 0, "the hangar's start shield stays in the hangar");
   ok(sim.flap(w, sv) === "flap" && w.spill.phase === "countdown", "the first tap launches the field");
-  sim.spillRelease(w);
-  ok(sim.flap(w, sv) === "flap" && w.spill.manual && w.spill.held, "a tap in the count takes the stick");
-  sim.spillRelease(w);
+  ok(sim.flap(w, sv) === "flap" && w.spill.manual, "a tap in the count takes the stick");
   for (let i = 0; i < 60 * 4; i++) { w.spill.rocks = []; w.spill.floorT = 0; sim.updateWorld(w, sv, DT); }
   ok(w.spill.phase === "wave", `the sim steps the Spill through the count (${w.spill.phase})`);
   w.spill.pilot.y = w.H * 0.5; w.spill.pilot.vy = 0;
-  ok(sim.flap(w, sv) === "flap" && w.spill.held, "a tap puts the hand on the thrust");
-  ok(sim.flap(w, sv) === "none", "holding is not a second tap");
-  for (let i = 0; i < 30; i++) { w.spill.rocks = []; sim.updateWorld(w, sv, DT); }
-  ok(w.spill.pilot.vy < 0, "and the ship climbs");
-  sim.spillRelease(w);
-  ok(!w.spill.held, "the release takes it off");
+  const y1 = w.spill.pilot.y;
+  ok(sim.flap(w, sv) === "flap" && w.spill.pilot.vy < 0, "a tap kicks the ship skyward");
+  ok(sim.flap(w, sv) === "flap" && Math.abs(w.spill.pilot.vy + S.SPILL.tapVy) < 1e-6, "a second tap is a tap, and never stacks");
+  for (let i = 0; i < 10; i++) { w.spill.rocks = []; sim.updateWorld(w, sv, DT); }
+  ok(w.spill.pilot.vy < 0 && w.spill.pilot.y < y1, "and the ship climbs");
   ok(Math.abs(w.squirrel.y - w.spill.pilot.y) < 1e-6, "the world's squirrel mirrors the Spill's pilot");
   ok(sim.pilotX(w) === w.spill.pilot.x, "and the pilot's X follows the lunge lane");
   ok(sim.dive(w, sv) === "dive" && w.spill.pilot.vy >= S.SPILL.burstDown, "a dive is the burst down");
@@ -632,9 +622,10 @@ const dock = (seed) => {
 // ------------------------------------------------------------- the bot
 //
 // A dodger, not a player: it looks 300px ahead, picks the widest gap in
-// the lane it is flying, and holds or releases toward it, bursting when
-// the gap is far. If this cannot clear wave 1 the ladder is broken,
-// whatever the tuning says.
+// the lane it is flying, and taps toward it like a thumb - at most eight
+// taps a second, and only while the ship is below its lane and not already
+// climbing briskly - bursting when the gap is far. If this cannot clear
+// wave 1 the ladder is broken, whatever the tuning says.
 function bot(s) {
   const p = s.pilot;
   if (s.phase !== "wave" && s.phase !== "drain") return;
@@ -659,7 +650,8 @@ function bot(s) {
   // never idle near the floor: below three quarters the answer is always up
   if (p.y > s.H - 140) target = Math.min(target, s.H * 0.55);
   const dy = target - p.y;
-  S.spillHold(s, dy < -8);
+  s.botTap = (s.botTap ?? 0) - DT;
+  if (dy < -8 && p.vy > -S.SPILL.tapVy * 0.4 && s.botTap <= 0) { S.spillTap(s); s.botTap = 0.12; }
   if (dy < -120 && p.vy > -200) S.spillBurst(s, -1);
   else if (dy > 120 && p.vy < 150) S.spillBurst(s, 1);
 }
