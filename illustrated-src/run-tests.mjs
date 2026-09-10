@@ -16,10 +16,12 @@
  *    node illustrated-src/run-tests.mjs              # all of them, fail on skip
  *    node illustrated-src/run-tests.mjs --allow-skips
  *    node illustrated-src/run-tests.mjs --only spill # substring filter
+ *    node illustrated-src/run-tests.mjs --skip-heavy  # the fast 50; see SHIPPING.md gate 3
  *    node illustrated-src/run-tests.mjs --list
  *
- *  Slow by design: test-warp alone takes about four minutes. Nothing here is
- *  excluded for cost - a gate you skip when you are busy is not a gate.
+ *  Slow by design. Seven tests carry 437 of the 593 seconds; --skip-heavy
+ *  leaves those out when the change cannot reach them, which is a call the
+ *  caller makes up front and writes down. Nothing is excluded silently.
  */
 import { readdirSync, existsSync } from "node:fs";
 import { spawn } from "node:child_process";
@@ -54,12 +56,36 @@ for (const o of OPTIONAL) {
 }
 
 const only = valueOf("--only");
+
+/** THE SEVEN EXPENSIVE ONES: 437s of the suite's 593. Each guards something
+ *  specific that has broken before - SHIPPING.md gate 3 says what, in plain
+ *  words, so the caller can tell whether their change can reach it.
+ *
+ *  --skip-heavy leaves them out. It is a JUDGEMENT, made up front and
+ *  declared, not an optimisation applied blindly: a diff that could touch
+ *  hole spawning, the Wormhole Run, the chart menus, AcorNut, the Shop or
+ *  helmet fit runs them. Owner, 10 Sep 2026, on the cost of getting that
+ *  call wrong: "if it ships and breaks, we will eventually fix and find it.
+ *  Not the end of the world if they miss a check." */
+const HEAVY = ["test-warp.mjs", "test-tunnel.mjs", "test-star-map-ui.mjs",
+  "test-vanguard-flight.mjs", "test-vanguard-render.mjs",
+  "test-shop-visuals.mjs", "test-helmet-animation.mjs"];
+const skipHeavy = has("--skip-heavy");
+
 const tests = readdirSync(HERE)
   .filter((f) => /^test-.*\.mjs$/.test(f))
   .filter((f) => !only || f.includes(only))
+  .filter((f) => !skipHeavy || !HEAVY.includes(f))
   .sort();
 
+
 if (has("--list")) { for (const t of tests) console.log(t); process.exit(0); }
+
+if (skipHeavy) {
+  console.log(`--skip-heavy: leaving out ${HEAVY.length} tests (about 437s).`);
+  console.log(`  ${HEAVY.map((f) => f.replace(/^test-|\.mjs$/g, "")).join(", ")}`);
+  console.log("  Say so in the scope checklist, and say why they cannot be reached.\n");
+}
 
 const run = (file) => new Promise((done) => {
   const started = Date.now();

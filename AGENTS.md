@@ -50,3 +50,33 @@ network. Game painters are generated from source, never edited in the tool.
 `node illustrated-src/test-flight-studio.mjs` verifies the standalone runtime,
 exports, all model assets and read-only host. The Docker workflow already runs
 every test file; use the same documented fallback when Docker is unavailable.
+
+## Scope checklist — post it in chat, every time
+
+Seven tests carry 437 of the harness's 593 seconds. You may skip them with
+`node illustrated-src/run-tests.mjs --skip-heavy` when your change cannot
+reach what they guard. SHIPPING.md gate 3 says what each one protects, in
+plain words; judge by reach, not filename.
+
+The skip is allowed. **Hiding it is not.** When you tell the owner a branch
+is ready, paste this in the chat message — not only in the PR body:
+
+```
+SCOPE
+  changed  <what you touched, in a few words>
+  skipped  <heavy tests left out> — <why they cannot be reached>
+  ran      tsc · verify-art · platform bridge · <n> tests, <n> passed
+```
+
+If you ran everything, say so and the second line reads `skipped  none`.
+
+Two things the owner treats as suspect on sight:
+
+- **A merge recommendation with no checklist.** If nobody says what was
+  skipped, assume everything was.
+- **A PR merged without being asked.** Ask, and wait. The only exception is
+  an explicit instruction for that specific change.
+
+Owner, 10 Sep 2026: "This isn't a government job.. if it ships and breaks,
+we will eventually fix and find it." A missed check is recoverable. An
+unreported one is not, because nobody knows where to look.
