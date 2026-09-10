@@ -4363,7 +4363,7 @@ export async function bootStandalone(root: HTMLElement) {
     // noopener/noreferrer because the destination is outside the game.
     const discord = document.createElement("a");
     discord.className = "ac-row ac-rowbtn ac-social";
-    discord.href = "https://discord.gg/xGnCuaSDG";
+    discord.href = "https://discord.gg/83RZMdmpvm";
     discord.target = "_blank";
     discord.rel = "noopener noreferrer";
     const dwrap = el("span", "ac-socialmark");

@@ -1,7 +1,7 @@
-import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=265";
-import { platform } from "./platform.js?v=265";
-import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=265";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=265";
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=271";
+import { platform } from "./platform.js?v=271";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=271";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=271";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -17,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=265";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "265";
+export const ART_VER = "271";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-10 05:50 UTC";
+export const BUILD_TIME = "2026-09-10 20:28 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -761,7 +761,11 @@ for (const bundle of BUNDLES)
 // HOW MUCH OF THE CATALOGUE IS ON SALE TODAY. Deliberately small: the shelf
 // is a reason to come back, not an inventory. Trails are never sold singly
 // for now - they arrive free with their set.
-export const SHOP_CYCLE = { suits: 3, helms: 4, pals: 1, trails: 0 };
+export const SHOP_CYCLE = {
+    maxItems: 4, suits: 2, premiumSuits: 1, minHelms: 1, helms: 2, pals: 1, trails: 0,
+    excludedIds: ["raccoon", "ferret", "hedgehog"],
+    excludedBundleIds: ["bundle-critters"],
+};
 // STAR DUST is the premium currency. Acorns are earned by flying and buy
 // the standard wardrobe; dust is bought (or claimed daily) and buys packs.
 // Two currencies, two jobs, and the header shows both so neither can be
