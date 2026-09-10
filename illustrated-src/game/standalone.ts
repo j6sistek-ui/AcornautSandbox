@@ -3722,7 +3722,7 @@ export async function bootStandalone(root: HTMLElement) {
     shelf("HELMETS", "helm", cy.helms, "today");
     shelf("PALS", "pal", cy.pals, "today");
     scroll.append(el("p", "ac-fine",
-      "The shelf restocks tomorrow. Trails are not sold on their own — they arrive with their set."));
+      "Shop refreshes daily"));
 
     // ---- STAR CHART BOOSTS (owner, 8 Sep 2026). Bought here, into the
     // account; spent on the Star Chart with a hold. The purchase itself is

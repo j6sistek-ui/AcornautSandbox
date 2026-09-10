@@ -1,23 +1,23 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash } from "./catalog.js?v=265";
-import { platform } from "./platform.js?v=265";
-import { isPremiumSuit } from "./high-orbit-config.js?v=265";
-import { spillAppearance } from "./spill-appearance.js?v=265";
-import { routeMasks, rewardId } from "./campaign-progress.js?v=265";
-import { reachedGate } from "./campaign.js?v=265";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks } from "./art.js?v=265";
-import { vanguardDepotEligible } from "./spill-depot-gag.js?v=265";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=265";
-import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, PALS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=265";
-import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=265";
-import { setVanguardPitchTrim } from "./vanguard.js?v=265";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=265";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=265";
-import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, updateWorld, } from "./sim.js?v=265";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=265";
-import { raceViewport } from "./race-viewport.js?v=265";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=265";
-import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=265";
-import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save.js?v=265";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash } from "./catalog.js?v=268";
+import { platform } from "./platform.js?v=268";
+import { isPremiumSuit } from "./high-orbit-config.js?v=268";
+import { spillAppearance } from "./spill-appearance.js?v=268";
+import { routeMasks, rewardId } from "./campaign-progress.js?v=268";
+import { reachedGate } from "./campaign.js?v=268";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks } from "./art.js?v=268";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=268";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=268";
+import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, PALS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=268";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=268";
+import { setVanguardPitchTrim } from "./vanguard.js?v=268";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=268";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=268";
+import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, updateWorld, } from "./sim.js?v=268";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=268";
+import { raceViewport } from "./race-viewport.js?v=268";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=268";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=268";
+import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save.js?v=268";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -1759,4 +1759,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=265";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=268";

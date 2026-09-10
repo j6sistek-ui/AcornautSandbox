@@ -1,7 +1,7 @@
-import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=262";
-import { platform } from "./platform.js?v=262";
-import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=262";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=262";
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=268";
+import { platform } from "./platform.js?v=268";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=268";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=268";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -17,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=262";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "262";
+export const ART_VER = "268";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-10 05:36 UTC";
+export const BUILD_TIME = "2026-09-10 07:13 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -134,12 +134,6 @@ export const PHYS = {
     magnetR: 200,
     squirrelR: 16,
 };
-export const NEWS = [
-    "THE STAR CHART: 260 missions, three stars each.",
-    "Stars unlock pals, mods, suits and modes.",
-    "Golden acorns still bounce off planets. Debris phases.",
-    "Debris kills. Planets bounce. Swipe cancels a bounce.",
-];
 export const HELMETS = [
     { id: "clear", name: "Clear", cost: 0, visor: "#bcd8f4", tint: 0.16, rim: "#cfd8e4", trim: "#8fa0b4", glow: null },
     { id: "ion", name: "Ion", cost: 15, visor: "#4ad8ff", tint: 0.2, rim: "#4ad8ff", trim: "#1b6f92", glow: "#4ad8ff" },
