@@ -1,12 +1,12 @@
-import { highOrbitTrailSuit, isPremiumSuit } from "./high-orbit-config.js?v=264";
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=264";
-import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=264";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=264";
-import { restoreSpill } from "./spill.js?v=264";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=264";
+import { highOrbitTrailSuit, isPremiumSuit } from "./high-orbit-config.js?v=263";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=263";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=263";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=263";
+import { restoreSpill } from "./spill.js?v=263";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=263";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, FIXED_SHOP_SUIT_IDS, bundleQuote, idDust, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=264";
-import { platform } from "./platform.js?v=264";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, FIXED_SHOP_SUIT_IDS, bundleQuote, idDust, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=263";
+import { platform } from "./platform.js?v=263";
 // Pinned to the shipped pre-regrouping catalog (9 Sep 2026). These are
 // historical grant amounts, not the price of the new bundle layout.
 export const BETA_DUST_GRANT_FLOOR = 12360;

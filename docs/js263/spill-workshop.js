@@ -1,12 +1,11 @@
-import { artUrl } from "./art.js?v=264";
-import { spillAppearance } from "./spill-appearance.js?v=264";
-import { SUITS } from "./catalog.js?v=264";
-import { paintShipPreview } from "./draw.js?v=264";
-import { writeSave } from "./save.js?v=264";
-import { SPILL_CONTROL_COLORS } from "./spill-control-art.js?v=264";
-import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillEngineColor, spillContractOffers } from "./spill-content.js?v=264";
-import { spillBuildFromState } from "./spill-presentation.js?v=264";
-import { SPILL_SHOP, spillPrice, spillContractProgress } from "./spill.js?v=264";
+import { artUrl } from "./art.js?v=263";
+import { spillAppearance } from "./spill-appearance.js?v=263";
+import { SUITS } from "./catalog.js?v=263";
+import { paintShipPreview } from "./draw.js?v=263";
+import { writeSave } from "./save.js?v=263";
+import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillEngineColor, spillContractOffers } from "./spill-content.js?v=263";
+import { spillBuildFromState } from "./spill-presentation.js?v=263";
+import { SPILL_SHOP, spillPrice, spillContractProgress } from "./spill.js?v=263";
 const el = (tag, cls = "", text = "") => {
     const n = document.createElement(tag);
     n.className = cls;
@@ -220,21 +219,8 @@ export function drawSpillFlightHelp() {
     section.setAttribute("aria-label", "How to fly · Debris Field");
     section.append(el("p", "ac-kicker ac-secthead", "HOW TO FLY · DEBRIS FIELD"));
     const controls = el("div", "ac-spillhelp-controls");
-    // EACH CARD WEARS ITS OWN PAD'S COLOUR. All three used to be the same
-    // slab of #101830, so the panel that teaches the controls looked nothing
-    // like the controls (owner, 10 Sep 2026: "the debris field buttons in
-    // help are too generic ... match same colors as buttons used in debris
-    // field"). The tints are read from SPILL_CONTROL_COLORS rather than
-    // copied, so repainting a pad repaints its card with it.
-    for (const [input, action, note, pad] of [
-        ["HOLD", "Rise", "Throttle / Space", "throttle"],
-        ["RELEASE", "Fall", "Let go", "dive"],
-        ["LUNGE", "Dash forward", "Swipe right / →", "lunge"],
-    ]) {
-        const card = el("div", `ac-spillhelp-pad ac-spillhelp-${pad}`);
-        const { light, edge } = SPILL_CONTROL_COLORS[pad];
-        card.style.setProperty("--pad-light", light);
-        card.style.setProperty("--pad-edge", edge);
+    for (const [input, action, note] of [["HOLD", "Rise", "Throttle / Space"], ["RELEASE", "Fall", "Let go"], ["LUNGE", "Dash forward", "Swipe right / →"]]) {
+        const card = el("div");
         card.append(el("b", "", input), el("span", "", action), el("small", "ac-sub", note));
         controls.append(card);
     }

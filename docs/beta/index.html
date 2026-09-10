@@ -1834,6 +1834,24 @@ body .ac-shipmenu .ac-sheet-scroll{padding-bottom:calc(24px + env(safe-area-inse
 .ac-spillhelp-controls b{font-size:13px;color:#f3efe4}
 .ac-spillhelp-controls span{font-size:12px;color:#cfd8ea}
 .ac-spillhelp-controls small{font-size:10px}
+/* Each card is tinted from its own flight pad. --pad-light and --pad-edge are
+   set per card in drawSpillFlightHelp from SPILL_CONTROL_COLORS, the same table
+   spillControlArt paints the real pads with, so the two cannot drift apart.
+   Same treatment the normal-flight TAP/SWIPE cards use: a translucent wash of
+   the accent, a border in it, the accent on the input word.
+   Two cascade traps here, both found by reading the computed style back out
+   of a browser rather than trusting the source. The card rule must outrank
+   `.ac-spillhelp-controls>div` (0,1,1), so it is written as a child selector
+   (0,2,0) - a bare `.ac-spillhelp-pad` loses and the card stays generic. The
+   `b` rule ties with `.ac-spillhelp-controls b` at (0,1,1), so it has to come
+   after it in source order or the word reverts to #f3efe4.
+   The flat fallbacks come first for anything without color-mix. */
+.ac-spillhelp-controls>.ac-spillhelp-pad{background:#101830;border-color:var(--pad-edge)}
+@supports (background:color-mix(in srgb,#fff 10%,#000)){
+  .ac-spillhelp-controls>.ac-spillhelp-pad{background:color-mix(in srgb,var(--pad-light) 13%,#101830);
+    border-color:color-mix(in srgb,var(--pad-edge) 65%,transparent)}
+}
+.ac-spillhelp-pad b{color:var(--pad-light)}
 .ac-spillflighthelp>.ac-replay{width:100%;margin-top:12px}
 
 .ac-spillsetup .ac-setup-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
@@ -2022,7 +2040,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js262/standalone.js")
+    import("../js264/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>
