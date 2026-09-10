@@ -1,4 +1,4 @@
-import { HIGH_ORBIT_PROFILES, isPremiumSuit } from './high-orbit-config.js?v=258';
+import { HIGH_ORBIT_PROFILES, isPremiumSuit } from './high-orbit-config.js?v=259';
 export const PREMIUM_FLIGHT_DURATION = 1;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = (v) => { v = clamp(v, 0, 1); return v * v * (3 - 2 * v); };

@@ -1,7 +1,7 @@
-import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=254";
-import { platform } from "./platform.js?v=254";
-import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=254";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=254";
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=259";
+import { platform } from "./platform.js?v=259";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=259";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=259";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -17,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=254";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "254";
+export const ART_VER = "259";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-09 22:07 UTC";
+export const BUILD_TIME = "2026-09-10 00:28 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -204,9 +204,9 @@ export const SUITS = [
     // ARCFLASH IS SOLD (owner, 7 Sep 2026): production, 1,850 star dust,
     // its blue electrical wake built in - see bundle-arcflash and DUST_STICKER.
     { id: "arcflash", name: "Arcflash", cost: 0, ownHead: true, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
-    { id: "porcelain", name: "Porcelain Paragon", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Sovereign Shell", fur: "#c7ccd3", furDark: "#767e8d", belly: "#fff8e9", suit: "#efe8d7", suitLite: "#fffdf3", suitDark: "#38567b", trim: "#466bb4", glow: "#b9d8ff", dust: null },
-    { id: "nacre", name: "Nacre Envoy", cost: 0, ownHead: true, headPolicy: "helmetless", fur: "#cfb1df", furDark: "#8e709f", belly: "#f5d8dc", suit: "#e4d6dc", suitLite: "#fff0df", suitDark: "#4a315d", trim: "#d4a2d8", glow: "#e5a8ed", dust: null },
-    { id: "origamist", name: "Foldspace Origamist", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Facet Shell", fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
+    { id: "porcelain", name: "Percy", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Sovereign Shell", fur: "#c7ccd3", furDark: "#767e8d", belly: "#fff8e9", suit: "#efe8d7", suitLite: "#fffdf3", suitDark: "#38567b", trim: "#466bb4", glow: "#b9d8ff", dust: null },
+    { id: "nacre", name: "Envoy", cost: 0, ownHead: true, headPolicy: "helmetless", fur: "#cfb1df", furDark: "#8e709f", belly: "#f5d8dc", suit: "#e4d6dc", suitLite: "#fff0df", suitDark: "#4a315d", trim: "#d4a2d8", glow: "#e5a8ed", dust: null },
+    { id: "origamist", name: "Patriot", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Facet Shell", fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
     { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
     { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
     { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
@@ -466,38 +466,13 @@ export const RETRO_GATE = 100;
 // at a hole you fly into, so this is a distance the pilot reads, not a
 // timer that expires on them.
 export const WARP_GATES = 15;
+/** Single pilots remain premium without pretending to be bundles. */
+export const FIXED_SHOP_SUIT_IDS = ["arcflash", "porcelain", "nacre", "origamist"];
 export const BUNDLES = [
-    // ARCFLASH (owner, 7 Sep 2026): one suit, one price, its wake included.
-    // The wake is not an item - it is the only trail Arcflash can wear and it
-    // arrives with the suit (trailUnlocked), so it is not listed or priced.
-    { id: "bundle-arcflash", name: "Arcflash", blurb: "The arc-lit articulated flight suit, blue electrical wake built in.", dust: 1850, fixed: true, items: [{ kind: "suit", id: "arcflash" }] },
-    // One authored pilot and its signature wake per purchase. The selected head
-    // design is inseparable; these packs never advertise a removable helmet.
-    // Latest owner price: 1,000 each, or all three for 2,500 Stardust.
-    // Preserve the existing singleton ids for purchase compatibility.
-    { id: "bundle-porcelain", name: "Porcelain Paragon", blurb: "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "porcelain" }] },
-    { id: "bundle-nacre", name: "Nacre Envoy", blurb: "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "nacre" }] },
-    { id: "bundle-origamist", name: "Foldspace Origamist", blurb: "Folded composite and the permanent Facet Shell. Foldspace Ribbon wake included.", dust: 1000, fixed: true, items: [{ kind: "suit", id: "origamist" }] },
-    { id: "bundle-premium-trio", name: "Premium Pilot Trio", blurb: "Porcelain Paragon, Nacre Envoy and Foldspace Origamist, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
-    { id: "bundle-magnetar", name: "Magnetar Companion", blurb: "A knot of blue lightning that turns the whole world over.", dust: 90, items: [{ kind: "pal", id: "magnetar" }] },
-    { id: "bundle-babyalien", name: "Baby Alien Companion", blurb: "Small, green and curious. The gates shrink to match.", dust: 90, items: [{ kind: "pal", id: "babyalien" }] },
-    { id: "bundle-satellite", name: "Satellite Companion", blurb: "A tin moon on a wobbling orbit. The sky closes in to a sight circle.", dust: 90, items: [{ kind: "pal", id: "satellite" }] },
-    { id: "bundle-spacepuppy", name: "Space Puppy Companion", blurb: "A pink axolotl in a harness. The run becomes a bounce house: giant planets, no debris, no score, just bounces.", dust: 90, items: [{ kind: "pal", id: "spacepuppy" }] },
-    { id: "bundle-astrafox", name: "AstraFox Companion", blurb: "A starlit fox that runs the sky faster: the gates swing wide and the world scrolls at 1.2x.", dust: 90, items: [{ kind: "pal", id: "astrafox" }] },
-    { id: "bundle-switchback", name: "Stopwatch Companion", blurb: "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.", dust: 90, items: [{ kind: "pal", id: "switchback" }] },
-    // THE THREE STANDALONE VISORS (owner, 8 Sep 2026: "Add them to the shop,
-    // premium purchases, in the rotations"). They came off the beta host, and
-    // premium HERE means being in a bundle - IAP_ITEMS is derived from this
-    // table, isIap reads that, and the shop's helmet rotation deals from
-    // HELMETS.filter(isIap). One helmet apiece, priced like the companions
-    // they most resemble: every other premium helmet shares its id with a
-    // suit and carries that set's weight, but these three are visors and
-    // nothing else, so idWeight makes them 90 dust singly.
-    { id: "bundle-amethyst", name: "Amethyst Visor", blurb: "Violet glass under a gold rim.", dust: 90, items: [{ kind: "helm", id: "amethyst" }] },
-    { id: "bundle-ivoryguard", name: "Ivoryguard Visor", blurb: "Pale ice, steel trim, a cold blue light.", dust: 90, items: [{ kind: "helm", id: "ivoryguard" }] },
-    { id: "bundle-reactor", name: "Reactor Visor", blurb: "Acid green, and it glows in the dark of the run.", dust: 90, items: [{ kind: "helm", id: "reactor" }] },
+    { id: "bundle-premium-trio", kit: { banner: "shop/bundle-premium-trio.png", discountDust: 500 }, name: "Premium Pilot Trio", blurb: "Percy, Envoy and Patriot, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
     {
         id: "bundle-aurora",
+        kit: { banner: "shop/bundle-aurora.png", discountDust: 450 },
         name: "Aurora Pack",
         blurb: "Ice, growth and eclipse \u2014 three skies, worn.",
         dust: 900,
@@ -510,6 +485,7 @@ export const BUNDLES = [
     },
     {
         id: "bundle-regalia",
+        kit: { banner: "shop/bundle-regalia.png", discountDust: 720 },
         name: "Regalia Pack",
         blurb: "Gemcut, seraphim and the deep \u2014 the ceremonial set.",
         dust: 1200,
@@ -524,6 +500,7 @@ export const BUNDLES = [
     },
     {
         id: "bundle-circuit",
+        kit: { banner: "shop/bundle-circuit.png", discountDust: 450 },
         name: "Circuit Pack",
         blurb: "Chrome, current and code. All three come with custom helmets.",
         dust: 750,
@@ -534,6 +511,7 @@ export const BUNDLES = [
     },
     {
         id: "bundle-critters",
+        kit: { banner: "shop/bundle-critters.png", discountDust: 400 },
         name: "Critter Pack",
         blurb: "Bandit, Noodle and Quill. Three more who eat no acorns.",
         dust: 750,
@@ -541,28 +519,29 @@ export const BUNDLES = [
             { kind: "suit", id: "raccoon" }, { kind: "suit", id: "ferret" }, { kind: "suit", id: "hedgehog" },
         ],
     },
-    // The small packs. They overlap the big ones ON PURPOSE: a pilot who owns
-    // Robo should meet a Robo pack that has already taken his suit off the
-    // price, which is the whole reason the pricing below exists.
     {
-        id: "bundle-robo",
-        name: "Robo & Glider",
-        blurb: "One machine, one wing. A short pack for a long night.",
-        dust: 300,
-        items: [
-            { kind: "suit", id: "robo" },
-            { kind: "pal", id: "nightglider" },
-        ],
+        id: "bundle-cosmic-companions",
+        kit: { banner: "shop/bundle-cosmic-companions.png", discountDust: 70 },
+        name: "Cosmic Companions",
+        blurb: "Magnetar, Baby Alien and Satellite: three companions with their own flight effects.",
+        dust: 200,
+        items: [{ kind: "pal", id: "magnetar" }, { kind: "pal", id: "babyalien" }, { kind: "pal", id: "satellite" }],
     },
     {
-        id: "bundle-cyber",
-        name: "Cyber & Clockwork",
-        blurb: "Circuit chrome, trailing gearlight.",
-        dust: 300,
-        items: [
-            { kind: "suit", id: "cyber" },
-            { kind: "trail", id: "clockwork" },
-        ],
+        id: "bundle-starlight-companions",
+        kit: { banner: "shop/bundle-starlight-companions.png", discountDust: 70 },
+        name: "Starlight Companions",
+        blurb: "Space Puppy, AstraFox and Stopwatch: three companions with their own flight effects.",
+        dust: 200,
+        items: [{ kind: "pal", id: "spacepuppy" }, { kind: "pal", id: "astrafox" }, { kind: "pal", id: "switchback" }],
+    },
+    {
+        id: "bundle-visor-collection",
+        kit: { banner: "shop/bundle-visor-collection.png", discountDust: 70 },
+        name: "Visor Collection",
+        blurb: "Amethyst, Ivoryguard and Reactor: three distinct visors for the wardrobe.",
+        dust: 200,
+        items: [{ kind: "helm", id: "amethyst" }, { kind: "helm", id: "ivoryguard" }, { kind: "helm", id: "reactor" }],
     },
 ];
 /** WHAT A SLOT IS WORTH. A suit is where the work goes - the rig, the neck
@@ -575,22 +554,11 @@ export const ITEM_WEIGHT = {
 /** the ownership keys a pack grants - a suit and its helmet share one */
 export const bundleIds = (b) => [...new Set(b.items.map((i) => i.id))];
 export const bundleWeight = (b) => b.items.reduce((n, i) => n + ITEM_WEIGHT[i.kind], 0);
-/** WHAT A PACK COSTS YOU, given what you already own.
- *
- *  Packs overlap on purpose - that is what makes a rotating shelf worth
- *  watching - so a pack whose suit you bought last week must not charge you
- *  for it twice. The price falls with the WEIGHT still owed rather than the
- *  item count, so clearing a suit out of a pack takes three helmets' worth
- *  off what is left. Rounded to ten so a discounted price still reads as a
- *  price and not as a calculation. */
+/** The legacy bundle checkout shares the actual Shop quote. `dust` remains
+ *  historical catalog data; it no longer asks a different price from the
+ *  featured card for the same kit. */
 export function bundlePrice(b, owns) {
-    const total = bundleWeight(b);
-    const owed = b.items.reduce((n, i) => n + (owns(i.id) ? 0 : ITEM_WEIGHT[i.kind]), 0);
-    if (owed <= 0)
-        return 0; // nothing left to sell
-    if (owed >= total)
-        return b.dust;
-    return Math.max(10, Math.round((b.dust * owed) / total / 10) * 10);
+    return bundleQuote(b, owns).due;
 }
 /** WHAT A FIXED-HEAD SUIT SAYS. Three views tell the pilot the same fact -
  *  a corner tag on the loadout stage, another on the shop case, and a note
@@ -680,7 +648,7 @@ export function shopBundles(now, owns) {
         .filter((b) => !bundleIds(b).every(owns))
         .slice(0, SHOP_SLOTS);
 }
-export const IAP_ITEMS = [...new Set(BUNDLES.flatMap(bundleIds))];
+export const IAP_ITEMS = [...new Set([...FIXED_SHOP_SUIT_IDS, ...BUNDLES.flatMap(bundleIds)])];
 // ------------------------------------------------------- A LA CARTE
 // The storefront sells single items as well as packs, so a single item
 // needs a price - and there was never one. ITEM_WEIGHT already says what a
@@ -729,13 +697,13 @@ export function idGrants(id) {
     const t = SET_TRAIL[id];
     return t ? [id, t] : [id];
 }
-/** THE WEIGHT SUM: every unowned id at its sticker or its weight rate, a
- *  set trail included. This is the base the featured price has always been
- *  struck off, and the owner set the shelf around the numbers it gives
- *  (Aurora 720, Regalia 900), so the audit left it exactly where it stood
- *  and corrected only what the card CLAIMS you are saving. */
-function weightTotal(ids, owns) {
-    return ids.filter((i) => !owns(i)).reduce((n, i) => n + idDust(i), 0);
+/** A bundle needs three distinct products. A matching suit and helmet
+ *  share one ownership key, and a set's free wake is a bonus, not another
+ *  product that can turn a singleton or duo into a bundle. */
+export function bundleProductIds(b) {
+    const ids = bundleIds(b);
+    const bonuses = new Set(ids.map(id => SET_TRAIL[id]).filter(Boolean));
+    return ids.filter(id => !bonuses.has(id) && !builtInTrailSuit(id));
 }
 /** what the ids you do NOT own would cost bought one at a time.
  *
@@ -749,26 +717,44 @@ function weightTotal(ids, owns) {
  *  that is the only case zeroed.
  */
 export function alaCarteTotal(ids, owns) {
-    const owed = ids.filter((i) => !owns(i));
+    const owed = [...new Set(ids)].filter((i) => !owns(i));
     const free = new Set(owed.map((i) => SET_TRAIL[i]).filter(Boolean));
     return owed.reduce((n, i) => n + (free.has(i) ? 0 : idDust(i)), 0);
 }
-/** THE FEATURED PACK. One at a time, and always the best deal on the
- *  shelf: half of what its remaining contents would cost singly. Half of
- *  what REMAINS, so a pack whose suit you already bought quietly costs
- *  less rather than charging for it twice. Half of the WEIGHT SUM, not of
- *  the shelf total above it: the free trail sits inside the base these
- *  packs were priced against, and taking it out would cut every featured
- *  price, which is the owner's call and not an audit's. */
-export const FEATURE_DISCOUNT = 0.5;
-export function featurePrice(b, owns) {
-    if (b.fixed || b.featuredAtSticker)
-        return bundlePrice(b, owns);
-    const due = weightTotal(bundleIds(b), owns);
-    if (due <= 0)
-        return 0;
-    return Math.max(10, Math.round((due * FEATURE_DISCOUNT) / 10) * 10);
+/** One quote for cards and both checkout paths. The kit discount is an
+ *  exact editable amount against the original individual retail value.
+ *  Ownership then credits the full retail value already covered, including
+ *  shared IDs and free set trails once. Credit never pays currency back:
+ *  if it covers the offer, the remaining contents can be claimed for zero.
+ *  `savings` and `discountPercent` describe the original kit discount;
+ *  `credit` is shown separately and is never called an extra sale. */
+export function bundleQuote(b, owns) {
+    const ids = bundleIds(b);
+    // Signature wakes are inseparable suit effects, derived by the review UI.
+    // Listing one as a product would invent a separately chargeable entitlement.
+    if (ids.some(id => builtInTrailSuit(id))) {
+        throw new Error(`Invalid bundle kit: ${b.id}; built-in wakes must not be listed as products`);
+    }
+    const retail = alaCarteTotal(ids, () => false);
+    const discount = b.kit?.discountDust;
+    if (bundleProductIds(b).length < 3 || !b.kit || b.kit.banner !== `shop/${b.id}.png` ||
+        !Number.isFinite(discount) || !Number.isInteger(discount) || discount < 0 || discount > retail) {
+        throw new Error(`Invalid bundle kit: ${b.id}`);
+    }
+    const offer = retail - discount;
+    const credit = retail - alaCarteTotal(ids, owns);
+    return {
+        retail, offer, credit, due: Math.max(0, offer - credit), savings: discount,
+        discountPercent: retail > 0 ? Math.round(discount / retail * 1000) / 10 : 0,
+    };
 }
+export function featurePrice(b, owns) {
+    return bundleQuote(b, owns).due;
+}
+// Fail immediately when an edited kit has an invalid banner or discount.
+// The standard build's catalog tests import this module before shipping.
+for (const bundle of BUNDLES)
+    bundleQuote(bundle, () => false);
 // HOW MUCH OF THE CATALOGUE IS ON SALE TODAY. Deliberately small: the shelf
 // is a reason to come back, not an inventory. Trails are never sold singly
 // for now - they arrive free with their set.
@@ -817,7 +803,7 @@ export const SUIT_SHELF = [
     { title: "EXOTIC", ids: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"] },
     // premium suits the pilot owns; each one not yet bought shows as a door
     // to the shop instead of a locked card that answers nothing
-    { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash"], shop: true },
+    { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash", ...PREMIUM_SUIT_IDS], shop: true },
     // the cat eats no acorns, so no amount of them buys it: it is the
     // 300-star prize, the full Star Chart, and nothing less
     // the critters are premium: unowned ones show as doors to the shop
@@ -826,7 +812,6 @@ export const SUIT_SHELF = [
     // rewards where gaps are missing... all tap animations fixed so they can
     // go live now"): the five former beta suits fill the ladder above 300.
     { title: "HIGH ORBIT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
-    { title: "PREMIUM ATELIER", ids: [...PREMIUM_SUIT_IDS], shop: true },
 ];
 // The helmet wall groups by what the GLASS does, because that is how a
 // pilot actually chooses one. Suit-locked helmets are not listed anywhere:

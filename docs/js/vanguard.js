@@ -1,6 +1,6 @@
-import { paintVanguardRig } from './vanguard-rig.js?v=258';
-import { PHYS } from './catalog.js?v=258';
-import { createManeuverMotion, maneuverTap, maneuverContact, stepManeuver, paintManeuver } from './vanguard-maneuver.js?v=258';
+import { paintVanguardRig } from './vanguard-rig.js?v=259';
+import { PHYS } from './catalog.js?v=259';
+import { createManeuverMotion, maneuverTap, maneuverContact, stepManeuver, paintManeuver } from './vanguard-maneuver.js?v=259';
 export const VANGUARD_FRAMES = 16;
 export const VANGUARD_CYCLE_SECONDS = 1.8;
 export const VANGUARD_CONTACT_SECONDS = .95;

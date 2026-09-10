@@ -1,23 +1,23 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash } from "./catalog.js?v=254";
-import { platform } from "./platform.js?v=254";
-import { isPremiumSuit } from "./high-orbit-config.js?v=254";
-import { spillAppearance } from "./spill-appearance.js?v=254";
-import { routeMasks, rewardId } from "./campaign-progress.js?v=254";
-import { reachedGate } from "./campaign.js?v=254";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks } from "./art.js?v=254";
-import { vanguardDepotEligible } from "./spill-depot-gag.js?v=254";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=254";
-import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=254";
-import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=254";
-import { setVanguardPitchTrim } from "./vanguard.js?v=254";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=254";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=254";
-import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=254";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=254";
-import { raceViewport } from "./race-viewport.js?v=254";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=254";
-import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=254";
-import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save.js?v=254";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash } from "./catalog.js?v=259";
+import { platform } from "./platform.js?v=259";
+import { isPremiumSuit } from "./high-orbit-config.js?v=259";
+import { spillAppearance } from "./spill-appearance.js?v=259";
+import { routeMasks, rewardId } from "./campaign-progress.js?v=259";
+import { reachedGate } from "./campaign.js?v=259";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks } from "./art.js?v=259";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=259";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=259";
+import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, PALS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=259";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=259";
+import { setVanguardPitchTrim } from "./vanguard.js?v=259";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=259";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=259";
+import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, spillRelease, updateWorld, } from "./sim.js?v=259";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=259";
+import { raceViewport } from "./race-viewport.js?v=259";
+import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=259";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=259";
+import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save.js?v=259";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -143,18 +143,49 @@ export async function createEngine(canvas) {
             if (!platform.devDoors)
                 return "denied";
             const entered = code.trim();
+            // BOTH CODES OPEN THE WHOLE LOADOUT. They used to open different
+            // halves of it, which is why each read as a partial unlock: 120189
+            // granted IAP_ITEMS and left every STAR-gated suit, helmet, trail
+            // and pal locked, while 033018 granted stars and so left the
+            // PURCHASED items locked. Every loadout gate in save.ts takes a
+            // purchase, a star count, or the id sitting in its own unlocked
+            // list, so filling the lists opens all five tabs without touching
+            // stars or chart progress.
+            const openWholeLoadout = () => {
+                const add = (list, ids) => {
+                    for (const id of ids)
+                        if (!list.includes(id))
+                            list.push(id);
+                    return list;
+                };
+                save.purchased = add(save.purchased || [], IAP_ITEMS);
+                // AcorNut is the one that made this look half-finished even with
+                // the lists filled: migrate strips TUTORIAL_SUIT back out of
+                // unlockedSuits unless tutorialSuitEarned says otherwise, and that
+                // reads `purchased`, never the list. Without this entry the next
+                // save quietly takes him away again.
+                add(save.purchased, [TUTORIAL_SUIT]);
+                add(save.unlockedSuits, SUITS.map((x) => x.id));
+                add(save.unlocked, HELMETS.map((x) => x.id));
+                add(save.unlockedTrails, TRAILS.map((x) => x.id));
+                add(save.unlockedPals, PALS.map((x) => x.id));
+                // The SHIP tab is loadout too; these four read keyUnlocks beside
+                // their star gate. `deep` and `lost` are flight MODES rather than
+                // loadout, so they stay on the chart where they were put.
+                add(save.keyUnlocks, ["flightmods", "startShield", "battery", "dualpal"]);
+            };
             if (entered === "120189") {
-                save.purchased = save.purchased || [];
-                for (const id of IAP_ITEMS)
-                    if (!save.purchased.includes(id))
-                        save.purchased.push(id);
+                openWholeLoadout();
                 writeSave(save);
                 notify();
                 return "ok";
             }
-            // Briella's code. The game believes it has every star, all the
-            // gates open, and Dad gets to watch her fly whatever she wants.
+            // Briella's code. Everything the code above opens, plus the stars:
+            // the game believes it has every star on the road, all the gates
+            // open, and Dad gets to watch her fly whatever she wants. The only
+            // difference from 120189 is that this one says so.
             if (entered === "033018") {
+                openWholeLoadout();
                 save.allStars = true;
                 writeSave(save);
                 notify();
@@ -1025,10 +1056,9 @@ export async function createEngine(canvas) {
         const ids = bundleIds(bn);
         if (ids.every((i) => ownsPremium(save, i)))
             return "owned";
-        // the price the SHELF is showing, not the sticker: a pack whose suit
-        // the pilot already owns - bought, keyed or earned on the road - costs
-        // less, and charging the sticker here would take dust the card never
-        // asked for
+        // Both entry points charge the displayed kit quote, with full retail
+        // ownership credit. Zero due can still complete an unowned kit; only
+        // the ownership check above means there is nothing left to grant.
         const due = bundlePrice(bn, (i) => ownsPremium(save, i));
         if (save.starDust < due)
             return "poor";
@@ -1059,8 +1089,9 @@ export async function createEngine(canvas) {
         notify();
         return "ok";
     }
-    // The featured pack charges the FEATURED price - half of what is left -
-    // not the sticker on the BUNDLES entry, which is what the shelf shows.
+    // The same kit quote as direct checkout. Credit is a price reduction,
+    // never a currency refund; an explicit zero-due completion still grants
+    // the missing contents and their set trails.
     function buyFeature(id) {
         const bn = BUNDLES.find((b) => b.id === id);
         if (!bn)
@@ -1760,4 +1791,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=254";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=259";
