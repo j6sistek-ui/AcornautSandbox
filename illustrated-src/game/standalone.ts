@@ -248,11 +248,15 @@ export async function bootStandalone(root: HTMLElement) {
     });
   };
   let disposeChart = () => {};
-  let throttleOwner: number | string | null = null;
-  const throttle = el("button", "ac-throttle");
+  // TAP TO FLY (owner, 10 Sep 2026). The centre pad is THRUST: one press,
+  // one kick, exactly what a tap on the field does. The Throttle it
+  // replaced was a hold - pointer capture, an owner per finger or key, a
+  // release watched on the window - and all of that went with it. Hyper
+  // Run keeps hold-to-rise; the field flies like the other modes now.
+  const thrust = el("button", "ac-thrust");
   const diveButton = el("button", "ac-dive");
   const lungeButton = el("button", "ac-lunge");
-  for (const [kind, button] of [["dive", diveButton], ["throttle", throttle], ["lunge", lungeButton]] as const) {
+  for (const [kind, button] of [["dive", diveButton], ["thrust", thrust], ["lunge", lungeButton]] as const) {
     button.innerHTML = spillControlArt(kind);
     const box = SPILL_CONTROL_LAYOUT[kind];
     button.style.left = `${box.x / SPILL_CONTROL_LAYOUT.width * 100}%`;
@@ -262,51 +266,38 @@ export async function bootStandalone(root: HTMLElement) {
   }
   const lungeStatus = el("span", "ac-control-status");
   lungeButton.append(lungeStatus);
-  throttle.setAttribute("aria-label", "Throttle: hold to rise, release to fall");
+  thrust.setAttribute("aria-label", "Thrust: tap to fly");
   diveButton.setAttribute("aria-label", "Dive: downward burst");
-  for (const b of [throttle, diveButton, lungeButton]) {
+  for (const b of [thrust, diveButton, lungeButton]) {
     b.addEventListener("keydown", e => { if (e.code === "Space" || e.code.startsWith("Arrow") || e.code === "Enter") e.stopPropagation(); });
     b.addEventListener("keyup", e => { if (e.code === "Space" || e.code.startsWith("Arrow") || e.code === "Enter") e.stopPropagation(); });
     b.addEventListener("contextmenu", e => e.preventDefault());
   }
-  const releaseThrottle = () => {
-    const owner = throttleOwner; throttleOwner = null;
-    engine.spillThrottle(false);
-    throttle.classList.remove("held"); throttle.setAttribute("aria-pressed", "false");
-    if (typeof owner === "number") try { throttle.releasePointerCapture(owner); } catch { /* already cancelled */ }
+  // The kick fires on the press, not the click, so the pad answers as fast
+  // as a tap on the field. A pointer press still synthesises a click, which
+  // arrives with detail >= 1 and is ignored; a click-only assistive input
+  // arrives with detail 0 and is the one click that counts.
+  thrust.onpointerdown = e => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    e.preventDefault(); engine.spillThrust(); updateSpillControls();
   };
-  throttle.onpointerdown = e => {
-    if (throttleOwner !== null || (e.pointerType === "mouse" && e.button !== 0)) return;
-    e.preventDefault(); throttleOwner = e.pointerId;
-    try { throttle.setPointerCapture(e.pointerId); } catch { /* release also watched on window */ }
-    engine.spillThrottle(true); updateSpillControls();
-  };
-  const endThrottle = (e: PointerEvent) => { if (throttleOwner === e.pointerId) releaseThrottle(); };
-  throttle.addEventListener("lostpointercapture", endThrottle);
-  window.addEventListener("pointerup", endThrottle);
-  window.addEventListener("pointercancel", endThrottle);
-  throttle.onkeydown = e => {
+  thrust.onkeydown = e => {
     if (!["Space", "Enter"].includes(e.code)) return;
     e.preventDefault();
-    if (e.repeat || throttleOwner !== null) return;
-    throttleOwner = e.code; engine.spillThrottle(true); updateSpillControls();
+    // a key held on the pad is one tap, never a stream of them
+    if (e.repeat) return;
+    engine.spillThrust(); updateSpillControls();
   };
-  throttle.onkeyup = e => { if (throttleOwner === e.code) { e.preventDefault(); releaseThrottle(); } };
-  throttle.onblur = () => { if (typeof throttleOwner === "string") releaseThrottle(); };
-  // Click-only assistive input can toggle the same throttle; keyboard/pointer holds suppress their native click.
-  throttle.onclick = e => { if (e.detail === 0) {
-    if (throttleOwner !== null) releaseThrottle();
-    else { throttleOwner = "assistive"; engine.spillThrottle(true); updateSpillControls(); }
-  } };
+  thrust.onclick = e => { if (e.detail === 0) { engine.spillThrust(); updateSpillControls(); } };
   diveButton.onclick = () => engine.spillDive();
   lungeButton.onclick = () => engine.spillLunge();
-  spillControls.append(diveButton, throttle, lungeButton);
+  spillControls.append(diveButton, thrust, lungeButton);
   function updateSpillControls() {
     const sp = engine.world.spill;
     const visible = engine.world.screen === "play" && sp && !engine.save.spillButtonsOff
       && ["countdown", "wave", "drain"].includes(sp.phase);
     spillControls.hidden = !visible;
-    if (!visible) { if (throttleOwner !== null) releaseThrottle(); return; }
+    if (!visible) return;
     const manual = sp.phase !== "countdown" || sp.manual;
     diveButton.disabled = !manual;
     lungeButton.disabled = !manual || sp.lungeCharges <= 0;
@@ -314,8 +305,9 @@ export async function bootStandalone(root: HTMLElement) {
     const cap = sp.up.thrusters >= 2 ? 2 : 1;
     lungeStatus.textContent = sp.lungeCharges ? `${sp.lungeCharges}/${cap} READY` : "RECHARGING";
     lungeButton.setAttribute("aria-label", `Lunge: forward dash, ${sp.lungeCharges} of ${cap} charges ready`);
-    throttle.classList.toggle("held", throttleOwner !== null && sp.held);
-    throttle.setAttribute("aria-pressed", String(throttleOwner !== null && sp.held));
+    // the pad glows for the length of the kick's plume, so a press is seen
+    // to land even when the ship is already at the top of a hop
+    thrust.classList.toggle("firing", (sp.thrustT ?? 0) > 0);
   }
 
   const paint = () => {
@@ -443,12 +435,12 @@ export async function bootStandalone(root: HTMLElement) {
           const text = el("span"); text.append(el("b", "", label), el("small", "", detail));
           b.append(text, el("strong", "", on ? "ON" : "OFF")); b.onclick = hit; settings.append(b); return b;
         };
-        option("On-screen buttons", "Throttle, Dive and Lunge. Gestures also work.", !engine.save.spillButtonsOff,
+        option("On-screen buttons", "Thrust, Dive and Lunge. Taps and swipes also work.", !engine.save.spillButtonsOff,
           () => engine.setSpillButtonsOff(!engine.save.spillButtonsOff));
         const prompts = option("Instructional prompts", engine.save.helpOff ? "Help is disabled in Settings." : "Control tips and wave lessons. Hazard warnings stay visible.",
           !engine.save.spillPromptsOff && !engine.save.helpOff, () => engine.setSpillPromptsOff(!engine.save.spillPromptsOff));
         prompts.disabled = !!engine.save.helpOff;
-        settings.append(el("p", "ac-sub", "Hold Throttle to rise; release to fall. Dive gives a downward burst. Lunge dashes forward and recharges."));
+        settings.append(el("p", "ac-sub", "Tap to fly: every tap is a kick upward and gravity brings you down. Dive gives a downward burst. Lunge dashes forward and recharges."));
         sheet.append(settings);
       }
       // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
@@ -1279,7 +1271,8 @@ export async function bootStandalone(root: HTMLElement) {
     // like the leaderboard and shop. current button has white box that
     // disrupts the bar's look"). Same painted-on-dark treatment as the
     // gift and the trophy: screen-blended into the rail's own square.
-    gear.append(hubIcon("settings"));
+    // The gear became a question mark when settings moved to the Profile.
+    gear.append(hubIcon("help"));
     gear.onclick = () => engine.open("help");
     rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
     box.append(rail);
@@ -1645,7 +1638,7 @@ export async function bootStandalone(root: HTMLElement) {
     overlay.querySelector<HTMLElement>('[data-spill-control="setup-guide"], [data-spill-briefing]')?.focus({ preventScroll: true });
   }
   function spillHelpSheet() {
-    return drawSpillGuideSheet(engine, closeSpillHelp, engine.world.screen === "help" ? "BACK TO HELP" : "BACK TO SHIP");
+    return drawSpillGuideSheet(engine, closeSpillHelp, engine.world.screen === "help" ? "BACK TO HELP" : "BACK TO LAUNCH");
   }
   function drawSpillPrep() { return drawSpillLaunchSetup(engine, openSpillHelp); }
   function drawDepot(_sp: SpillState) { return drawDepotWorkshop(engine, depotView, render); }

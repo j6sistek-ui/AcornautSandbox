@@ -919,14 +919,16 @@
     /* the ship's meters: one segment per level, lit as it fills */
     /* inert for a moment after docking: a thumb still tapping buys nothing */
     .ac-depotcard.arming .ac-offer, .ac-depotcard.arming .ac-depotact, .ac-depotcard.arming .ac-primary { opacity: .35; pointer-events: none; }
-    .ac-depotwrap { background: rgba(3,6,18,.68); }
+    .ac-depotwrap { background: rgba(8,5,26,.68); }
     .ac-depotcard { text-align: left; padding-bottom: 0; }
     .ac-depotcard .ac-lvlname { margin-bottom: 2px; }
     .ac-spilloptions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .ac-spilloption { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; width: 100%; min-height: 60px; padding: 12px; border: 1px solid #ffffff24; border-radius: 10px; background: #131d30; color: #e4ebff; text-align: left; font: 600 12px/1.4 Figtree,sans-serif; cursor: pointer; }
-    .ac-spilloption b { font-size: 13px; } .ac-spilloption span { color: #acbad0; } .ac-spilloption strong { color: #f4ce80; font-size: 11px; }
-    .ac-spilloption.selected { border-color: #88d6ad; background: #163029; } .ac-spilloption:disabled { cursor: default; opacity: .5; }
-    .ac-spillprep { position: absolute; bottom: max(18px,env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(450px,calc(100% - 28px)); max-height: 70%; overflow: auto; pointer-events: auto; padding: 18px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; background: rgba(10,17,34,.96); border: 1px solid #2a3454; border-radius: 18px; box-shadow: 0 12px 60px #0008; }
+    /* Loadout family (10 Sep 2026): violet card, teal choice tokens when fitted, gold for the price word */
+    .ac-spilloption { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; width: 100%; min-height: 60px; padding: 12px; border: 1px solid #8656ba; border-radius: 16px; background: linear-gradient(145deg, rgba(23,12,46,.93), rgba(8,6,24,.88)); box-shadow: inset 0 0 0 1px #c386ff15, 0 0 7px #aa69ee22; color: #f9f4ff; text-align: left; font: 600 12px/1.4 Figtree,sans-serif; cursor: pointer; }
+    .ac-spilloption b { font-size: 13px; } .ac-spilloption span { color: #e1d9f1; } .ac-spilloption strong { color: #ffd76a; font-size: 11px; }
+    .ac-spilloption.selected { border-color: var(--ac-choice-line); background: var(--ac-choice-fill); box-shadow: var(--ac-choice-ring); } .ac-spilloption:disabled { cursor: default; opacity: .5; }
+    .ac-spilloption:focus-visible { outline: 2px solid #fff1b2; outline-offset: 3px; }
+    .ac-spillprep { position: absolute; bottom: max(18px,env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(450px,calc(100% - 28px)); max-height: 70%; overflow: auto; pointer-events: auto; padding: 18px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(180deg, #110b23, #090615); border: 1px solid #7951a7; border-radius: 18px; box-shadow: inset 0 1px 0 #d3a1ff22, 0 12px 60px #0008; }
     .ac-spillprep h2 { margin: 0; font: 700 28px Fraunces,serif; }
     .ac-spillprep p { margin: 0; }
     @media(max-width:380px) { .ac-spilloptions { grid-template-columns: 1fr; }}
@@ -1607,10 +1609,10 @@
     }
 
     /* The Spill workshop: the ship and its hardpoints own the bay. */
-    body .ac-depotwrap { background: linear-gradient(180deg,rgba(3,6,18,.06),rgba(3,6,18,.38)); }
+    body .ac-depotwrap { background: linear-gradient(180deg,rgba(8,5,26,.06),rgba(8,5,26,.38)); }
     body .ac-depotwrap .ac-depotcard { width: min(940px,100%); max-height: 92%; gap: 10px; padding: 16px 14px 0;
-      background: linear-gradient(145deg,rgba(18,22,43,.94),rgba(13,12,30,.95)); border: 1px solid #b4a0d855;
-      border-bottom: 0; box-shadow: 0 -16px 80px #03061766; }
+      background: linear-gradient(180deg,rgba(17,11,35,.95),rgba(9,6,21,.96)); border: 1px solid #7951a7;
+      border-bottom: 0; box-shadow: inset 0 1px 0 #d3a1ff22, 0 -16px 80px #03061766; }
     .ac-depotconsole h3, .ac-shipworkshop h3 { font: 700 22px/1.1 Fraunces,serif; margin: 0; color: #f9e7c8; }
     @keyframes ac-bay-arrival { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
     .ac-shipworkshop { gap: 12px; }
@@ -1634,24 +1636,30 @@
     .ac-spillcontrols button svg { display: block; width: 100%; height: 100%; pointer-events: none; filter: drop-shadow(0 4px 3px #0008); }
     .ac-spillcontrols .ac-dive { border-radius: 28% 0 0 28%; }
     .ac-spillcontrols .ac-lunge { border-radius: 0 28% 28% 0; }
-    .ac-spillcontrols .ac-throttle { z-index: 2; border-radius: 50%; }
-    .ac-spillcontrols button:active svg,.ac-spillcontrols .held svg { filter: brightness(1.3) drop-shadow(0 0 8px #a6ffda55); transform: scale(.97); }
+    .ac-spillcontrols .ac-thrust { z-index: 2; border-radius: 50%; }
+    .ac-spillcontrols button:active svg,.ac-spillcontrols .firing svg { filter: brightness(1.3) drop-shadow(0 0 8px #a6ffda55); transform: scale(.97); }
     .ac-spillcontrols button:disabled { opacity: .45; }
     .ac-spillcontrols .ac-control-status { position: absolute; top: 100%; left: 12%; width: 88%; text-align: center; color: #b4edff; font: 800 8px Figtree,sans-serif; letter-spacing: .05em; }
     .ac-spillcontrols button:focus-visible { outline: none; }
     .ac-spillcontrols button:focus-visible .ac-pad-face { stroke: #fff; stroke-width: 4; }
-    .ac-spillsetting:focus-visible, .ac-hardpoint:focus-visible { outline: 2px solid #ffe1a0; outline-offset: 3px; }
+    .ac-spillsetting:focus-visible, .ac-hardpoint:focus-visible { outline: 2px solid #fff1b2; outline-offset: 3px; }
+    /* Loadout family (10 Sep 2026): the violet panel, violet rows, and the ON pill is the Loadout's lit teal tab */
     .ac-spillsettings { display: flex; flex-direction: column; width: 100%; max-width: 520px; gap: 10px; text-align: left;
-      padding: 14px; border: 1px solid #9bc9ce44; border-radius: 16px; background: linear-gradient(135deg,#233249,#17182f); }
-    .ac-spillsettings h3 { margin: 0; font: 700 20px Fraunces,serif; color: #f5dfb8; }
+      padding: 14px; border: 1px solid #7951a7; border-radius: 18px; background: linear-gradient(180deg,#110b23,#090615);
+      box-shadow: inset 0 1px 0 #d3a1ff22; }
+    .ac-spillsettings h3 { margin: 0; font: 700 20px Fraunces,serif; color: #f9f4ff; }
     .ac-spillsettings p { margin: 0; }
+    .ac-spillsettings .ac-sub { color: #c9bbe3; }
     .ac-spillsetting { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; min-height: 60px;
-      border: 1px solid #ffffff22; border-radius: 11px; color: #e9e6f3; background: #0e172ccc; text-align: left; cursor: pointer; }
+      border: 1px solid #8656ba; border-radius: 16px; color: #f9f4ff; background: linear-gradient(145deg, rgba(23,12,46,.93), rgba(8,6,24,.88));
+      box-shadow: inset 0 0 0 1px #c386ff15, 0 0 7px #aa69ee22; text-align: left; cursor: pointer; }
     .ac-spillsetting > span { display: flex; flex-direction: column; gap: 5px; }
     .ac-spillsetting b { font: 800 13px Figtree,sans-serif; }
-    .ac-spillsetting small { font: 500 11px/1.4 Figtree,sans-serif; color: #b3c3d8; }
-    .ac-spillsetting strong { font: 900 10px Figtree,sans-serif; border-radius: 7px; padding: 7px; background: #384053; color: #c0c9d8; }
-    .ac-spillsetting[aria-checked="true"] strong { color: #b7f0d1; background: #254e44; }
+    .ac-spillsetting small { font: 500 11px/1.4 Figtree,sans-serif; color: #e1d9f1; }
+    .ac-spillsetting strong { font: 900 10px Figtree,sans-serif; letter-spacing: .1em; border-radius: 999px; padding: 7px 11px;
+      border: 1px solid #955bdd; background: rgba(14,6,32,.84); color: #e0d8ee; }
+    .ac-spillsetting[aria-checked="true"] strong { color: #f5fffe; border-color: #65ffe8;
+      background: linear-gradient(180deg, #156263, #09252f 65%, #124a4c); box-shadow: inset 0 0 9px #4affdf99, 0 0 12px #4affdf88; }
     .ac-spillsetting:disabled { opacity: .6; }
     @media(max-height:450px) { .ac-stage > .ac-spillcontrols { width: min(300px,calc(100% - 32px)); bottom: max(8px,env(safe-area-inset-bottom)); } }
 
@@ -1694,11 +1702,19 @@
 .ac-reward-concept h3 { color: #f1d6a7; margin: 8px 0; font: 700 17px/1.3 system-ui; }
 .ac-reward-concept .ac-sub { font-size: 12px; line-height: 1.5; }
 </style>
-<style id="ac-spill-workshop-css">/* Spill workshop: real controls over the approved salvage hangar artwork. */
-body .ac-depotwrap.ac-workshop{background:linear-gradient(#070c1930,#070c1940),var(--workshop-art);background-size:cover;background-position:center;padding:10px;justify-content:center;align-items:center}
-body .ac-depotwrap.ac-workshop .ac-depotcard{width:min(680px,100%);max-height:100%;padding:0;gap:0;align-items:stretch;text-align:left;color:#f8eddb;border:1px solid #56627c85;border-radius:18px;background:#0e1525ed;box-shadow:0 15px 65px #0008;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#576176 #131b2d}
-.ac-workshop-card h2,.ac-depotguidecard h2,.ac-spillsetup h2{font:800 28px/1.1 Fraunces,Georgia,serif;color:#f8eddb;margin:0}
-.ac-workshop h3,.ac-spillsetup h3,.ac-starting-kit h3,.ac-engine-picker h3{font:600 15px/1.25 Figtree,sans-serif;margin:0;color:#f4e9d5}
+<style id="ac-spill-workshop-css">/* Spill workshop: real controls over the approved salvage hangar artwork.
+   MATERIAL (10 Sep 2026, owner: "should match the loadout and shops style, right
+   now it feels a bit like a different game"). Every Debris Field surface wears the
+   Loadout/Shop family: violet grounds and panels, purple borders, teal choice
+   tokens for anything selected or fitted, gold pills for anything that costs
+   Acorn Coins, the Loadout's radial purple "?" and its cream focus ring. The four
+   hardpoint colours, the green health bar, the workshop art and the pads keep
+   their own colour. Layout values are unchanged. */
+.ac-workshop,.ac-spillsetup,.ac-spillsettings,.ac-spilloptions,.ac-spillflighthelp,.ac-starting-kit,.ac-engine-picker{--ac-choice-line:#62ffec;--ac-choice-fill:rgba(10,74,77,.72);--ac-choice-ring:inset 0 0 12px #42f9dc44,0 0 12px #42f9dc66}
+body .ac-depotwrap.ac-workshop{background:linear-gradient(#08051a33,#08051a4d),var(--workshop-art);background-size:cover;background-position:center;padding:10px;justify-content:center;align-items:center}
+body .ac-depotwrap.ac-workshop .ac-depotcard{width:min(680px,100%);max-height:100%;padding:0;gap:0;align-items:stretch;text-align:left;color:#f9f4ff;border:1px solid #7951a7;border-radius:18px;background:linear-gradient(180deg,#110b23f5,#090615f5);box-shadow:inset 0 1px 0 #d3a1ff22,0 15px 65px #0008;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#6b4a9a #120a26}
+.ac-workshop-card h2,.ac-depotguidecard h2,.ac-spillsetup h2{font:800 28px/1.1 Fraunces,Georgia,serif;color:#f9f4ff;margin:0}
+.ac-workshop h3,.ac-spillsetup h3,.ac-starting-kit h3,.ac-engine-picker h3{font:600 15px/1.25 Figtree,sans-serif;margin:0;color:#f9f4ff}
 .ac-workshop p,.ac-workshop h4{margin:0}
 .ac-workshop button,.ac-starting-kit button,.ac-engine-picker button,.ac-spillsetup button{font-family:Figtree,sans-serif;cursor:pointer;touch-action:manipulation}
 .ac-workshop button:disabled,.ac-starting-kit button:disabled,.ac-engine-picker button:disabled{cursor:default}
@@ -1709,96 +1725,105 @@ body .ac-depotwrap.ac-workshop .ac-depotcard{width:min(680px,100%);max-height:10
 .ac-workshop-icon{width:20px;height:20px;display:block;flex:none;color:inherit}
 .ac-workshop-coin{width:18px;height:18px;object-fit:contain;display:inline-block;flex:none}
 .ac-utility-art{width:48px;height:48px;object-fit:contain;display:block;flex:none;filter:drop-shadow(0 3px 2px #0006)}
-.ac-workshop-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 14px 10px;background:linear-gradient(120deg,#28253bbb,#0b1321a6)}
+.ac-workshop-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 14px 10px;background:radial-gradient(ellipse at 0 0,#6a35a866,transparent 55%),linear-gradient(120deg,#2b1652cc,#0d0820a6)}
 .ac-workshop-head .ac-kicker,.ac-depotguidecard .ac-kicker{line-height:1.4;margin:0 0 4px}
 .ac-workshop-headtools{display:flex;align-items:center;gap:10px;flex:none}
-.ac-workshop-wallet{display:flex;align-items:center;gap:6px;color:#f5d391;font:600 24px/1.2 Fraunces,Georgia,serif;font-variant-numeric:tabular-nums}
-.ac-workshop-wallet .ac-workshop-coin{width:27px;height:27px}
-.ac-workshop-status{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 13px;background:#0e1729;border-block:1px solid #52607955;font:500 12px/1.3 Figtree,sans-serif}
+/* the balance wears the Loadout's acorn pill */
+.ac-workshop-wallet{display:flex;align-items:center;gap:4px;min-height:30px;padding:0 9px 0 5px;border-radius:999px;color:#ffdf9a;background:rgba(120,90,20,.28);border:1px solid rgba(255,206,92,.4);font:800 13px/1 Figtree,sans-serif;font-variant-numeric:tabular-nums}
+.ac-workshop-wallet .ac-workshop-coin{width:18px;height:18px;filter:drop-shadow(0 0 4px rgba(255,206,92,.6))}
+.ac-workshop .ac-helpdot,.ac-spillsetup .ac-helpdot{border:1px solid #ce95ff;color:#f6edff;background:radial-gradient(ellipse at top,#572579,#170d2e 72%);box-shadow:inset 0 0 7px #c97eff55,0 0 9px #c97eff66;font:800 16px/1 Figtree,sans-serif}
+.ac-workshop-status{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 13px;background:#0d0820;border-block:1px solid #7951a766;color:#e1d9f1;font:500 12px/1.3 Figtree,sans-serif}
+.ac-workshop-status b{color:#f9f4ff}
 .ac-workshop-health{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
 .ac-workshop-health>span{display:flex;align-items:center;gap:6px;white-space:nowrap}
 .ac-workshop-health .ac-workshop-icon{color:#7ee6b5;width:17px;height:17px}
-.ac-workshop-health progress{width:100%;max-width:128px;height:7px;appearance:none;border:0;border-radius:5px;overflow:hidden;background:#2b384c;accent-color:#69dcaa}
-.ac-workshop-health progress::-webkit-progress-bar{background:#2b384c;border-radius:5px}
+.ac-workshop-health progress{width:100%;max-width:128px;height:7px;appearance:none;border:0;border-radius:5px;overflow:hidden;background:#2a1d45;accent-color:#69dcaa}
+.ac-workshop-health progress::-webkit-progress-bar{background:#2a1d45;border-radius:5px}
 .ac-workshop-health progress::-webkit-progress-value{background:linear-gradient(#91f0c5,#42c795);border-radius:5px}
 .ac-workshop-health progress::-moz-progress-bar{background:#69dcaa}
 .ac-workshop-shields{display:flex;gap:5px;align-items:center;color:#b6ddf4;white-space:nowrap}
 .ac-workshop-shields .ac-workshop-icon{width:16px;height:18px}
-.ac-workshop-buy{display:flex;align-items:center;justify-content:center;gap:5px;flex:none;min-height:44px;min-width:62px;padding:8px 10px;border:1px solid #f3c786;border-radius:10px;background:linear-gradient(#bc873a,#78501f);box-shadow:inset 0 1px #ffebba88,0 2px 0 #513717;color:#fff0cf;font:600 13px/1.15 Figtree,sans-serif}
-.ac-workshop-buy:disabled{background:#263146;border-color:#546077;box-shadow:none;color:#bbc7d9}
-.ac-workshop-buy.fitted{background:#193d34;border-color:#71bb9a;color:#b4f0d0;box-shadow:none;font-size:11px}
+/* a price is the Loadout's gold pill, coin inside; fitted wears the choice tokens */
+.ac-workshop-buy{display:flex;align-items:center;justify-content:center;gap:5px;flex:none;min-height:44px;min-width:62px;padding:8px 14px;border:1px solid rgba(255,238,190,.6);border-radius:999px;background:linear-gradient(180deg,#ffcd5a,#f0b64a 45%,#b8730a);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px -6px rgba(255,180,60,.7);color:#2b1700;font:800 13px/1.15 Figtree,sans-serif}
+.ac-workshop-buy:disabled{background:linear-gradient(180deg,#221540,#130b26);border-color:#8656ba66;box-shadow:none;color:#b9a9d6}
+.ac-workshop-buy.fitted{background:var(--ac-choice-fill);border-color:var(--ac-choice-line);color:#eafffc;box-shadow:var(--ac-choice-ring);font-size:11px}
 .ac-workshop-buy:active:not(:disabled){transform:translateY(1px);box-shadow:none}
-.ac-workshop-status .ac-workshop-buy{font-size:11px;min-width:0;padding:7px 8px}
+.ac-workshop-status .ac-workshop-buy{font-size:11px;min-width:0;padding:7px 12px}
 .ac-workshop-status .ac-workshop-buy .ac-workshop-coin{width:15px;height:15px}
-.ac-workshop-free{padding:8px 14px;color:#ffda84;background:#3c3023;font:600 14px/1.3 Figtree,sans-serif}
-.ac-workshop-stage{position:relative;isolation:isolate;background:linear-gradient(#080b1822,#080b1833),var(--workshop-art);background-size:cover;background-position:center 65%;overflow:hidden}
+.ac-workshop-free{padding:8px 14px;color:#ffd76a;background:linear-gradient(100deg,rgba(237,160,60,.22),rgba(12,8,28,.4) 70%);border-bottom:1px solid rgba(255,206,92,.25);font:600 14px/1.3 Figtree,sans-serif}
+.ac-workshop-stage{position:relative;isolation:isolate;background:linear-gradient(#08051a22,#08051a33),var(--workshop-art);background-size:cover;background-position:center 65%;overflow:hidden}
 .ac-workshop-preview{display:block;width:100%;height:auto}
 .ac-workshop-stage .ac-workshop-preview{position:relative;z-index:1}
 .ac-workshop-links{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
 .ac-workshop-links path{fill:none;stroke:var(--system-color);stroke-width:1.2;opacity:.8}
-.ac-workshop-system{position:absolute;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:106px;min-height:56px;padding:7px 8px;border:1px solid var(--system-color);border-radius:11px;background:linear-gradient(145deg,rgba(var(--system-rgb),.96),#121629ed);box-shadow:0 3px 5px #0006;color:#f8eadb;font:500 12px/1.15 Figtree,sans-serif}
+.ac-workshop-system{position:absolute;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:106px;min-height:56px;padding:7px 8px;border:1px solid var(--system-color);border-radius:11px;background:linear-gradient(145deg,rgba(var(--system-rgb),.96),#140c28ed);box-shadow:0 3px 5px #0006;color:#f9f4ff;font:500 12px/1.15 Figtree,sans-serif}
 .ac-workshop-system.selected{outline:2px solid #ffe091;outline-offset:1px;box-shadow:0 0 14px #ffbd5770}
 .ac-workshop-system[data-system=plating]{left:10px;top:9px}.ac-workshop-system[data-system=shield]{right:10px;top:9px}
 .ac-workshop-system[data-system=thrusters]{left:10px;bottom:9px}.ac-workshop-system[data-system=pulse]{right:10px;bottom:9px}
 .ac-workshop-systemname{display:flex;align-items:center;gap:6px}.ac-workshop-systemname .ac-workshop-icon{width:17px;height:17px;color:var(--system-color)}
-.ac-workshop-systemprice{display:flex;align-items:center;gap:5px;color:#f8e2b4;font-size:12px}.ac-workshop-systemprice .ac-workshop-coin{width:14px;height:14px}
-.ac-workshop-selection{display:flex;align-items:center;gap:10px;padding:10px 12px;background:linear-gradient(100deg,rgba(var(--system-rgb),.2),#111a2c);border-block:1px solid #5a657a77}
+.ac-workshop-systemprice{display:flex;align-items:center;gap:5px;color:#ffe2a8;font-size:12px}.ac-workshop-systemprice .ac-workshop-coin{width:14px;height:14px}
+.ac-workshop-selection{display:flex;align-items:center;gap:10px;padding:10px 12px;background:linear-gradient(100deg,rgba(var(--system-rgb),.22),#0f0a20);border-block:1px solid #7951a766}
 .ac-workshop-selection>.ac-workshop-icon{color:var(--system-color);width:25px;height:25px}
-.ac-workshop-selectiontext{flex:1;min-width:0}.ac-workshop-selection h3{font-size:14px}.ac-workshop-selection p{margin-top:4px;font:400 12px/1.35 Figtree,sans-serif;color:#c5cce0}
-.ac-workshop-need{color:#f4c5a4;font:500 12px Figtree,sans-serif;padding:7px 14px}
+.ac-workshop-selectiontext{flex:1;min-width:0}.ac-workshop-selection h3{font-size:14px}.ac-workshop-selection p{margin-top:4px;font:400 12px/1.35 Figtree,sans-serif;color:#e1d9f1}
+.ac-workshop-need{color:#ffb6a5;font:500 12px Figtree,sans-serif;padding:7px 14px}
 .ac-workshop-sectionhead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.ac-workshop-sectionhead>span{font:400 11px/1.25 Figtree,sans-serif;color:#b8c5db}
-.ac-workshop-utilities{padding:12px 12px 0}.ac-workshop-utilities h3{font:600 18px/1.2 Fraunces,Georgia,serif}
-.ac-workshop-slots{display:flex;gap:7px;margin:8px 0;color:#a9b8ce;font:400 10px/1.15 Figtree,sans-serif}
-.ac-workshop-slots>span{display:flex;align-items:center;justify-content:center;gap:4px;flex:1;min-width:0;min-height:27px;padding:4px 5px;background:#0b1423;border:1px dashed #56677c;border-radius:6px}
-.ac-workshop-slots .fitted{border-style:solid;border-color:#599b83;color:#b5e9ce}.ac-workshop-slots .ac-utility-art{width:21px;height:21px}
+.ac-workshop-sectionhead>span{font:400 11px/1.25 Figtree,sans-serif;color:#c9bbe3}
+.ac-workshop-utilities{padding:12px 12px 0}.ac-workshop-utilities h3{font:600 18px/1.2 Fraunces,Georgia,serif;text-shadow:0 0 10px #a869df66}
+.ac-workshop-slots{display:flex;gap:7px;margin:8px 0;color:#c9bbe3;font:400 10px/1.15 Figtree,sans-serif}
+.ac-workshop-slots>span{display:flex;align-items:center;justify-content:center;gap:4px;flex:1;min-width:0;min-height:27px;padding:4px 5px;background:rgba(14,6,32,.84);border:1px dashed #955bdd99;border-radius:999px}
+.ac-workshop-slots .fitted{border-style:solid;border-color:var(--ac-choice-line);background:var(--ac-choice-fill);box-shadow:var(--ac-choice-ring);color:#eafffc}.ac-workshop-slots .ac-utility-art{width:21px;height:21px}
 .ac-workshop-utilitygrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.ac-workshop-utility{display:flex;flex-direction:column;min-width:0;padding:9px 8px 8px;border:1px solid #4f5a7277;border-radius:12px;background:linear-gradient(140deg,#293046aa,#111a2b);gap:6px}
-.ac-workshop-utility.fitted{border-color:#72b69a;background:linear-gradient(140deg,#26443e,#121e2c)}
+.ac-workshop-utility{display:flex;flex-direction:column;min-width:0;padding:9px 8px 8px;border:1px solid #8656ba;border-radius:16px;background:linear-gradient(145deg,rgba(23,12,46,.93),rgba(8,6,24,.88));box-shadow:inset 0 0 0 1px #c386ff15,0 0 7px #aa69ee22;gap:6px}
+.ac-workshop-utility.fitted{border-color:var(--ac-choice-line);background:var(--ac-choice-fill);box-shadow:var(--ac-choice-ring)}
 .ac-workshop-utilityname{display:flex;align-items:center;gap:6px;min-height:42px}.ac-workshop-utilityname .ac-utility-art{width:43px;height:43px}
-.ac-workshop-utility h4{font:600 13px/1.2 Figtree,sans-serif;color:#f2e9d9}.ac-workshop-utility p{font:400 12px/1.35 Figtree,sans-serif;color:#c0cbdf;flex:1}
+.ac-workshop-utility h4{font:600 13px/1.2 Figtree,sans-serif;color:#f9f4ff}.ac-workshop-utility p{font:400 12px/1.35 Figtree,sans-serif;color:#e1d9f1;flex:1}
 .ac-workshop-utility .ac-workshop-buy{align-self:stretch;margin-top:1px;font-size:12px;min-height:40px}
-.ac-workshop-requirement{color:#e4c796;font:400 10px/1.2 Figtree,sans-serif}
-.ac-workshop-extras,.ac-workshop-specialties{margin:11px 12px 0;border:1px solid #55607966;border-radius:11px;background:#141d30}
-.ac-workshop summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:10px 12px;color:#e9ddc9;font:600 14px/1.3 Figtree,sans-serif}
-.ac-workshop summary::-webkit-details-marker{display:none}.ac-workshop summary:after{content:'›';font:500 24px/1 Figtree,sans-serif;color:#bfcbe1}.ac-workshop details[open]>summary:after{transform:rotate(90deg)}
+.ac-workshop-requirement{color:#f3ca75;font:400 10px/1.2 Figtree,sans-serif}
+.ac-workshop-extras,.ac-workshop-specialties{margin:11px 12px 0;border:1px solid #8656ba;border-radius:16px;background:linear-gradient(145deg,rgba(23,12,46,.93),rgba(8,6,24,.88));box-shadow:inset 0 0 0 1px #c386ff15,0 0 7px #aa69ee22}
+.ac-workshop summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:10px 12px;color:#f3ecff;font:600 14px/1.3 Figtree,sans-serif}
+.ac-workshop summary::-webkit-details-marker{display:none}.ac-workshop summary:after{content:'›';font:500 24px/1 Figtree,sans-serif;color:#cba7ff}.ac-workshop details[open]>summary:after{transform:rotate(90deg)}
 .ac-workshop-specialties .ac-spilloptions{padding:0 9px 9px;grid-template-columns:1fr 1fr}.ac-workshop-specialties .ac-spilloption{font-size:12px;padding:9px}.ac-workshop-specialties .ac-spilloption b{font-size:12px}
-.ac-workshop-service{display:flex;gap:9px;align-items:center;padding:10px 12px;border-top:1px solid #48546a88;font:500 13px/1.3 Figtree,sans-serif}.ac-workshop-service>div{flex:1}.ac-workshop-service p{font-size:12px;color:#becade;margin-top:4px}.ac-workshop-service>.ac-workshop-icon{color:#f4ce8a}
+.ac-workshop-service{display:flex;gap:9px;align-items:center;padding:10px 12px;border-top:1px solid #8656ba55;font:500 13px/1.3 Figtree,sans-serif}.ac-workshop-service>div{flex:1}.ac-workshop-service p{font-size:12px;color:#e1d9f1;margin-top:4px}.ac-workshop-service>.ac-workshop-icon{color:#f3ca75}
 .ac-workshop-extras>.ac-workshop-note{padding:5px 12px 9px}
-.ac-workshop-contract-option{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:0;border-top:1px solid #46536c88;background:transparent;color:#f3e7d0;width:100%;text-align:left;font:500 12px/1.3 Figtree,sans-serif}
-.ac-workshop-contract-option>span{display:flex;flex-direction:column;gap:4px}.ac-workshop-contract-option span span{font-weight:400;color:#bac7dc}.ac-workshop-contract-option strong{flex:none;color:#f8d48b;font-size:11px}.ac-workshop-contract-option:disabled{opacity:.6}
-.ac-workshop-contract,.ac-workshop-milestone{font:500 12px/1.4 Figtree,sans-serif;color:#ead19b;padding:10px 13px}
-.ac-workshop-swap{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;padding:10px;border:1px solid #beac83;border-radius:10px;background:#302b3b}.ac-workshop-swap p{flex-basis:100%;font:500 12px/1.4 Figtree,sans-serif;color:#f6dcaa}
+.ac-workshop-contract-option{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:0;border-top:1px solid #8656ba55;background:transparent;color:#f9f4ff;width:100%;text-align:left;font:500 12px/1.3 Figtree,sans-serif}
+.ac-workshop-contract-option>span{display:flex;flex-direction:column;gap:4px}.ac-workshop-contract-option span span{font-weight:400;color:#e1d9f1}.ac-workshop-contract-option strong{flex:none;color:#ffd76a;font-size:11px}.ac-workshop-contract-option:disabled{opacity:.6}
+.ac-workshop-contract,.ac-workshop-milestone{font:500 12px/1.4 Figtree,sans-serif;color:#f3ca75;padding:10px 13px}
+.ac-workshop-swap{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;padding:10px;border:1px solid #955bdd;border-radius:16px;background:rgba(14,6,32,.84);box-shadow:inset 0 0 9px #9d5aea33,0 0 10px #9d5aea33}.ac-workshop-swap p{flex-basis:100%;font:500 12px/1.4 Figtree,sans-serif;color:#f3ca75}
 .ac-workshop-secondary{min-height:44px}
-.ac-workshop-footer{position:sticky;bottom:0;z-index:4;padding:8px 12px max(10px,env(safe-area-inset-bottom));background:#101729f7;border-top:1px solid #4c58706b;margin-top:11px}
-.ac-workshop-receipt{font:500 11px/1.3 Figtree,sans-serif;color:#a3dfbd;min-height:22px;padding-bottom:6px}
+.ac-workshop-footer{position:sticky;bottom:0;z-index:4;padding:8px 12px max(10px,env(safe-area-inset-bottom));background:#0c0719;border-top:1px solid #7951a766;margin-top:11px}
+/* the shelf fades out under the pinned footer instead of showing through its top margin */
+.ac-workshop-footer::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:11px;pointer-events:none;background:linear-gradient(#0c071900,#0c0719 60%)}
+.ac-workshop-receipt{font:500 11px/1.3 Figtree,sans-serif;color:#8af3e6;min-height:22px;padding-bottom:6px}
 /* Hub classes own the button material; these are layout modifiers only. */
 .ac-workshop-actions{display:flex;align-items:stretch;gap:8px}
 .ac-workshop-launch{flex:1;min-width:0;min-height:46px}
 .ac-workshop-launch:disabled{opacity:.5;cursor:default}
 .ac-workshop-exit{min-height:44px;flex:none}
-.ac-workshop-note{color:#b7c5d9;font:400 12px/1.4 Figtree,sans-serif;margin:5px 0 0}
-body .ac-workshop .ac-depotguidecard{width:min(420px,100%);padding:20px 16px 14px;background:radial-gradient(ellipse at 90% 0,#49365466,transparent 50%),#12182b}
-.ac-guide-collect{display:flex;align-items:center;gap:12px;margin:18px 0 17px}.ac-guide-collect .ac-workshop-coin{width:34px;height:34px}.ac-guide-collect h3{color:#f5d391}.ac-guide-collect p{font:400 13px/1.4 Figtree,sans-serif;margin-top:4px}
-.ac-guide-systems,.ac-guide-kit{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.ac-guide-systems>div,.ac-guide-kit>div{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;font:500 12px/1.2 Figtree,sans-serif;color:var(--system-color,#f3e9d7)}
-.ac-guide-systems .ac-workshop-icon{margin-bottom:3px}.ac-guide-systems span,.ac-guide-kit span{font:400 11px/1.25 Figtree,sans-serif;color:#bfcbe0}
-.ac-guide-utilityhead{border-top:1px solid #4b576f80;padding-top:13px;margin:17px 0 8px}.ac-guide-utilityhead h3{color:#a7ddfa}.ac-guide-kit .ac-utility-art{width:55px;height:52px}
-.ac-guide-services{font:400 11px/1.4 Figtree,sans-serif;color:#c9d2e3;margin-top:15px!important;text-align:center}
-.ac-guide-carry{display:grid;grid-template-columns:1fr 1fr;gap:14px;border-top:1px solid #4b576f80;padding-top:14px;margin:16px 0}.ac-guide-carry p{font:400 12px/1.4 Figtree,sans-serif;color:#c1ccdf;margin-top:5px}.ac-guide-loss h3{color:#ffb6a5}.ac-guide-keep h3{color:#8be0b0}
+/* the secondary action is the Loadout family's violet ghost on the live page as well as the beta */
+body .ac-workshop .ac-ghost,body .ac-spillsetup .ac-ghost{background:linear-gradient(180deg,#1f1340,#0f0921);border:1px solid #8656ba;color:#f3ecff;box-shadow:inset 0 0 0 1px #c386ff15}
+.ac-workshop-note{color:#c9bbe3;font:400 12px/1.4 Figtree,sans-serif;margin:5px 0 0}
+/* the guide: the same specificity as the workshop card, so its padding finally applies */
+body .ac-depotwrap.ac-workshop .ac-depotcard.ac-depotguidecard{width:min(420px,100%);padding:20px 16px 14px;background:radial-gradient(ellipse at 90% 0,#57257966,transparent 50%),linear-gradient(180deg,#110b23f5,#090615f5)}
+.ac-guide-collect{display:flex;align-items:center;gap:12px;margin:18px 0 17px}.ac-guide-collect .ac-workshop-coin{width:34px;height:34px}.ac-guide-collect h3{color:#f3ca75}.ac-guide-collect p{font:400 13px/1.4 Figtree,sans-serif;margin-top:4px;color:#e1d9f1}
+.ac-guide-systems,.ac-guide-kit{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.ac-guide-systems>div,.ac-guide-kit>div{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;font:500 12px/1.2 Figtree,sans-serif;color:var(--system-color,#f9f4ff)}
+.ac-guide-systems .ac-workshop-icon{margin-bottom:3px}.ac-guide-systems span,.ac-guide-kit span{font:400 11px/1.25 Figtree,sans-serif;color:#c9bbe3}
+.ac-guide-utilityhead{border-top:1px solid #8656ba55;padding-top:13px;margin:17px 0 8px}.ac-guide-utilityhead h3{color:#d9c4fa;text-shadow:0 0 10px #a869df66}.ac-guide-kit .ac-utility-art{width:55px;height:52px}
+.ac-guide-services{font:400 11px/1.4 Figtree,sans-serif;color:#c9bbe3;margin-top:15px!important;text-align:center}
+.ac-guide-carry{display:grid;grid-template-columns:1fr 1fr;gap:14px;border-top:1px solid #8656ba55;padding-top:14px;margin:16px 0}.ac-guide-carry p{font:400 12px/1.4 Figtree,sans-serif;color:#e1d9f1;margin-top:5px}.ac-guide-loss h3{color:#ffb6a5}.ac-guide-keep h3{color:#7ff2e0}
 .ac-depotguidecard>.ac-workshop-launch{flex:none;width:100%;margin-top:1px}.ac-guide-timing{text-align:center;margin-top:11px!important;font-size:11px}
 /* Setup is outside the run: a real starting ship, earned utility and chosen color. */
-body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));bottom:max(12px,env(safe-area-inset-bottom));max-height:calc(100% - max(12px,env(safe-area-inset-top)) - max(12px,env(safe-area-inset-bottom)));display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;padding:16px 15px;gap:0;background:linear-gradient(145deg,#24273d,#101c2d);border:1px solid #2a3454;color:#f3e6d2;text-align:left;border-radius:18px}
-.ac-spillsetup .ac-kicker{line-height:1.4;margin:0 0 7px}.ac-setup-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.ac-setup-head>div{min-width:0}.ac-launch-ship{position:relative;margin:3px 0 0;background:radial-gradient(ellipse,#41546855,transparent 70%)}
-.ac-launch-ship .ac-workshop-preview{max-width:360px;margin:auto}.ac-launch-pilot{position:absolute;bottom:0;left:0;color:#dcd2c4;font:500 12px/1.2 Figtree,sans-serif}
-.ac-launch-stats{font:500 13px/1.3 Figtree,sans-serif;color:#a4e5c2;padding:7px 0 10px;margin:0;border-bottom:1px solid #46546b}
+body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));bottom:max(12px,env(safe-area-inset-bottom));max-height:calc(100% - max(12px,env(safe-area-inset-top)) - max(12px,env(safe-area-inset-bottom)));display:flex;flex-direction:column;overflow:hidden;box-sizing:border-box;padding:16px 15px;gap:0;background:linear-gradient(180deg,#110b23,#090615);border:1px solid #7951a7;color:#f9f4ff;text-align:left;border-radius:18px;box-shadow:inset 0 1px 0 #d3a1ff22,0 12px 60px #0008}
+.ac-spillsetup .ac-kicker{line-height:1.4;margin:0 0 7px}.ac-setup-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.ac-setup-head>div{min-width:0}.ac-launch-ship{position:relative;margin:3px 0 0;background:radial-gradient(ellipse,#57257966,transparent 70%)}
+.ac-launch-ship .ac-workshop-preview{max-width:360px;margin:auto}.ac-launch-pilot{position:absolute;bottom:0;left:0;color:#e1d9f1;font:500 12px/1.2 Figtree,sans-serif}
+.ac-launch-stats{font:500 13px/1.3 Figtree,sans-serif;color:#8af3e6;padding:7px 0 10px;margin:0;border-bottom:1px solid #8656ba55}
 .ac-starting-kit{margin-top:14px}.ac-starting-kit>.ac-workshop-note{margin:4px 0 7px}.ac-starting-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-.ac-starter-none{min-height:38px;width:100%;padding:7px 10px;border:1px solid #53647b;border-radius:8px;color:#ccd7e7;background:#142237;font:500 12px Figtree,sans-serif;text-align:left;margin-bottom:7px}
-.ac-starter-option{display:flex;align-items:center;gap:7px;min-width:0;padding:9px 8px;border:1px solid #53647b;border-radius:10px;background:#172338;color:#eadfcf;text-align:left;font:400 11px/1.3 Figtree,sans-serif}
-.ac-starter-option .ac-utility-art{width:42px;height:47px}.ac-starter-text{display:flex;flex-direction:column;min-width:0;gap:4px}.ac-starter-text>b{font-size:12px}.ac-starter-text>span{color:#bcc9dc}.ac-starter-text>strong{font-size:10px;color:#e8ce98}
-.ac-starter-option.on strong{color:#ddd3ff}.ac-starter-option:disabled{background:#141d2c;border-color:#3e4b62}.ac-starter-option:disabled .ac-utility-art{opacity:.55}.ac-starter-option:disabled strong{color:#b8c3d8}
-.ac-engine-picker{margin-top:15px;padding-top:12px;border-top:1px solid #46546b}.ac-engine-picker h3{font-size:14px}.ac-engine-colors{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin-top:8px}
-.ac-engine-color{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;min-height:73px;padding:7px 3px;border:1px solid #526078;border-radius:9px;background:#152238;color:#ded7cd;font:500 11px/1.15 Figtree,sans-serif}
-.ac-engine-color:disabled{background:#151d2a;color:#b4bdd0}.ac-engine-color small{font:400 9px/1.2 Figtree,sans-serif;color:#b9c8de}.ac-engine-color.on small{color:#ddd3ff}
+.ac-starter-none{min-height:38px;width:100%;padding:7px 10px;border:1px solid #8656ba;border-radius:16px;color:#e1d9f1;background:linear-gradient(145deg,rgba(23,12,46,.93),rgba(8,6,24,.88));box-shadow:inset 0 0 0 1px #c386ff15,0 0 7px #aa69ee22;font:500 12px Figtree,sans-serif;text-align:left;margin-bottom:7px}
+.ac-starter-option{display:flex;align-items:center;gap:7px;min-width:0;padding:9px 8px;border:1px solid #8656ba;border-radius:16px;background:linear-gradient(145deg,rgba(23,12,46,.93),rgba(8,6,24,.88));box-shadow:inset 0 0 0 1px #c386ff15,0 0 7px #aa69ee22;color:#f9f4ff;text-align:left;font:400 11px/1.3 Figtree,sans-serif}
+.ac-starter-option .ac-utility-art{width:42px;height:47px}.ac-starter-text{display:flex;flex-direction:column;min-width:0;gap:4px}.ac-starter-text>b{font-size:12px}.ac-starter-text>span{color:#e1d9f1}.ac-starter-text>strong{font-size:10px;color:#ffd76a}
+.ac-starter-option.on strong{color:#eafffc}.ac-starter-option:disabled{background:rgba(14,6,32,.84);border-color:#8656ba66;box-shadow:none}.ac-starter-option:disabled .ac-utility-art{opacity:.55}.ac-starter-option:disabled strong{color:#b9a9d6}
+.ac-engine-picker{margin-top:15px;padding-top:12px;border-top:1px solid #8656ba55}.ac-engine-picker h3{font-size:14px}.ac-engine-colors{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin-top:8px}
+.ac-engine-color{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;min-height:73px;padding:7px 3px;border:1px solid #8656ba;border-radius:16px;background:linear-gradient(145deg,rgba(23,12,46,.93),rgba(8,6,24,.88));box-shadow:inset 0 0 0 1px #c386ff15,0 0 7px #aa69ee22;color:#f9f4ff;font:500 11px/1.15 Figtree,sans-serif}
+.ac-engine-color:disabled{background:rgba(14,6,32,.84);border-color:#8656ba66;box-shadow:none;color:#b9a9d6}.ac-engine-color small{font:400 9px/1.2 Figtree,sans-serif;color:#c9bbe3}.ac-engine-color.on small{color:#eafffc}
 .ac-engine-swatch{display:block;width:31px;height:15px;border-radius:90% 25% 25% 90%;background:linear-gradient(90deg,transparent,var(--engine-color),#e2f4ff);filter:drop-shadow(0 0 3px var(--engine-color))}.ac-engine-color:disabled .ac-engine-swatch{opacity:.55;filter:none}
 .ac-launch-controls{padding:10px 0 2px;margin:0}.ac-spillsetup .ac-workshop-actions{margin-top:11px}
 @media(min-width:700px){.ac-workshop-stage .ac-workshop-preview{width:430px;max-width:100%;margin:auto}.ac-workshop-system{width:132px;min-height:62px;font-size:14px}.ac-workshop-system[data-system=plating],.ac-workshop-system[data-system=thrusters]{left:25px}.ac-workshop-system[data-system=shield],.ac-workshop-system[data-system=pulse]{right:25px}.ac-workshop-links{width:430px;left:50%;transform:translateX(-50%)}.ac-workshop-utility{display:grid;grid-template-columns:70px 1fr;column-gap:10px;padding:11px}.ac-workshop-utilityname{display:contents}.ac-workshop-utilityname .ac-utility-art{grid-column:1;grid-row:1 / 4;width:70px;height:86px;align-self:center}.ac-workshop-utility h4,.ac-workshop-utility p,.ac-workshop-utility .ac-workshop-buy,.ac-workshop-requirement{grid-column:2}.ac-workshop-health{flex-direction:row;align-items:center;gap:10px}.ac-workshop-status{font-size:14px}.ac-workshop-status .ac-workshop-buy{font-size:13px}}
@@ -1807,10 +1832,10 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));bottom:max(1
 @media(prefers-reduced-motion:reduce){.ac-workshop button{transition:none}.ac-workshop-system.selected{box-shadow:none}}
 
 .ac-spillsetup>*{flex-shrink:0}
-.ac-workshop button:focus-visible,.ac-workshop summary:focus-visible,.ac-spillsetup button:focus-visible,.ac-starting-kit button:focus-visible,.ac-engine-picker button:focus-visible{outline:2px solid #c2eaff;outline-offset:3px}
+.ac-workshop button:focus-visible,.ac-workshop summary:focus-visible,.ac-spillsetup button:focus-visible,.ac-starting-kit button:focus-visible,.ac-engine-picker button:focus-visible{outline:2px solid #fff1b2;outline-offset:3px}
 
-/* Green fitted utilities and functional hardpoint colors remain Depot-only.
-   All saved choices and ship previews use the hub's shared violet tokens. */
+/* Functional hardpoint colors remain Depot-only. All saved choices, fitted
+   utilities and ship previews use the hub's shared teal choice tokens. */
 body .ac-shipmenu .ac-card.on, body .ac-starter-option.on, body .ac-starter-none.on,
 body .ac-engine-color.on, body .ac-shipworkshop .ac-spilloption.on {
   border-color:var(--ac-choice-line);background:var(--ac-choice-fill);box-shadow:var(--ac-choice-ring);
@@ -1830,33 +1855,55 @@ body .ac-shipmenu .ac-sheet-scroll{padding-bottom:calc(24px + env(safe-area-inse
 }
 .ac-spillflighthelp{margin:12px 0 16px}
 .ac-spillhelp-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
-.ac-spillhelp-controls>div{display:flex;flex-direction:column;gap:5px;padding:12px 6px;border:1px solid #2a3454;border-radius:16px;background:#101830;text-align:center}
-.ac-spillhelp-controls b{font-size:13px;color:#f3efe4}
-.ac-spillhelp-controls span{font-size:12px;color:#cfd8ea}
-.ac-spillhelp-controls small{font-size:10px}
-/* Each card is tinted from its own flight pad. --pad-light and --pad-edge are
-   set per card in drawSpillFlightHelp from SPILL_CONTROL_COLORS, the same table
+.ac-spillhelp-controls>div{display:flex;flex-direction:column;gap:5px;padding:12px 6px;border:1px solid #8656ba;border-radius:16px;background:linear-gradient(145deg,rgba(23,12,46,.93),rgba(8,6,24,.88));box-shadow:inset 0 0 0 1px #c386ff15,0 0 7px #aa69ee22;text-align:center}
+.ac-spillhelp-controls b{font-size:13px;color:#f9f4ff}
+.ac-spillhelp-controls span{font-size:12px;color:#e1d9f1}
+.ac-spillhelp-controls small{font-size:10px;color:#c9bbe3}
+/* PER-PAD IDENTITY ON TOP OF THAT BASE. The gradient, inset glow and radius
+   above are left exactly as they are - these cards belong to the Loadout's
+   family now, and only their IDENTITY comes from the pad. So the border, the
+   outer glow and the input word take the colour of the pad the card
+   describes, and the fill does not move. --pad-light and --pad-edge are set
+   per card in flightControlCards from SPILL_CONTROL_COLORS, the same table
    spillControlArt paints the real pads with, so the two cannot drift apart.
-   Same treatment the normal-flight TAP/SWIPE cards use: a translucent wash of
-   the accent, a border in it, the accent on the input word.
-   Two cascade traps here, both found by reading the computed style back out
-   of a browser rather than trusting the source. The card rule must outrank
-   `.ac-spillhelp-controls>div` (0,1,1), so it is written as a child selector
-   (0,2,0) - a bare `.ac-spillhelp-pad` loses and the card stays generic. The
-   `b` rule ties with `.ac-spillhelp-controls b` at (0,1,1), so it has to come
-   after it in source order or the word reverts to #f3efe4.
-   The flat fallbacks come first for anything without color-mix. */
-.ac-spillhelp-controls>.ac-spillhelp-pad{background:#101830;border-color:var(--pad-edge)}
+
+   Both selectors are written as CHILDREN on purpose, measured out of a
+   browser rather than assumed: a bare `.ac-spillhelp-pad` loses to
+   `.ac-spillhelp-controls>div` at (0,1,1) and the card stays generic, and
+   `.ac-spillhelp-pad b` merely TIES `.ac-spillhelp-controls b`, which would
+   leave the word colour depending on source order.
+   The flat fallback comes first for anything without color-mix. */
+.ac-spillhelp-controls>.ac-spillhelp-pad{border-color:var(--pad-edge)}
 @supports (background:color-mix(in srgb,#fff 10%,#000)){
-  .ac-spillhelp-controls>.ac-spillhelp-pad{background:color-mix(in srgb,var(--pad-light) 13%,#101830);
-    border-color:color-mix(in srgb,var(--pad-edge) 65%,transparent)}
+  .ac-spillhelp-controls>.ac-spillhelp-pad{
+    border-color:color-mix(in srgb,var(--pad-edge) 80%,transparent);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--pad-light) 14%,transparent),
+               0 0 7px color-mix(in srgb,var(--pad-light) 18%,transparent)}
 }
-.ac-spillhelp-pad b{color:var(--pad-light)}
+.ac-spillhelp-controls>.ac-spillhelp-pad b{color:var(--pad-light)}
 .ac-spillflighthelp>.ac-replay{width:100%;margin-top:12px}
+.ac-spillsetup .ac-sub,.ac-spillflighthelp .ac-sub,.ac-depotguidecard .ac-sub{color:#c9bbe3}
 
 .ac-spillsetup .ac-setup-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
-.ac-spillsetup .ac-workshop-actions{flex-shrink:0;padding-top:10px;border-top:1px solid #46546b}
+.ac-spillsetup .ac-workshop-actions{flex-shrink:0;padding-top:10px;border-top:1px solid #7951a766}
 @media(max-height:450px){.ac-spillsetup .ac-launch-ship{display:none}.ac-spillsetup h2{font-size:24px}}
+
+/* ==== INSTRUCTIONS SHEET + COMPACT GUIDE UTILITIES (10 Sep 2026). Layout only:
+   grids, sizes and spacing. ==== */
+.ac-spillsetup .ac-spillhelp-controls{margin:2px 0 6px}
+.ac-spillhelp-extra{display:block;margin:0 0 8px;font-size:11px;line-height:1.3}
+.ac-setup-loop{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:5px}
+.ac-setup-loop li{display:flex;align-items:center;gap:8px;min-height:22px;font:500 13px/1.35 Figtree,sans-serif;color:#f3ecff}
+.ac-setup-loop li>span{min-width:0}
+.ac-setup-loop .ac-workshop-coin{width:20px;height:20px}
+.ac-spillsetup .ac-launch-ship{margin:8px 0 0}
+.ac-guide-utilityrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0}
+.ac-guide-utilityrow>div{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;text-align:center;font:500 11px/1.2 Figtree,sans-serif;color:#f9f4ff}
+.ac-guide-utilityrow>div b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.ac-guide-utilityrow .ac-utility-art{width:26px;height:26px}
+.ac-guide-utilityhead.ac-guide-utilityhead{margin:10px 0 4px;padding-top:8px}
+.ac-guide-utilityhead.ac-guide-utilityhead h3{font-size:14px}
+.ac-guide-carry.ac-guide-carry{margin:10px 0 14px;padding-top:12px}
 </style>
 <style id="ac-loadout-css">/* Loadout presentation only. The existing sky paintings take the equipped
    suit's colors; the live canvas and every control keep their own colors. */
@@ -2039,7 +2086,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js264/standalone.js")
+    import("./js265/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

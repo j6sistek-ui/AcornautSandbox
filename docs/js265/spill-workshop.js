@@ -1,11 +1,12 @@
-import { artUrl } from "./art.js?v=261";
-import { spillAppearance } from "./spill-appearance.js?v=261";
-import { SUITS } from "./catalog.js?v=261";
-import { paintShipPreview } from "./draw.js?v=261";
-import { writeSave } from "./save.js?v=261";
-import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillEngineColor, spillContractOffers } from "./spill-content.js?v=261";
-import { spillBuildFromState } from "./spill-presentation.js?v=261";
-import { SPILL_SHOP, spillPrice, spillContractProgress } from "./spill.js?v=261";
+import { artUrl } from "./art.js?v=265";
+import { spillAppearance } from "./spill-appearance.js?v=265";
+import { SUITS } from "./catalog.js?v=265";
+import { paintShipPreview } from "./draw.js?v=265";
+import { writeSave } from "./save.js?v=265";
+import { SPILL_CONTROL_COLORS } from "./spill-control-art.js?v=265";
+import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillEngineColor, spillContractOffers } from "./spill-content.js?v=265";
+import { spillBuildFromState } from "./spill-presentation.js?v=265";
+import { SPILL_SHOP, spillPrice, spillContractProgress } from "./spill.js?v=265";
 const el = (tag, cls = "", text = "") => {
     const n = document.createElement(tag);
     n.className = cls;
@@ -43,7 +44,7 @@ export function spillUtilityArt(id) {
     im.width = im.height = 64;
     return im;
 }
-function shipPreview(engine, pick, height, flashAt = -10000) {
+function shipPreview(engine, pick, height, flashAt = -10000, scale = 3.2) {
     const canvas = el("canvas", "ac-workshop-preview"), dpr = Math.min(2, window.devicePixelRatio || 1);
     canvas.width = 344 * dpr;
     canvas.height = height * dpr;
@@ -68,7 +69,7 @@ function shipPreview(engine, pick, height, flashAt = -10000) {
                     ctx.fillStyle = glow;
                     ctx.fillRect(0, 0, 344, height);
                 }
-                paintShipPreview(ctx, engine.art, engine.save, 189, height * .55, 3.2, reduced ? 0 : now / 1000, pick);
+                paintShipPreview(ctx, engine.art, engine.save, 189, height * .55, scale, reduced ? 0 : now / 1000, pick);
             }
             if (!reduced)
                 requestAnimationFrame(paint);
@@ -125,25 +126,47 @@ export function drawSpillEnginePicker(engine) {
         wrap.append(el("p", "ac-workshop-note", "Rust Wake overrides this color with orange. Switch to the standard trail in Loadout to use your color."));
     return wrap;
 }
+/** THE ONE INSTRUCTIONS SHEET (owner, 10 Sep 2026: "a single instructions
+ *  menu should pop up for gameplay mechanics"). It teaches the hand and the
+ *  loop, shows the ship the pilot is about to fly, and offers nothing to
+ *  choose: the free upgrade waits at the Depot, utilities at wave 5. */
 export function drawSpillLaunchSetup(engine, onGuide) {
     const save = engine.save, wrap = el("div", "ac-spillprep ac-spillsetup");
     const pilot = SUITS.find(s => s.id === save.equippedSuit)?.name ?? "Pilot";
     const head = el("header", "ac-setup-head"), heading = el("div");
-    heading.append(el("p", "ac-kicker", "DEBRIS FIELD · NEW RUN"), el("h2", "", "Your next ship"));
+    heading.append(el("p", "ac-kicker", "DEBRIS FIELD · NEW RUN"), el("h2", "", "How to fly"));
     const help = el("button", "ac-helpdot", "?");
     help.dataset.spillControl = "setup-guide";
-    help.setAttribute("aria-label", "Debris Field briefing");
+    help.setAttribute("aria-label", "How the Depot works");
     help.onclick = onGuide;
     head.append(heading, help);
     wrap.append(head);
-    const body = el("div", "ac-setup-body"), stage = el("div", "ac-launch-ship");
-    stage.append(shipPreview(engine, { plating: 0, thrusters: 0, pulse: 0, shield: 0, utilities: save.spillStarter ? [save.spillStarter] : [] }, 140), el("b", "ac-launch-pilot", `${pilot} aboard`));
-    body.append(stage, el("p", "ac-launch-stats", "3 health · first upgrade free"), el("p", "ac-workshop-note ac-launch-controls", "Land at the Depot. Choose Health, Shields, Thrusters or Pulse for free."));
+    const body = el("div", "ac-setup-body");
+    body.append(flightControlCards(), harderKickNote());
+    const loop = el("ol", "ac-setup-loop");
+    loop.setAttribute("aria-label", "The run");
+    for (const [text, withCoin] of [["Survive the waves", false], ["Collect Acorn Coins", true], ["Depot every 5 waves · upgrade your ship · first upgrade free", false]]) {
+        const step = el("li");
+        if (withCoin)
+            step.append(coin());
+        step.append(el("span", "", text));
+        loop.append(step);
+    }
+    const stage = el("div", "ac-launch-ship");
+    stage.append(shipPreview(engine, { plating: 0, thrusters: 0, pulse: 0, shield: 0, utilities: save.spillStarter ? [save.spillStarter] : [] }, 104, -10000, 2.5), el("b", "ac-launch-pilot", `${pilot} aboard`));
+    body.append(loop, stage);
     wrap.append(body);
     const actions = el("div", "ac-workshop-actions"), back = el("button", "ac-ghost ac-workshop-exit", "MAIN MENU"), go = el("button", "ac-primary ac-workshop-launch", "START RUN");
     back.onclick = () => engine.open("title");
     go.dataset.spillControl = "land";
-    go.onclick = () => engine.spillLunge();
+    go.onclick = () => {
+        // the briefing has been shown: the save says so, and nothing repeats it
+        if (!save.spillDepotGuideSeen) {
+            save.spillDepotGuideSeen = true;
+            writeSave(save);
+        }
+        engine.spillLunge();
+    };
     actions.append(back, go);
     wrap.append(actions);
     return wrap;
@@ -170,18 +193,22 @@ function drawDepotGuide(engine, onClose, closeLabel) {
         item.append(systemIcon(id), el("b", "", name), el("span", "", effect));
         effects.append(item);
     }
-    sheet.append(effects);
+    sheet.append(effects, el("p", "ac-guide-services", "Repair · full health   |   Extra life · revive once"));
+    // Utilities are the wave-5 shelf, not the first decision: one compact row,
+    // art and a short name, after the systems (owner: "not the most important
+    // thing to understand").
     const title = el("div", "ac-workshop-sectionhead ac-guide-utilityhead");
-    title.append(el("h3", "", "Utilities"), el("span", "", "Fit 2"));
+    title.append(el("h3", "", "Utilities"), el("span", "", "From the wave 5 Depot · fit 2"));
     sheet.append(title);
-    const kit = el("div", "ac-guide-kit");
+    const kit = el("div", "ac-guide-utilityrow");
     for (const id of SPILL_UTILITY_IDS) {
         const u = SPILL_UTILITIES[id], item = el("div");
-        item.setAttribute("aria-label", u.name);
-        item.append(spillUtilityArt(id), el("b", "", u.short), el("span", "", u.guide));
+        item.dataset.guideUtility = id;
+        item.title = `${u.name} · ${u.guide}`;
+        item.append(spillUtilityArt(id), el("b", "", u.short));
         kit.append(item);
     }
-    sheet.append(kit, el("p", "ac-guide-services", "Repair · full health   |   Extra life · revive once"));
+    sheet.append(kit);
     const carry = el("div", "ac-guide-carry"), lost = el("div", "ac-guide-loss"), kept = el("div", "ac-guide-keep");
     lost.append(el("h3", "", "Out of lives"), el("p", "", "Wave 1. Acorn Coins & upgrades reset."));
     kept.append(el("h3", "", "Unlocks stay"), el("p", "", "Starting utility choices & engine colors."));
@@ -193,7 +220,7 @@ function drawDepotGuide(engine, onClose, closeLabel) {
     sheet.append(enter, el("p", "ac-workshop-note ac-guide-timing", "Depot every 5 waves · No timer"));
     return sheet;
 }
-/** Informational replay: reading it before a run never consumes the first-visit guide. */
+/** Informational replay: reading it changes no run state and no save field. */
 export function drawSpillGuideSheet(engine, onClose, closeLabel) {
     const wrap = el("div", "ac-lvlsheet ac-depotwrap ac-workshop ac-spillhelpwrap");
     wrap.style.setProperty("--workshop-art", `url("${artUrl("spill-scene/workshop.webp")}")`);
@@ -202,7 +229,7 @@ export function drawSpillGuideSheet(engine, onClose, closeLabel) {
     wrap.append(sheet);
     wrap.onclick = e => { if (e.target === wrap)
         onClose(); };
-    // Reading a modal must not throttle or launch the ready ship behind it.
+    // Keys read by a modal must not tap or launch the ready ship behind it.
     wrap.onkeydown = e => {
         e.stopPropagation();
         if (e.key === "Tab") {
@@ -213,33 +240,51 @@ export function drawSpillGuideSheet(engine, onClose, closeLabel) {
     wrap.onkeyup = e => e.stopPropagation();
     return wrap;
 }
+/** TAP TO FLY, in three cards. The instructions sheet, Settings & Help and
+ *  the briefing replay all draw these, so the hand is described once. */
+// Each card names the PAD it describes and wears that pad's colour. All
+// three were the same slab, so the panel teaching the controls looked
+// nothing like the controls (owner, 10 Sep 2026: "the debris field buttons
+// in help are too generic ... match same colors as buttons used in debris
+// field for tap, dive, thrust"). The tints are READ from
+// SPILL_CONTROL_COLORS, the table spillControlArt paints the real pads
+// with, so repainting a pad repaints its card.
+const FLIGHT_CONTROLS = [
+    ["TAP", "Fly", "Tap · Space", "thrust"],
+    ["SWIPE DOWN", "Dive", "Swipe down · ↓", "dive"],
+    ["LUNGE", "Dash forward", "Swipe right · →", "lunge"],
+];
+function flightControlCards() {
+    const controls = el("div", "ac-spillhelp-controls");
+    for (const [input, action, note, pad] of FLIGHT_CONTROLS) {
+        const card = el("div", `ac-spillhelp-pad ac-spillhelp-${pad}`);
+        const { light, edge } = SPILL_CONTROL_COLORS[pad];
+        card.style.setProperty("--pad-light", light);
+        card.style.setProperty("--pad-edge", edge);
+        card.append(el("b", "", input), el("span", "", action), el("small", "ac-sub", note));
+        controls.append(card);
+    }
+    return controls;
+}
+const harderKickNote = () => el("small", "ac-sub ac-spillhelp-extra", "Swipe up · harder kick · W");
 /** The same instructions in Settings & Help and the replayable briefing. */
 export function drawSpillFlightHelp() {
     const section = el("section", "ac-spillflighthelp");
     section.setAttribute("aria-label", "How to fly · Debris Field");
-    section.append(el("p", "ac-kicker ac-secthead", "HOW TO FLY · DEBRIS FIELD"));
-    const controls = el("div", "ac-spillhelp-controls");
-    for (const [input, action, note] of [["HOLD", "Rise", "Throttle / Space"], ["RELEASE", "Fall", "Let go"], ["LUNGE", "Dash forward", "Swipe right / →"]]) {
-        const card = el("div");
-        card.append(el("b", "", input), el("span", "", action), el("small", "ac-sub", note));
-        controls.append(card);
-    }
-    section.append(controls, el("p", "ac-sub", "Depot every 5 waves · spend Acorn Coins · first upgrade free."));
+    section.append(el("p", "ac-kicker ac-secthead", "HOW TO FLY · DEBRIS FIELD"), flightControlCards(), harderKickNote(), el("p", "ac-sub", "Depot every 5 waves · spend Acorn Coins · first upgrade free."));
     return section;
 }
 export function drawDepotWorkshop(engine, view, rerender) {
     const sp = engine.world.spill, key = `${sp.seed}:${sp.wave}`;
+    // The guide is behind the "?" only: the instructions sheet before the run
+    // already taught the loop, and a Depot that opens a second sheet on
+    // arrival hid the free upgrade behind it (owner, 10 Sep 2026).
     if (key !== view.key)
-        Object.assign(view, createDepotView(), { key, guide: !!sp.welcome && !engine.save.spillDepotGuideSeen });
+        Object.assign(view, createDepotView(), { key });
     const wrap = el("div", "ac-lvlsheet ac-depotwrap ac-workshop");
     wrap.style.setProperty("--workshop-art", `url("${artUrl("spill-scene/workshop.webp")}")`);
     if (view.guide) {
-        wrap.append(drawDepotGuide(engine, () => {
-            engine.save.spillDepotGuideSeen = true;
-            writeSave(engine.save);
-            view.guide = false;
-            rerender();
-        }, engine.save.spillDepotGuideSeen ? "BACK TO DEPOT" : "ENTER DEPOT"));
+        wrap.append(drawDepotGuide(engine, () => { view.guide = false; rerender(); }, "BACK TO DEPOT"));
         return wrap;
     }
     const sheet = el("section", "ac-lvlcard ac-depotcard ac-workshop-card");

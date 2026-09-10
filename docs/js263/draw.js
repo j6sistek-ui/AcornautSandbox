@@ -1781,7 +1781,7 @@ function drawSpillShip(ctx, w, save, art, s, x, parked = false) {
         .map(([, name]) => name ? { name, sp: art.spillShip[name], xf: xfOf(name) } : null)
         .filter((l) => !!l && !!l.sp);
     const z = SPILL_SHIP_LEN / hull.box.w;
-    const thrust = Math.max(s.held ? 0.55 : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
+    const thrust = Math.max(s.thrustT ? 0.55 * Math.min(1, s.thrustT / 0.22) : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
     ctx.save();
     ctx.translate(x, s.pilot.y);
     ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
@@ -1914,7 +1914,7 @@ function drawSpillScout(ctx, w, save, art, s, x) {
     const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
     const layout = hyperRunShipLayout(box.w * fit / 2, scale, ship);
     const engineX = layout.engineX;
-    const thrust = Math.max(s.held ? 0.55 : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
+    const thrust = Math.max(s.thrustT ? 0.55 * Math.min(1, s.thrustT / 0.22) : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
     ctx.save();
     ctx.translate(x, s.pilot.y);
     ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
@@ -2458,9 +2458,9 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
             "COLLECT ACORN COINS",
             compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
                 : "DEPOT EVERY 5 WAVES · SPEND ACORN COINS",
-            compact ? "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▶ LUNGE"
-                : "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▲▼ BURST · SWIPE ▶ LUNGE",
-            "PRESS TO LAUNCH",
+            compact ? "TAP ▲ FLY · SWIPE ▼ DIVE · SWIPE ▶ LUNGE"
+                : "TAP ▲ FLY · SWIPE ▼ DIVE · SWIPE ▲ BURST · SWIPE ▶ LUNGE",
+            "TAP TO LAUNCH",
         ];
         const oreLine = 1;
         const lineHeight = compact ? 20 : 21;
@@ -2530,7 +2530,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         ctx.globalAlpha = 1;
         ctx.fillStyle = "rgba(215,230,247,.7)";
         ctx.font = "700 11px Figtree, system-ui";
-        ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · PRESS TO TAKE THE STICK", W / 2, H * 0.34 + 146);
+        ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · TAP TO TAKE THE STICK", W / 2, H * 0.34 + 146);
         ctx.restore();
     }
     if (s.phase === "wave" && s.phaseT < 0.6) {
@@ -5270,7 +5270,7 @@ export function paintShipPreview(ctx, art, save, cx, cy, scale, t, pick) {
         shipPreviewStates.set(key, s);
     }
     s.pilot.y = 0;
-    s.held = true;
+    s.thrustT = 0.22;
     s.signal = spillEngineColor(save).color;
     const w = { time: t, squirrel: { y: 0, vy: 0, rot: 0 }, W: 390, H: 760 };
     ctx.save();

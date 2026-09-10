@@ -1,22 +1,22 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=264";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=264";
-import { createHighOrbitMotion, stepHighOrbit, highOrbitTap } from "./high-orbit-motion.js?v=264";
-import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=264";
-import { trailWornBy } from "./catalog.js?v=264";
-import { missionRandom } from "./mission-rng.js?v=264";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=264";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=264";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, BOUNCE_ANIM_DURATION, LEGACY_DEBRIS_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, PHYS, TRAILS } from "./catalog.js?v=264";
-import { nextFamilyPlanet } from "./planet-family.js?v=264";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=264";
-import { platform } from "./platform.js?v=264";
-import { TUTORIAL_SUIT } from "./catalog.js?v=264";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=264";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=264";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=264";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillHold, stepSpill, } from "./spill.js?v=264";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=264";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=264";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=265";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=265";
+import { createHighOrbitMotion, stepHighOrbit, highOrbitTap } from "./high-orbit-motion.js?v=265";
+import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=265";
+import { trailWornBy } from "./catalog.js?v=265";
+import { missionRandom } from "./mission-rng.js?v=265";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=265";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=265";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, BOUNCE_ANIM_DURATION, LEGACY_DEBRIS_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, PHYS, TRAILS } from "./catalog.js?v=265";
+import { nextFamilyPlanet } from "./planet-family.js?v=265";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=265";
+import { platform } from "./platform.js?v=265";
+import { TUTORIAL_SUIT } from "./catalog.js?v=265";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=265";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=265";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=265";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillTap, stepSpill, } from "./spill.js?v=265";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=265";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=265";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -2537,11 +2537,11 @@ export function flap(w, save) {
     }
     if (w.ready)
         w.ready = false;
-    // THE SPILL flies its own ship, and its tap is the hand going ON the
-    // thrust: it stays on until spillRelease. A press its phase refuses - the
-    // countdown, the Depot, the respawn freeze - or a press while already
-    // held is not a tap, so nothing below counts it or animates it.
-    if (w.spill && !spillHold(w.spill, true))
+    // THE SPILL flies its own ship, and its tap is the same kick skyward it
+    // is everywhere else. A tap its phase refuses - the Depot, the respawn
+    // freeze, the autopilot before a hand takes the stick - is not a tap, so
+    // nothing below counts it or animates it.
+    if (w.spill && !spillTap(w.spill))
         return "none";
     // the road's contracts fly on both pages: these modifiers follow the mission, not the page
     if (!w.tut && w.flight === "fly") {
@@ -3151,11 +3151,6 @@ const SPILL_TONES = {
     lunge: ["#8fd6ff", "#cfefff"],
     graze: ["#9fe8ff"],
 };
-/** the hand comes OFF the thrust: pointer up, key up, focus lost */
-export function spillRelease(w) {
-    if (w.spill)
-        spillHold(w.spill, false);
-}
 /** a swipe up: the kick skyward. The swipe down is dive() */
 export function spillBurstUp(w) {
     if (!w.spill || w.screen !== "play" || w.ready)

@@ -48,7 +48,6 @@ import {
   takeRaceCueEffects,
   takeSpillCues,
   spillBurstUp,
-  spillRelease,
   updateWorld,
   type FlightMode,
   type Screen,
@@ -160,7 +159,7 @@ export type Engine = {
   continueCost: () => number;
   /** Spill buttons and gestures share the same movement rules. */
   spillLunge: () => void;
-  spillThrottle: (held: boolean) => void;
+  spillThrust: () => void;
   spillDive: () => void;
   setSpillButtonsOff: (off: boolean) => void;
   setSpillPromptsOff: (off: boolean) => void;
@@ -257,7 +256,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   let raceAccumulator = 0;
   let raceGesture = createRaceGestureState();
   let raceResizeKeyboardReleasePending: "keyboard-rise" | "keyboard-drop" | null = null;
-  const spillThrustSources = new Set<string>();
   const listeners = new Set<() => void>();
   const notify = () => listeners.forEach((fn) => fn());
 
@@ -548,7 +546,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     setSpillButtonsOff(off) {
       save.spillButtonsOff = off;
-      if (off) releaseSpillThrust("button");
       writeSave(save); notify();
     },
     setSpillPromptsOff(off) {
@@ -616,11 +613,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (ok) notify();
       return ok;
     },
-    spillThrottle(held) {
-      if (!held) { releaseSpillThrust("button"); return; }
+    spillThrust() {
       if (!world.spill || world.screen !== "play" || save.spillButtonsOff) return;
-      spillThrustSources.add("button");
       if (flap(world, save) === "flap") sfx.flap();
+      notify();
     },
     spillDive() {
       if (!world.spill || world.screen !== "play") return;
@@ -634,14 +630,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // started around it would sit frozen on the countdown forever
       if (world.ready) {
         if (flap(world, save) === "flap") sfx.flap();
-        // AND THEN LET GO (audit, 8 Sep 2026). The launch arrives from a DOM
-        // button on the launch sheet, or from a key with no keyup of its
-        // own, so nothing ever registered a thrust source - yet flap's ready
-        // branch latched s.pressed. Wave 1 then opened with the thrust stuck
-        // on, the ship climbing by itself, and the pilot's first press
-        // reading as "already held" and doing nothing. Release unless a real
-        // finger or key is genuinely down, which the source set knows.
-        if (!spillThrustSources.size) spillRelease(world);
         notify();
         return;
       }
@@ -678,7 +666,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     spillSuspend() {
       if (world.screen !== "play" || !world.spill || !spillCheckpoint(world.spill)) return false;
-      checkpointSpill(); spillRelease(world); world.spill = null; world.screen = "title";
+      checkpointSpill(); world.spill = null; world.screen = "title";
       resetInputTracking(); notify(); return true;
     },
     spillResume() {
@@ -725,8 +713,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     pause() {
       cancelRaceControls();
-      spillRelease(world);
-      spillThrustSources.clear();
       swipe = null;
       // A race pause discards the incomplete presentation-frame remainder.
       // Resume starts from the next whole 60 Hz authority step, so focus loss
@@ -1218,7 +1204,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       }
     }
     const spillResize = sizeChanged && world.spill !== null && world.screen === "play" && !world.ready;
-    if (spillResize) { spillRelease(world); resetInputTracking(); raceAccumulator = 0; pausePlay(world); }
+    if (spillResize) { resetInputTracking(); raceAccumulator = 0; pausePlay(world); }
     canvas.width = Math.floor(W * dpr);
     canvas.height = Math.floor(H * dpr);
     canvas.style.width = `${W}px`;
@@ -1242,16 +1228,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   }
 
   function resetInputTracking() {
-    spillThrustSources.clear();
-    spillRelease(world);
     raceGesture = createRaceGestureState();
     raceResizeKeyboardReleasePending = null;
     swipe = null;
-  }
-
-  function releaseSpillThrust(source: string) {
-    spillThrustSources.delete(source);
-    if (!spillThrustSources.size) spillRelease(world);
   }
 
   function cancelRaceControls(owner?: RaceGestureOwner) {
@@ -1288,11 +1267,14 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         return;
       }
       swipe = { owner: e.pointerId, x0: p.x, y0: p.y, t0: performance.now(), fired: false };
-      if (world.spill) spillThrustSources.add("pointer");
+      // the field captures the pointer so a swipe that leaves the canvas
+      // still lands; its tap is the same flap as everywhere else
       if (world.spill) { try { canvas.setPointerCapture(e.pointerId); } catch { /* browser cancelled the pointer */ } }
-      // A tap is a tap everywhere, the corridor included. Hold-to-rise and
-      // slide-and-hold were flown against it and retired - see the note in
-      // updateTunnel - so nothing intercepts this any more.
+      // A tap is a tap everywhere, the corridor and the debris field
+      // included. Hold-to-rise and slide-and-hold were flown against it and
+      // retired - see the note in updateTunnel - so nothing intercepts this
+      // any more. Hyper Run, the one hold-to-rise mode left, took the
+      // race branch above.
       const ev = flap(world, save);
       if (ev === "flap") sfx.flap();
       if (world.tut?.stage === "pal" && world.tut.hold && world.tut.t >= TUT_ARM) {
@@ -1362,18 +1344,16 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return;
     }
     if (world.race) return;
-    // the Spill's hand comes off the thrust with the finger
-    if (world.spill) {
-      if (swipe?.owner !== e.pointerId) return;
-      releaseSpillThrust("pointer");
-    }
+    // only the finger that owns the field's swipe can end it
+    if (world.spill && swipe?.owner !== e.pointerId) return;
     swipe = null;
   };
   canvas.addEventListener("pointerup", end);
   canvas.addEventListener("pointercancel", end);
   canvas.addEventListener("lostpointercapture", end);
-  // A held thrust is a long-press to the browser: without these, phones
-  // answer it with text selection and the copy bubble over the whole HUD.
+  // A finger resting on the field is a long-press to the browser: without
+  // these, phones answer it with text selection and the copy bubble over
+  // the whole HUD.
   canvas.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
   canvas.addEventListener("contextmenu", (e) => e.preventDefault());
   document.addEventListener("selectstart", (e) => {
@@ -1407,7 +1387,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // keydowns. It may not auto-resume the paused race or become a new
       // press until the physical key has first been released.
       if (raceResizeKeyboardReleasePending) return;
-      if (world.spill && e.repeat && !spillThrustSources.has(e.code)) return;
+      // a key held down is one tap in the field, never a stream of them
+      if (world.spill && e.repeat) return;
       if (world.screen === "splash") engine.open("title");
       else if (world.screen === "title") engine.fly("fly");
       // A focus/visibility/Escape pause cancels the semantic owner. Ignore an
@@ -1421,7 +1402,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
             ? pressRaceKeyboardDragGesture(raceGesture, "keyboard-rise", world.race.tick, 0)
             : pressRaceGesture(raceGesture, "keyboard-rise", world.race.tick, null));
         } else {
-          if (world.spill) spillThrustSources.add(e.code);
           const ev = flap(world, save);
           if (ev === "flap") sfx.flap();
         }
@@ -1449,8 +1429,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (ev === "dive") sfx.dive();
       notify();
     }
-    // the Spill's extra keys: right (or D) for the lunge, W for the kick
-    // skyward. Space is the hold and ArrowDown the dive, as everywhere
+    // the Spill's extra keys: right (or D) for the lunge, W for the harder
+    // kick skyward. Space is the tap and ArrowDown the dive, as everywhere
     if (world.spill && world.screen === "play" && !e.repeat) {
       if (e.code === "ArrowRight" || e.code === "KeyD") {
         e.preventDefault();
@@ -1464,7 +1444,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   });
   window.addEventListener("keyup", (e) => {
     if (e.code === "Space" || e.code === "ArrowUp") {
-      if (world.spill) releaseSpillThrust(e.code);
       if (raceResizeKeyboardReleasePending === "keyboard-rise") {
         raceResizeKeyboardReleasePending = null;
         return;
@@ -1489,7 +1468,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       return;
     }
     cancelRaceControls();
-    spillRelease(world);
     swipe = null;
   });
   document.addEventListener("visibilitychange", () => {
@@ -1499,7 +1477,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         return;
       }
       cancelRaceControls();
-      spillRelease(world);
       swipe = null;
     }
   });

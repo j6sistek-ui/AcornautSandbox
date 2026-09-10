@@ -1,21 +1,22 @@
 export const SPILL_CONTROL_LAYOUT = {
     width: 360, height: 112,
     dive: { x: 0, y: 16, width: 144, height: 80 },
-    throttle: { x: 130, y: 6, width: 100, height: 100 },
+    thrust: { x: 130, y: 6, width: 100, height: 100 },
     lunge: { x: 216, y: 16, width: 144, height: 80 },
 };
 /** THE PADS' OWN COLOURS, in one place because two places now read them.
  *  The flight pads are painted below; the Help panel's Debris Field cards
  *  are tinted from the same values (spill-workshop.ts, drawSpillFlightHelp)
  *  so the card a pilot reads and the pad they press are the same colour.
- *  Owner, 10 Sep 2026: "the debris field buttons in help are too generic". */
+ *  Owner, 10 Sep 2026: "the debris field buttons in help are too generic".
+ *  The centre pad is THRUST, not the retired Throttle hold - tap to rise. */
 export const SPILL_CONTROL_COLORS = {
-    throttle: { light: "#bdffe4", edge: "#559e90", top: "#315956", base: "#112e2d" },
+    thrust: { light: "#bdffe4", edge: "#559e90", top: "#315956", base: "#112e2d" },
     lunge: { light: "#b4edff", edge: "#559fc1", top: "#2e4254", base: "#0c1422" },
     dive: { light: "#ffcead", edge: "#c58366", top: "#413b45", base: "#0c1422" },
 };
 export function spillControlArt(kind) {
-    const center = kind === "throttle", right = kind === "lunge";
+    const center = kind === "thrust", right = kind === "lunge";
     const id = `ac-flight-${kind}`, w = center ? 100 : 144, h = center ? 100 : 80;
     const { light, edge, top, base } = SPILL_CONTROL_COLORS[kind];
     // The inner arc follows the central disc with a 7px gutter. Each wing's
@@ -35,7 +36,7 @@ export function spillControlArt(kind) {
       ${center ? '<circle cx="50" cy="50" r="42.5" fill="none" stroke="#d6fff0" stroke-opacity=".14"/>' : '<path d="M8 69H136" stroke="#000" stroke-opacity=".35" stroke-width="3"/>'}
     </g>
     ${center
-        ? `<path d="M50 29 32 53H68Z" fill="${light}"/><path d="M40 65H60" stroke="${light}" stroke-opacity=".7" stroke-width="3.5" stroke-linecap="round"/>`
+        ? `<path d="M50 24 32 48H68Z" fill="${light}"/><text x="50" y="68" text-anchor="middle" fill="${light}" font-family="Figtree, sans-serif" font-size="11" font-weight="800" letter-spacing=".7">THRUST</text>`
         : `<path d="${right ? "M74 20 90 30 74 40 78 30Z" : "M49 21H77L63 38Z"}" fill="${light}"/><text x="${x}" y="61" text-anchor="middle" fill="${light}" font-family="Figtree, sans-serif" font-size="11" font-weight="800" letter-spacing=".7">${right ? "LUNGE" : "DIVE"}</text>`}
   </svg>`;
 }

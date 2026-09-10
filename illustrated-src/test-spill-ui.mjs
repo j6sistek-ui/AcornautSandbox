@@ -20,14 +20,25 @@ function button(text){const b=[...app.querySelectorAll('button')].find(b=>b.text
 function control(id){const b=app.querySelector(`[data-spill-control="${id}"]`);assert(b,`missing Depot control ${id}`);return b;}
 function ship(kind,id){const b=app.querySelector(`[data-ship-${kind}="${id}"]`);assert(b,`missing ship ${kind} ${id}`);return b;}
 function fixture(wave=5){engine.save.spillStarter=null;engine.fly('spill');const s=engine.world.spill;s.phase='depot';s.wave=s.cleared=wave;s.depot={arm:0,bought:[]};s.ore=2000;s.oreMined=70;s.depotVisits=wave/5;s.expeditionDone=wave>=20;engine.world.ready=false;s.cues=['depot'];tick();return s;}
-// Briefing replay is informational: it neither starts a run nor consumes
-// the first-visit guide. The planet tutorial and currency cluster remain.
+// Briefing replay is informational: it neither starts a run nor writes the
+// save. The planet tutorial and currency cluster remain.
 engine.open('help');
 assert(app.textContent.includes('SWIPE DOWN'));assert(button('REPLAY TUTORIAL'));
 assert.deepEqual([...app.querySelectorAll('.ac-helprow')].slice(0,3).map(r=>r.querySelector('p').textContent),['ACORN','STAR DUST','ACORN COINS']);
+// TAP TO FLY in Settings & Help: the same three cards as the instructions sheet, and no hold left anywhere.
+const TAP_CARDS=['TAP','SWIPE DOWN','LUNGE'],HOLD_WORDS=['HOLD','RELEASE','Throttle','throttle','hold to','Let go'];
+function cardsOf(root){return [...root.querySelectorAll('.ac-spillhelp-controls > div')].map(c=>c.querySelector('b').textContent);}
+const helpFlight=app.querySelector('.ac-spillflighthelp');assert(helpFlight);assert.deepEqual(cardsOf(helpFlight),TAP_CARDS);
+assert(helpFlight.textContent.includes('Tap · Space'));assert(helpFlight.textContent.includes('Swipe down'));assert(helpFlight.textContent.includes('Swipe right'));
+assert(helpFlight.querySelector('small.ac-sub').textContent.includes('Space'));
+assert(helpFlight.textContent.includes('Swipe up · harder kick · W'));assert(helpFlight.textContent.includes('Depot every 5 waves · spend Acorn Coins · first upgrade free.'));
+for(const word of HOLD_WORDS) assert(!helpFlight.textContent.includes(word),`Help never says ${word} about the Debris Field`);
 const beforeHelp=JSON.stringify(engine.save);
 button('DEBRIS FIELD BRIEFING').click();assert(app.querySelector('.ac-spillhelpwrap'));
-assert(app.textContent.includes('HOW TO FLY · DEBRIS FIELD'));
+assert(app.textContent.includes('HOW TO FLY · DEBRIS FIELD'));assert.deepEqual(cardsOf(app.querySelector('.ac-spillhelpwrap')),TAP_CARDS);
+for(const word of HOLD_WORDS) assert(!app.querySelector('.ac-spillhelpwrap').textContent.includes(word),`the briefing never says ${word}`);
+assert.equal(app.querySelectorAll('.ac-spillhelpwrap [data-guide-utility]').length,4,'the briefing lists the four utilities in one compact row');
+assert.equal(control('enter-depot').textContent,'BACK TO HELP');
 app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true}));
 assert(!app.querySelector('.ac-spillhelpwrap'));assert.equal(engine.world.screen,'help');
 assert.equal(document.activeElement.dataset.spillBriefing,'');
@@ -45,59 +56,85 @@ const savedLaunch=JSON.stringify(engine.save);assert(ship('spec','brace').disabl
 ship('tier','thrusters-3').click();ship('tier','pulse-2').click();ship('spec','efficient').click();assert(!app.querySelector('[data-ship-utility]'),'the preview-only utility shelf is gone; Starting utility is the one picker');assert.equal(app.querySelectorAll('[data-ship-starter]').length,5,'exactly one Starting utility picker: stock plus the four utilities, no duplicate shelf');assert.equal(ship('starter','magnet').getAttribute('aria-pressed'),'true');assert.equal(ship('starter','scanner').getAttribute('aria-pressed'),'false');assert(app.querySelector('.ac-shipreadout').textContent.includes('1/2 UTILITIES'),'the plan previews the chosen starter in its slot readout');
 ship('tier','plating-1').click();assert(ship('spec','brace').disabled);assert.equal(JSON.stringify(engine.save),savedLaunch,'planning changes no save fields');
 button('SHOW LAUNCH SHIP').click();assert.equal(ship('tier','plating-0').getAttribute('aria-pressed'),'true');
-engine.fly('spill');assert(app.querySelector('.ac-spillsetup'));assert(app.textContent.includes('Your next ship'));
+// ONE INSTRUCTIONS SHEET before an endless run: how to fly, the loop, the ship. Nothing to choose.
+engine.fly('spill');const setup=app.querySelector('.ac-spillsetup');assert(setup);assert(setup.querySelector('h2').textContent==='How to fly');assert(!app.textContent.includes('Your next ship'));
+assert.deepEqual(cardsOf(setup),TAP_CARDS,'the instructions sheet shows the three tap-to-fly cards');
+const setupNotes=[...setup.querySelectorAll('.ac-spillhelp-controls small.ac-sub')].map(n=>n.textContent);assert.deepEqual(setupNotes,['Tap · Space','Swipe down · ↓','Swipe right · →']);
+for(const word of HOLD_WORDS) assert(!setup.textContent.includes(word),`the instructions sheet never says ${word}`);
+for(const line of ['Survive the waves','Collect Acorn Coins','Depot every 5 waves · upgrade your ship · first upgrade free']) assert(setup.textContent.includes(line),`the loop says ${line}`);
+assert(setup.querySelector('.ac-setup-loop .ac-workshop-coin'),'the coin sits where Acorn Coins are named');assert(setup.textContent.includes('aboard'));assert(setup.querySelector('.ac-launch-ship canvas'));
 assert(!app.querySelector('[data-ship-starter]'),'the entrance has no utility choices');
 assert(!app.querySelector('[data-ship-color]'),'appearance choices stay in Loadout');
 assert(!app.querySelector('[data-spill-upgrade]'),'upgrades are chosen at the Depot after landing');
-assert(!app.querySelector('.ac-setup-body [data-spill-control="land"]'),'Start stays outside the scrolling body');
-assert.equal(control('land').textContent,'START RUN');
+assert(!setup.querySelector('.ac-workshop-system, .ac-workshop-utility, [data-guide-utility]'),'no upgrade or utility choices on the instructions sheet');
+assert(!app.querySelector('.ac-setup-body [data-spill-control="land"]'),'Start stays outside the scrolling body');assert(setup.querySelector('.ac-setup-body .ac-spillhelp-controls'),'the cards scroll with the body');
+assert.equal(control('land').textContent,'START RUN');assert(button('MAIN MENU'));
 assert.deepEqual(engine.world.spill.utilities,['magnet']);assert.equal(engine.save.spillEngineColor,'copper');
+assert.equal(engine.save.spillDepotGuideSeen,false,'a fresh save has not seen the briefing');
 const beforeBriefing=JSON.stringify(engine.world.spill);
-control('setup-guide').click();assert(app.querySelector('.ac-spillhelpwrap'));
+control('setup-guide').click();assert(app.querySelector('.ac-spillhelpwrap'));assert.equal(control('enter-depot').textContent,'BACK TO LAUNCH');
+assert.equal(app.querySelectorAll('.ac-spillhelpwrap [data-guide-utility]').length,4);
 app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('keydown',{key:' ',code:'Space',bubbles:true}));
 app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('keyup',{key:' ',code:'Space',bubbles:true}));
 assert.equal(JSON.stringify(engine.world.spill),beforeBriefing,'briefing keys never start or steer the ship');
-control('enter-depot').click();assert(!app.querySelector('.ac-spillhelpwrap'));
-assert.equal(engine.save.spillDepotGuideSeen,false,'previewing help preserves the automatic first Depot guide');
+control('enter-depot').click();assert(!app.querySelector('.ac-spillhelpwrap'));assert(app.querySelector('.ac-spillsetup'));
+assert.equal(engine.save.spillDepotGuideSeen,false,'the replay records nothing: START RUN does');
 assert.equal(document.activeElement.dataset.spillControl,'setup-guide');
 
-control('land').click();assert.equal(engine.world.spill.phase,'docking');tick(200);
-assert.equal(engine.world.spill.depotVisits,0);assert(app.querySelector('.ac-depotguidecard'));assert(!app.querySelector('[data-spill-control="plating"]'));
-const guidedState=JSON.stringify(engine.world.spill);control('enter-depot').click();assert.equal(Save.loadSave().spillDepotGuideSeen,true);
-assert.equal(JSON.stringify(engine.world.spill),guidedState,'the guide changes no run state');assert(control('launch').disabled);
+control('land').click();assert.equal(engine.world.spill.phase,'docking');
+assert.equal(engine.save.spillDepotGuideSeen,true,'START RUN records that the briefing was shown');assert.equal(Save.loadSave().spillDepotGuideSeen,true);
+tick(200);
+// The Depot opens straight onto the free upgrade: no guide sheet on arrival, ever.
+assert.equal(engine.world.spill.depotVisits,0);assert(!app.querySelector('.ac-depotguidecard'),'the Depot never opens its guide on its own');assert(control('plating'));
+const guidedState=JSON.stringify(engine.world.spill);assert(control('launch').disabled);assert.equal(control('launch').textContent,'CHOOSE FREE UPGRADE');
+assert(app.textContent.includes('Choose one free upgrade'));assert(app.textContent.includes('One free upgrade before takeoff'));
 assert.equal(app.querySelectorAll('.ac-workshop-system').length,4,'the opening Depot offers the four core upgrades');
 assert(!app.querySelector('.ac-workshop-utilities'),'utilities do not appear in the opening Depot');
 for(const id of ['magnet','scanner','brake','capacitor']) assert(!app.querySelector(`[data-spill-control="${id}"]`));
-control('guide').click();assert(app.textContent.includes('Unlocks stay'));control('enter-depot').click();assert.equal(JSON.stringify(engine.world.spill),guidedState);
+assert(!app.querySelector('[data-spill-control="repair"]'));assert(!app.querySelector('[data-spill-control="core"]'));assert(!app.querySelector('[data-spill-control^="contract-"]'),'no repair, extra life or contracts before takeoff');
+control('guide').click();assert(app.querySelector('.ac-depotguidecard'));assert.equal(control('enter-depot').textContent,'BACK TO DEPOT');
+assert(app.textContent.includes('Unlocks stay'));assert(app.textContent.includes('From the wave 5 Depot · fit 2'));
+assert.equal(app.querySelectorAll('[data-guide-utility]').length,4,'the guide shows the four utilities in one compact row');assert(!app.querySelector('.ac-guide-kit'));
+assert(!app.textContent.includes('Pull Acorn Coins'),'guide utilities carry a short name, no description');
+const guideCardOrder=[...app.querySelector('.ac-depotguidecard').children].map(c=>c.className);assert(guideCardOrder.indexOf('ac-guide-systems')<guideCardOrder.indexOf('ac-guide-utilityrow'),'systems come before utilities');
+control('enter-depot').click();assert(!app.querySelector('.ac-depotguidecard'));assert.equal(JSON.stringify(engine.world.spill),guidedState,'the guide changes no run state');assert(control('launch').disabled);
 control('inspect-thrusters').click();control('thrusters').click();assert.equal(engine.world.spill.up.thrusters,1);assert.equal(engine.world.spill.ore,0);
 assert.equal(control('launch').textContent,'LAUNCH WAVE 1');control('launch').click();assert.equal(engine.world.spill.phase,'countdown');tick(181);
 assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:1,pulse:0},'only the chosen starting upgrade is fitted');
-// Button holds survive HUD rebuilds, multi-touch actions and mixed gesture/keyboard release.
-const thrust=app.querySelector('.ac-throttle'),controls=app.querySelector('.ac-spillcontrols');assert(thrust&&!controls.hidden);
+// TAP TO FLY: the Thrust pad, a tap on the field and Space are the same kick. Taps never stack,
+// key repeats are not taps, and nothing has to be released.
+const thrust=app.querySelector('.ac-thrust'),controls=app.querySelector('.ac-spillcontrols');assert(thrust&&!controls.hidden);
+assert(!app.querySelector('.ac-throttle'),'the Throttle hold is retired');assert.equal(thrust.getAttribute('aria-label'),'Thrust: tap to fly');
 function touch(target,type,id,primary=true){target.dispatchEvent(new win.PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:primary,clientX:100,clientY:300,bubbles:true,cancelable:true}));}
-touch(engine.canvas,'pointerdown',10);touch(thrust,'pointerdown',11,false);touch(engine.canvas,'pointerup',10);
-assert(engine.world.spill.held,'a released gesture cannot cancel the button hold');tick(3);assert.equal(app.querySelector('.ac-throttle'),thrust,'HUD update retains the captured button');
-app.querySelector('.ac-dive').click();assert(engine.world.spill.pilot.vy>0);assert(engine.world.spill.held,'Dive does not release a held throttle');
-touch(win,'pointerup',12,false);assert(engine.world.spill.held,'another finger cannot release throttle');touch(win,'pointerup',11);assert(!engine.world.spill.held);
-touch(thrust,'pointerdown',13);win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space'}));touch(win,'pointerup',13);assert(engine.world.spill.held);win.dispatchEvent(new win.KeyboardEvent('keyup',{code:'Space'}));assert(!engine.world.spill.held);
-touch(thrust,'pointerdown',14);engine.pause();assert(!engine.world.spill.held&&controls.hidden);engine.resume();assert(!engine.world.spill.held);
-win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',repeat:true}));assert(!engine.world.spill.held,'a stale held-key repeat cannot restart throttle after pause');
-touch(thrust,'pointerdown',15);touch(win,'pointerup',14);assert(engine.world.spill.held,'stale release after pause cannot cancel a fresh hold');touch(win,'pointercancel',15);assert(!engine.world.spill.held);
-thrust.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',bubbles:true,cancelable:true}));assert(engine.world.spill.held);thrust.dispatchEvent(new win.KeyboardEvent('keyup',{code:'Space',bubbles:true,cancelable:true}));assert(!engine.world.spill.held);
+const sp=engine.world.spill;sp.pilot.vy=0;
+touch(thrust,'pointerdown',11,false);assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'a press on the pad is the tap kick');assert(thrust.classList.contains('firing'),'the pad glows for the kick');
+tick(3);assert.equal(app.querySelector('.ac-thrust'),thrust,'HUD update retains the pad');
+touch(thrust,'pointerdown',12,false);assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'a second press never stacks past the tap speed');
+touch(win,'pointerup',11);touch(win,'pointerup',12);assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'releases change nothing: there is no hold to let go of');
+sp.pilot.vy=0;touch(engine.canvas,'pointerdown',10);assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'a tap on the field is the same kick');touch(engine.canvas,'pointerup',10);
+app.querySelector('.ac-dive').click();assert(sp.pilot.vy>0,'Dive is the burst down');
+sp.pilot.vy=0;win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space'}));assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'Space is a tap');
+sp.pilot.vy=0;win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',repeat:true}));assert.equal(sp.pilot.vy,0,'a held key repeat is not a stream of taps');
+win.dispatchEvent(new win.KeyboardEvent('keyup',{code:'Space'}));
+engine.pause();assert(controls.hidden);engine.resume();assert(!controls.hidden);
+sp.pilot.vy=0;win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',repeat:true}));assert.equal(sp.pilot.vy,0,'a stale held-key repeat cannot tap after pause');
+sp.pilot.vy=0;thrust.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',bubbles:true,cancelable:true}));assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'Space on the focused pad taps once');
+sp.pilot.vy=0;thrust.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',bubbles:true,cancelable:true,repeat:true}));assert.equal(sp.pilot.vy,0,'and a held key on the pad does not repeat');
+thrust.dispatchEvent(new win.KeyboardEvent('keyup',{code:'Space',bubbles:true,cancelable:true}));
 const charges=engine.world.spill.lungeCharges;app.querySelector('.ac-lunge').click();assert.equal(engine.world.spill.lungeCharges,charges-1);assert(app.querySelector('.ac-lunge').disabled);assert(app.querySelector('.ac-lunge').textContent.includes('RECHARGING'));
 // Pause preferences persist. Hiding text changes no simulation state or hazard warnings.
 engine.pause();app.querySelector('[role="switch"][aria-label="On-screen buttons"]').click();assert.equal(Save.loadSave().spillButtonsOff,true);
 const pausedState=JSON.stringify(engine.world.spill);app.querySelector('[role="switch"][aria-label="Instructional prompts"]').click();assert.equal(Save.loadSave().spillPromptsOff,true);assert.equal(JSON.stringify(engine.world.spill),pausedState,'prompt setting does not alter wave pacing');
-engine.resume();assert(controls.hidden);engine.spillThrottle(true);assert(!engine.world.spill.held,'hidden controls cannot acquire thrust');
+engine.resume();assert(controls.hidden);sp.pilot.vy=0;engine.spillThrust();assert.equal(sp.pilot.vy,0,'hidden controls cannot tap');
 const Draw=await import(new URL('../docs/js/draw.js',import.meta.url).href);const labels=[];ctx.fillText=t=>labels.push(t);const flight=engine.world.spill;
 flight.hint='TEST INSTRUCTION';flight.hintT=5;flight.banner='HAZARD WARNING';flight.bannerT=1;
 Draw.drawHud(ctx,engine.world,engine.art,engine.save);assert(!labels.includes('TEST INSTRUCTION'));assert(labels.includes('HAZARD WARNING'));
 engine.pause();app.querySelector('[role="switch"][aria-label="Instructional prompts"]').click();app.querySelector('[role="switch"][aria-label="On-screen buttons"]').click();engine.resume();assert(!controls.hidden);labels.length=0;Draw.drawHud(ctx,engine.world,engine.art,engine.save);assert(labels.includes('TEST INSTRUCTION'));
 ctx.fillText=()=>{};flight.lunge=0;flight.lungeCharges=1;flight.cool=0;flight.pilot.y=flight.H*.45;flight.pilot.vy=0;
-// A swipe remains valid after a long hold; another pointer cannot release it.
+// A swipe still lands after a long rest on the field; a second finger's release cannot end the first finger's swipe.
 const canvas=engine.canvas;function pointer(type,id,x,y){canvas.dispatchEvent(new win.PointerEvent(type,{pointerId:id,clientX:x,clientY:y,pointerType:'touch',isPrimary:true,bubbles:true}));}
-pointer('pointerdown',1,100,300);now+=800;pointer('pointermove',1,155,300);assert(engine.world.spill.lunge>0,'long-hold swipe lunges');pointer('pointerup',2,155,300);assert(engine.world.spill.held);pointer('pointerup',1,155,300);assert(!engine.world.spill.held);
-pointer('pointerdown',3,100,300);win.dispatchEvent(new win.Event('blur'));assert.equal(engine.world.screen,'pause');assert(!engine.world.spill.held);engine.resume();assert.equal(engine.world.screen,'play');pointer('pointerdown',4,100,300);width=320;engine.resize();assert.equal(engine.world.screen,'pause');assert(!engine.world.spill.held);engine.resume();
+pointer('pointerdown',1,100,300);now+=800;pointer('pointerup',2,100,300);pointer('pointermove',1,155,300);assert(engine.world.spill.lunge>0,'a swipe after a long rest still lunges, and another finger cannot cancel it');pointer('pointerup',1,155,300);
+pointer('pointerdown',3,100,300);win.dispatchEvent(new win.Event('blur'));assert.equal(engine.world.screen,'pause');engine.resume();assert.equal(engine.world.screen,'play');pointer('pointerdown',4,100,300);width=320;engine.resize();assert.equal(engine.world.screen,'pause');engine.resume();
 const s=fixture();const initial=s.ore;assert.equal(app.querySelectorAll('.ac-workshop-system').length,4);assert.equal(app.querySelectorAll('.ac-workshop-slots > span').length,2);
 control('inspect-pulse').click();assert.equal(s.ore,initial,'inspecting a system is not a purchase');control('inspect-plating').click();
 control('plating').click();assert.equal(s.up.plating,1);assert.equal(s.ore,initial-60);assert.equal(engine.save.spillSuspended.state.up.plating,1);
@@ -116,11 +153,16 @@ const end=fixture(20);assert.equal(engine.world.screen,'play');assert(end.firstP
 control('plating').click();const hull=end.maxHull,bank=end.ore;control('save').click();assert(engine.spillResume());tick(50);assert(engine.world.spill.firstPass);assert(app.textContent.includes('First pass complete'));
 assert.equal(control('launch').textContent,'LAUNCH WAVE 21');control('launch').click();assert.equal(engine.world.screen,'play');assert.equal(engine.world.spill.wave,21);assert.equal(engine.world.spill.maxHull,hull);assert.equal(engine.world.spill.ore,bank);assert(!engine.world.spill.firstPass);
 const later=fixture(20);assert(!later.firstPass);assert(!app.textContent.includes('First pass complete'));assert(!app.textContent.includes('FINISH EXPEDITION'));control('launch').click();assert.equal(later.wave,21);assert.equal(engine.world.screen,'play');assert.equal(engine.save.spillRecords.expeditions,2);assert.equal(engine.save.spillRecords.runs,0);
-// A rematch always returns to an explicit, editable starting ship; guide is shown once.
+// A rematch returns to the instructions sheet and a stock ship; the Depot still opens without its guide.
 engine.world.spill.phase='over';engine.world.spill.hull=0;engine.world.spill.cause='impact';engine.world.spill.cues=['dead'];tick();
 button('CHOOSE SHIP & FLY AGAIN').click();assert(app.querySelector('.ac-spillsetup'));assert.equal(engine.world.spill.hull,3);assert.equal(engine.world.spill.ore,0);
 assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:0,pulse:0});assert.equal(engine.save.spillEngineColor,'copper');
 assert(!app.querySelector('[data-ship-starter]'));control('land').click();tick(200);assert(!app.querySelector('.ac-depotguidecard'));assert(control('launch').disabled);
+// A mission (target > 0) has no sheet: the canvas ready card, a tap, then the same welcome Depot with its free upgrade and no guide.
+engine.fly('spill');engine.world.spill.target=3;engine.spillLunge();assert.equal(engine.world.spill.phase,'docking');assert(!app.querySelector('.ac-spillsetup'));tick(200);
+assert.equal(engine.world.spill.phase,'depot');assert(!app.querySelector('.ac-depotguidecard'),'a mission lands on the free upgrade with no guide');assert(engine.world.spill.freeUpgrade);
+assert.equal(app.querySelectorAll('.ac-workshop-system').length,4);assert(!app.querySelector('.ac-workshop-utilities'));assert.equal(control('launch').textContent,'CHOOSE FREE UPGRADE');assert(control('launch').disabled);assert(!app.querySelector('[data-spill-control="save"]'),'missions cannot save and exit');
+control('guide').click();assert.equal(control('enter-depot').textContent,'BACK TO DEPOT');assert(app.textContent.includes('Survive 3 waves.'));control('enter-depot').click();assert(!app.querySelector('.ac-depotguidecard'));
 // High-refresh displays keep 60 simulation steps and approximately 60 paints.
 Object.defineProperty(win,"devicePixelRatio",{value:3,configurable:true});
 for(const hz of [120,90,144]) {
@@ -153,4 +195,4 @@ for(const [suit,motionOff,ready,plays] of [['vanguard',false,true,true],['flight
  assert.equal(s.phase,'depot');assert.equal(s.depotVisits,0);assert(s.freeUpgrade);
  assert(app.querySelector('[data-spill-control="inspect-plating"]'));
 }
-engine.stop();await win.happyDOM.close();console.log('spill UI: guide once/replay, all utility cards, atomic swap/refit, purchases, scroll/focus, earned engine colors/migration, rematch selection, save/resume, input/pause, paint budget and Vanguard landing passed');
+engine.stop();await win.happyDOM.close();console.log('spill UI: one instructions sheet, guide by request only, all utility cards, atomic swap/refit, purchases, scroll/focus, earned engine colors/migration, rematch selection, save/resume, input/pause, paint budget and Vanguard landing passed');
