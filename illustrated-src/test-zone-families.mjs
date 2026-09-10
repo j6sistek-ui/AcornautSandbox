@@ -49,9 +49,8 @@ for(const expected of baseline.records){
  const geometry={phases:[w.driftPhase,w.tiltPhase],planets:w.planets.map(({topKind,botKind,blockers,...p})=>({...p,blockers:blockers.map(({kind,debris,...b})=>b)})),pickups:w.pickups};
  for(const p of w.planets){assert(Cat.ENVS[def.fx.env].planetBias.includes(p.topKind));assert.equal(p.topKind,p.botKind);for(const b of p.blockers)assert(Cat.ENVS[def.fx.env].debrisBias.includes(b.debris));}
  if(w.spill){
-  const s=w.spill;s.welcome=false;s.openingEnabled=false;s.pilot.y=H*.45;s.iframes=10000;Spill.spillHold(s,true);
+  const s=w.spill;s.welcome=false;s.openingEnabled=false;s.pilot.y=H*.45;s.iframes=10000;Spill.spillTap(s);
   for(let q=0;q<300&&s.phase!=='wave';q++){Spill.stepSpill(s,1/60);s.pilot.y=H*.45;s.pilot.vy=0;}
-  Spill.spillHold(s,false);
   for(let i=0;i<600;i++){Spill.stepSpill(s,1/60);s.pilot.y=H*.45;s.pilot.vy=0;s.iframes=10000;}
   geometry.spill={rng:s.rng,rocks:s.rocks.map(({sprite,...r})=>r),nuts:s.nuts,wave:s.wave,event:s.event};
   assert(s.rocks.length>0,`Spill fixture did not exercise spawning: ${id}`);
