@@ -1,17 +1,17 @@
 {
-  "date": "2026-09-10T06:25:52.128Z",
-  "base_commit": "daad832642b7af5cda4358fb60f4ce40026c638d",
-  "stamp": 266,
+  "date": "2026-09-10T07:27:16.556Z",
+  "base_commit": "bafe50345707ef22f4607ef4ba2534057643a473",
+  "stamp": 269,
   "builds": "Docker production/beta/lab/Flight Studio pass",
   "typecheck": "pass",
   "art": "32 QA groups pass",
   "harness": {
-    "pass": 55,
+    "pass": 56,
     "fail": 1,
     "skip": 0,
-    "total": 56
+    "total": 57
   },
-  "bridge": "pass - 51 files clean",
+  "bridge": "pass in complete harness - 51 files clean",
   "browser": {
     "production": "390 and320 pass",
     "beta": "390 and320 pass",
@@ -35,16 +35,24 @@
     "total_bytes": 262144,
     "max_channel_delta": 28,
     "first_byte": 64900,
-    "unchanged_base_reproduction": "Independently reproduced at daad832642b7af5cda4358fb60f4ce40026c638d in the same Docker image; exact 22-byte, delta28, first64900 result. See baseline-high-orbit.txt.",
+    "unchanged_base_reproduction": "Independently reproduced at bafe50345707ef22f4607ef4ba2534057643a473 in the same Docker image; exact22-byte,delta28,first64900 result. See baseline-high-orbit.txt.",
     "dependency": "Linux @napi-rs/canvas0.1.100"
   },
-  "tested_commit": "5943d7011da109bc21f39675ca89043d7e7e0042",
-  "publication": "Draft for owner review with the independently reproduced baseline failure disclosed. Subsequent changes affect review files only; game source and build outputs match the tested commit. No merge or release approval.",
+  "tested_commit": "b4e4f079432cb6bb59a203ee1735559fc992fcf3",
+  "publication": "Existing PR266 updated after owner merged PR264. Owner has marked PR266 ready; this update preserves that state. Final receipt changes review files only; no merge or release performed.",
   "scope": "Two Shop-only CSS rules and cache stamp; no price, artwork, save, purchase or gameplay changes",
   "original_reproduction_commit": "11a1b88df55ab0664fc413cb07a384ae15e3e704",
   "source_scope": {
     "generated_modules_compared": 51,
     "modules_differ_only_in_build_stamp_and_time": true,
     "shipping_art_unchanged": true
+  },
+  "conflict_resolution": {
+    "merged_pr": 264,
+    "previous_head": "84bea3c39ee8da93d7c4a53ef766fb62af0ca41f",
+    "base_commit": "bafe50345707ef22f4607ef4ba2534057643a473",
+    "helmet_artwork_and_masters_identical": true,
+    "painters_and_registration_identical": true,
+    "source_shell_only_two_spacing_rules_and_stamp": true
   }
 }

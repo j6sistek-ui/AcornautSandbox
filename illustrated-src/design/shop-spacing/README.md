@@ -1,16 +1,16 @@
 # Shop spacing repair
 
-Issue #265 covers the shared Shop spacing reports. The section headings inherited a -2px lower margin and adjacent Stardust purchase cards had no separation. Text already contained the space in Star Dust.
+Issue #265 covers headings touching the following image/card and adjoining Stardust purchase cards. Two Shop-only CSS rules change heading clearance from -2px to8px and card separation from0px to10px. The Star Dust label already contained its space. Prices, purchases, saves, gameplay and artwork are unchanged.
 
-Two Shop-only CSS rules now give headings 8px clearance and purchase cards a 10px lower margin. Prices, text, handlers, ownership and artwork are unchanged. Current main daad832642b7af5cda4358fb60f4ce40026c638d is integrated. Source export generated production/beta/lab/Studio at stamp 266.
+PR264 was merged by the owner while PR266 was open. This update integrates that helmet release at main bafe50345707ef22f4607ef4ba2534057643a473, preserves all shipping art, source masters, helmet painters and registration, and rebuilds production/beta/lab/Flight Studio at stamp269. All51 generated game modules differ from current main only in stamp/build time.
 
 ## Evidence
 
-Fresh disposable Edge contexts at 390x844 and 320x844 reproduce -2px heading gaps and 0px card gaps on main 11a1b88df55ab0664fc413cb07a384ae15e3e704. The candidate measures 8px and 10px respectively, with no horizontal overflow or page errors. The geometry assertions fail on the recorded baseline and pass on the candidate. These are desktop browser tests at mobile widths, not native iPhone validation.
+Runtime tested: b4e4f079432cb6bb59a203ee1735559fc992fcf3. Final receipt changes only the files in this review folder. The original baseline was reproduced at11a1b88df55ab0664fc413cb07a384ae15e3e704. New production and beta measurements after integration pass at390x844 and320x844:8px heading gaps,10px card gaps, no horizontal overflow or page errors. Disposable synthetic saves were used. These desktop browser checks do not establish native iPhone validation.
 
-[Before measurements](before-measurements.json) / [After measurements](after-measurements.json).
+[Before measurements](before-measurements.json) / [After measurements](after-measurements.json) / [Beta measurements](beta-after-measurements.json).
 
-| Before | Candidate |
+| Before | Updated candidate |
 | --- | --- |
 | ![Before390](before-390-dust.png) | ![After390](after-390-dust.png) |
 | ![Before320](before-320-dust.png) | ![After320](after-320-dust.png) |
@@ -18,18 +18,16 @@ Fresh disposable Edge contexts at 390x844 and 320x844 reproduce -2px heading gap
 
 ## Repeat the layout check
 
-Use existing Playwright and browser tooling; do not install host packages. Point ACORNAUT_PLAYWRIGHT at the existing Playwright package and ACORNAUT_BROWSER at an existing Chromium/Edge executable, then run:
+Use existing Playwright and browser tooling. Set ACORNAUT_PLAYWRIGHT to the package and ACORNAUT_BROWSER to the Chromium/Edge executable, then run:
 
 ```sh
 node illustrated-src/design/shop-spacing/browser-check.mjs after
 ```
 
-The check serves only this checkout on a temporary loopback port, opens isolated browser storage, measures both widths, asserts the gaps/overflow/page errors and closes its browser/server. Set ACORNAUT_REVIEW_BETA=1 to check beta, and ACORNAUT_REVIEW_OUTPUT to write captures outside the repo. The before mode captures baseline geometry without enforcing the repaired distances. This optional browser check is separate from the standard dependency-limited Node harness.
+The check serves this checkout on a temporary loopback port, opens isolated storage, measures both widths and closes its browser/server. ACORNAUT_REVIEW_BETA=1 checks beta; ACORNAUT_REVIEW_OUTPUT selects an output directory. Before mode records baseline geometry without enforcing repaired distances. This optional browser check is separate from the standard Node harness.
 
-## Shipping status
+## Validation and status
 
-Container builds/typecheck/art/harness/bridge have been attempted. Final gate results and any blocker are recorded in validation.json. Do not interpret visual success as release approval.
+Docker source/lab/Studio builds, typecheck, all32 art QA groups and the platform bridge test pass. No lint script exists; git diff --check passes. The full harness finishes56 passed,1 failed,0 skipped out of57. The sole failure is the existing High Orbit Cinderforge raster comparison:22 of262144 bytes differ, maximum delta28, first byte64900. This exact failure was independently reproduced on unchanged current main bafe50345707ef22f4607ef4ba2534057643a473 in the same image. See [baseline result](baseline-high-orbit.txt) and [validation](validation.json). The full gate remains nonzero.
 
-The complete Docker harness finished with 55/56 passing, one failure and no skips. The failure was independently reproduced on unchanged current main daad832642b7af5cda4358fb60f4ce40026c638d in the same Docker image: 22 differing bytes, maximum channel delta 28, first byte 64900. See [baseline result](baseline-high-orbit.txt). Production and beta layout assertions pass at both widths. After integrating current main, all checks and production/beta browser measurements were repeated at runtime commit 5943d7011da109bc21f39675ca89043d7e7e0042. The final receipt changes review files only; game source and build outputs match that tested commit. All 51 generated game modules differ from main only in stamp/build-time values; shipping art is unchanged.
-
-This candidate is being published as a draft for review with the existing baseline failure disclosed. Draft publication is authorized; this does not establish green release gates or approval to merge or deploy. Native iPhone validation remains outstanding.
+The owner marked PR266 ready. This conflict-resolution update preserves that state; no merge or release was performed. Native iPhone validation remains outstanding.

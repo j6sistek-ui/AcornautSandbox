@@ -1,3 +1,7 @@
+Unchanged main bafe50345707ef22f4607ef4ba2534057643a473
+Docker acornaut-own001-checks; Node22.23.2; Linux Canvas0.1.100
+Verified 2026-09-10T07:27:16.556Z
+
 node:internal/modules/run_main:123
     triggerUncaughtException(
     ^
