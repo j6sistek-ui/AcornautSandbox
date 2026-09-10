@@ -91,10 +91,26 @@ def main():
 
     suits = suit_ids()
     for s in suits:
+        # Current runtime portraits for these ids are visibly rougher than the
+        # curated website exports. Keep the reviewed exports until art is fixed.
+        if s["id"] in {"abyssal", "cinderforge", "cosmic", "groveguard", "sunforged", "ferret", "hedgehog", "raccoon"}:
+            for prefix in ("s-", "preview-"):
+                retained = os.path.join(ROOT, "site-src", "assets", prefix + s["id"] + ".webp")
+                target = os.path.join(out, prefix + s["id"] + ".webp")
+                if os.path.abspath(retained) != os.path.abspath(target):
+                    import shutil
+                    shutil.copy2(retained, target)
+            continue
         p = os.path.join(ART, "suits", s["id"] + ".png")
+        if s["id"] == "arcflash":
+            p = os.path.join(ART, "suits", "arcflash", "body.png")
         if not os.path.exists(p):
             print("  ! no render for", s["id"]); continue
-        total += webp(p, os.path.join(out, "s-%s.webp" % s["id"]), (176, 176), 82)
+        im = Image.open(p).convert("RGBA")
+        im.save(os.path.join(out, "preview-%s.webp" % s["id"]), "WEBP", lossless=True, method=6)
+        im.resize((208, 208), Image.LANCZOS).save(os.path.join(out, "s-%s.webp" % s["id"]), "WEBP", lossless=True, method=6)
+        total += os.path.getsize(os.path.join(out, "s-%s.webp" % s["id"]))
+        total += os.path.getsize(os.path.join(out, "preview-%s.webp" % s["id"]))
     print("suits      %2d" % len(suits))
 
     for way in ("asc", "desc"):
