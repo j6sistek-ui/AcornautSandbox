@@ -1859,6 +1859,28 @@ body .ac-shipmenu .ac-sheet-scroll{padding-bottom:calc(24px + env(safe-area-inse
 .ac-spillhelp-controls b{font-size:13px;color:#f9f4ff}
 .ac-spillhelp-controls span{font-size:12px;color:#e1d9f1}
 .ac-spillhelp-controls small{font-size:10px;color:#c9bbe3}
+/* PER-PAD IDENTITY ON TOP OF THAT BASE. The gradient, inset glow and radius
+   above are left exactly as they are - these cards belong to the Loadout's
+   family now, and only their IDENTITY comes from the pad. So the border, the
+   outer glow and the input word take the colour of the pad the card
+   describes, and the fill does not move. --pad-light and --pad-edge are set
+   per card in flightControlCards from SPILL_CONTROL_COLORS, the same table
+   spillControlArt paints the real pads with, so the two cannot drift apart.
+
+   Both selectors are written as CHILDREN on purpose, measured out of a
+   browser rather than assumed: a bare `.ac-spillhelp-pad` loses to
+   `.ac-spillhelp-controls>div` at (0,1,1) and the card stays generic, and
+   `.ac-spillhelp-pad b` merely TIES `.ac-spillhelp-controls b`, which would
+   leave the word colour depending on source order.
+   The flat fallback comes first for anything without color-mix. */
+.ac-spillhelp-controls>.ac-spillhelp-pad{border-color:var(--pad-edge)}
+@supports (background:color-mix(in srgb,#fff 10%,#000)){
+  .ac-spillhelp-controls>.ac-spillhelp-pad{
+    border-color:color-mix(in srgb,var(--pad-edge) 80%,transparent);
+    box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--pad-light) 14%,transparent),
+               0 0 7px color-mix(in srgb,var(--pad-light) 18%,transparent)}
+}
+.ac-spillhelp-controls>.ac-spillhelp-pad b{color:var(--pad-light)}
 .ac-spillflighthelp>.ac-replay{width:100%;margin-top:12px}
 .ac-spillsetup .ac-sub,.ac-spillflighthelp .ac-sub,.ac-depotguidecard .ac-sub{color:#c9bbe3}
 
@@ -2064,7 +2086,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js263/standalone.js")
+    import("./js267/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>
