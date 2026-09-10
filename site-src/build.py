@@ -148,7 +148,7 @@ def main():
     page = re.sub(r'(?<![\w-])(src|poster|srcset|href)="assets/([^" ]+)"',
                   lambda m: m.group(1) + '="' + resolve(m.group(2)) + '"', page)
     dynamic = re.findall(r"(?:video|poster):'([^']+)'", app)
-    dynamic += ["hero.mp4", "worlds.mp4", "squad.mp4"]
+    dynamic += ["hero.mp4", "worlds.mp4", "squad.mp4", "crew-showcase.mp4"]
     dynamic += re.findall(r'"id": "([^" ]+)"', app)
     dynamic = ["preview-%s.webp" % n if not "." in n else n for n in dynamic]
     media = {name: resolve(name) for name in sorted(set(dynamic))}
@@ -189,7 +189,7 @@ def main():
 
     size = os.path.getsize(dst)
     print("%s -> %s (%.2f MB)" % (args.mode, dst, size / 1048576))
-    print("31 selectable suits, 6 gameplay modes, 3 cinematic films")
+    print("31 selectable suits, 6 gameplay modes, 4 cinematic films")
     if args.mode == "files":
         total = sum(os.path.getsize(os.path.join(r, f))
                     for r, _, fs in os.walk(out_dir) for f in fs)
