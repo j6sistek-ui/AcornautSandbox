@@ -1,0 +1,51 @@
+{
+  "at": "2026-09-10T07:57:06.304Z",
+  "base_commit": "ed4092d99b4f2092d27021a8f2df2902122a44be",
+  "tested_commit": "6ec3d942296682e9030532451347b4a0bb952135",
+  "stamp": 270,
+  "change": "One Shop note shortened to Shop refreshes daily; cache stamp and generated outputs refreshed.",
+  "builds": "Production/beta, lab and Flight Studio container builds pass",
+  "browser": {
+    "engine": "Fresh headless Edge with disposable synthetic save",
+    "viewports": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 320,
+        "height": 844
+      }
+    ],
+    "device_scale_factor": 2,
+    "production": "pass",
+    "beta": "pass",
+    "text": "Shop refreshes daily",
+    "height_before": 26,
+    "height_after": 13,
+    "page_errors": 0,
+    "horizontal_overflow": false,
+    "offer_ids_and_prices_preserved": true,
+    "fixed_inventory_clock": "2026-09-10T07:00:00Z",
+    "visual_review": "Both production screenshots inspected"
+  },
+  "scope": {
+    "base": "ed4092d99b4f2092d27021a8f2df2902122a44be",
+    "generated_modules": 51,
+    "source_single_text_change": true,
+    "other_changes_only_stamp_time": true,
+    "shipping_art_masters_and_website_unchanged": true,
+    "shop_css_preserved": true,
+    "whitespace": "pass"
+  },
+  "whitespace": "git diff --check passes",
+  "checks_intentionally_not_repeated": "Full gameplay harness, global art gate and separate platform bridge; single text change has no behavior or asset impact. No new assertion-only unit test for static wording.",
+  "known_unrelated_limitation": "PR266 documents the existing Linux Canvas High Orbit raster difference. That unrelated check was not rerun for this copy-only update.",
+  "native_iphone_validation": false,
+  "baseline": {
+    "commit": "daad832642b7af5cda4358fb60f4ce40026c638d",
+    "stamp": 265,
+    "scope": "Original reproduced two-line note and offer/price measurements; current main still contains the exact old text."
+  },
+  "publication": "Draft for owner review; no merge or release."
+}

@@ -1,0 +1,240 @@
+{
+  "beta": false,
+  "tag": "after",
+  "rows": [
+    {
+      "width": 390,
+      "text": "Shop refreshes daily",
+      "height": 13,
+      "items": [
+        {
+          "id": "arcflash",
+          "kind": "suit",
+          "price": "1,850"
+        },
+        {
+          "id": "arcflash",
+          "kind": "suit"
+        },
+        {
+          "id": "porcelain",
+          "kind": "suit",
+          "price": "1,000"
+        },
+        {
+          "id": "porcelain",
+          "kind": "suit"
+        },
+        {
+          "id": "nacre",
+          "kind": "suit",
+          "price": "1,000"
+        },
+        {
+          "id": "nacre",
+          "kind": "suit"
+        },
+        {
+          "id": "origamist",
+          "kind": "suit",
+          "price": "1,000"
+        },
+        {
+          "id": "origamist",
+          "kind": "suit"
+        },
+        {
+          "id": "raccoon",
+          "kind": "suit",
+          "price": "270"
+        },
+        {
+          "id": "raccoon",
+          "kind": "suit"
+        },
+        {
+          "id": "hedgehog",
+          "kind": "suit",
+          "price": "270"
+        },
+        {
+          "id": "hedgehog",
+          "kind": "suit"
+        },
+        {
+          "id": "volt",
+          "kind": "suit",
+          "price": "270"
+        },
+        {
+          "id": "volt",
+          "kind": "suit"
+        },
+        {
+          "id": "seraph",
+          "kind": "helm",
+          "price": "360"
+        },
+        {
+          "id": "seraph",
+          "kind": "helm"
+        },
+        {
+          "id": "leviathan",
+          "kind": "helm",
+          "price": "360"
+        },
+        {
+          "id": "leviathan",
+          "kind": "helm"
+        },
+        {
+          "id": "ivoryguard",
+          "kind": "helm",
+          "price": "90"
+        },
+        {
+          "id": "ivoryguard",
+          "kind": "helm"
+        },
+        {
+          "id": "gemmie",
+          "kind": "helm",
+          "price": "360"
+        },
+        {
+          "id": "gemmie",
+          "kind": "helm"
+        },
+        {
+          "id": "nightglider",
+          "kind": "pal",
+          "price": "90"
+        },
+        {
+          "id": "nightglider",
+          "kind": "pal"
+        }
+      ],
+      "pageErrors": [],
+      "scrollWidth": 390
+    },
+    {
+      "width": 320,
+      "text": "Shop refreshes daily",
+      "height": 13,
+      "items": [
+        {
+          "id": "arcflash",
+          "kind": "suit",
+          "price": "1,850"
+        },
+        {
+          "id": "arcflash",
+          "kind": "suit"
+        },
+        {
+          "id": "porcelain",
+          "kind": "suit",
+          "price": "1,000"
+        },
+        {
+          "id": "porcelain",
+          "kind": "suit"
+        },
+        {
+          "id": "nacre",
+          "kind": "suit",
+          "price": "1,000"
+        },
+        {
+          "id": "nacre",
+          "kind": "suit"
+        },
+        {
+          "id": "origamist",
+          "kind": "suit",
+          "price": "1,000"
+        },
+        {
+          "id": "origamist",
+          "kind": "suit"
+        },
+        {
+          "id": "raccoon",
+          "kind": "suit",
+          "price": "270"
+        },
+        {
+          "id": "raccoon",
+          "kind": "suit"
+        },
+        {
+          "id": "hedgehog",
+          "kind": "suit",
+          "price": "270"
+        },
+        {
+          "id": "hedgehog",
+          "kind": "suit"
+        },
+        {
+          "id": "volt",
+          "kind": "suit",
+          "price": "270"
+        },
+        {
+          "id": "volt",
+          "kind": "suit"
+        },
+        {
+          "id": "seraph",
+          "kind": "helm",
+          "price": "360"
+        },
+        {
+          "id": "seraph",
+          "kind": "helm"
+        },
+        {
+          "id": "leviathan",
+          "kind": "helm",
+          "price": "360"
+        },
+        {
+          "id": "leviathan",
+          "kind": "helm"
+        },
+        {
+          "id": "ivoryguard",
+          "kind": "helm",
+          "price": "90"
+        },
+        {
+          "id": "ivoryguard",
+          "kind": "helm"
+        },
+        {
+          "id": "gemmie",
+          "kind": "helm",
+          "price": "360"
+        },
+        {
+          "id": "gemmie",
+          "kind": "helm"
+        },
+        {
+          "id": "nightglider",
+          "kind": "pal",
+          "price": "90"
+        },
+        {
+          "id": "nightglider",
+          "kind": "pal"
+        }
+      ],
+      "pageErrors": [],
+      "scrollWidth": 320
+    }
+  ]
+}
