@@ -55,7 +55,7 @@ class Emitter:
         if self.mode == "inline":
             return data_uri(src)
         self._copy(src, os.path.join(self.out, "assets", name))
-        return "assets/" + name
+        return "assets/" + name + "?v=" + self._version(src)
 
     def clip(self, name):
         src = os.path.join(CLIPS, name)
@@ -64,7 +64,12 @@ class Emitter:
         if self.mode == "inline":
             return data_uri(src)
         self._copy(src, os.path.join(self.out, "clips", name))
-        return "clips/" + name
+        return "clips/" + name + "?v=" + self._version(src)
+
+    @staticmethod
+    def _version(src):
+        with open(src, "rb") as f:
+            return hashlib.sha256(f.read()).hexdigest()[:12]
 
     def _copy(self, src, dst):
         if dst in self.copied:
@@ -101,16 +106,16 @@ def stamp_worker(out_dir):
     """Write sw.js with its cache name derived from everything else emitted.
 
     The worker answers assets cache-first and never revalidates inside a cache
-    generation, so the cache NAME is the only cache-busting mechanism the site
-    has. Hardcoding it means a changed asset stays invisible to every returning
-    visitor until a human remembers to bump a constant - so derive it instead.
+    generation. Asset URLs also carry content hashes, so an older worker can
+    never return an old asset for a new page. Derive the cache name from content
+    and worker logic rather than relying on a manual version bump.
 
-    Hashes sorted (relative path, bytes) over the whole output, excluding sw.js
+    Hashes the worker template and sorted (relative path, bytes) over the output, excluding sw.js
     itself, which would otherwise be circular. Deterministic: identical output
     gives an identical name, so redeploying unchanged content does not flush
     anyone's cache for nothing.
     """
-    h = hashlib.sha256()
+    h = hashlib.sha256(part("sw.js").encode())
     for root, dirs, files in os.walk(out_dir):
         dirs.sort()
         for f in sorted(files):
@@ -156,6 +161,7 @@ def main():
     scripts += '<script>' + app + '</script><script>' + demo + '</script>'
     meta = HEAD_META.format(desc=DESCRIPTION, site=SITE_URL)
     if args.mode == "files":
+        scripts += "<script>" + part("updates.js") + "</script>"
         meta += ('<link rel="manifest" href="manifest.webmanifest">'
                  '<script>(function(){try{'
                  'if(matchMedia("(display-mode: standalone)").matches||navigator.standalone){'
