@@ -30,4 +30,6 @@ The check serves only this checkout on a temporary loopback port, opens isolated
 
 Container builds/typecheck/art/harness/bridge have been attempted. Final gate results and any blocker are recorded in validation.json. Do not interpret visual success as release approval.
 
-The complete Docker harness finished with 55/56 passing, one failure and no skips. The failure matches the previously reproduced unchanged-base High Orbit raster difference exactly. Production and beta layout assertions pass at both widths. This candidate remains local under the scheduled workflow's requirement for green shipping gates before publication.
+The complete Docker harness finished with 55/56 passing, one failure and no skips. The failure matches the previously reproduced unchanged-base High Orbit raster difference exactly. Production and beta layout assertions pass at both widths. The runtime and visual evidence were tested at commit 53cdbca4606013a1509607dae9360a52122274cd; the follow-up changes only this review documentation and continuity record.
+
+This candidate is being published as a draft for review with the existing baseline failure disclosed. Draft publication is authorized; this does not establish green release gates or approval to merge or deploy. Native iPhone validation remains outstanding.

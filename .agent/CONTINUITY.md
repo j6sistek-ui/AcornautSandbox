@@ -25,3 +25,4 @@
 
 [OUTCOMES]
 - 2026-09-10T05:55Z [CODE] Issue #265 candidate adds 8px Shop heading clearance and10px Stardust card separation in two CSS rules; stamp264. Production/beta browser geometry at390/320 passes. Docker builds/typecheck/32 art groups/bridge pass; full harness 55/56 with one known unchanged-base High Orbit raster failure and no skips. Candidate remains unpublished until shipping gate is resolved; evidence in illustrated-src/design/shop-spacing.
+- 2026-09-10T06:15Z [USER] Supersedes publication hold above: prepare a draft PR for review with the known baseline test failure disclosed. Runtime checks bind to 53cdbca4606013a1509607dae9360a52122274cd; this follow-up updates documentation only. No merge or release authorized.
