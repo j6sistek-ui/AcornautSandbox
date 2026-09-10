@@ -75,8 +75,60 @@ later shell expensive, so the test fails the build instead.
 3. Gate, all four, before pushing:
    - `npx tsc illustrated-src/game/*.ts illustrated-src/lab/rig.ts --noEmit --module es2015 --target es2020 --skipLibCheck --moduleResolution bundler --strict false`
    - `python3 illustrated-src/verify-art.py` (32 groups; every catalog id must have its still and banks)
-   - the harness: `node illustrated-src/run-tests.mjs` (or `npm test`), which runs every `illustrated-src/test-*.mjs` with no skip list. Sixteen of them need `happy-dom` or `@napi-rs/canvas`: `npm install` at the repo root, or the runner reports them SKIPPED and fails. `test-warp` needs about four minutes.
+   - the harness: `node illustrated-src/run-tests.mjs` (or `npm test`), which runs every `illustrated-src/test-*.mjs` with no skip list. Sixteen of them need `happy-dom` or `@napi-rs/canvas`: `npm install` at the repo root, or the runner reports them SKIPPED and fails.
    - `node illustrated-src/test-platform-bridge.mjs`
+
+   **Seven tests are optional, and you decide up front.** They cost 437 of
+   the harness's 593 seconds. Each one guards a specific thing that has
+   broken before. Read what it protects; if your change could touch that,
+   run it. Otherwise skip it with `--skip-heavy`.
+
+   **`test-warp`** · 159s · *No black hole inside a black hole.* Catching a
+   hole opens a stretch, and a hole met while already inside one is scenery
+   that looks exactly like the way out. The roll must be off for the whole
+   stretch. It broke once because Free Flight counts GATES and every other
+   mode counts SECONDS, and the guard only read the counter. Slow because it
+   re-flies levels to build a real sample. **Run it if you touched hole or
+   warp spawning, gate counting, or level/mode timing.**
+
+   **`test-tunnel`** · 54s · *The Wormhole Run stays flyable.* Tap floor,
+   freeze, save, loadout and resize across three seeds, in a spawned
+   sandbox. **Run it if you touched the Wormhole Run, the tap floor, or
+   run-state save/resume.**
+
+   **`test-star-map-ui`** · 53s · *The Star Chart menus still navigate.*
+   Real menu and engine events, zone families, bounded canvases, engine
+   access and progression. **Run it if you touched the chart, its rewards,
+   zone visuals, or progression unlocks.**
+
+   **`test-vanguard-flight`** · 50s · *AcorNut flies right.* Real canvas
+   with real art, no simulated screenshots. **Run it if you touched
+   AcorNut's painter, the sim, or his art.**
+
+   **`test-vanguard-render`** · 47s · *AcorNut draws right.* Rapid taps,
+   shallow gravity, full swipe, retained dust, crisp opaque poses, A/B
+   physics equality across 204 comparison frames. **Run it if you touched
+   his painter, the dust, or his art.**
+
+   **`test-shop-visuals`** · 38s · *The Shop shows real product art.* Every
+   bundle has a distinct kit banner, item cards use actual game painters,
+   the rotation and animated previews hold. **Run it if you touched the
+   Shop, bundles, prices, or shop art.**
+
+   **`test-helmet-animation`** · 36s · *Helmets still fit.* Glass and
+   fitting compared against a pinned pre-repair revision, so a helmet
+   cannot silently drift off a head. **Run it if you touched helmets, heads,
+   visors, or the suits they sit on.**
+
+   Judge by REACH, not filename. An `ART_VER` bump touches `catalog.ts` and
+   reaches none of these. A menu string touches `standalone.ts` and reaches
+   none of these. When genuinely unsure, run it.
+
+   This is deliberately not airtight. Owner, 10 Sep 2026: "if it ships and
+   breaks, we will eventually fix and find it. Not the end of the world if
+   they miss a check." What is NOT optional is saying which way you called
+   it - see the scope checklist in AGENTS.md.
+
 4. Prove it in the browser once, at 390 wide, on the page it changes
    (production or beta). Screens that changed get a screenshot in the PR.
 5. PR body: what, why (quote the owner's ask), verified. No model names.
