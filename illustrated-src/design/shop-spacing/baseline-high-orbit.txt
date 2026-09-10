@@ -1,0 +1,23 @@
+Unchanged main bafe50345707ef22f4607ef4ba2534057643a473
+Docker acornaut-own001-checks; Node22.23.2; Linux Canvas0.1.100
+Verified 2026-09-10T07:27:16.556Z
+
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: cinderforge fallback equals rig pixels at canonical size — 22 of 262144 bytes differ, max channel delta 28, first at byte 64900 (pixel 16225, channel R)
+
+22 !== 0
+
+    at samePixels (file:///tmp/shop-base/illustrated-src/test-high-orbit.mjs:32:10)
+    at file:///tmp/shop-base/illustrated-src/test-high-orbit.mjs:86:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 22,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.23.2
