@@ -2,11 +2,11 @@
 
 Issue #267: the note below the daily shelves overexplained restocking and trail availability. It now reads **Shop refreshes daily**, in the same location. The source change is one string in standalone.ts; rotation, offers, prices, purchases, saves and art are unchanged.
 
-Current main ed4092d99b4f2092d27021a8f2df2902122a44be is integrated, including the merged helmets, Shop spacing and website showcase. Production/beta, lab and Flight Studio outputs were rebuilt in the existing container at stamp 270.
+Current main 944578e8223883352bac168cb8a843caa1b70194 is integrated, including the merged helmets, Shop spacing and website showcase. Production/beta, lab and Flight Studio outputs were rebuilt in the existing container at stamp 270.
 
 ## Focused verification
 
-Runtime tested: 6ec3d942296682e9030532451347b4a0bb952135. The final receipt commit changes only this review folder.
+Runtime tested: 6ec3d942296682e9030532451347b4a0bb952135. A subsequent website-only main update was integrated without changing the tested game source or outputs. Only four website files changed upstream; game checks were not repeated. The final receipt commit changes only this review folder.
 
 - Container builds pass. Compilation is part of the export.
 - Fresh isolated Edge at 390x844 and 320x844, DPR 2, passes in production and beta. The new note fits one line (13px), with no page errors or horizontal overflow. Both production captures were visually inspected.

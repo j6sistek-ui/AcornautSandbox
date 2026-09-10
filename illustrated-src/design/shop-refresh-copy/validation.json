@@ -1,6 +1,6 @@
 {
   "at": "2026-09-10T07:57:06.304Z",
-  "base_commit": "ed4092d99b4f2092d27021a8f2df2902122a44be",
+  "base_commit": "944578e8223883352bac168cb8a843caa1b70194",
   "tested_commit": "6ec3d942296682e9030532451347b4a0bb952135",
   "stamp": 270,
   "change": "One Shop note shortened to Shop refreshes daily; cache stamp and generated outputs refreshed.",
@@ -30,7 +30,7 @@
     "visual_review": "Both production screenshots inspected"
   },
   "scope": {
-    "base": "ed4092d99b4f2092d27021a8f2df2902122a44be",
+    "base": "944578e8223883352bac168cb8a843caa1b70194",
     "generated_modules": 51,
     "source_single_text_change": true,
     "other_changes_only_stamp_time": true,
@@ -47,5 +47,17 @@
     "stamp": 265,
     "scope": "Original reproduced two-line note and offer/price measurements; current main still contains the exact old text."
   },
-  "publication": "Draft for owner review; no merge or release."
+  "publication": "Draft for owner review; no merge or release.",
+  "post_verification_integration": {
+    "at": "2026-09-10T07:59:13.962Z",
+    "base": "944578e8223883352bac168cb8a843caa1b70194",
+    "files": [
+      "site-src/build.py",
+      "site-src/parts/sw.js",
+      "site-src/parts/updates.js",
+      "site-src/test-cache.mjs"
+    ],
+    "game_source_and_builds_identical_to_tested_runtime": true,
+    "tests_not_repeated": "Only website files changed on main; inherited unchanged. Game source/builds exactly match the already-tested runtime."
+  }
 }
