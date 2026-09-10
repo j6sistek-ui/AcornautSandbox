@@ -1,31 +1,31 @@
-import { spillDockTravelDuration } from "./spill.js?v=258";
-import { clearHelmetRearCollar } from "./helmet-openings.js?v=258";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=258";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=258";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=258";
-import { arcflashPreview } from "./arcflash-motion.js?v=258";
-import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=258";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=258";
-import { highOrbitPreview } from "./high-orbit-motion.js?v=258";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=258";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=258";
-import { spillAppearance } from "./spill-appearance.js?v=258";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=258";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=258";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=258";
-import { goalHud } from "./campaign.js?v=258";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=258";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=258";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=258";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=258";
-import { suitPitchFor } from "./save.js?v=258";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=258";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=258";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=258";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=258";
-import { spillEngineColor } from "./spill-content.js?v=258";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=258";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=258";
+import { spillDockTravelDuration } from "./spill.js?v=262";
+import { clearHelmetRearCollar } from "./helmet-openings.js?v=262";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=262";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=262";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=262";
+import { arcflashPreview } from "./arcflash-motion.js?v=262";
+import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=262";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=262";
+import { highOrbitPreview } from "./high-orbit-motion.js?v=262";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=262";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=262";
+import { spillAppearance } from "./spill-appearance.js?v=262";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=262";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=262";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=262";
+import { goalHud } from "./campaign.js?v=262";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=262";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=262";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=262";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=262";
+import { suitPitchFor } from "./save.js?v=262";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=262";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=262";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=262";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=262";
+import { spillEngineColor } from "./spill-content.js?v=262";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=262";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=262";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1781,7 +1781,7 @@ function drawSpillShip(ctx, w, save, art, s, x, parked = false) {
         .map(([, name]) => name ? { name, sp: art.spillShip[name], xf: xfOf(name) } : null)
         .filter((l) => !!l && !!l.sp);
     const z = SPILL_SHIP_LEN / hull.box.w;
-    const thrust = Math.max(s.held ? 0.55 : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
+    const thrust = Math.max(s.thrustT ? 0.55 * Math.min(1, s.thrustT / 0.22) : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
     ctx.save();
     ctx.translate(x, s.pilot.y);
     ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
@@ -1914,7 +1914,7 @@ function drawSpillScout(ctx, w, save, art, s, x) {
     const fit = (88 * scale) / Math.max(1, Math.max(box.w, box.h));
     const layout = hyperRunShipLayout(box.w * fit / 2, scale, ship);
     const engineX = layout.engineX;
-    const thrust = Math.max(s.held ? 0.55 : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
+    const thrust = Math.max(s.thrustT ? 0.55 * Math.min(1, s.thrustT / 0.22) : 0, s.burstT > 0 ? Math.min(1, s.burstT / 0.22) : 0);
     ctx.save();
     ctx.translate(x, s.pilot.y);
     ctx.rotate(Math.max(-0.28, Math.min(0.32, s.pilot.rot * 0.45)));
@@ -2285,7 +2285,7 @@ function drawSpillHint(ctx, w, text, alpha, bottom) {
     }
     ctx.restore();
 }
-function drawSpillHud(ctx, w, art, hidePrompts = false) {
+function drawSpillHud(ctx, w, art, hidePrompts = false, padsOn = true) {
     const s = w.spill;
     const { W, H } = w;
     ctx.textAlign = "center";
@@ -2441,9 +2441,11 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         ctx.fillStyle = "#ff9a4c";
         ctx.fillRect(cx + 13, cy + 9, tw * (s.phase === "countdown" ? 0 : spillRamp(s)), 2);
     }
-    // the free lesson, while it runs
+    // the free lesson, while it runs. The DOM flight pads sit on the bottom
+    // 110px or so of a phone (plus its safe area), so the card climbs above
+    // them while they are on; it sat across the Thrust pad otherwise
     if (!hidePrompts && s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
-        drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
+        drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - (padsOn ? 156 : 96));
     }
     if (s.phase === "ready" && s.target) {
         const compact = W < 520;
@@ -2458,9 +2460,9 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
             "COLLECT ACORN COINS",
             compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
                 : "DEPOT EVERY 5 WAVES · SPEND ACORN COINS",
-            compact ? "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▶ LUNGE"
-                : "HOLD ▲ RISE · RELEASE ▼ FALL · SWIPE ▲▼ BURST · SWIPE ▶ LUNGE",
-            "PRESS TO LAUNCH",
+            compact ? "TAP ▲ FLY · SWIPE ▼ DIVE · SWIPE ▶ LUNGE"
+                : "TAP ▲ FLY · SWIPE ▼ DIVE · SWIPE ▲ BURST · SWIPE ▶ LUNGE",
+            "TAP TO LAUNCH",
         ];
         const oreLine = 1;
         const lineHeight = compact ? 20 : 21;
@@ -2530,7 +2532,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         ctx.globalAlpha = 1;
         ctx.fillStyle = "rgba(215,230,247,.7)";
         ctx.font = "700 11px Figtree, system-ui";
-        ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · PRESS TO TAKE THE STICK", W / 2, H * 0.34 + 146);
+        ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · TAP TO TAKE THE STICK", W / 2, H * 0.34 + 146);
         ctx.restore();
     }
     if (s.phase === "wave" && s.phaseT < 0.6) {
@@ -4350,50 +4352,25 @@ export const FROZEN_SUITS = ["vanguard", "flight", "robo", "alien", "bigbooty", 
     // eclipse drives its power and feel" - and they now do, so they inherit
     // Eclipse's dial rather than the shallow holding value they were parked at.
     "cryostar", "verdant"];
-// FLIGHT PATTERNS GROUP BY FAMILY (owner, 9 Sep 2026: "unique flight
-// pattern by family"; then "Loosely on the family thing. not a rule ...
-// there may be exceptions like acornaut. as close as possible these
-// groupings should align").
+// FLIGHT METHOD IS DELIBERATELY NOT STANDARDISED.
+// This block used to hold FLIGHT_FAMILIES and FLIES_APART, which grouped
+// suits and made a settled family fly one shared ramp. That is the thing
+// the owner asked to go, 10 Sep 2026: "Not force every new character to be
+// exactly the same", and "standardization's hard when the perfect method
+// hasn't been discovered yet ... I like some models more than others, but
+// nothing screams use only this one.. so don't gate it."
 //
-// So: alignment is the DEFAULT and divergence is allowed, but a suit that
-// flies apart from its group has to be NAMED as flying apart. The failure
-// this prevents is nobody's decision - a member quietly drifting off its
-// group because someone tuned one suit and forgot the other four.
+// After the last art pass most suits carry their own tap bank, so they can
+// each fly a bit differently, and that is fine for now. There may one day
+// be a single solution for all of them or a unique one per character - the
+// flight modifier is where that gets worked out - and until then nothing
+// here decides it in advance.
 //
-// SUIT_SHELF in catalog.ts is the grouping the pilot actually sees, and
-// these mirror it; the harness checks they have not drifted apart. The
-// owner's plan, 9 Sep: exotic its own pattern, high orbit its own (and
-// shipping LAST), standard its own, AcorNut its own apart from standard,
-// and Quill / Noodle / Bandit standardised together.
-//
-// `settled` is the honest part. A family is only held to alignment once its
-// art is IN. Most of the roster is being regenerated right now and does not
-// align yet - asserting that it does would be asserting something false.
-// Flip a family to settled when its art lands and the alignment becomes
-// real; the harness starts holding it to that from then on.
-export const FLIGHT_FAMILIES = [
-    // Eclipse's motion, transferred to the other two by #242 and confirmed by
-    // the owner ("those three yes"). Art is in, all three frozen.
-    { name: "eclipse", members: ["eclipse", "cryostar", "verdant"], settled: true },
-    // "i'm standardizing quill noodle and rocket" - Bandit is the raccoon;
-    // the owner said "rocket" for it, so the NAME may be changing. Art in
-    // progress.
-    { name: "critters", members: ["raccoon", "ferret", "hedgehog"], settled: false },
-    // "all standard will have their own (except acornut - it'll have its own)"
-    { name: "standard", members: ["vanguard", "flight", "iontrim", "copper", "frost", "voidsuit", "ember", "ghost"], settled: false },
-    // "all exotic have their own unique"
-    { name: "exotic", members: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"], settled: false },
-    // "all high orbit will have their own ... they'll go last"
-    { name: "highorbit", members: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"], settled: false },
-];
-/** Suits that deliberately fly apart from the group they sit in. An
- *  exception is fine - "there may be exceptions like acornaut" - but it is
- *  declared here rather than discovered later as a suit that drifted. */
-export const FLIES_APART = [
-    // "except acornut - it'll have its own". It sits on the STANDARD shelf and
-    // shares nothing else with it: its own painter, its own free-running cycle.
-    "vanguard",
-];
+// What replaced the family rule is simpler and is the real point: every
+// suit carries its own number (see SUIT_DIVE_DEPTH), so a value changed to
+// fix one reported problem cannot silently move a suit nobody was looking
+// at. The failure being prevented is a fix that gets applied globally and
+// is never verified to have solved anything.
 export const SUIT_DIVE_DEPTH = {
     // ---- FROZEN: approved 9 Sep 2026, do not touch ----
     flight: 1, alien: 1, cyber: 1, eclipse: 1, seraph: 1, briellacat: 1,
@@ -4407,12 +4384,36 @@ export const SUIT_DIVE_DEPTH = {
     // every tail-whip pose. The temporary limits on obsolete art are retired.
     iontrim: 1, copper: 1, leviathan: 1,
     ghost: 1, voidsuit: 1, ember: 1, frost: 1, sammie: 1, gemmie: 1,
+    // ---- EVERY SUIT CARRIES ITS OWN NUMBER ----
+    // These twelve used to have no line here and fell through to
+    // POSE_DIVE_DEPTH, which meant one edit moved all twelve at once. Owner,
+    // 10 Sep 2026: "right now, every suit is its own. needs to be coded. so
+    // changing a value in one place doesn't force everyone to change."
+    //
+    // Most of them never reach this dial today - their own painters or tap
+    // banks answer first - but "never reaches it today" is exactly how a
+    // shared number stays invisible until some other change routes them
+    // through it. Written out at the value they already flew, so nothing
+    // moves; what changes is that moving one of them now takes aim.
+    vanguard: 1, arcflash: 1, robo: 1, bigbooty: 1, catsuit: 1, volt: 1,
+    raccoon: 1, ferret: 1, hedgehog: 1,
+    porcelain: 1, nacre: 1, origamist: 1,
 };
-/** The dive dial this suit flies: its own if it has one, else the default. */
+/** The dive dial this suit flies. Every shipped suit has its own entry, so
+ *  this only falls back for an id that is not a suit at all. */
 export function diveDepthFor(id) {
     const v = SUIT_DIVE_DEPTH[id];
     return typeof v === "number" ? v : POSE_DIVE_DEPTH;
 }
+// ECLIPSE, CRYOSTAR AND VERDANT ARE A PREFERENCE, NOT A FAMILY RULE.
+// Owner, 10 Sep 2026: "eclipse, verdant, cryo should remain as similar as
+// possible, and any change to one should prompt the integrator to ask me
+// if i should apply to all 3." So they are not welded together - each has
+// its own line above like everything else - but they are named here so a
+// change to one cannot go in quietly. The harness asks the question; the
+// owner answers it. Splitting them is allowed, it just has to be on
+// purpose.
+export const MATCHED_TRIO = ["eclipse", "cryostar", "verdant"];
 // THE CLIMB SPAN: the vertical speed that means "full climb pose". This was
 // 470 px/s, and the game never gets there - a hard climb peaks near 428, so
 // even the best tap asked for 60% of the ramp, which POSE_CURVE then bent
@@ -5271,7 +5272,7 @@ export function paintShipPreview(ctx, art, save, cx, cy, scale, t, pick) {
         shipPreviewStates.set(key, s);
     }
     s.pilot.y = 0;
-    s.held = true;
+    s.thrustT = 0.22;
     s.signal = spillEngineColor(save).color;
     const w = { time: t, squirrel: { y: 0, vy: 0, rot: 0 }, W: 390, H: 760 };
     ctx.save();
@@ -5567,7 +5568,7 @@ export function drawHud(ctx, w, art, save) {
 function drawHudBody(ctx, w, art, save) {
     const { W } = w;
     if (w.spill) {
-        drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff);
+        drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff, !save?.spillButtonsOff);
         return;
     }
     if (w.race) {

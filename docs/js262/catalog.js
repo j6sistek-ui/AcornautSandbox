@@ -1,7 +1,7 @@
-import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=258";
-import { platform } from "./platform.js?v=258";
-import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=258";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=258";
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=262";
+import { platform } from "./platform.js?v=262";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=262";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=262";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -17,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=258";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "258";
+export const ART_VER = "262";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-10 00:27 UTC";
+export const BUILD_TIME = "2026-09-10 02:37 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -386,6 +386,15 @@ export function washScale(flight) {
     return flight === "deep" || flight === "lost" ? 0.45 : 1;
 }
 export const PLANET_COUNT = 134;
+// THE HUB'S OWN PLANET. The MODES tile on the home screen paints this one,
+// and it is named here because the boot loader and the tile have to agree
+// about it. They stopped agreeing once zone art went lazy: the boot fetch
+// narrowed to ENVS[0].planetBias, which is Deep Space [0, 1, 2, 33, 34],
+// while the tile kept asking for 8 - a Nebula Nursery planet that nothing
+// fetches until a pilot actually flies that zone. The result was a blank
+// box on a freshly loaded home screen. Both sides read this constant now,
+// so moving the hub to a different planet cannot silently un-load it.
+export const HUB_PLANET = 8;
 export const DEBRIS_COUNT = 55;
 // Special-mode seeded art rolls retain their original range.
 export const LEGACY_DEBRIS_COUNT = 27;

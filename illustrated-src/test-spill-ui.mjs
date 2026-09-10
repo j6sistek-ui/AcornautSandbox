@@ -72,32 +72,40 @@ control('guide').click();assert(app.textContent.includes('Unlocks stay'));contro
 control('inspect-thrusters').click();control('thrusters').click();assert.equal(engine.world.spill.up.thrusters,1);assert.equal(engine.world.spill.ore,0);
 assert.equal(control('launch').textContent,'LAUNCH WAVE 1');control('launch').click();assert.equal(engine.world.spill.phase,'countdown');tick(181);
 assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:1,pulse:0},'only the chosen starting upgrade is fitted');
-// Button holds survive HUD rebuilds, multi-touch actions and mixed gesture/keyboard release.
-const thrust=app.querySelector('.ac-throttle'),controls=app.querySelector('.ac-spillcontrols');assert(thrust&&!controls.hidden);
+// TAP TO FLY: the Thrust pad, a tap on the field and Space are the same kick. Taps never stack,
+// key repeats are not taps, and nothing has to be released.
+const thrust=app.querySelector('.ac-thrust'),controls=app.querySelector('.ac-spillcontrols');assert(thrust&&!controls.hidden);
+assert(!app.querySelector('.ac-throttle'),'the Throttle hold is retired');assert.equal(thrust.getAttribute('aria-label'),'Thrust: tap to fly');
 function touch(target,type,id,primary=true){target.dispatchEvent(new win.PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:primary,clientX:100,clientY:300,bubbles:true,cancelable:true}));}
-touch(engine.canvas,'pointerdown',10);touch(thrust,'pointerdown',11,false);touch(engine.canvas,'pointerup',10);
-assert(engine.world.spill.held,'a released gesture cannot cancel the button hold');tick(3);assert.equal(app.querySelector('.ac-throttle'),thrust,'HUD update retains the captured button');
-app.querySelector('.ac-dive').click();assert(engine.world.spill.pilot.vy>0);assert(engine.world.spill.held,'Dive does not release a held throttle');
-touch(win,'pointerup',12,false);assert(engine.world.spill.held,'another finger cannot release throttle');touch(win,'pointerup',11);assert(!engine.world.spill.held);
-touch(thrust,'pointerdown',13);win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space'}));touch(win,'pointerup',13);assert(engine.world.spill.held);win.dispatchEvent(new win.KeyboardEvent('keyup',{code:'Space'}));assert(!engine.world.spill.held);
-touch(thrust,'pointerdown',14);engine.pause();assert(!engine.world.spill.held&&controls.hidden);engine.resume();assert(!engine.world.spill.held);
-win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',repeat:true}));assert(!engine.world.spill.held,'a stale held-key repeat cannot restart throttle after pause');
-touch(thrust,'pointerdown',15);touch(win,'pointerup',14);assert(engine.world.spill.held,'stale release after pause cannot cancel a fresh hold');touch(win,'pointercancel',15);assert(!engine.world.spill.held);
-thrust.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',bubbles:true,cancelable:true}));assert(engine.world.spill.held);thrust.dispatchEvent(new win.KeyboardEvent('keyup',{code:'Space',bubbles:true,cancelable:true}));assert(!engine.world.spill.held);
+const sp=engine.world.spill;sp.pilot.vy=0;
+touch(thrust,'pointerdown',11,false);assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'a press on the pad is the tap kick');assert(thrust.classList.contains('firing'),'the pad glows for the kick');
+tick(3);assert.equal(app.querySelector('.ac-thrust'),thrust,'HUD update retains the pad');
+touch(thrust,'pointerdown',12,false);assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'a second press never stacks past the tap speed');
+touch(win,'pointerup',11);touch(win,'pointerup',12);assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'releases change nothing: there is no hold to let go of');
+sp.pilot.vy=0;touch(engine.canvas,'pointerdown',10);assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'a tap on the field is the same kick');touch(engine.canvas,'pointerup',10);
+app.querySelector('.ac-dive').click();assert(sp.pilot.vy>0,'Dive is the burst down');
+sp.pilot.vy=0;win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space'}));assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'Space is a tap');
+sp.pilot.vy=0;win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',repeat:true}));assert.equal(sp.pilot.vy,0,'a held key repeat is not a stream of taps');
+win.dispatchEvent(new win.KeyboardEvent('keyup',{code:'Space'}));
+engine.pause();assert(controls.hidden);engine.resume();assert(!controls.hidden);
+sp.pilot.vy=0;win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',repeat:true}));assert.equal(sp.pilot.vy,0,'a stale held-key repeat cannot tap after pause');
+sp.pilot.vy=0;thrust.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',bubbles:true,cancelable:true}));assert.equal(sp.pilot.vy,-S.SPILL.tapVy,'Space on the focused pad taps once');
+sp.pilot.vy=0;thrust.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Space',bubbles:true,cancelable:true,repeat:true}));assert.equal(sp.pilot.vy,0,'and a held key on the pad does not repeat');
+thrust.dispatchEvent(new win.KeyboardEvent('keyup',{code:'Space',bubbles:true,cancelable:true}));
 const charges=engine.world.spill.lungeCharges;app.querySelector('.ac-lunge').click();assert.equal(engine.world.spill.lungeCharges,charges-1);assert(app.querySelector('.ac-lunge').disabled);assert(app.querySelector('.ac-lunge').textContent.includes('RECHARGING'));
 // Pause preferences persist. Hiding text changes no simulation state or hazard warnings.
 engine.pause();app.querySelector('[role="switch"][aria-label="On-screen buttons"]').click();assert.equal(Save.loadSave().spillButtonsOff,true);
 const pausedState=JSON.stringify(engine.world.spill);app.querySelector('[role="switch"][aria-label="Instructional prompts"]').click();assert.equal(Save.loadSave().spillPromptsOff,true);assert.equal(JSON.stringify(engine.world.spill),pausedState,'prompt setting does not alter wave pacing');
-engine.resume();assert(controls.hidden);engine.spillThrottle(true);assert(!engine.world.spill.held,'hidden controls cannot acquire thrust');
+engine.resume();assert(controls.hidden);sp.pilot.vy=0;engine.spillThrust();assert.equal(sp.pilot.vy,0,'hidden controls cannot tap');
 const Draw=await import(new URL('../docs/js/draw.js',import.meta.url).href);const labels=[];ctx.fillText=t=>labels.push(t);const flight=engine.world.spill;
 flight.hint='TEST INSTRUCTION';flight.hintT=5;flight.banner='HAZARD WARNING';flight.bannerT=1;
 Draw.drawHud(ctx,engine.world,engine.art,engine.save);assert(!labels.includes('TEST INSTRUCTION'));assert(labels.includes('HAZARD WARNING'));
 engine.pause();app.querySelector('[role="switch"][aria-label="Instructional prompts"]').click();app.querySelector('[role="switch"][aria-label="On-screen buttons"]').click();engine.resume();assert(!controls.hidden);labels.length=0;Draw.drawHud(ctx,engine.world,engine.art,engine.save);assert(labels.includes('TEST INSTRUCTION'));
 ctx.fillText=()=>{};flight.lunge=0;flight.lungeCharges=1;flight.cool=0;flight.pilot.y=flight.H*.45;flight.pilot.vy=0;
-// A swipe remains valid after a long hold; another pointer cannot release it.
+// A swipe still lands after a long rest on the field; a second finger's release cannot end the first finger's swipe.
 const canvas=engine.canvas;function pointer(type,id,x,y){canvas.dispatchEvent(new win.PointerEvent(type,{pointerId:id,clientX:x,clientY:y,pointerType:'touch',isPrimary:true,bubbles:true}));}
-pointer('pointerdown',1,100,300);now+=800;pointer('pointermove',1,155,300);assert(engine.world.spill.lunge>0,'long-hold swipe lunges');pointer('pointerup',2,155,300);assert(engine.world.spill.held);pointer('pointerup',1,155,300);assert(!engine.world.spill.held);
-pointer('pointerdown',3,100,300);win.dispatchEvent(new win.Event('blur'));assert.equal(engine.world.screen,'pause');assert(!engine.world.spill.held);engine.resume();assert.equal(engine.world.screen,'play');pointer('pointerdown',4,100,300);width=320;engine.resize();assert.equal(engine.world.screen,'pause');assert(!engine.world.spill.held);engine.resume();
+pointer('pointerdown',1,100,300);now+=800;pointer('pointerup',2,100,300);pointer('pointermove',1,155,300);assert(engine.world.spill.lunge>0,'a swipe after a long rest still lunges, and another finger cannot cancel it');pointer('pointerup',1,155,300);
+pointer('pointerdown',3,100,300);win.dispatchEvent(new win.Event('blur'));assert.equal(engine.world.screen,'pause');engine.resume();assert.equal(engine.world.screen,'play');pointer('pointerdown',4,100,300);width=320;engine.resize();assert.equal(engine.world.screen,'pause');engine.resume();
 const s=fixture();const initial=s.ore;assert.equal(app.querySelectorAll('.ac-workshop-system').length,4);assert.equal(app.querySelectorAll('.ac-workshop-slots > span').length,2);
 control('inspect-pulse').click();assert.equal(s.ore,initial,'inspecting a system is not a purchase');control('inspect-plating').click();
 control('plating').click();assert.equal(s.up.plating,1);assert.equal(s.ore,initial-60);assert.equal(engine.save.spillSuspended.state.up.plating,1);

@@ -1,8 +1,8 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=258";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=258";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=258";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=258";
-import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumSuit, isHighOrbitRig } from "./high-orbit-config.js?v=258";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=262";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=262";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=262";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=262";
+import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumSuit, isHighOrbitRig } from "./high-orbit-config.js?v=262";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -681,7 +681,8 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         many(`${base}/acorn/`, 16),
         many(`${base}/golden/`, 16),
         many(`${base}/shield/`, 4),
-        indexedSprites("planets", ENVS[0].planetBias, PLANET_COUNT),
+        // The hub tile needs its planet at boot, not when its zone is entered.
+        indexedSprites("planets", [...ENVS[0].planetBias, HUB_PLANET], PLANET_COUNT),
         indexedSprites("debris", Array.from({ length: LEGACY_DEBRIS_COUNT }, (_, i) => i), DEBRIS_COUNT),
         optional(`${base}/sky.jpg`),
         named(palIds, "solo"),

@@ -29,14 +29,24 @@ remain stable. Missions use the standard starting ship and a fixed seed.
 
 ## Controls and damage
 
-- Hold to rise, release to fall. Swipe up/down for a burst; right for a lunge.
-- A swipe still works after a long hold. Only the owning pointer releases it;
-  cancellation, lost capture, blur, visibility loss and resize clear the hand.
-- Space / Up hold thrust; Down dives; W bursts upward; Right / D lunges.
-- Optional on-screen Throttle (hold), Dive (downward burst) and Lunge
-  (forward dash) use those same rules. The button layer survives HUD updates,
-  tracks the holding finger and supports a second finger for Dive or Lunge.
-  Gesture, keyboard and button holds release independently; pause cancels all.
+- Tap to fly, like every other mode except Hyper Run: a tap is an instant
+  kick skyward (400 px/s against 1,000 px/s² of gravity, an 80 px hop that
+  peaks in 0.4 s) and taps never stack. Swipe down to dive, swipe up for a
+  harder kick, swipe right to lunge. The fall is capped at 420 px/s; a dive
+  carries past the cap and decays back to it.
+- A swipe still works after a long rest on the field, and only the owning
+  pointer can end it. Nothing has to be released: blur, visibility loss and
+  resize pause the run rather than cancel a hold.
+- Space / Up tap; a held key is one tap, never a stream. Down dives; W is the
+  harder kick; Right / D lunges.
+- Optional on-screen Thrust (tap), Dive (downward burst) and Lunge (forward
+  dash) use those same rules. The button layer survives HUD updates and a
+  second finger can Dive or Lunge while the first taps. The Thrust pad fires on
+  the press and glows for the length of the kick's plume. Pause hides the pads.
+- The numbers were chosen by sweep: the rule test's tapping bot flew seven
+  candidate hands over twelve seeds, and 400/1,000 cleared wave 3 on all
+  twelve and wave 5 on eight; flight's own 450/1,300 cleared wave 3 on six.
+  Hyper Run keeps hold-to-rise.
 - The Spill pause menu saves separate switches for buttons and instructional
   prompts. Hiding prompts affects presentation only: warning banners, event
   corridors, HUD information and wave pacing remain active. Global Help off

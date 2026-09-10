@@ -1634,8 +1634,8 @@
     .ac-spillcontrols button svg { display: block; width: 100%; height: 100%; pointer-events: none; filter: drop-shadow(0 4px 3px #0008); }
     .ac-spillcontrols .ac-dive { border-radius: 28% 0 0 28%; }
     .ac-spillcontrols .ac-lunge { border-radius: 0 28% 28% 0; }
-    .ac-spillcontrols .ac-throttle { z-index: 2; border-radius: 50%; }
-    .ac-spillcontrols button:active svg,.ac-spillcontrols .held svg { filter: brightness(1.3) drop-shadow(0 0 8px #a6ffda55); transform: scale(.97); }
+    .ac-spillcontrols .ac-thrust { z-index: 2; border-radius: 50%; }
+    .ac-spillcontrols button:active svg,.ac-spillcontrols .firing svg { filter: brightness(1.3) drop-shadow(0 0 8px #a6ffda55); transform: scale(.97); }
     .ac-spillcontrols button:disabled { opacity: .45; }
     .ac-spillcontrols .ac-control-status { position: absolute; top: 100%; left: 12%; width: 88%; text-align: center; color: #b4edff; font: 800 8px Figtree,sans-serif; letter-spacing: .05em; }
     .ac-spillcontrols button:focus-visible { outline: none; }
@@ -1839,6 +1839,22 @@ body .ac-shipmenu .ac-sheet-scroll{padding-bottom:calc(24px + env(safe-area-inse
 .ac-spillsetup .ac-setup-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
 .ac-spillsetup .ac-workshop-actions{flex-shrink:0;padding-top:10px;border-top:1px solid #46546b}
 @media(max-height:450px){.ac-spillsetup .ac-launch-ship{display:none}.ac-spillsetup h2{font-size:24px}}
+
+/* ==== INSTRUCTIONS SHEET + COMPACT GUIDE UTILITIES (10 Sep 2026). Layout only:
+   grids, sizes and spacing. Material and colour belong to the restyle pass. ==== */
+.ac-spillsetup .ac-spillhelp-controls{margin:2px 0 6px}
+.ac-spillhelp-extra{display:block;margin:0 0 8px;font-size:11px;line-height:1.3}
+.ac-setup-loop{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-direction:column;gap:5px}
+.ac-setup-loop li{display:flex;align-items:center;gap:8px;min-height:22px;font:500 13px/1.35 Figtree,sans-serif}
+.ac-setup-loop li>span{min-width:0}
+.ac-setup-loop .ac-workshop-coin{width:20px;height:20px}
+.ac-spillsetup .ac-launch-ship{margin:8px 0 0}
+.ac-guide-utilityrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 2px}
+.ac-guide-utilityrow>div{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;text-align:center;font:500 11px/1.2 Figtree,sans-serif}
+.ac-guide-utilityrow>div b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.ac-guide-utilityrow .ac-utility-art{width:28px;height:28px}
+.ac-guide-utilityhead.ac-guide-utilityhead{margin:12px 0 7px;padding-top:10px}
+.ac-guide-carry.ac-guide-carry{margin:12px 0 14px;padding-top:12px}
 </style>
 <style id="ac-loadout-css">/* Loadout presentation only. The existing sky paintings take the equipped
    suit's colors; the live canvas and every control keep their own colors. */
@@ -2021,7 +2037,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js261/standalone.js")
+    import("./js262/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>
