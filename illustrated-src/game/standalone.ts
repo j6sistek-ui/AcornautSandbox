@@ -11,7 +11,7 @@ import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-pr
 import { STAR_MAP_PREVIEW, suitPitchDefault, DUST_STICKER } from "./catalog";
 import { suitLean } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
+import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, NEWS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, SHOP_CYCLE, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
 import { bundleQuote, type BundleItem } from "./catalog";
 import { drawSprite as drawSpriteOn } from "./art";
@@ -1403,7 +1403,7 @@ export async function bootStandalone(root: HTMLElement) {
       loadoutTile.append(el("span", "ac-hubsub ac-hubequip", `${hubPals.join(" + ")} equipped`));
     }
     const planet = miniCanvas(50, 50);
-    if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[8] ?? null, 25, 25, 46);
+    if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[HUB_PLANET] ?? null, 25, 25, 46);
     // no dot: a badge should mean something NEW is inside, and nothing
     // in the mode sheet changes on its own
     tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`,

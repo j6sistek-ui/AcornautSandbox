@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "259";
+export const ART_VER = "260";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -495,6 +495,16 @@ export function washScale(flight: string) {
 }
 
 export const PLANET_COUNT = 134;
+
+// THE HUB'S OWN PLANET. The MODES tile on the home screen paints this one,
+// and it is named here because the boot loader and the tile have to agree
+// about it. They stopped agreeing once zone art went lazy: the boot fetch
+// narrowed to ENVS[0].planetBias, which is Deep Space [0, 1, 2, 33, 34],
+// while the tile kept asking for 8 - a Nebula Nursery planet that nothing
+// fetches until a pilot actually flies that zone. The result was a blank
+// box on a freshly loaded home screen. Both sides read this constant now,
+// so moving the hub to a different planet cannot silently un-load it.
+export const HUB_PLANET = 8;
 export const DEBRIS_COUNT = 55;
 // Special-mode seeded art rolls retain their original range.
 export const LEGACY_DEBRIS_COUNT = 27;
