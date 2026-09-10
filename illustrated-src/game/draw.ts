@@ -4456,51 +4456,25 @@ export const FROZEN_SUITS = ["vanguard", "flight", "robo", "alien", "bigbooty", 
   // Eclipse's dial rather than the shallow holding value they were parked at.
   "cryostar", "verdant"] as const;
 
-// FLIGHT PATTERNS GROUP BY FAMILY (owner, 9 Sep 2026: "unique flight
-// pattern by family"; then "Loosely on the family thing. not a rule ...
-// there may be exceptions like acornaut. as close as possible these
-// groupings should align").
+// FLIGHT METHOD IS DELIBERATELY NOT STANDARDISED.
+// This block used to hold FLIGHT_FAMILIES and FLIES_APART, which grouped
+// suits and made a settled family fly one shared ramp. That is the thing
+// the owner asked to go, 10 Sep 2026: "Not force every new character to be
+// exactly the same", and "standardization's hard when the perfect method
+// hasn't been discovered yet ... I like some models more than others, but
+// nothing screams use only this one.. so don't gate it."
 //
-// So: alignment is the DEFAULT and divergence is allowed, but a suit that
-// flies apart from its group has to be NAMED as flying apart. The failure
-// this prevents is nobody's decision - a member quietly drifting off its
-// group because someone tuned one suit and forgot the other four.
+// After the last art pass most suits carry their own tap bank, so they can
+// each fly a bit differently, and that is fine for now. There may one day
+// be a single solution for all of them or a unique one per character - the
+// flight modifier is where that gets worked out - and until then nothing
+// here decides it in advance.
 //
-// SUIT_SHELF in catalog.ts is the grouping the pilot actually sees, and
-// these mirror it; the harness checks they have not drifted apart. The
-// owner's plan, 9 Sep: exotic its own pattern, high orbit its own (and
-// shipping LAST), standard its own, AcorNut its own apart from standard,
-// and Quill / Noodle / Bandit standardised together.
-//
-// `settled` is the honest part. A family is only held to alignment once its
-// art is IN. Most of the roster is being regenerated right now and does not
-// align yet - asserting that it does would be asserting something false.
-// Flip a family to settled when its art lands and the alignment becomes
-// real; the harness starts holding it to that from then on.
-export const FLIGHT_FAMILIES: { name: string; members: readonly string[]; settled: boolean }[] = [
-  // Eclipse's motion, transferred to the other two by #242 and confirmed by
-  // the owner ("those three yes"). Art is in, all three frozen.
-  { name: "eclipse", members: ["eclipse", "cryostar", "verdant"], settled: true },
-  // "i'm standardizing quill noodle and rocket" - Bandit is the raccoon;
-  // the owner said "rocket" for it, so the NAME may be changing. Art in
-  // progress.
-  { name: "critters", members: ["raccoon", "ferret", "hedgehog"], settled: false },
-  // "all standard will have their own (except acornut - it'll have its own)"
-  { name: "standard", members: ["vanguard", "flight", "iontrim", "copper", "frost", "voidsuit", "ember", "ghost"], settled: false },
-  // "all exotic have their own unique"
-  { name: "exotic", members: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"], settled: false },
-  // "all high orbit will have their own ... they'll go last"
-  { name: "highorbit", members: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"], settled: false },
-];
-
-/** Suits that deliberately fly apart from the group they sit in. An
- *  exception is fine - "there may be exceptions like acornaut" - but it is
- *  declared here rather than discovered later as a suit that drifted. */
-export const FLIES_APART: readonly string[] = [
-  // "except acornut - it'll have its own". It sits on the STANDARD shelf and
-  // shares nothing else with it: its own painter, its own free-running cycle.
-  "vanguard",
-];
+// What replaced the family rule is simpler and is the real point: every
+// suit carries its own number (see SUIT_DIVE_DEPTH), so a value changed to
+// fix one reported problem cannot silently move a suit nobody was looking
+// at. The failure being prevented is a fix that gets applied globally and
+// is never verified to have solved anything.
 
 export const SUIT_DIVE_DEPTH: Record<string, number> = {
   // ---- FROZEN: approved 9 Sep 2026, do not touch ----
@@ -4516,13 +4490,39 @@ export const SUIT_DIVE_DEPTH: Record<string, number> = {
   // every tail-whip pose. The temporary limits on obsolete art are retired.
   iontrim: 1, copper: 1, leviathan: 1,
   ghost: 1, voidsuit: 1, ember: 1, frost: 1, sammie: 1, gemmie: 1,
+
+  // ---- EVERY SUIT CARRIES ITS OWN NUMBER ----
+  // These twelve used to have no line here and fell through to
+  // POSE_DIVE_DEPTH, which meant one edit moved all twelve at once. Owner,
+  // 10 Sep 2026: "right now, every suit is its own. needs to be coded. so
+  // changing a value in one place doesn't force everyone to change."
+  //
+  // Most of them never reach this dial today - their own painters or tap
+  // banks answer first - but "never reaches it today" is exactly how a
+  // shared number stays invisible until some other change routes them
+  // through it. Written out at the value they already flew, so nothing
+  // moves; what changes is that moving one of them now takes aim.
+  vanguard: 1, arcflash: 1, robo: 1, bigbooty: 1, catsuit: 1, volt: 1,
+  raccoon: 1, ferret: 1, hedgehog: 1,
+  porcelain: 1, nacre: 1, origamist: 1,
 };
 
-/** The dive dial this suit flies: its own if it has one, else the default. */
+/** The dive dial this suit flies. Every shipped suit has its own entry, so
+ *  this only falls back for an id that is not a suit at all. */
 export function diveDepthFor(id: string) {
   const v = SUIT_DIVE_DEPTH[id];
   return typeof v === "number" ? v : POSE_DIVE_DEPTH;
 }
+
+// ECLIPSE, CRYOSTAR AND VERDANT ARE A PREFERENCE, NOT A FAMILY RULE.
+// Owner, 10 Sep 2026: "eclipse, verdant, cryo should remain as similar as
+// possible, and any change to one should prompt the integrator to ask me
+// if i should apply to all 3." So they are not welded together - each has
+// its own line above like everything else - but they are named here so a
+// change to one cannot go in quietly. The harness asks the question; the
+// owner answers it. Splitting them is allowed, it just has to be on
+// purpose.
+export const MATCHED_TRIO: readonly string[] = ["eclipse", "cryostar", "verdant"];
 
 // THE CLIMB SPAN: the vertical speed that means "full climb pose". This was
 // 470 px/s, and the game never gets there - a hard climb peaks near 428, so
