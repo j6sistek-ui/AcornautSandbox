@@ -1,0 +1,30 @@
+{
+  "stamp": 267,
+  "viewport": [
+    390,
+    844
+  ],
+  "helmets": [
+    "royal",
+    "chronarch",
+    "princess",
+    "cryostar",
+    "verdant",
+    "eclipse"
+  ],
+  "pageErrors": [],
+  "scripts": [
+    {
+      "url": "http://127.0.0.1:59111/js267/standalone.js",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:59111/js267/catalog.js?v=267",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:59111/js267/helmet-openings.js?v=267",
+      "status": 200
+    }
+  ]
+}

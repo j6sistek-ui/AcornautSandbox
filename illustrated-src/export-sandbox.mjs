@@ -16,6 +16,8 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pages = join(root, "docs");
+// Regenerated helmets contain complete glass; only their outside backing is removed.
+execFileSync(process.execPath, [join(root, "illustrated-src/export-visor-glass.mjs")], { cwd: root, stdio: "inherit" });
 // The approved premium trio is one registered full-body sheet per suit.
 execFileSync(process.execPath, [join(root, "illustrated-src/export-premium-flight.mjs")], { cwd: root, stdio: "inherit" });
 // Zone planets/debris ship from transparent masters through the same build.

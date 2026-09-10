@@ -1397,7 +1397,7 @@
     .ac-shopvisual .ac-caseplate b { color: #fff0ce; }
     .ac-shopvisual .ac-caseeyebrow { color: #e6c58e; }
     .ac-shopvisual .ac-casetag { color: #e1c9f5; border-color: rgba(220,180,115,.45); background: rgba(31,14,54,.88); }
-    .ac-shopvisual .ac-shelfhead { margin-top: 16px; color: #ead5a4; letter-spacing: .16em; }
+    .ac-shopvisual .ac-shelfhead { margin: 16px 2px 8px; color: #ead5a4; letter-spacing: .16em; }
     .ac-shopvisual .ac-sub, .ac-shopvisual .ac-fine { color: #c1b6d7; }
     .ac-shopvisual .ac-shelfrow { gap: 10px; padding: 4px 3px 12px; }
     .ac-shopvisual .ac-card.ac-shoptile { flex: 0 0 116px; width: 116px; min-width: 0;
@@ -1444,7 +1444,7 @@
     .ac-shopvisual .ac-boostcard .ac-modprice { padding: 9px 8px; border-radius: 9px;
       border: 1px solid rgba(211,162,250,.5); color: #f1dcff; background: rgba(38,15,66,.8); }
     .ac-shopvisual .ac-boostcard.ac-confirming { border-color: #ffe1a0; }
-    .ac-shopvisual .ac-card.ac-dustrow { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto;
+    .ac-shopvisual .ac-card.ac-dustrow { margin-bottom: 10px; display: grid; grid-template-columns: 52px minmax(0, 1fr) auto;
       gap: 11px; min-height: 82px; padding: 10px; border-radius: 16px; border: 1px solid rgba(194,166,237,.76);
       background: linear-gradient(105deg, rgba(74,44,110,.94), rgba(18,9,39,.94) 55%, rgba(54,27,82,.95));
       box-shadow: inset 0 1px 2px rgba(239,215,255,.5), inset 0 -2px 5px rgba(4,1,16,.8), 0 5px 15px rgba(0,0,0,.3); }
@@ -2087,7 +2087,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js268/standalone.js")
+    import("../js270/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

@@ -1,0 +1,110 @@
+[
+  {
+    "width": 390,
+    "headings": [
+      {
+        "text": "SUITStoday",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "HELMETStoday",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "PALStoday",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "STAR CHART BOOSTS",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "FEATURED PACK",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "PREMIUM PILOT BUNDLE",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "STAR DUST",
+        "marginBottom": "8px",
+        "gap": 8
+      }
+    ],
+    "dustGaps": [
+      10,
+      10,
+      10
+    ],
+    "dustLabels": [
+      "100 Star Dust",
+      "550 Star Dust",
+      "1,200 Star Dust",
+      "2,600 Star Dust"
+    ],
+    "scrollWidth": 390,
+    "viewport": 390,
+    "pageErrors": []
+  },
+  {
+    "width": 320,
+    "headings": [
+      {
+        "text": "SUITStoday",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "HELMETStoday",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "PALStoday",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "STAR CHART BOOSTS",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "FEATURED PACK",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "PREMIUM PILOT BUNDLE",
+        "marginBottom": "8px",
+        "gap": 8
+      },
+      {
+        "text": "STAR DUST",
+        "marginBottom": "8px",
+        "gap": 8
+      }
+    ],
+    "dustGaps": [
+      10,
+      10,
+      10
+    ],
+    "dustLabels": [
+      "100 Star Dust",
+      "550 Star Dust",
+      "1,200 Star Dust",
+      "2,600 Star Dust"
+    ],
+    "scrollWidth": 320,
+    "viewport": 320,
+    "pageErrors": []
+  }
+]
