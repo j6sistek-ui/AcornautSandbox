@@ -1,5 +1,5 @@
-import { LEVELS, STAR_REWARDS, CHART_MAX_STARS, countBits, missionProgressId } from "./campaign.js?v=270";
-import { ENVS } from "./catalog.js?v=270";
+import { LEVELS, STAR_REWARDS, CHART_MAX_STARS, countBits, missionProgressId } from "./campaign.js?v=271";
+import { ENVS } from "./catalog.js?v=271";
 export const barrierId = (after) => ({ 33: "hyper-barrier-1", 66: "hyper-barrier-2", 99: "hyper-barrier-3" }[after]);
 export const rewardId = (r) => r.kind === "dust" || r.kind === "acorns"
     ? `legacy:${r.kind}:${r.stars}`
