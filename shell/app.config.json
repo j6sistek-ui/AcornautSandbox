@@ -1,15 +1,15 @@
 {
   "_readme": "EVERY VALUE YOU WILL BE GIVEN BY APPLE, GOOGLE OR REVENUECAT GOES HERE, AND ONLY HERE. `npm run configure` stamps them into the native projects; nothing else needs editing. Anything still starting with PLACEHOLDER_ is unset. See README.md for where each one comes from.",
   "appName": "Acornaut",
-  "appId": "PLACEHOLDER_BUNDLE_ID",
-  "marketingVersion": "1.0.12",
+  "appId": "com.quarterdropgames.acornaut",
+  "marketingVersion": "1.0.0",
   "buildNumber": 1,
   "ios": {
-    "teamId": "PLACEHOLDER_APPLE_TEAM_ID",
+    "teamId": "7DH55F49XW",
     "appStoreConnectAppId": "PLACEHOLDER_ASC_APP_ID"
   },
   "android": {
-    "packageName": "PLACEHOLDER_ANDROID_PACKAGE",
+    "packageName": "com.quarterdropgames.acornaut",
     "playGamesProjectId": "PLACEHOLDER_PLAY_GAMES_PROJECT_ID"
   },
   "revenuecat": {

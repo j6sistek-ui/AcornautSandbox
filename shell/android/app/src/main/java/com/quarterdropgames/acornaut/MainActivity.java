@@ -1,4 +1,4 @@
-package com.placeholder.acornaut;
+package com.quarterdropgames.acornaut;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
