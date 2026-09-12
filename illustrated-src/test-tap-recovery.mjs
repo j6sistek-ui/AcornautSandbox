@@ -59,6 +59,9 @@ assert(world.tapAnimT > 0 && world.tapAnimT < TAP_ANIM_DURATION,
 
 let settleTicks = 0;
 while (world.tapAnimT >= 0 && settleTicks < 600) {
+  // keep the pilot in the world: with no taps it falls out the bottom and
+  // the run ends, freezing the clock this contract is about
+  if (world.squirrel.y > 640) world.squirrel.y = 320;
   updateWorld(world, save, 1 / 60);
   settleTicks += 1;
 }

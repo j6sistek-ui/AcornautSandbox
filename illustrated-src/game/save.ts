@@ -38,6 +38,7 @@ import {
   type BoostId,
 } from "./catalog";
 import { platform } from "./platform";
+import { TAP_SHAPE, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_ONE, type TapShape, type TailSpring } from "./control-constants";
 
 // Pinned to the shipped pre-regrouping catalog (9 Sep 2026). These are
 // historical grant amounts, not the price of the new bundle layout.
@@ -194,6 +195,14 @@ export type SaveData = {
   /** per-suit forward lean in whole degrees, set with the beta pitch dial;
    *  absent = the catalog default (SUIT_PITCH_DEFAULTS) */
   suitPitch?: Record<string, number>;
+  /** BETA dials, per suit (see TAP_SHAPE / TAIL_SPRING in control-constants):
+   *  the tap shape - "default" (the stock ramp), "velocity", or a linear
+   *  {fwd, back} in seconds - and the tail spring multipliers. Read only on
+   *  the beta page; a live build flies the tables. */
+  tapShape?: Record<string, TapShape | "velocity" | "default">;
+  tailSpring?: Record<string, TailSpring>;
+  /** BETA dial, per suit: what a repeat tap does (see repeatTapMode in sim.ts) */
+  tapRepeat?: Record<string, "rewind" | "finish" | "restart">;
   // Retired dials, left in old saves and ignored: diveDepth / poseMode (the
   // dive is shallow and every frame flies, see POSE_DIVE_DEPTH in draw.ts)
   // and eclipseMotionMode (Eclipse flies heading; every other suit flies
@@ -417,6 +426,28 @@ export function loadSave(): SaveData {
       if (typeof v !== "number" || !isFinite(v)) delete s.suitPitch[id];
       else s.suitPitch[id] = Math.max(SUIT_PITCH_MIN, Math.min(SUIT_PITCH_MAX, Math.round(v)));
     }
+  }
+  // the beta dials: anything malformed is dropped, numbers are clamped
+  if (!s.tapShape || typeof s.tapShape !== "object") s.tapShape = {};
+  for (const id of Object.keys(s.tapShape)) {
+    const v = s.tapShape[id] as unknown;
+    if (v === "velocity" || v === "default") continue;
+    const o = v as { fwd?: unknown; back?: unknown };
+    if (o && typeof o === "object" && typeof o.fwd === "number" && isFinite(o.fwd) && typeof o.back === "number" && isFinite(o.back)) {
+      const c = (n: number) => Math.max(TAP_SHAPE_MIN, Math.min(TAP_SHAPE_MAX, Math.round(n * 20) / 20));
+      s.tapShape[id] = { fwd: c(o.fwd), back: c(o.back) };
+    } else delete s.tapShape[id];
+  }
+  if (!s.tapRepeat || typeof s.tapRepeat !== "object") s.tapRepeat = {};
+  for (const id of Object.keys(s.tapRepeat)) if (!["rewind", "finish", "restart"].includes(s.tapRepeat[id] as string)) delete s.tapRepeat[id];
+  if (!s.tailSpring || typeof s.tailSpring !== "object") s.tailSpring = {};
+  for (const id of Object.keys(s.tailSpring)) {
+    const o = s.tailSpring[id] as unknown as { stiff?: unknown; damp?: unknown; kick?: unknown };
+    const ok = (n: unknown): n is number => typeof n === "number" && isFinite(n);
+    if (o && typeof o === "object" && ok(o.stiff) && ok(o.damp) && ok(o.kick)) {
+      const c = (n: number) => Math.max(TAIL_SPRING_MIN, Math.min(TAIL_SPRING_MAX, Math.round(n * 20) / 20));
+      s.tailSpring[id] = { stiff: c(o.stiff), damp: c(o.damp), kick: c(o.kick) };
+    } else delete s.tailSpring[id];
   }
   if (!Array.isArray(s.unlockedSuits)) s.unlockedSuits = ["flight"];
   // ACORNUT IS EARNED (owner, 6 Sep 2026): 570 stars on the road, or the
@@ -891,4 +922,20 @@ export function equippedPals(s: SaveData): string[] {
 export function suitPitchFor(save: SaveData | null | undefined, id: string): number {
   const v = save?.suitPitch?.[id];
   return typeof v === "number" && isFinite(v) ? v : suitPitchDefault(id);
+}
+
+/** how a tap moves this suit's ascent bank: the beta dial if set, else the
+ *  table; null is the stock ramp. A live build never reads the dial. */
+export function tapShapeFor(save: SaveData | null | undefined, id: string): TapShape | "velocity" | null {
+  const dialled = IS_BETA ? save?.tapShape?.[id] : undefined;
+  if (dialled === "default") return null;
+  if (dialled !== undefined) return dialled;
+  return TAP_SHAPE[id] ?? null;
+}
+
+/** this suit's tail spring multipliers: the beta dial if set, else the
+ *  table, else 1/1/1. A live build never reads the dial. */
+export function tailSpringFor(save: SaveData | null | undefined, id: string): TailSpring {
+  const dialled = IS_BETA ? save?.tailSpring?.[id] : undefined;
+  return dialled ?? TAIL_SPRING[id] ?? TAIL_SPRING_ONE;
 }

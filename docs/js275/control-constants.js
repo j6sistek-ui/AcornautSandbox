@@ -25,6 +25,18 @@ export const PAINTED_TAP_SUITS = new Set([
 ]);
 /** Spend less of the tap in its neutral lead-in, preserving the full gesture. */
 export const PAINTED_TAP_EASE = .73;
+/** CLASSIC ASCENT: velocity picks the ascent frame, the way every ascent
+ *  bank flew before 12 Sep 2026. A suit here skips the tap-clock ramp
+ *  above (PAINTED_TAP_EASE, the 62.5% out-and-back), the "rising velocity
+ *  cannot restart a climb" clamp and the added pose smoothing, and reads
+ *  its ascent frame straight from how fast it is rising.
+ *
+ *  A trial, on one suit, at the owner's word (12 Sep 2026, after a trace
+ *  showed the ramp was the last difference between Eclipse today and
+ *  Eclipse the day he froze it): "only change eclipse. to try it."
+ *  Nothing else is on this list until he says so - not cryostar and
+ *  verdant either, so the matched trio is knowingly apart for the trial. */
+export const CLASSIC_ASCENT_SUITS = new Set(["eclipse"]);
 /** THE WORMHOLE'S SETTLED FEEL.
  *
  *  These were FOUND BY FLYING, not chosen. The corridor's numbers were

@@ -1,17 +1,28 @@
 import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate, type VanguardMotion } from "./vanguard";
 import { PAINTED_TAP_SUITS } from "./control-constants";
 
-/** DOES A REPEAT TAP QUEUE OR REWIND? Two behaviours exist for a tap that
- *  lands while the tap animation is still playing:
- *    REWIND - the picture reverses from where it is, bounces off the start
- *             and plays out again. Every tap moves the body that frame.
- *    QUEUE  - the gesture finishes untouched, then replays once; taps in
- *             between collapse into that one replay.
- *  The frozen roster always rewinds (it is not in PAINTED_TAP_SUITS). The
- *  rest queue, unless the owner has flipped the beta pause toggle to try
- *  rewind on them - live builds never see the toggle, so there it is inert. */
+/** WHAT A REPEAT TAP DOES to a tap animation still playing. Three answers:
+ *    "rewind"  the picture reverses from where it is, bounces off the start
+ *              and plays out again. Every tap moves the body that frame.
+ *    "finish"  the gesture finishes untouched, then replays once; taps in
+ *              between collapse into that one replay (PR #277's queue).
+ *    "restart" the gesture starts over from its first frame, every tap.
+ *  Live: the frozen roster rewinds (it is not in PAINTED_TAP_SUITS), the
+ *  rest finish. Beta: the per-suit pause dial (save.tapRepeat) wins, then
+ *  the older whole-roster switch (save.tapRewind). Owner, 12 Sep 2026:
+ *  "give me a toggle in pause menu in beta only, so i can decide which
+ *  ones get the treatment." A live build never reads either dial. */
+export type TapRepeat = "rewind" | "finish" | "restart";
+export function repeatTapMode(id: string, save: SaveData): TapRepeat {
+  if (IS_BETA) {
+    const dialled = save.tapRepeat?.[id];
+    if (dialled) return dialled;
+    if (save.tapRewind && PAINTED_TAP_SUITS.has(id)) return "rewind";
+  }
+  return PAINTED_TAP_SUITS.has(id) ? "finish" : "rewind";
+}
 export function repeatTapQueues(id: string, save: SaveData): boolean {
-  return PAINTED_TAP_SUITS.has(id) && !(IS_BETA && save.tapRewind);
+  return repeatTapMode(id, save) === "finish";
 }
 import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact, type ArcflashMotion } from "./arcflash-motion";
 import { createHighOrbitMotion, stepHighOrbit, highOrbitTap, type HighOrbitMotion } from "./high-orbit-motion";
@@ -22,7 +33,7 @@ import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, 
 import { CHART_LEVELS, reachedGate } from "./campaign";
 import {TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, BOUNCE_ANIM_DURATION, LEGACY_DEBRIS_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, skyIdFor, PHYS, TRAILS } from "./catalog";
 import { nextFamilyPlanet, type PlanetBag } from "./planet-family";
-import { modsUnlocked, batteryUnlocked, writeSave, type SaveData, grantTutorialKit, equippedPals} from "./save";
+import { modsUnlocked, batteryUnlocked, writeSave, tailSpringFor, type SaveData, grantTutorialKit, equippedPals} from "./save";
 import { platform } from "./platform";
 import { TUTORIAL_SUIT } from "./catalog";
 import { emptyStats, goalMet, goldGatesFor, type LevelDef, type LevelFx, type RunStats, gateClearedBy} from "./campaign";
@@ -3075,10 +3086,16 @@ export function flap(w: World, save: SaveData) {
     w.tapAnimT = 0;
     w.tapAnimDir = 1;
     w.tapAnimFromRot = w.squirrel.rot;
-  } else if (repeatTapQueues(pilotSuitId(w, save), save)) {
+  } else if (repeatTapMode(pilotSuitId(w, save), save) === "finish") {
     // Rewinding on every short tap traps painted banks in their first poses.
     // Finish the gesture, then replay once for input accepted during it.
     w.tapAnimQueued = true;
+  } else if (repeatTapMode(pilotSuitId(w, save), save) === "restart") {
+    // the owner's third answer: every tap is a fresh gesture from frame one
+    w.tapAnimT = 0;
+    w.tapAnimDir = 1;
+    w.tapAnimFromRot = w.squirrel.rot;
+    w.tapAnimQueued = false;
   } else {
     // A repeat tap REWINDS the picture: the animation plays backward from
     // wherever it is, bounces off the start, and runs through to the end
@@ -3094,7 +3111,7 @@ export function flap(w: World, save: SaveData) {
   }
   w.flapBoost = 0.22;
   // the tail drags DOWN as the pilot shoots up, then whips back
-  w.tailV += TAIL.flap;
+  w.tailV += TAIL.flap * tailSpringFor(save, pilotSuitId(w, save)).kick;
   spawnTrail(w, save);
   return "flap";
 }
@@ -3104,7 +3121,7 @@ export function dive(w: World, save: SaveData) {
   w.tapAnimQueued = false;
   // a dive throws the tail the other way, harder — it over-rotates past
   // home on the way back and rings down, which reads as weight falling
-  w.tailV -= TAIL.dive;
+  w.tailV -= TAIL.dive * tailSpringFor(save, pilotSuitId(w, save)).kick;
   if (w.spill) {
     if (!spillBurst(w.spill, 1)) return "none";
     spark(w, w.spill.pilot.x, w.squirrel.y - 16, ["#c8d0e0", "#fff"], 10, "poof");
@@ -3965,7 +3982,9 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   // world breathes — it just does not move or pull.
   // the tail keeps swinging through freezes and warps — it is the
   // pilot's own motion, not the world's
-  w.tailV += (-TAIL.stiffness * w.tailA - TAIL.damping * w.tailV) * dt;
+  // per-suit spring multipliers (TAIL_SPRING / the beta tail dial), 1/1/1 as shipped
+  const spring = tailSpringFor(save, pilotSuitId(w, save));
+  w.tailV += (-TAIL.stiffness * spring.stiff * w.tailA - TAIL.damping * spring.damp * w.tailV) * dt;
   w.tailA += w.tailV * dt;
   if (w.tailA > TAIL.maxA) { w.tailA = TAIL.maxA; w.tailV *= -0.35; }
   if (w.tailA < -TAIL.maxA) { w.tailA = -TAIL.maxA; w.tailV *= -0.35; }

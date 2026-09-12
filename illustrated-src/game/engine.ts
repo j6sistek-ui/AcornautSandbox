@@ -1,5 +1,6 @@
 import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId } from "./catalog";
 import { platform } from "./platform";
+import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, type TapShape, type TailSpring } from "./control-constants";
 import { isPremiumSuit } from "./high-orbit-config";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, rewardId } from "./campaign-progress";
@@ -202,6 +203,12 @@ export type Engine = {
   resetLab: () => void;
   /** the beta repeat-tap dial: rewind instead of queue on the queue-roster suits */
   setTapRewind: (on: boolean) => void;
+  /** the beta repeat-tap dial, per suit: rewind / finish / restart; null clears it */
+  setTapRepeat: (suitId: string, mode: "rewind" | "finish" | "restart" | null) => void;
+  /** the beta tap-shape dial, per suit; null clears the dial back to the table */
+  setTapShape: (suitId: string, shape: TapShape | "velocity" | "default" | null) => void;
+  /** the beta tail-spring dial, per suit; null clears it back to the table */
+  setTailSpring: (suitId: string, spring: TailSpring | null) => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -591,6 +598,34 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     setTapRewind(on) {
       save.tapRewind = on;
       world.tapAnimQueued = false;   // a queued replay from the other rule is not owed
+      writeSave(save);
+      notify();
+    },
+    setTapRepeat(suitId, mode) {
+      if (!save.tapRepeat) save.tapRepeat = {};
+      if (mode === null) delete save.tapRepeat[suitId]; else save.tapRepeat[suitId] = mode;
+      world.tapAnimQueued = false;   // a queued replay from the other rule is not owed
+      writeSave(save);
+      notify();
+    },
+    setTapShape(suitId, shape) {
+      if (!save.tapShape) save.tapShape = {};
+      if (shape === null) delete save.tapShape[suitId];
+      else if (shape === "velocity" || shape === "default") save.tapShape[suitId] = shape;
+      else {
+        const c = (n: number) => Math.max(TAP_SHAPE_MIN, Math.min(TAP_SHAPE_MAX, Math.round(n * 20) / 20));
+        save.tapShape[suitId] = { fwd: c(shape.fwd), back: c(shape.back) };
+      }
+      writeSave(save);
+      notify();
+    },
+    setTailSpring(suitId, spring) {
+      if (!save.tailSpring) save.tailSpring = {};
+      if (spring === null) delete save.tailSpring[suitId];
+      else {
+        const c = (n: number) => Math.max(TAIL_SPRING_MIN, Math.min(TAIL_SPRING_MAX, Math.round(n * 20) / 20));
+        save.tailSpring[suitId] = { stiff: c(spring.stiff), damp: c(spring.damp), kick: c(spring.kick) };
+      }
       writeSave(save);
       notify();
     },
