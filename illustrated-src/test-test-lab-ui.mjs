@@ -70,8 +70,16 @@ assert(sheet.textContent.includes('FLIGHT LAB'),'beta: the Flight Lab sliders ar
 button('RESET ALL DIALS TO STOCK').click();tick();
 assert(button('TAP AGAIN TO RESET EVERY DIAL'),'beta: the first tap only arms the reset');
 e.setTapAccent(true);tick();assert.equal(e.save.tapAccent,true);
+// the strength dial appears with the accent on, and its quick buttons set it
+assert(app.querySelector('.ac-testlab input[aria-label="Strength"]'),'beta: the accent strength slider is on the sheet');
+button('3×').click();tick();
+assert.equal(e.save.tapAccentStrength,3,'beta: 3x sets the strength');
+button('1×').click();tick();
+assert.equal(e.save.tapAccentStrength,undefined,'beta: 1x is stock and stores nothing');
+button('4×').click();tick();
 button('TAP AGAIN TO RESET EVERY DIAL').click();tick();
 assert.equal(e.save.tapAccent,false,'beta: the second tap resets the accent switch');
+assert.equal(e.save.tapAccentStrength,undefined,'beta: and the strength');
 assert.equal(e.save.testLab,undefined,'beta: and the Flight Test settings');
 // the Modes sheet is modes only now
 app.querySelector('.ac-testlab .ac-backbtn').click();tick();

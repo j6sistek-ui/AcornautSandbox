@@ -1,6 +1,6 @@
 import { selectShopCycle } from "./shop-cycle";
 import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art";
-import { suitPitchFor, tapShapeFor, tailSpringFor, type SaveData } from "./save";
+import { suitPitchFor, tapShapeFor, tailSpringFor, tapAccentStrengthFor, type SaveData } from "./save";
 import { platform } from "./platform";
 import { spillAppearance } from "./spill-appearance";
 import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog";
@@ -1140,6 +1140,21 @@ export async function bootStandalone(root: HTMLElement) {
       row.append(b);
     }
     panel.append(row);
+    // THE STRENGTH DIAL (owner, 12 Sep 2026: "build a dial, i can barely
+    // notice it"): one multiplier on the ignition, the squash and the
+    // nose-up. 1x is what first shipped; 4x is four times it.
+    if (on) {
+      const k = tapAccentStrengthFor(engine.save);
+      panel.append(dialRow("Strength", 0.25, 4, 0.25, k, (v) => `${v.toFixed(2)}×`, (v) => engine.setTapAccentStrength(v)));
+      const quick = el("div", "ac-modes");
+      (quick as HTMLElement).style.gridTemplateColumns = "repeat(4, minmax(0,1fr))";
+      for (const v of [1, 2, 3, 4]) {
+        const b = el("button", k === v ? "ac-mode on" : "ac-mode", `${v}×`);
+        b.onclick = () => engine.setTapAccentStrength(v);
+        quick.append(b);
+      }
+      panel.append(quick);
+    }
     return panel;
   }
   function tailSpringDial(suitId: string) {

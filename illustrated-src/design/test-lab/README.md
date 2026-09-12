@@ -60,6 +60,24 @@ Pattern and speed persist under `save.testLab` (sanitised on load). A hold
 is never saved. `resetRun` clears the Flight Test, so no other run can
 inherit it.
 
+## The accent strength dial (12 Sep, second PR)
+
+Owner, after a frame-by-frame look at Cyber with the accent on and off:
+"build a dial, i can barely notice it." What the frames showed: OFF holds
+one frozen climb frame for the 200 ms after a tap; ON moves the body
+through the same window, but at 3 px of squash and 3 px of nose-up on a
+65 px pilot, inside a 20 px frame swap. And Cyber's ignition was invisible
+by accident: the glow is drawn in the suit's glow colour, which on Cyber is
+its own violet.
+
+So: `save.tapAccentStrength` (0.25..4, 1 = as first shipped), one
+multiplier on the ignition radius, the squash and the nose-up, with a
+slider and 1x/2x/3x/4x buttons under the TAP ACCENT switch wherever it
+appears (Test Lab sheet, Flight Test dock, pause sheet). The ignition now
+burns white at the core with the suit glow as the rim, so it reads on every
+suit. Reset-all clears it. `tapAccentStrengthFor` in `save.ts` is the one
+reader; a live build never draws the accent.
+
 ## Adding a test switch later
 
 A global switch is one more panel appended in `wornSuitDials` or the sheet;
@@ -73,7 +91,11 @@ Chromium 390x844 against the exported beta page (stamp 283), Ion worn,
 tap accent on. `1-home.jpg` the flask on the rail; `2-sheet.jpg` the Test
 Lab; `3-flight-test.jpg` the run on HOVER; `4-six-per-second.jpg` the
 autopilot at 6/s (taps/s reads 6.0, pose and tap clock live);
-`5-dials.jpg` the worn suit's dials folded out inside the run.
+`5-dials.jpg` the worn suit's dials folded out inside the run;
+`6-strength-dial.jpg` the accent strength slider and 1x-4x buttons under
+the TAP ACCENT switch; `7-ignition-4x-quarter-speed.jpg` four frames 90 ms
+apart on Flight at 4x, quarter speed: the white-cored ignition behind the
+boots, then the nose-up squeeze, then the settle.
 
 Gates on this change: typecheck, export, `run-tests --skip-heavy` (57 of
 58; the one failure is the pre-existing 22-byte Cinderforge fallback

@@ -205,6 +205,9 @@ export type SaveData = {
   tapRepeat?: Record<string, "rewind" | "finish" | "restart">;
   /** BETA switch: the 167 ms tap accent and body reaction (drawPilot) */
   tapAccent: boolean;
+  /** BETA dial: how hard the accent reads, 0.25..4, 1 = as first shipped
+   *  (owner, 12 Sep 2026: "build a dial, i can barely notice it") */
+  tapAccentStrength?: number;
   /** BETA Test Lab: the Flight Test's last autopilot pattern and transport
    *  speed, so the bench opens the way it was left. Read only on the beta
    *  page; a live build never starts a Flight Test. */
@@ -481,6 +484,8 @@ export function loadSave(): SaveData {
   for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx", "tapRewind", "tapAccent"] as const) {
     if (typeof s[k] !== "boolean") s[k] = false;
   }
+  if (s.tapAccentStrength !== undefined
+    && !(typeof s.tapAccentStrength === "number" && isFinite(s.tapAccentStrength) && s.tapAccentStrength >= 0.25 && s.tapAccentStrength <= 4)) delete s.tapAccentStrength;
   // the Test Lab's Flight Test settings: a bad value falls back, never bricks
   if (s.testLab !== undefined) {
     const t = s.testLab as unknown;
@@ -950,6 +955,13 @@ export function tapShapeFor(save: SaveData | null | undefined, id: string): TapS
   if (dialled === "default") return null;
   if (dialled !== undefined) return dialled;
   return TAP_SHAPE[id] ?? null;
+}
+
+/** the tap accent's strength: the beta dial, else 1. A live build never
+ *  draws the accent at all. */
+export function tapAccentStrengthFor(save: SaveData | null | undefined): number {
+  const v = IS_BETA ? save?.tapAccentStrength : undefined;
+  return typeof v === "number" && isFinite(v) ? Math.max(0.25, Math.min(4, v)) : 1;
 }
 
 /** this suit's tail spring multipliers: the beta dial if set, else the
