@@ -73,8 +73,13 @@ Rebuild its committed output with `npm run build:flight-studio` after source
 art/rig changes.
 
 Prototypes on their own pages. The game imports none of it; the only way in
-is the PROTOTYPES doors at the bottom of the Modes sheet (and of Help on the
-live page), marked delete-when-frozen.
+is the beta **Test Lab** - the flask on the Home rail, beta and dev doors
+only - where every lab page has a door, marked delete-when-frozen. The Test
+Lab also holds every beta dial (tap accent, repeat tap, tap shape, tail
+spring, pitch, the Flight Lab sliders) and the **Flight Test**: a free flight
+that flies itself on an autopilot (hover, 2/4/6/8 taps a second, pairs,
+station) with transport, readouts and the dials live at the bottom of the
+run. Nothing of it exists on the production page.
 
 - **`docs/lab/rig/`** — the rig editor, a fitting bench for heads and helmets.
 - **`docs/lab/skytest/`** — the procedural sky bench (beta only).

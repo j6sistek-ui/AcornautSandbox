@@ -10,10 +10,10 @@ import { addChartScenery } from "./star-map-view";
 import { mapDebrisIndex } from "./zone-visuals";
 import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress";
 import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog";
-import { repeatTapMode } from "./sim";
+import { repeatTapMode, FLIGHT_TEST_PATTERNS, type FlightTestPattern } from "./sim";
 import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, FROZEN_SUITS, type ShipPick } from "./draw";
 import { bundleQuote, type BundleItem } from "./catalog";
 import { drawSprite as drawSpriteOn } from "./art";
@@ -401,6 +401,9 @@ export async function bootStandalone(root: HTMLElement) {
       pause.onclick = () => engine.pause();
       bar.append(pause);
       overlay.append(bar);
+      // the Flight Test's dock: transport, autopilot, readouts and the dials,
+      // riding the bottom of the run without pausing it
+      if (engine.world.flightTest) overlay.append(flightTestDock());
       // THE SPILL's LUNGE button rides the bottom-right corner for anyone
       // who misses the swipe. When the Depot is open it takes the screen.
       const sp = engine.world.spill;
@@ -776,6 +779,8 @@ export async function bootStandalone(root: HTMLElement) {
   // and the waist pinched in, so it reads as the cut crystal rather than
   // as the flat five-point star already used for chart progress.
   const I_DUST = ["M12 2.2 13.9 9 20.4 12 13.9 15 12 21.8 10.1 15 3.6 12 10.1 9z"];
+  // the Test Lab's flask (a beta-only door on the Home rail)
+  const I_FLASK = ["M9 3h6v2h-1v5.3l5.3 8.8A1.6 1.6 0 0 1 17.9 21.5H6.1a1.6 1.6 0 0 1-1.4-2.4L10 10.3V5H9V3z", "M8.6 16.5h6.8L13 12.4h-2z"];
   // The Discord wordmark's face, drawn rather than linked so it needs no
   // network round trip and inherits currentColor like every other icon here.
   const I_DISCORD = ["M20.317 4.492a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.492a.07.07 0 0 0-.032.027C.533 9.093-.32 13.555.099 17.961a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.094-.838-9.52-3.549-13.442a.061.061 0 0 0-.031-.03zM8.02 15.278c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"];
@@ -1317,6 +1322,11 @@ export async function bootStandalone(root: HTMLElement) {
   // the save - so it resets on reload, which is right: it is an instrument
   // you open to dial something in, not a mode the game sits in.
   let hyperRunOpen = false;
+  // THE TEST LAB (beta + dev doors only): the sheet behind the flask on the
+  // Home rail, and the Flight Test dock's collapsed/expanded dials
+  let testLabOpen = false;
+  let flightDockDials = false;
+  let resetArmed = false;
   // An inspected Depot build stays local. Only the starting utility and engine color are equipped.
   let shipPlan: ShipPick | null = null;
   const depotView = createDepotView();
@@ -1408,7 +1418,18 @@ export async function bootStandalone(root: HTMLElement) {
     // The gear became a question mark when settings moved to the Profile.
     gear.append(hubIcon("help"));
     gear.onclick = () => engine.open("help");
-    rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
+    // THE TEST LAB DOOR (owner, 12 Sep 2026: "on beta only, add a button on
+    // the home screen, opens up a menu, put every test feature in there").
+    // Beta AND dev doors, like the lab pages it leads to, so a store build
+    // never shows it even on the beta page.
+    if (IS_BETA && platform.devDoors) {
+      const lab = el("button", "ac-hub-sq ac-hub-lab");
+      lab.setAttribute("aria-label", "Test Lab");
+      lab.append(icon(I_FLASK, 24));
+      lab.onclick = () => { testLabOpen = true; render(); };
+      rail.classList.add("ac-hub-rail-lab");
+      rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, lab, gear);
+    } else rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
     box.append(rail);
     // The equal grid cells own pill size; only the numbers may shrink.
     // Keep the existing 16px acorn and 14px Stardust artwork untouched.
@@ -1562,7 +1583,7 @@ export async function bootStandalone(root: HTMLElement) {
     chart.append(track);
     // no dot: a badge should mean something NEW is inside, and nothing
     // in the mode sheet changes on its own
-    tile("t-modes", hubIcon("modes-orbit"), "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`,
+    tile("t-modes", hubIcon("modes-orbit"), "MODES", `${MODES.length} ways to fly`,
       () => { modesOpen = true; render(); });
     box.append(tiles);
 
@@ -1571,6 +1592,7 @@ export async function bootStandalone(root: HTMLElement) {
     // pill added a third piece of text for the same message and, being
     // absolutely positioned, landed on top of the STAR CHART bar it was
     // pointing at, covering that bar's own progress line.
+    if (testLabOpen) box.append(drawTestLabSheet());
     if (modesOpen) box.append(drawModeSheet());
     if (hyperRunOpen) {
       box.append(drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "modes"));
@@ -1729,26 +1751,143 @@ export async function bootStandalone(root: HTMLElement) {
       });
     });
 
-    // What remains under the divider really is a lab: utilities, not modes.
-    // BETA ONLY (owner, 7 Sep 2026: "rig editor and ship bench need to
-    // remove from main app"), and never in a store build (platform.devDoors).
-    if (IS_BETA && platform.devDoors) {
-      sheet.append(el("p", "ac-modeshead", "PROTOTYPES"));
-      const door = (label: string, hit: () => void) => {
-        const b = el("button", "ac-moderow ac-modedoor");
-        const t = el("span", "ac-moderowtxt");
-        t.append(el("b", "", label));
-        b.append(t, icon(I_CHEV, 16));
-        b.onclick = hit;
-        sheet.append(b);
-      };
-      door("RIG EDITOR", () => { window.location.href = labRootOf() + "rig/"; });
-      door("SHIP BENCH", () => { window.location.href = labRootOf() + "ship/"; });
-      if (IS_BETA) door("BACKGROUND TEST MODE", () => { window.location.href = labRootOf() + "skytest/"; });
-    }
+    // The lab doors that used to sit under a PROTOTYPES divider here moved
+    // to the Test Lab sheet (owner, 12 Sep 2026: "put every test feature in
+    // there ... everything that's unique to testing"). This sheet is modes.
     wrap.append(sheet);
     wrap.onclick = (e) => { if (e.target === wrap) { modesOpen = false; render(); } };
     return wrap;
+  }
+
+  // ---- THE TEST LAB (beta + dev doors only) ------------------------------
+  // Owner, 12 Sep 2026: "on beta only, add a button on the home screen,
+  // opens up a menu, put every test feature in there, the helmet rig
+  // editor, everything that's unique to testing. Then add you self flying
+  // simulator in there. 2/4/6/8 auto flap speed. and then some dials, to
+  // tweak it. that way if something's being tested later a toggle can be
+  // added there or i can use the dials to check it. always there always."
+  //
+  // Everything the beta already carried for testing lives here: the
+  // per-suit dials the pause sheet grew, the Flight Lab sliders, and the
+  // lab pages that used to be PROTOTYPES doors on the Modes sheet (four of
+  // which had no door at all). A new test switch is one more row in one of
+  // the groups below; a new bench is one more line in LAB_PAGES.
+  const LAB_PAGES: [string, string, string][] = [
+    ["RIG EDITOR", "heads and helmets, fitted by thumb", "rig/"],
+    ["SHIP BENCH", "the Spill hull", "ship/"],
+    ["BACKGROUND TEST MODE", "the procedural sky", "skytest/"],
+    ["VISUAL AUDIT", "every suit and helmet on light and dark plates", "visual-audit/"],
+    ["FLIGHT LAB PAGE", "reorder Flight's climb and dive frames", "flightlab/"],
+    ["HIGH ORBIT", "the five cut rigs", "high-orbit/"],
+    ["PREMIUM PILOTS", "Percy, Envoy and Patriot", "premium-pilots/"],
+  ];
+  function labDoor(label: string, sub: string, hit: () => void, cls = "") {
+    const b = el("button", `ac-moderow ac-modedoor ${cls}`.trim());
+    const t = el("span", "ac-moderowtxt");
+    t.append(el("b", "", label));
+    if (sub) t.append(el("span", "", sub));
+    b.append(t, icon(I_CHEV, 16));
+    b.onclick = hit;
+    return b;
+  }
+  /** the worn suit's five dials - the same builders the pause sheet uses */
+  function wornSuitDials(suitId: string) {
+    const col = el("div", "ac-testlab-dials");
+    col.append(tapAccentDial());
+    col.append(repeatTapDial(suitId));
+    const shape = tapShapeDial(suitId);
+    if (shape) col.append(shape);
+    const spring = tailSpringDial(suitId);
+    if (spring) col.append(spring);
+    else col.append(el("p", "ac-sub ac-testlab-note", "TAIL SPRING · this suit's tail is painted into its frames; nothing for the spring to move"));
+    col.append(suitPitchDial(suitId));
+    return col;
+  }
+  function drawTestLabSheet() {
+    const wrap = el("div", "ac-lvlsheet");
+    const sheet = el("div", "ac-lvlcard ac-modecard ac-testlab");
+    const head = header("BETA ONLY · NEVER IN A STORE BUILD", "Test Lab");
+    const back = head.querySelector<HTMLButtonElement>(".ac-backbtn")!;
+    back.setAttribute("aria-label", "Close the Test Lab");
+    back.onclick = () => { testLabOpen = false; resetArmed = false; render(); };
+    sheet.append(head, el("p", "ac-sub ac-testlab-stamp", `dev ${DEV_STAMP}`));
+    const worn = engine.save.equippedSuit;
+    const wornName = SUITS.find((s) => s.id === worn)?.name ?? worn;
+    sheet.append(el("p", "ac-modeshead", "FLIGHT TEST"));
+    sheet.append(labDoor("FLIGHT TEST", `${wornName} flies itself · hover, 2/4/6/8 taps a second, pairs, station · dials live`,
+      () => { testLabOpen = false; resetArmed = false; engine.startFlightTest(); }, "ac-testlab-go"));
+    sheet.append(el("p", "ac-modeshead", "SWITCHES · SAVED ON THIS DEVICE"));
+    sheet.append(wornSuitDials(worn));
+    sheet.append(el("p", "ac-modeshead", "FLIGHT LAB · FREE FLIGHT"));
+    sheet.append(flightLab());
+    sheet.append(el("p", "ac-modeshead", "BENCHES · SEPARATE PAGES"));
+    for (const [label, sub, path] of LAB_PAGES) sheet.append(labDoor(label, sub, () => { window.location.href = labRootOf() + path; }));
+    // two taps to reset, because it clears numbers the owner may not have
+    // baked into the tables yet
+    const reset = el("button", resetArmed ? "ac-ghost ac-testlab-reset on" : "ac-ghost ac-testlab-reset",
+      resetArmed ? "TAP AGAIN TO RESET EVERY DIAL" : "RESET ALL DIALS TO STOCK");
+    reset.onclick = () => { if (resetArmed) { resetArmed = false; engine.resetTestLab(); } else { resetArmed = true; render(); } };
+    sheet.append(reset);
+    wrap.append(sheet);
+    wrap.onclick = (e) => { if (e.target === wrap) { testLabOpen = false; resetArmed = false; render(); } };
+    return wrap;
+  }
+  /** THE FLIGHT TEST DOCK: transport, autopilot pattern, live readouts and
+   *  the worn suit's dials, at the bottom of a run that never pauses for
+   *  them. Readouts refresh every frame while the dock is on screen. */
+  function flightTestDock() {
+    const w = engine.world;
+    const ft = w.flightTest!;
+    const dock = el("div", "ac-ftdock");
+    const reads = el("div", "ac-ftreads");
+    const read = (label: string) => { const d = el("div"); const b = el("b", "", "—"); d.append(el("span", "", label), b); reads.append(d); return b; };
+    const rVy = read("vy"), rPose = read("pose"), rClock = read("tap clock"), rTail = read("tail"), rTaps = read("taps/s");
+    dock.append(reads);
+    const seg = (items: [string, boolean, () => void][]) => {
+      const row = el("div", "ac-modes ac-ftseg");
+      (row as HTMLElement).style.gridTemplateColumns = `repeat(${items.length}, minmax(0,1fr))`;
+      for (const [label, on, hit] of items) { const b = el("button", on ? "ac-mode on" : "ac-mode", label); b.onclick = hit; row.append(b); }
+      return row;
+    };
+    dock.append(el("p", "ac-ftlabel", "AUTOPILOT"));
+    const patLabel: Record<FlightTestPattern, string> = { manual: "MANUAL", hover: "HOVER", "2": "2/s", "4": "4/s", "6": "6/s", "8": "8/s", pairs: "PAIRS", station: "STATION" };
+    dock.append(seg(FLIGHT_TEST_PATTERNS.map((p) => [patLabel[p], ft.pattern === p, () => engine.setFlightTest({ pattern: p })] as [string, boolean, () => void])));
+    dock.append(el("p", "ac-ftlabel", "TRANSPORT"));
+    const held = w.timeScale === 0;
+    const saved = engine.save.testLab?.speed ?? 1;
+    dock.append(seg([
+      ["1×", !held && w.timeScale === 1, () => engine.setFlightTest({ speed: 1 })],
+      ["½×", !held && w.timeScale === 0.5, () => engine.setFlightTest({ speed: 0.5 })],
+      ["¼×", !held && w.timeScale === 0.25, () => engine.setFlightTest({ speed: 0.25 })],
+      [held ? "RESUME" : "HOLD", held, () => engine.setFlightTest({ speed: held ? saved : 0 })],
+      ["STEP", false, () => { if (!held) engine.setFlightTest({ speed: 0 }); engine.flightTestStep(); }],
+    ]));
+    const worn = engine.save.equippedSuit;
+    const wornName = (SUITS.find((s) => s.id === worn)?.name ?? worn).toUpperCase();
+    dock.append(seg([
+      [`${wornName} DIALS ${flightDockDials ? "▴" : "▾"}`, flightDockDials, () => { flightDockDials = !flightDockDials; render(); }],
+      ["LOADOUT", false, () => engine.open("hangar")],
+      ["TEST LAB", false, () => { testLabOpen = true; engine.open("title"); }],
+    ]));
+    if (flightDockDials) dock.append(wornSuitDials(worn));
+    const tick = () => {
+      if (!dock.isConnected) return;
+      const cur = engine.world;
+      rVy.textContent = `${Math.round(cur.squirrel.vy)}`;
+      // the frame the painter chose this frame, from its evaluation hook
+      // (only whole-frame banks report one)
+      const pose = (window as unknown as { __acornautPose?: { suit: string; bank: string; idx: number } }).__acornautPose;
+      rPose.textContent = pose && pose.suit === worn ? `${pose.bank}-${pose.idx}` : "—";
+      rClock.textContent = cur.tapAnimT < 0 ? "idle" : `${cur.tapAnimT.toFixed(2)}s`;
+      rTail.textContent = `${(cur.tailA * 180 / Math.PI).toFixed(1)}°`;
+      const log = cur.flightTest?.tapLog ?? [];
+      let recent = 0;
+      for (const t of log) if (t > cur.time - 2) recent++;
+      rTaps.textContent = (recent / 2).toFixed(1);
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    return dock;
   }
 
   function labRootOf() {

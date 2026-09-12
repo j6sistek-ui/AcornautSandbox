@@ -1,5 +1,6 @@
 import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId } from "./catalog";
 import { platform } from "./platform";
+import { beginFlightTest, type FlightTestPattern } from "./sim";
 import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, type TapShape, type TailSpring } from "./control-constants";
 import { isPremiumSuit } from "./high-orbit-config";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
@@ -211,6 +212,16 @@ export type Engine = {
   setTapShape: (suitId: string, shape: TapShape | "velocity" | "default" | null) => void;
   /** the beta tail-spring dial, per suit; null clears it back to the table */
   setTailSpring: (suitId: string, spring: TailSpring | null) => void;
+  /** THE TEST LAB's Flight Test (beta + dev doors only): a free flight that
+   *  flies itself. startFlightTest launches it on the saved pattern. */
+  startFlightTest: () => void;
+  /** change the autopilot pattern and/or the transport speed (1, .5, .25;
+   *  0 holds the world without leaving the run). Saved, except a hold. */
+  setFlightTest: (patch: { pattern?: FlightTestPattern; speed?: number }) => void;
+  /** advance a held Flight Test by exactly one 1/60 tick */
+  flightTestStep: () => void;
+  /** clear every beta dial and lab setting back to stock, in one go */
+  resetTestLab: () => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -633,6 +644,60 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         const c = (n: number) => Math.max(TAIL_SPRING_MIN, Math.min(TAIL_SPRING_MAX, Math.round(n * 20) / 20));
         save.tailSpring[suitId] = { stiff: c(spring.stiff), damp: c(spring.damp), kick: c(spring.kick) };
       }
+      writeSave(save);
+      notify();
+    },
+    startFlightTest() {
+      // the door is beta-and-dev-doors only; the sim refuses outside the
+      // beta on its own, this is the store-build half of the gate
+      if (!IS_BETA || !platform.devDoors) return;
+      unlockAudio();
+      const pattern = (save.testLab?.pattern ?? "hover") as FlightTestPattern;
+      if (!beginFlightTest(world, save, pattern)) return;
+      world.timeScale = save.testLab?.speed ?? 1;
+      void loadZoneArt(engine.art, world.envB).then(notify);
+      resize();
+      resetInputTracking();
+      raceAccumulator = 0;
+      last = performance.now();
+      notify();
+    },
+    setFlightTest(patch) {
+      if (!save.testLab) save.testLab = {};
+      if (patch.pattern) {
+        save.testLab.pattern = patch.pattern;
+        if (world.flightTest) { world.flightTest.pattern = patch.pattern; world.flightTest.next = 0; world.flightTest.pair = false; }
+      }
+      if (patch.speed !== undefined) {
+        const s = Math.max(0, Math.min(1, patch.speed));
+        // a hold (0) is a moment, not a setting: the saved speed is what
+        // the transport returns to
+        if (s > 0) save.testLab.speed = s;
+        if (world.flightTest) world.timeScale = s;
+      }
+      writeSave(save);
+      notify();
+    },
+    flightTestStep() {
+      // one authority tick, drained once - a Flight Test is never a race
+      // or the Spill, so there are no cue plans to double-dispatch
+      if (!world.flightTest || world.screen !== "play" || world.race || world.spill) return;
+      const ev = updateWorld(world, save, 1 / 60);
+      dispatchWorldEvent(ev);
+      notify();
+    },
+    resetTestLab() {
+      delete save.tapShape;
+      delete save.tapRepeat;
+      delete save.tailSpring;
+      delete save.suitPitch;
+      delete save.testLab;
+      save.tapAccent = false;
+      save.tapRewind = false;
+      save.lab = {};
+      if (!world.lvl) world.lab = world.flightTest ? { freeRevive: true } : {};
+      world.tapAnimQueued = false;
+      if (world.flightTest) world.timeScale = 1;
       writeSave(save);
       notify();
     },
@@ -1634,7 +1699,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // used to integrate on the frame delta clamped to 33 ms, so a 120 Hz
     // phone and a 60 Hz phone flew slightly different arcs through the same
     // taps. A hitch replays up to the 0.25 s cap.
-    raceAccumulator += frameDt;
+    // The Flight Test's transport scales the world clock here, ahead of
+    // the accumulator, so a half-speed bench still steps whole 1/60 ticks
+    // and a hold (0) steps none. Every other run feeds it 1.
+    raceAccumulator += frameDt * (world.flightTest && world.screen === "play" ? world.timeScale : 1);
     while (raceAccumulator + 1e-12 >= 1 / 60) {
       // Race cues are drained after every authority step, not once per
       // render frame. This preserves simultaneous pass/debris feedback and

@@ -98,11 +98,17 @@ try {
   "a Modes row launches directly again; TAKE FLIGHT must be the only mode launcher");
   assert(catalogSource.includes("export const HYPER_RUN_ENABLED = true"),
   "Hyper Run is gated again - it ships on both pages now");
+  // The lab doors left the Modes sheet for the Test Lab (owner, 12 Sep
+  // 2026: "put every test feature in there"): Modes is modes only, and the
+  // Test Lab sheet is where a lab door lives now.
+  const testLabSource = standaloneSource.slice(
+    standaloneSource.indexOf("function drawTestLabSheet"),
+    standaloneSource.indexOf("function labRootOf"),
+  );
   assert(modesTable.indexOf('label: "HYPER RUN"') > 0
-    && modeSheetSource.includes('el("p", "ac-modeshead", "PROTOTYPES")')
-    && modeSheetSource.indexOf("MODES.forEach")
-      < modeSheetSource.indexOf('el("p", "ac-modeshead", "PROTOTYPES")'),
-  "Hyper Run slid back below the PROTOTYPES divider; it is a shipped mode, not a lab door");
+    && !modeSheetSource.includes('"PROTOTYPES"')
+    && testLabSource.includes('labDoor(label, sub, () => { window.location.href = labRootOf() + path; })'),
+  "Hyper Run is a shipped mode on the Modes sheet; the lab doors belong to the Test Lab sheet, not a PROTOTYPES divider on Modes");
   assert(homeSource.includes("if (hyperRunOpen)")
     && homeSource.includes('drawLevelSheet(HYPER_RUN_MISSION, hyperRunMask(), "modes")'),
   "Modes did not route Hyper Run through its objective/control briefing");
