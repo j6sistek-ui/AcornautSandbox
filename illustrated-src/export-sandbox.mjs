@@ -16,6 +16,8 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pages = join(root, "docs");
+// Home navigation icons use the same screen blending as existing menu artwork.
+execFileSync(process.execPath, [join(root, "illustrated-src/export-home-icons.mjs")], { cwd: root, stdio: "inherit" });
 // Regenerated helmets contain complete glass; only their outside backing is removed.
 execFileSync(process.execPath, [join(root, "illustrated-src/export-visor-glass.mjs")], { cwd: root, stdio: "inherit" });
 // The approved premium trio is one registered full-body sheet per suit.

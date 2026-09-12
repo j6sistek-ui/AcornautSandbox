@@ -11,12 +11,6 @@ import { PAINTED_TAP_SUITS, TAP_REPEAT } from "./control-constants.js?v=279";
  *  the older whole-roster switch (save.tapRewind). Owner, 12 Sep 2026:
  *  "give me a toggle in pause menu in beta only, so i can decide which
  *  ones get the treatment." A live build never reads either dial. */
-/** the premium trio's whole-frame playback takes the same repeat answer as
- *  the painted banks (owner, 12 Sep 2026: Patriot "is finishing its cycle
- *  before it starts animation. it's not a restart on tap. that's the issue") */
-function premiumRepeat(w, save) {
-    return repeatTapMode(pilotSuitId(w, save), save);
-}
 export function repeatTapMode(id, save) {
     if (IS_BETA) {
         const dialled = save.tapRepeat?.[id];
@@ -2479,7 +2473,7 @@ function tutGesture(w, save, kind) {
             if (pilotSuitId(w, save) === "arcflash")
                 arcflashTap(w.arcflash, tutorialImpulse);
             if (isHighOrbit(pilotSuitId(w, save)))
-                highOrbitTap(w.highOrbit, tutorialImpulse, premiumRepeat(w, save));
+                highOrbitTap(w.highOrbit, tutorialImpulse);
             break;
         case "doDive":
             t.hold = false;
@@ -2637,7 +2631,7 @@ export function flap(w, save) {
         if (pilotSuitId(w, save) === "arcflash")
             arcflashTap(w.arcflash, impulse);
         if (isHighOrbit(pilotSuitId(w, save)))
-            highOrbitTap(w.highOrbit, impulse, premiumRepeat(w, save));
+            highOrbitTap(w.highOrbit, impulse);
     }
     w.flapBoost = 0.22;
     // the body reaction spring takes a bounded impulse per accepted tap
@@ -3402,7 +3396,7 @@ export function updateWorld(w, save, dt) {
         if (isHighOrbit(orbitRaceSuit) && w.race.tick > priorRaceTick && !w.tut?.hold
             && w.shieldFreeze <= 0 && w.warpT <= 0 && !w.stuck) {
             if (w.race.phase === 'normal' && w.race.held && (!priorHeld || (w.race.boost && !priorBoost)))
-                highOrbitTap(w.highOrbit, Math.max(1, priorRaceVy - w.race.vy), premiumRepeat(w, save));
+                highOrbitTap(w.highOrbit, Math.max(1, priorRaceVy - w.race.vy));
             stepHighOrbit(w.highOrbit, orbitRaceSuit, RACE_DT, w.race.vy);
         }
         w.speed = w.race.speed;

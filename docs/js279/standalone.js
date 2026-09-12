@@ -267,6 +267,7 @@ export async function bootStandalone(root) {
         });
     };
     let disposeChart = () => { };
+    let disposeHomeWallet = () => { };
     // TAP TO FLY (owner, 10 Sep 2026). The centre pad is THRUST: one press,
     // one kick, exactly what a tap on the field does. The Throttle it
     // replaced was a hold - pointer capture, an owner per finger or key, a
@@ -343,6 +344,8 @@ export async function bootStandalone(root) {
     const paint = () => {
         disposeChart();
         disposeChart = () => { };
+        disposeHomeWallet();
+        disposeHomeWallet = () => { };
         updateSpillControls();
         const snap = engine.snap();
         const prevScroll = overlay.querySelector(".ac-sheet-scroll");
@@ -1434,14 +1437,16 @@ export async function bootStandalone(root) {
         // send a pilot who wants more of them.
         const acorns = el("button", "ac-hub-idacorns ac-hub-idnut");
         acorns.setAttribute("aria-label", "Shop");
-        acorns.append(acornImg(16), el("span", "", s.acorns.toLocaleString()));
+        const acornNumber = el("span", "ac-hub-amount", s.acorns.toLocaleString());
+        acorns.append(acornImg(16), acornNumber);
         acorns.onclick = () => engine.open("shop");
         // Star Dust sits beside acorns and carries a plus, because the only
         // way to get more is to buy it - so the counter may as well be the
         // door to where you do that.
         const dust = el("button", "ac-hub-iddust");
         dust.setAttribute("aria-label", "Buy Star Dust");
-        dust.append(icon(I_DUST, 14, true), el("span", "", s.starDust.toLocaleString()), el("i", "ac-hub-plus", "+"));
+        const dustNumber = el("span", "ac-hub-amount", s.starDust.toLocaleString());
+        dust.append(icon(I_DUST, 14, true), dustNumber, el("i", "ac-hub-plus", "+"));
         dust.onclick = () => engine.open("shop");
         idcap.append(prof, acorns, dust);
         const shopBtn = el("button", "ac-hub-sq");
@@ -1471,6 +1476,25 @@ export async function bootStandalone(root) {
         gear.onclick = () => engine.open("help");
         rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
         box.append(rail);
+        // The equal grid cells own pill size; only the numbers may shrink.
+        // Keep the existing 16px acorn and 14px Stardust artwork untouched.
+        const fitWallet = () => {
+            if (!rail.isConnected)
+                return;
+            idcap.style.setProperty("--ac-hub-amount-size", "15px");
+            const ratios = [acornNumber, dustNumber].map(number => {
+                const range = document.createRange();
+                range.selectNodeContents(number);
+                const width = range.getBoundingClientRect().width;
+                return width > number.clientWidth ? Math.max(0, number.clientWidth - 1) / width : 1;
+            });
+            idcap.style.setProperty("--ac-hub-amount-size", `${15 * Math.min(1, ...ratios)}px`);
+        };
+        const walletFrame = requestAnimationFrame(fitWallet);
+        const walletResize = typeof ResizeObserver !== "undefined" ? new ResizeObserver(fitWallet) : null;
+        walletResize?.observe(idcap);
+        document.fonts?.ready.then(fitWallet);
+        disposeHomeWallet = () => { cancelAnimationFrame(walletFrame); walletResize?.disconnect(); };
         const mark = el("div", "ac-hub-wordmark");
         mark.append(el("h1", "ac-hub-title", "ACORNAUT"));
         mark.append(el("p", "ac-hub-kicker", "Navigate the Cosmos, Collect Acorns"));
@@ -1577,6 +1601,17 @@ export async function bootStandalone(root) {
         if (hubPals.length) {
             loadoutTile.append(el("span", "ac-hubsub ac-hubequip", `${hubPals.join(" + ")} equipped`));
         }
+        // Star Chart is a peer of Loadout and Modes; retain its original badge,
+        // reward threshold, completion state and route progress inside the tile.
+        const stars = starsOf(s);
+        const nxt = nextStarReward(stars);
+        const chart = tile("t-chart", el("span", "ac-hub-starbadge", "★"), "STAR CHART", nxt ? `Next unlock ★ ${nxt.stars}` : "Complete", () => engine.open("log"), undefined, s.guide === "levels");
+        chart.setAttribute("aria-label", `Star Chart. ${stars} of ${CHART_MAX_STARS} stars. ${nxt ? `Next unlock at ${nxt.stars} stars.` : "Complete."}`);
+        const track = el("span", "ac-hub-track");
+        const fill = el("i", "");
+        fill.style.width = `${Math.min(100, (stars / CHART_MAX_STARS) * 100)}%`;
+        track.append(fill, el("em", "", `${stars} / ${CHART_MAX_STARS}`));
+        chart.append(track);
         const planet = miniCanvas(50, 50);
         if (planet.ctx)
             drawSpriteOn(planet.ctx, engine.art?.planets?.[HUB_PLANET] ?? null, 25, 25, 46);
@@ -1584,24 +1619,6 @@ export async function bootStandalone(root) {
         // in the mode sheet changes on its own
         tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`, () => { modesOpen = true; render(); });
         box.append(tiles);
-        // the Star Chart bar: campaign stars over this route's total, plus what the
-        // next handful buys — a second door into the chart
-        const stars = starsOf(s);
-        const nxt = nextStarReward(stars);
-        const bar = el("button", "ac-hub-bar");
-        bar.append(el("span", "ac-hub-starbadge", "★"));
-        const btxt = el("span", "ac-hub-bartxt");
-        btxt.append(el("b", "", nxt ? `STAR CHART · NEXT UNLOCK ★ ${nxt.stars}` : "STAR CHART · COMPLETE"));
-        const track = el("span", "ac-hub-track");
-        const fill = el("i", "");
-        fill.style.width = `${Math.min(100, (stars / CHART_MAX_STARS) * 100)}%`;
-        track.append(fill, el("em", "", `${stars} / ${CHART_MAX_STARS}`));
-        btxt.append(track);
-        bar.append(btxt);
-        bar.onclick = () => engine.open("log");
-        if (s.guide === "levels")
-            bar.classList.add("ac-pulse");
-        box.append(bar);
         // NO SECOND LINE. The guided step above is the instruction - it names
         // the destination, says why, and is the thing you press. The old coach
         // pill added a third piece of text for the same message and, being

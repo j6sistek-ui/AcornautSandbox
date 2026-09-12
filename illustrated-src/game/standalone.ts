@@ -13,7 +13,7 @@ import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog";
 import { repeatTapMode } from "./sim";
 import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
-import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, FROZEN_SUITS, type ShipPick } from "./draw";
 import { bundleQuote, type BundleItem } from "./catalog";
 import { drawSprite as drawSpriteOn } from "./art";
@@ -261,6 +261,7 @@ export async function bootStandalone(root: HTMLElement) {
     });
   };
   let disposeChart = () => {};
+  let disposeHomeWallet = () => {};
   // TAP TO FLY (owner, 10 Sep 2026). The centre pad is THRUST: one press,
   // one kick, exactly what a tap on the field does. The Throttle it
   // replaced was a hold - pointer capture, an owner per finger or key, a
@@ -325,6 +326,7 @@ export async function bootStandalone(root: HTMLElement) {
 
   const paint = () => {
     disposeChart(); disposeChart = () => {};
+    disposeHomeWallet(); disposeHomeWallet = () => {};
     updateSpillControls();
     const snap = engine.snap();
     const prevScroll = overlay.querySelector(".ac-sheet-scroll");
@@ -1360,23 +1362,25 @@ export async function bootStandalone(root: HTMLElement) {
     // meter on the left, the shop and the gear on the right
     const rail = el("div", "ac-hub-rail");
     const idcap = el("div", "ac-hub-id");
-    const prof = el("button", "ac-hub-idport");
+    const prof = el("button", "ac-hub-sq ac-hub-idport");
     prof.setAttribute("aria-label", "Profile");
-    prof.append(portraitOf(helm, suit, 34));
+    prof.append(portraitOf(helm, suit, 36));
     prof.onclick = () => engine.open("profile");
     // matched to the Star Dust pill so the two currencies read as a pair.
     // No plus: acorns are flown for, not bought, so there is nowhere to
     // send a pilot who wants more of them.
     const acorns = el("button", "ac-hub-idacorns ac-hub-idnut");
     acorns.setAttribute("aria-label", "Shop");
-    acorns.append(acornImg(16), el("span", "", s.acorns.toLocaleString()));
+    const acornNumber = el("span", "ac-hub-amount", s.acorns.toLocaleString());
+    acorns.append(acornImg(16), acornNumber);
     acorns.onclick = () => engine.open("shop");
     // Star Dust sits beside acorns and carries a plus, because the only
     // way to get more is to buy it - so the counter may as well be the
     // door to where you do that.
     const dust = el("button", "ac-hub-iddust");
     dust.setAttribute("aria-label", "Buy Star Dust");
-    dust.append(icon(I_DUST, 14, true), el("span", "", s.starDust.toLocaleString()),
+    const dustNumber = el("span", "ac-hub-amount", s.starDust.toLocaleString());
+    dust.append(icon(I_DUST, 14, true), dustNumber,
                 el("i", "ac-hub-plus", "+"));
     dust.onclick = () => engine.open("shop");
     idcap.append(prof, acorns, dust);
@@ -1406,6 +1410,24 @@ export async function bootStandalone(root: HTMLElement) {
     gear.onclick = () => engine.open("help");
     rail.append(idcap, el("div", "ac-hub-railgap"), shopBtn, boardBtn, gear);
     box.append(rail);
+    // The equal grid cells own pill size; only the numbers may shrink.
+    // Keep the existing 16px acorn and 14px Stardust artwork untouched.
+    const fitWallet = () => {
+      if (!rail.isConnected) return;
+      idcap.style.setProperty("--ac-hub-amount-size", "15px");
+      const ratios = [acornNumber, dustNumber].map(number => {
+        const range = document.createRange();
+        range.selectNodeContents(number);
+        const width = range.getBoundingClientRect().width;
+        return width > number.clientWidth ? Math.max(0, number.clientWidth - 1) / width : 1;
+      });
+      idcap.style.setProperty("--ac-hub-amount-size", `${15 * Math.min(1, ...ratios)}px`);
+    };
+    const walletFrame = requestAnimationFrame(fitWallet);
+    const walletResize = typeof ResizeObserver !== "undefined" ? new ResizeObserver(fitWallet) : null;
+    walletResize?.observe(idcap);
+    document.fonts?.ready.then(fitWallet);
+    disposeHomeWallet = () => { cancelAnimationFrame(walletFrame); walletResize?.disconnect(); };
 
     const mark = el("div", "ac-hub-wordmark");
     mark.append(el("h1", "ac-hub-title", "ACORNAUT"));
@@ -1478,7 +1500,7 @@ export async function bootStandalone(root: HTMLElement) {
     const launch = el("button", "ac-hubtile t-launch");
     launch.append(el("span", "ac-hub-ribbon", `${MODES[selectedMode].label} SELECTED`));
     const lic = el("span", "ac-hubic");
-    lic.append(hubIcon("rocket", false));
+    lic.append(hubIcon("launch-holo"));
     const ltxt = el("span", "ac-hub-launchtxt");
     const spillSelected = MODES[selectedMode].id === "spill";
     const suspended = spillSelected ? s.spillSuspended : null;
@@ -1517,7 +1539,7 @@ export async function bootStandalone(root: HTMLElement) {
     launch.onclick = () => launchSelected();
     tiles.append(launch);
 
-    const loadoutTile = tile("t-loadout", portraitOf(helm, suit, 50), "LOADOUT", "Suits & gear",
+    const loadoutTile = tile("t-loadout", hubIcon("star-chart-holo"), "LOADOUT", "Suits & gear",
       () => engine.open("hangar"), undefined,
       s.guide === "hangar" || s.guide === "helmet");
     // an equipped pal announces itself on the tile — one green line
@@ -1525,31 +1547,24 @@ export async function bootStandalone(root: HTMLElement) {
     if (hubPals.length) {
       loadoutTile.append(el("span", "ac-hubsub ac-hubequip", `${hubPals.join(" + ")} equipped`));
     }
-    const planet = miniCanvas(50, 50);
-    if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[HUB_PLANET] ?? null, 25, 25, 46);
-    // no dot: a badge should mean something NEW is inside, and nothing
-    // in the mode sheet changes on its own
-    tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`,
-      () => { modesOpen = true; render(); });
-    box.append(tiles);
-
-    // the Star Chart bar: campaign stars over this route's total, plus what the
-    // next handful buys — a second door into the chart
+    // The starbound rocket marks Star Chart; reward threshold, completion
+    // state and route progress remain inside the same navigation tile.
     const stars = starsOf(s);
     const nxt = nextStarReward(stars);
-    const bar = el("button", "ac-hub-bar");
-    bar.append(el("span", "ac-hub-starbadge", "★"));
-    const btxt = el("span", "ac-hub-bartxt");
-    btxt.append(el("b", "", nxt ? `STAR CHART · NEXT UNLOCK ★ ${nxt.stars}` : "STAR CHART · COMPLETE"));
+    const chart = tile("t-chart", hubIcon("star-chart-rocket"), "STAR CHART",
+      nxt ? `Next unlock ★ ${nxt.stars}` : "Complete", () => engine.open("log"),
+      undefined, s.guide === "levels");
+    chart.setAttribute("aria-label", `Star Chart. ${stars} of ${CHART_MAX_STARS} stars. ${nxt ? `Next unlock at ${nxt.stars} stars.` : "Complete."}`);
     const track = el("span", "ac-hub-track");
     const fill = el("i", "");
     fill.style.width = `${Math.min(100, (stars / CHART_MAX_STARS) * 100)}%`;
     track.append(fill, el("em", "", `${stars} / ${CHART_MAX_STARS}`));
-    btxt.append(track);
-    bar.append(btxt);
-    bar.onclick = () => engine.open("log");
-    if (s.guide === "levels") bar.classList.add("ac-pulse");
-    box.append(bar);
+    chart.append(track);
+    // no dot: a badge should mean something NEW is inside, and nothing
+    // in the mode sheet changes on its own
+    tile("t-modes", hubIcon("modes-orbit"), "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`,
+      () => { modesOpen = true; render(); });
+    box.append(tiles);
 
     // NO SECOND LINE. The guided step above is the instruction - it names
     // the destination, says why, and is the thing you press. The old coach
