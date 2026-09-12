@@ -22,7 +22,7 @@ import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=27
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=273";
 import { suitPitchFor } from "./save.js?v=273";
 import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=273";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=273";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=273";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=273";
 import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=273";
 import { spillEngineColor } from "./spill-content.js?v=273";
@@ -4606,7 +4606,9 @@ lean = SUIT_LEAN_DEFAULT,
 // the loadout case hands in the pose itself (-1 full climb .. +1 full
 // dive, already shaped), so its sweep lands on frames exactly, with no
 // smoother between; NaN means "derive it from the motion, as in play"
-poseOverride = NaN) {
+poseOverride = NaN,
+// Live bank playback is input-driven; isolated shelf previews may cycle.
+tapDriven = false) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     // Flight's animation frames already wear the Clear dome. Any other helmet
@@ -4814,8 +4816,8 @@ poseOverride = NaN) {
                 // So the climb runs on the TAP CLOCK for every banked suit, exactly
                 // the way Cat and Robo's sixteen-frame banks do a few branches
                 // below - the whole bank across the whole tap, linearly, whatever
-                // the velocity is doing. The sim rewinds that clock on a repeat tap,
-                // so a second tap replays the gesture instead of truncating it.
+                // the velocity is doing. Accepted repeat taps queue one replay;
+                // they never rewind or truncate the current painted gesture.
                 //
                 //   tap, pause, tap    robo (16f, shipped)  1345789bcdfg.1245689acde
                 //                      a bank on the clock  122344566788.11233455677
@@ -4837,7 +4839,7 @@ poseOverride = NaN) {
                 // window, home over the rest. It ends where the glide and the dive
                 // both begin, so the handover costs no frame.
                 const n = ascFrames.length;
-                const at = Math.min(1, Math.max(0, tapAnimT / TAP_ANIM_DURATION));
+                const at = Math.pow(Math.min(1, Math.max(0, tapAnimT / TAP_ANIM_DURATION)), PAINTED_TAP_EASE);
                 const OUT = 0.625;
                 const climb = at <= OUT ? at / OUT : 1 - (at - OUT) / (1 - OUT);
                 const k = Math.min(n - 1, Math.round(climb * (n - 1)));
@@ -4859,6 +4861,9 @@ poseOverride = NaN) {
                     v = sv < 0 ? -Math.min(1, -sv / POSE_CLIMB_SPAN) : Math.min(1, sv / 620);
                 }
                 // shape the attitude: the dive half shallowed, both halves curved
+                // After an input gesture, rising velocity must not restart its climb.
+                if (tapDriven)
+                    v = Math.max(0, v);
                 if (v > 0)
                     v *= diveDepthFor(suit.id);
             }
@@ -4901,14 +4906,14 @@ poseOverride = NaN) {
             // the pilot presses and the character does not answer.
             //
             // So the cycle plays across the tap, the same way every other painted
-            // bank now does, and the sim's rewind on a repeat tap replays it. With
+            // bank now does, and the sim queues one replay for repeat taps. With
             // no tap running the character rests on its first frame, which is what
             // a bank with no dive half can honestly show. The world clock stays
             // for the hangar and any caller with no tap of its own, so a shelf
             // card still breathes.
             const idx = tapAnimT >= 0
                 ? Math.min(loopFrames.length - 1, Math.floor((tapAnimT / TAP_ANIM_DURATION) * loopFrames.length))
-                : Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
+                : tapDriven ? 0 : Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
             const refL = loopFrames[0].box ?? ref;
             drawRigLayer(ctx, loopFrames[idx], refL, x, y, size, 0, undefined, halo);
         }
@@ -5090,7 +5095,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
         paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
         // Cryostar and Verdant now share Eclipse's heading mapping by owner
         // request. All three use the same smoother, pose curve and frame index.
-        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed, lean);
+        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed, lean, NaN, true);
     if (flagship && w.shieldCharges > 0)
         paintVanguardShield(ctx, 0, 0, w.time);
     ctx.restore();

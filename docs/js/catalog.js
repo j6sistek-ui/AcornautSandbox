@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-12 02:13 UTC";
+export const BUILD_TIME = "2026-09-12 03:11 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private

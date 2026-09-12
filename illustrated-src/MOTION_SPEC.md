@@ -1,14 +1,25 @@
 # Acornaut motion spec — how a suit flies
 
-## Flight repeated-tap correction, 12 Sep 2026
+## Painted-bank repeated-tap correction, 12 Sep 2026
 
-The Flight pilot keeps its three ascent and five descent paintings. Accepted
-repeat taps no longer rewind the active ascent gesture: it finishes before
-one coalesced replay. Rapid input therefore reaches every ascent frame, while
-release drains the bounded queue and returns to velocity-driven descent.
-Dive clears the pending replay; reset clears all playback state. Other
-banked suits retain their existing reverse recovery. Physics, artwork and
-per-frame helmet registration are unchanged.
+The owner's report concerns banked flight, including Eclipse and Ion, rather
+than only the pilot named Flight. All 24 registered ascent/tap/loop suits
+complete the active gesture before one coalesced replay. Ascent playback uses
+a front-loaded .73 timing curve for visible onset within100ms. Rapid taps therefore
+reach every painted pose; release drains the bounded queue. Asc/desc suits
+then follow downward velocity, while loop-only critters rest on frame one.
+Rising velocity cannot restart a completed climb without a tap. Dive clears
+the pending replay; reset clears playback state. Shelf previews retain their
+authored cycles. Physics, art, helmet anchors and independent controllers are
+unchanged. The roster in control-constants.ts is checked against the shipping
+art manifests by test-flight-input.mjs.
+
+## Patriot onset correction, 12 Sep 2026
+
+Patriot (origamist) now plays source frames1,6–16 after a tap, skipping four
+near-identical opening crouches. First lift arrives around33ms; the stronger
+lift by100ms. All16 source images and explicit-frame access remain intact.
+Percy and Envoy retain their full sequence. Flight Studio uses the same order.
 
 ## Premium pilot trio — explicit owner selection, 9 Sep 2026
 

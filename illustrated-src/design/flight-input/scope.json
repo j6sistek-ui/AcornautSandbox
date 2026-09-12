@@ -1,11 +1,20 @@
 {
   "base": "e94b2b47bb04d423e5b16ac157005eec901e5911",
   "stamp": 273,
-  "generatedModules": 53,
-  "changedRuntimeModules": [
+  "changedModules": [
+    "control-constants.js",
+    "draw.js",
     "high-orbit-motion.js",
+    "premium-flight.js",
     "sim.js"
   ],
-  "shippingArtMastersAndWebsiteUnchanged": true,
-  "retainedJs272Unchanged": true
+  "unchanged": [
+    "all shipping artwork",
+    "art masters",
+    "helmet registration",
+    "physics forces",
+    "saves",
+    "website"
+  ],
+  "priorHighOrbitRuntime": "8827b42a7cae96fe4afdaa2a49105d4402fc3942"
 }

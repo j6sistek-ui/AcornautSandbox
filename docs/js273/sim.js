@@ -1,4 +1,5 @@
 import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=273";
+import { PAINTED_TAP_SUITS } from "./control-constants.js?v=273";
 import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=273";
 import { createHighOrbitMotion, stepHighOrbit, highOrbitTap } from "./high-orbit-motion.js?v=273";
 import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=273";
@@ -72,7 +73,7 @@ export function makeWorld(W, H) {
         arcflash: createArcflashMotion(),
         highOrbit: createHighOrbitMotion(),
         tapAnimDir: 1,
-        flightTapQueued: false,
+        tapAnimQueued: false,
         tapAnimFromRot: 0,
         bounceAnimT: -1,
         bounceAnimDir: 0,
@@ -1189,7 +1190,7 @@ export function resetRun(w, save, flight, tutorial, level, tunnelSeed) {
     w.arcflash = createArcflashMotion();
     w.highOrbit = createHighOrbitMotion(isHighOrbit(save.equippedSuit) ? save.equippedSuit : 'cinderforge');
     w.tapAnimDir = 1;
-    w.flightTapQueued = false;
+    w.tapAnimQueued = false;
     w.tapAnimFromRot = 0;
     w.bounceAnimT = -1;
     w.bounceAnimDir = 0;
@@ -2576,10 +2577,10 @@ export function flap(w, save) {
         w.tapAnimDir = 1;
         w.tapAnimFromRot = w.squirrel.rot;
     }
-    else if (pilotSuitId(w, save) === "flight") {
-        // Reversing this three-pose bank on every short tap holds it at frame
-        // zero. Finish the current gesture, then replay once for accepted input.
-        w.flightTapQueued = true;
+    else if (PAINTED_TAP_SUITS.has(pilotSuitId(w, save))) {
+        // Rewinding on every short tap traps painted banks in their first poses.
+        // Finish the gesture, then replay once for input accepted during it.
+        w.tapAnimQueued = true;
     }
     else {
         // A repeat tap REWINDS the picture: the animation plays backward from
@@ -2606,8 +2607,7 @@ export function flap(w, save) {
 export function dive(w, save) {
     if (w.screen !== "play" || w.ready)
         return "none";
-    if (pilotSuitId(w, save) === "flight")
-        w.flightTapQueued = false;
+    w.tapAnimQueued = false;
     // a dive throws the tail the other way, harder — it over-rotates past
     // home on the way back and rings down, which reads as weight falling
     w.tailV -= TAIL.dive;
@@ -3509,9 +3509,9 @@ export function updateWorld(w, save, dt) {
             w.tapAnimDir = 1;
         }
         else if (w.tapAnimT >= TAP_ANIM_DURATION) {
-            const replay = pilotSuitId(w, save) === "flight" && w.flightTapQueued;
+            const replay = PAINTED_TAP_SUITS.has(pilotSuitId(w, save)) && w.tapAnimQueued;
             w.tapAnimT = replay ? w.tapAnimT - TAP_ANIM_DURATION : -1;
-            w.flightTapQueued = false;
+            w.tapAnimQueued = false;
             w.tapAnimDir = 1;
         }
     }

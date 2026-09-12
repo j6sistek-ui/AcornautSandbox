@@ -75,13 +75,16 @@ async function renderChecks(){
       // addressability. Inverting the curve keeps the real property under
       // any curve value, and the frame-rate sweep below is what now holds
       // the line on frames actually being SEEN.
-      const age=Math.pow((frame+.5)/16,1/P.PREMIUM_FLIGHT_CURVE)*M.PREMIUM_FLIGHT_DURATION;
+      const order=P.premiumFlightOrder(id),slot=order.indexOf(frame);
+      const age=Math.pow((Math.max(0,slot)+.5)/order.length,1/P.PREMIUM_FLIGHT_CURVE)*M.PREMIUM_FLIGHT_DURATION;
       const state=M.createHighOrbitMotion(id);state.frames={age,active:true,queued:false};
-      assert.equal(P.premiumFlightFrame(id,state),frame,id+' every authored frame is addressable');
+      if(slot>=0)assert.equal(P.premiumFlightFrame(id,state),frame,id+' every gameplay pose is addressable');
       const explicit=surface();P.paintPremiumFlightFrame(explicit.getContext('2d'),art,id,128,128,192,frame,state,undefined,false);same(explicit,expected,id+' exact complete frame '+frame+' from public painter');
+      if(slot>=0){
       let overlays=0;const routed=surface();R.paintHighOrbit(routed.getContext('2d'),art,id,128,128,192,state,undefined,false,0,()=>overlays++,true);
       assert.equal(overlays,0,id+' frame '+frame+' ignores external head overlays');same(routed,expected,id+' legacy entry point dispatches full frame '+frame);
       for(const helmet of Cat.HELMETS){const live=surface();D.paintOrbitPilot(live.getContext('2d'),art,id,128,128,192,helmet,state,undefined,false);same(live,expected,id+' frame '+frame+' authored head retained with '+helmet.id);}
+      }
       for(const [size,pitch] of [[52,-.35],[52,.35],[192,-.35],[192,.35]]){
         // Inspect the actual drawing transform. Rendering through an extra
         // intermediate canvas adds one-byte color rounding under rotation;
@@ -116,8 +119,9 @@ async function renderChecks(){
         M.stepHighOrbit(state,id,1/120,-200);const frame=P.premiumFlightFrame(id,state);seen.add(frame);if(sequence.at(-1)!==frame)sequence.push(frame);
         assert.deepEqual(state.pose,initialPose,id+' whole frames do not animate cut-rig joints');
       }
-      assert.deepEqual([...seen].sort((a,b)=>a-b),Array.from({length:16},(_,i)=>i),id+' all sixteen poses reachable'+(rapid?' under rapid taps':''));
-      assert.deepEqual(sequence.slice(0,16),Array.from({length:16},(_,i)=>i),id+' authored frame order preserved');
+      const expected=id==='origamist'?[0,5,6,7,8,9,10,11,12,13,14,15]:Array.from({length:16},(_,i)=>i);
+      assert.deepEqual([...seen].sort((a,b)=>a-b),expected,id+' selected poses reachable'+(rapid?' under rapid taps':''));
+      assert.deepEqual(sequence.slice(0,expected.length),expected,id+' selected authored order preserved');
       if(!rapid)assert(!state.frames.active,id+' one tap completes without an unrequested replay');
       const before=structuredClone(state);for(const [dt,vy] of [[0,0],[-1,0],[NaN,0],[.01,NaN]])M.stepHighOrbit(state,id,dt,vy);for(const impulse of [0,-1,NaN,Infinity])M.highOrbitTap(state,impulse);assert.deepEqual(state,before,id+' invalid input or paused clock does not advance');
     }
@@ -133,8 +137,8 @@ async function renderChecks(){
       const s=M.createHighOrbitMotion(id),seen=new Set();M.highOrbitTap(s,40);
       seen.add(P.premiumFlightFrame(id,s));
       for(let tick=0;tick<fps;tick++){M.stepHighOrbit(s,id,1/fps,-200);seen.add(P.premiumFlightFrame(id,s));}
-      assert.deepEqual([...Array(16).keys()].filter(f=>!seen.has(f)),[],
-        id+' shows every authored frame at '+fps+'fps');
+      assert.deepEqual(P.premiumFlightOrder(id).filter(f=>!seen.has(f)),[],
+        id+' shows every selected gameplay frame at '+fps+'fps');
     }
     const rates=[30,60,120].map(fps=>{const s=M.createHighOrbitMotion(id);M.highOrbitTap(s);for(let tick=0;tick<fps*2;tick++){if(tick===fps/2)M.highOrbitTap(s);M.stepHighOrbit(s,id,1/fps,-200);}return s;});
     for(const s of rates.slice(1)){assert.equal(P.premiumFlightFrame(id,s),P.premiumFlightFrame(id,rates[0]),id+' frame rate independent playback');assert.equal(s.frames.active,rates[0].frames.active);assert(Math.abs(s.frames.age-rates[0].frames.age)<1e-8);}
@@ -160,7 +164,7 @@ async function renderChecks(){
       for(let i=0;i<2;i++)assert(Math.hypot(actual[i][0]-expected[i][0],actual[i][1]-expected[i][1])<1e-8,id+' wake is attached to the displayed frame');
     }
     const wake=createCanvas(80,40);E.paintHighOrbitWake(wake.getContext('2d'),id,40,20,0);assert(rgba(wake).some((value,i)=>i%4===3&&value>100),id+' custom wake visible at first paint');
-    results.push({id,frames:16,frameHashes:hashes,bounds,rapidTapAllFrames:true,helmetsChecked:Cat.HELMETS.length,wakeSamples:720,headPolicy:suit.headPolicy});
+    results.push({id,frames:16,gameplayFrames:P.premiumFlightOrder(id).length,frameHashes:hashes,bounds,rapidTapAllSelectedFrames:true,helmetsChecked:Cat.HELMETS.length,wakeSamples:720,headPolicy:suit.headPolicy});
   }
   const out=root+'illustrated-src/design/premium-pilots/';mkdirSync(out,{recursive:true});
   writeFileSync(out+'production-review.png',contact.toBuffer('image/png'));

@@ -26,8 +26,7 @@ const [{ makeWorld, flap, updateWorld }, { defaultSave }, { TAP_ANIM_DURATION }]
   ]);
 
 const save = defaultSave();
-// Flight now completes and queues its gesture. Robo retains the existing
-// reverse recovery contract exercised here; Flight has its own live test.
+// Robo represents the painted banks; repeat taps cannot rewind the gesture.
 save.equippedSuit = "robo";
 const world = makeWorld(390, 844);
 world.screen = "play";
@@ -45,14 +44,14 @@ const firstRecoveryT = world.tapAnimT;
 const firstTailV = world.tailV;
 assert(flap(world, save) === "flap", "repeat tap was rejected");
 assert(world.tapAnimT === firstRecoveryT, "repeat tap rewound or restarted the body clock");
-assert(world.tapAnimDir === -1, "repeat tap did not reverse toward the impulse bookend");
+assert(world.tapAnimDir === 1 && world.tapAnimQueued, "repeat tap must queue without reversing the active gesture");
 assert(world.tailV > firstTailV, "repeat tap did not add energy to the live tail spring");
 
 for (let i = 0; i < 12; i++) updateWorld(world, save, 1 / 60);
 const secondRecoveryT = world.tapAnimT;
 assert(flap(world, save) === "flap", "second repeat tap was rejected");
 assert(world.tapAnimT === secondRecoveryT, "second repeat changed the body clock");
-assert(world.tapAnimDir === -1, "second repeat did not reverse the active beat");
+assert(world.tapAnimDir === 1 && world.tapAnimQueued, "second repeat must preserve forward playback and coalesce");
 assert(world.tapAnimT > 0 && world.tapAnimT < TAP_ANIM_DURATION,
   "recovery did not remain active between taps");
 
@@ -69,7 +68,7 @@ console.log(JSON.stringify({
   firstRepeatAt: Number(firstRecoveryT.toFixed(3)),
   secondRepeatAt: Number(secondRecoveryT.toFixed(3)),
   repeatClockContinuity: "passed",
-  interruptibleReverseRecovery: "passed",
+  completeGestureBeforeReplay: "passed",
   repeatedTailImpulse: "passed",
   exactIdleSentinel: "passed",
 }));

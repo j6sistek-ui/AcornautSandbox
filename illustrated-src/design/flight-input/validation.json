@@ -1,7 +1,16 @@
 {
-  "at": "2026-09-12T02:23:00.074Z",
+  "at": "2026-09-12T03:15:18.036Z",
   "base": "e94b2b47bb04d423e5b16ac157005eec901e5911",
+  "priorDraftHead": "dc43a614b8d319ecce102c61fae3cba5ee448712",
   "stamp": 273,
+  "changedModules": [
+    "control-constants.js",
+    "draw.js",
+    "high-orbit-motion.js",
+    "premium-flight.js",
+    "sim.js"
+  ],
+  "artAndWebsiteUnchanged": true,
   "builds": {
     "web": true,
     "beta": true,
@@ -12,16 +21,172 @@
   },
   "testsPassed": [
     "flight-input",
-    "high-orbit-input",
-    "tap-recovery (Robo legacy contract)",
-    "rig-anatomy",
-    "high-orbit-integration (production/beta)",
-    "premium-pilots",
+    "tap-recovery",
+    "natural-flight",
+    "eclipse-motion-transfer",
+    "vanguard",
     "vanguard-flight",
     "platform-bridge",
+    "patriot-input",
+    "premium-pilots",
     "flight-studio"
   ],
-  "additional": "High Orbit diagnostic passes all movement, geometry, helmet and pause/race checks after proving fallback pixels unchanged from main; premium states equal main at all 3600 samples.",
+  "bankedSuits": [
+    "alien",
+    "bigbooty",
+    "briellacat",
+    "catsuit",
+    "copper",
+    "cryostar",
+    "cyber",
+    "eclipse",
+    "ember",
+    "ferret",
+    "flight",
+    "frost",
+    "gemmie",
+    "ghost",
+    "hedgehog",
+    "iontrim",
+    "leviathan",
+    "raccoon",
+    "robo",
+    "sammie",
+    "seraph",
+    "verdant",
+    "voidsuit",
+    "volt"
+  ],
+  "bankTraces": 96,
+  "onset": [
+    {
+      "id": "alien",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "briellacat",
+      "firstMoveMs": 33.333333333333336
+    },
+    {
+      "id": "copper",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "cryostar",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "cyber",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "eclipse",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "ember",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "flight",
+      "firstMoveMs": 83.33333333333333
+    },
+    {
+      "id": "frost",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "gemmie",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "ghost",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "iontrim",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "leviathan",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "sammie",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "seraph",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "verdant",
+      "firstMoveMs": 16.666666666666668
+    },
+    {
+      "id": "voidsuit",
+      "firstMoveMs": 16.666666666666668
+    }
+  ],
+  "patriot": [
+    {
+      "fps": 30,
+      "firstLiftMs": 33.333333333333336,
+      "fullLiftMs": 100,
+      "frames": [
+        0,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "fps": 60,
+      "firstLiftMs": 33.333333333333336,
+      "fullLiftMs": 100,
+      "frames": [
+        0,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    {
+      "fps": 120,
+      "firstLiftMs": 33.333333333333336,
+      "fullLiftMs": 91.66666666666666,
+      "frames": [
+        0,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    }
+  ],
   "browser": {
     "viewport": [
       390,
@@ -32,12 +197,11 @@
     "errors": [],
     "measurements": [
       {
-        "id": "flight",
+        "id": "eclipse",
         "stamp": "273",
-        "loaded": 3,
+        "loaded": 8,
         "screen": "play",
         "poses": [
-          1,
           2,
           3
         ],
@@ -46,47 +210,20 @@
         "documentWidth": 390
       },
       {
-        "id": "cinderforge",
+        "id": "iontrim",
         "stamp": "273",
-        "loaded": true,
+        "loaded": 8,
         "screen": "play",
-        "poses": [],
+        "poses": [
+          2,
+          3
+        ],
         "canvasWidth": 780,
         "canvasHeight": 1688,
         "documentWidth": 390
       },
       {
-        "id": "groveguard",
-        "stamp": "273",
-        "loaded": true,
-        "screen": "play",
-        "poses": [],
-        "canvasWidth": 780,
-        "canvasHeight": 1688,
-        "documentWidth": 390
-      },
-      {
-        "id": "cosmic",
-        "stamp": "273",
-        "loaded": true,
-        "screen": "play",
-        "poses": [],
-        "canvasWidth": 780,
-        "canvasHeight": 1688,
-        "documentWidth": 390
-      },
-      {
-        "id": "sunforged",
-        "stamp": "273",
-        "loaded": true,
-        "screen": "play",
-        "poses": [],
-        "canvasWidth": 780,
-        "canvasHeight": 1688,
-        "documentWidth": 390
-      },
-      {
-        "id": "abyssal",
+        "id": "origamist",
         "stamp": "273",
         "loaded": true,
         "screen": "play",
@@ -97,8 +234,10 @@
       }
     ]
   },
-  "limitation": "Strict High Orbit fallback raster equality remains nonzero on Linux Canvas. Same main/candidate fallback pixels; historical PNG mismatch: Cinderforge22 bytes max28, Groveguard23 max2, Cosmic16 max8, Sunforged23 max4, Abyssal21 max2. Original assertion retained. Native iPhone validation and owner visual acceptance remain outstanding.",
-  "skipped": "Full harness; warp, tunnel, star-map-ui, vanguard-render, shop-visuals and broad helmet-animation/global art checks. Input physics, level/mode timing, art and fit registration are unchanged. Focused actual rig/helmet and AcorNut flight checks cover the reached behavior.",
-  "testedRuntimeCommit": "8827b42a7cae96fe4afdaa2a49105d4402fc3942",
-  "lineEndings": "CRLF normalized to LF for repository formatting; no logic changes after verification."
+  "priorHighOrbitEvidence": {
+    "testedRuntime": "8827b42a7cae96fe4afdaa2a49105d4402fc3942",
+    "reusedBecause": "Five-rig controller, atlas art, helmet anchors and Canvas dependencies are unchanged by this follow-up."
+  },
+  "skipped": "Full unrelated suite, warp, tunnel, star-map-ui, vanguard-render, shop-visuals and broad helmet/global art gates. No forces, level/mode timing, saves, prices or artwork changed; affected bank painters and helmets received focused coverage.",
+  "limitation": "Native iPhone and owner visual acceptance remain outstanding. Historical High Orbit Linux fallback mismatch remains disclosed; prior verified main/candidate pixel equality is reused."
 }

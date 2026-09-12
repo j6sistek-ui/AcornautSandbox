@@ -8,7 +8,7 @@ import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {makeProject,validateProject,serializeProject,createAnimation,acceptTap,stepAnimation,createSimulation,seekSimulation,transportTime,STEP,clone} from '../tools/flight-studio/core.mjs';
 import {StudioRenderer} from '../tools/flight-studio/renderer.mjs';
-import {paintPremiumFlightFrame,premiumFlightFrame} from '../tools/flight-studio/game/premium-flight.mjs';
+import {paintPremiumFlightFrame,premiumFlightFrame,premiumFlightOrder} from '../tools/flight-studio/game/premium-flight.mjs';
 import {createStudioServer} from '../tools/flight-studio/launch.mjs';
 const require=createRequire(import.meta.url),{createCanvas,loadImage}=require(process.env.ACORNAUT_CANVAS||'@napi-rs/canvas');
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),dir=join(root,'tools/flight-studio');
@@ -42,7 +42,7 @@ for(const model of premium){
     stepAnimation(s,project.profile,STEP,-300);seen.add(s.frame);
     assert.equal(s.frame,premiumFlightFrame(model.id,s.native),model.id+' default Studio frame matches shipping tap lifecycle');
   }
-  assert.deepEqual([...seen].sort((a,b)=>a-b),Array.from({length:16},(_,i)=>i),model.id+' plays all sixteen complete poses');
+  assert.deepEqual([...seen].sort((a,b)=>a-b),[...premiumFlightOrder(model.id)],model.id+' plays the shipping tap sequence');
   assert.equal(s.frame,model.sheet.fallbackFrame,model.id+' returns to fallback after queued playback');
   const pattern=createSimulation(model,project);
   for(let tick=1;tick<=project.pattern.duration/STEP;tick++){
@@ -58,6 +58,7 @@ assert.equal(p.tapSource,'asc');
 assert.equal(p.tapPath,'out-back');
 const returning=createAnimation(ion);acceptTap(returning,p);for(let i=0;i<120;i++)stepAnimation(returning,p,STEP,-300);assert.equal(returning.frame,0,'out-and-back must finish at neutral');
 p.tapPath='forward';
+p.tapEase=1; // The following fixtures isolate linear timing and custom duration.
 const a=createAnimation(ion),b=createAnimation(ion);acceptTap(a,p);acceptTap(b,p);
 const visited=[];
 for(let i=0;i<120;i++){stepAnimation(a,p,STEP,-450);stepAnimation(b,p,STEP,-60);assert.equal(a.frame,b.frame,'tap frame must not follow rise velocity');assert.notEqual(a.bank,'desc');visited.push(a.frame);}
