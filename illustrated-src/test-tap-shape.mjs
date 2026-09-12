@@ -33,7 +33,12 @@ const mod=f=>import(pathToFileURL(join(scratch,'js',f+'.js')).href);
 const [D,A,Sim,S,C,Control]=await Promise.all(['draw','art','sim','save','catalog','control-constants'].map(mod));
 
 // --- the tables: exactly what the owner asked for, nothing more ----------
-assert.deepEqual(Control.TAP_SHAPE,{eclipse:'velocity'},'TAP_SHAPE: Eclipse on velocity, everything else stock ("only change eclipse. to try it")');
+const VELOCITY=['eclipse','cryostar','verdant','cyber','seraph','alien','flight','briellacat','iontrim','copper','voidsuit','ember','frost','ghost','gemmie','sammie','leviathan'];
+assert.deepEqual(Object.keys(Control.TAP_SHAPE).sort(),[...VELOCITY].sort(),'TAP_SHAPE: every ascent-bank suit, and only those (owner, 12 Sep 2026: "everything I don\'t name otherwise, gets velocity rewind")');
+assert(Object.values(Control.TAP_SHAPE).every(v=>v==='velocity'),'and all of them are on velocity');
+assert.deepEqual([...VELOCITY].sort(),[...new Set([...Object.keys(A.ASC_BANKS)])].sort(),'the velocity roster is exactly the suits with an ascent bank');
+assert.deepEqual(Control.TAP_REPEAT,{raccoon:'restart',ferret:'restart',hedgehog:'restart'},'the critters restart ("Critters, bandit, noodle and quill get velocity restart" - and A: restart only)');
+assert.equal(Control.PAINTED_TAP_SUITS.size,0,'no suit finishes/queues live any more');
 assert.deepEqual(Control.TAIL_SPRING,{},'TAIL_SPRING is empty until the owner reports numbers');
 assert.deepEqual([...Control.TAIL_SPRING_SUITS].sort(),[...A.RIGGED_SUITS].sort(),'the tail-spring roster is exactly the suits that draw their own tail layer');
 
@@ -101,7 +106,9 @@ function trace(cadence,ticks,setup){
  const rewind=trace(.3,40,save=>{save.tapShape={eclipse:{fwd:.25,back:.1}}});
  assert(rewind[18]!=='asc-1',`rewind (stock for a frozen suit): the second tap continues from where the picture is, got ${rewind[18]}`);
  assert.equal(Sim.repeatTapMode('eclipse',{tapRepeat:{}}),'rewind');
- assert.equal(Sim.repeatTapMode('ember',{tapRepeat:{}}),'finish');
+ assert.equal(Sim.repeatTapMode('ember',{tapRepeat:{}}),'rewind','ember rewinds live now');
+ assert.equal(Sim.repeatTapMode('raccoon',{tapRepeat:{}}),'restart');
+ assert.equal(Sim.repeatTapMode('robo',{tapRepeat:{}}),'rewind');
  assert.equal(Sim.repeatTapMode('ember',{tapRepeat:{ember:'restart'}}),'restart');
 }
 // "default" on the dial is the stock ramp: under 150 ms taps it never
@@ -117,7 +124,19 @@ function trace(cadence,ticks,setup){
 assert.equal(S.tapShapeFor({tapShape:{}},'eclipse'),'velocity');
 assert.deepEqual(S.tapShapeFor({tapShape:{eclipse:{fwd:.5,back:.5}}},'eclipse'),{fwd:.5,back:.5});
 assert.equal(S.tapShapeFor({tapShape:{eclipse:'default'}},'eclipse'),null);
-assert.equal(S.tapShapeFor(null,'flight'),null,'a suit off the table is the stock ramp');
+assert.equal(S.tapShapeFor(null,'robo'),null,'a suit off the table (a frozen one) is the stock ramp');
+assert.equal(S.tapShapeFor(null,'flight'),'velocity','flight is on the velocity table per the 12 Sep ruling');
+
+// --- the body reaction spring behind the tap accent (sim side) -----------
+{
+ const {w,save}=world();Sim.flap(w,save);const trace=[];
+ for(let i=0;i<24;i++){Sim.updateWorld(w,save,1/60);trace.push(w.tapReact);}
+ const peakAt=trace.indexOf(Math.max(...trace));
+ assert(Math.max(...trace)>0.3&&Math.max(...trace)<=1,`reaction peaks between 0.3 and 1 (got ${Math.max(...trace).toFixed(3)})`);
+ assert(peakAt>=2&&peakAt<=7,`reaction peaks 50-120 ms after the tap (tick ${peakAt})`);
+ assert(trace[23]<0.15,`reaction has settled by 400 ms (${trace[23].toFixed(3)})`);
+ assert.equal(S.defaultSave().tapAccent,false,'the accent ships OFF');
+}
 
 // --- the tail spring, in the sim -----------------------------------------
 {

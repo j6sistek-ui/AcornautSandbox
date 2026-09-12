@@ -16,9 +16,10 @@ plus remains. Shop balances, purchase behavior and player storage are unchanged.
 
 ## Implementation and verification
 
-- Based on main `0b213438a5c489c382d76250a6222c8318b48f3c`.
+- Integrated main `4075248f8c0873f9129fcac32060d6abc4c3e8e1`, preserving its
+  new flight controls and engine-color picker changes.
 - Authored changes: `game/standalone.ts`, Home CSS in `docs/index.html`, and
-  `ART_VER` 277 in `game/catalog.ts`. Production, beta, lab and Flight Studio
+  `ART_VER` 279 in `game/catalog.ts`. Production, beta, lab and Flight Studio
   outputs were regenerated with the existing exporters.
 - Source export, lab build, Flight Studio build, TypeScript check and
   `git diff --check` completed successfully.

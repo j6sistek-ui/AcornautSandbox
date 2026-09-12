@@ -1,6 +1,7 @@
 # Compact Shop viewer
 
 [MILESTONE]
+- 2026-09-12T09:10Z [TOOL] Draft PR283 opened at887ec53a, then main advanced to4075248f. Integrated its flight/control/color-picker changes without altering them; all Home source changes retained. Rebuilt279, lab/Studio/typecheck passed after integration; no tests/art/bridge. Original art matches updated main. PR remains draft and unmerged; owner visual review next, browser unavailable.
 - 2026-09-12T09:04Z [USER] Approved Home proposal 2: Star Chart between Loadout and Modes, remove bottom banner, preserve original icon artwork and sizes, equal Acorn/Stardust pill dimensions. Requested a slightly brighter neon green. Supersedes proposal-only scope. PR required; never auto merge.
 - 2026-09-12T09:04Z [CODE] Implemented in tmp/home-star-chart-placement, branch codex/home-star-chart-placement-20260912 from main0b213438. Chart retains progress/next reward/Complete/guide/route; green25c58c/0a6248, highlight7af2bd. Original34px Star Chart badge,16px Acorn and14px Stardust unchanged; equal34px-height pills fit number text together.
 - 2026-09-12T09:04Z [TOOL] Export/lab/Flight Studio/typecheck/diff-whitespace checks passed; build277. Docker unavailable; existing dependencies only. No tests/art/bridge checks per owner's no-rerun direction. Browser unavailable, so no visual signoff. All regenerated art restored to original after exact-path backup; art directories unchanged. Local preview8777 uses in-memory save; draft PR publication next.

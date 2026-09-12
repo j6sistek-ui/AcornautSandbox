@@ -402,3 +402,19 @@ tap-clock ramp picks it now. Owner: "only change eclipse. to try it", then
 - The repeat-tap dial is per suit too (`save.tapRepeat`): REWIND, FINISH
   (PR #277's queue) or RESTART (every tap a fresh gesture). Stock is rewind
   for the frozen roster and finish for the rest.
+
+## The ruling, 12 Sep 2026
+
+After flying the dials: "robot cat big booty volt all stay default rewind.
+briellas cat, cyber, eclipse, and everything I don't name otherwise, gets
+velocity rewind. Critters, bandit, noodle and quill get velocity restart
+[A: restart only]. percy, envoy, patriot, all need something else, its
+artwork, its frame work. high orbit ... play well with velocity rewind.
+arcflash and acornut are good." Baked: TAP_SHAPE = velocity for all
+seventeen ascent-bank suits; PAINTED_TAP_SUITS empty (nobody finishes
+live); TAP_REPEAT = restart for the three critters; FROZEN_SUITS = Robo,
+Big Booty, Cat, Volt, AcorNut, Arcflash. From the retrofit study: ordinary
+flight now steps on the same fixed 1/60 accumulator as Race and Spill; a
+held Space key is one tap in flight; and a beta TAP ACCENT switch adds a
+167 ms ignition and a body reaction spring that read the accepted tap.
+The premium trio is a project of its own.
