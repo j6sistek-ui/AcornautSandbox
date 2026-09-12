@@ -153,5 +153,14 @@ assert.equal(Sim.flightTestInterval('manual'), 0);
   assert.deepEqual(S.loadSave().testLab, { pattern: '6', speed: 0.5 }, 'and keeps sane ones');
   stored.set(Cat.SAVE_KEY, JSON.stringify({ ...base, testLab: 'junk' }));
   assert.equal(S.loadSave().testLab, undefined, 'and drops junk outright');
+  // the accent strength dial: 0.25..4 survives, anything else is stock
+  stored.set(Cat.SAVE_KEY, JSON.stringify({ ...base, tapAccentStrength: 3 }));
+  assert.equal(S.loadSave().tapAccentStrength, 3, 'a dialled strength survives');
+  assert.equal(S.tapAccentStrengthFor(S.loadSave()), 3);
+  for (const bad of [0, 9, 'x', NaN]) {
+    stored.set(Cat.SAVE_KEY, JSON.stringify({ ...base, tapAccentStrength: bad }));
+    assert.equal(S.loadSave().tapAccentStrength, undefined, `strength ${bad} is dropped`);
+  }
+  assert.equal(S.tapAccentStrengthFor(base), 1, 'no dial reads as 1x');
 }
 console.log(JSON.stringify({ suite: 'test lab', page: mode, patterns: Sim.FLIGHT_TEST_PATTERNS.length, result: 'PASS' }));

@@ -206,6 +206,8 @@ export type Engine = {
   setTapRewind: (on: boolean) => void;
   /** the beta tap accent + body reaction switch */
   setTapAccent: (on: boolean) => void;
+  /** the beta accent strength dial, 0.25..4 (1 = as first shipped) */
+  setTapAccentStrength: (k: number) => void;
   /** the beta repeat-tap dial, per suit: rewind / finish / restart; null clears it */
   setTapRepeat: (suitId: string, mode: "rewind" | "finish" | "restart" | null) => void;
   /** the beta tap-shape dial, per suit; null clears the dial back to the table */
@@ -619,6 +621,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       writeSave(save);
       notify();
     },
+    setTapAccentStrength(k) {
+      const v = Math.max(0.25, Math.min(4, Math.round(k * 4) / 4));
+      if (v === 1) delete save.tapAccentStrength; else save.tapAccentStrength = v;
+      writeSave(save);
+      notify();
+    },
     setTapRepeat(suitId, mode) {
       if (!save.tapRepeat) save.tapRepeat = {};
       if (mode === null) delete save.tapRepeat[suitId]; else save.tapRepeat[suitId] = mode;
@@ -692,6 +700,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       delete save.tailSpring;
       delete save.suitPitch;
       delete save.testLab;
+      delete save.tapAccentStrength;
       save.tapAccent = false;
       save.tapRewind = false;
       save.lab = {};

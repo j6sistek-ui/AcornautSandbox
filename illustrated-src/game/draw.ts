@@ -20,7 +20,7 @@ import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./co
 import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
-import { suitPitchFor, tapShapeFor, type SaveData } from "./save";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor, type SaveData } from "./save";
 import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS, type Particle, type World } from "./sim";
 import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE, type SuitLean, type TapShape } from "./control-constants";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
@@ -5209,25 +5209,35 @@ function drawPilot(
   // nose-up at the peak, ~70 ms after the tap, settled by ~250 ms. Both
   // read the ACCEPTED tap (flapBoost, tapReact), never the tap clock, so
   // every tap shows at every cadence. Off unless the owner switches it on.
+  //
+  // THE STRENGTH DIAL (owner, 12 Sep 2026, after a frame-by-frame look at
+  // Cyber: "build a dial, i can barely notice it"). One multiplier on all
+  // three parts - ignition radius, squash and nose-up - 1 is what shipped,
+  // 4 is four times it. And the ignition now burns white at the core with
+  // the suit's glow as the rim: Cyber's glow is the same violet as its
+  // body, so a glow-only ignition vanished on the one suit the owner was
+  // judging it on.
   if (IS_BETA && save.tapAccent && !independentRig) {
+    const k = tapAccentStrengthFor(save);
     const age = 0.22 - Math.max(0, w.flapBoost);   // seconds since the last tap
     if (w.flapBoost > 0 && age < 0.167) {
       const stage = age < 0.017 ? 1 : age < 0.05 ? 2 : age < 0.1 ? 3 : 4;
       const amp = [0, 0.5, 1, 0.6, 0.3][stage];
       const col = (suit as { glow?: string | null }).glow ?? helm.glow ?? "#4ad8ff";
-      const radius = 9 * amp + 2;
+      const radius = (9 * amp + 2) * Math.sqrt(k);
       ctx.save();
       ctx.translate(-9, 5);
-      const g = ctx.createRadialGradient(0, 0, 1, 0, 0, radius);
-      g.addColorStop(0, glowRgba(col, 0.85 * amp));
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+      g.addColorStop(0, `rgba(255,255,255,${(0.95 * amp).toFixed(3)})`);
+      g.addColorStop(0.35, glowRgba(col, 0.85 * amp));
       g.addColorStop(1, glowRgba(col, 0));
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
-    const r = Math.max(0, Math.min(1, w.tapReact));
+    const r = Math.max(0, Math.min(1, w.tapReact)) * k;
     ctx.rotate(-r * (6 * Math.PI) / 180);
-    ctx.scale(1 + 0.03 * r, 1 - 0.05 * r);
+    ctx.scale(1 + 0.03 * r, Math.max(0.5, 1 - 0.05 * r));
   }
   // the sim's real pitch — dives nose down, bounces kick the body over;
   // the old ±6° bank made every impact read as nothing happening

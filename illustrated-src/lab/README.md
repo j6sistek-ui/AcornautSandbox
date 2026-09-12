@@ -88,6 +88,20 @@ involved, so it is an estimate; the grid shows you what is left over.
 That is the intended use: collect overrides until the pattern is obvious,
 fold them, look again.
 
+## Drafts, and RESET ALL
+
+Your drags are kept in the browser's local storage so a reload does not
+lose a fitting session. The draft is tagged with the art build it was
+dialled against; **a newer build sets it aside and opens on the shipping
+numbers**, and says so in the toast. That is deliberate: a draft from an
+old build puts every helmet somewhere the Loadout does not, and dragging
+cannot fix it because the bench never writes to the game - only COPY does,
+by way of a paste into `draw.ts`.
+
+**RESET** puts back the one number under the current target. **RESET ALL**
+(two taps) puts back every number, drops every override and lock, and
+clears the draft so a reload cannot bring it back.
+
 ## Controls
 
 - **Tap a tile to select it, then drag it** — moves the piece under the

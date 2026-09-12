@@ -64,14 +64,15 @@ assert(sheet.textContent.includes(`dev ${Cat.DEV_STAMP}`),'beta: the sheet print
 assert(button('FLIGHT TEST'),'beta: the Flight Test door');
 for(const door of ['RIG EDITOR','SHIP BENCH','BACKGROUND TEST MODE','VISUAL AUDIT','FLIGHT LAB PAGE','HIGH ORBIT','PREMIUM PILOTS'])
   assert(button(door),`beta: lab door ${door}`);
-assert(sheet.textContent.includes('TAP ACCENT')&&sheet.textContent.includes('REPEAT TAP')&&sheet.textContent.includes('TAP SHAPE')&&sheet.textContent.includes('PITCH'),'beta: the worn suit\'s dials are on the sheet');
-assert(sheet.textContent.includes('FLIGHT LAB'),'beta: the Flight Lab sliders are on the sheet');
+// just the doors: no dial on the sheet (owner, 12 Sep 2026: "clean it up")
+assert(!sheet.querySelector('.ac-suit-pitch')&&!sheet.querySelector('.ac-lab')&&!sheet.textContent.includes('TAP ACCENT'),'beta: the sheet carries no dials');
 // reset takes two taps
 button('RESET ALL DIALS TO STOCK').click();tick();
 assert(button('TAP AGAIN TO RESET EVERY DIAL'),'beta: the first tap only arms the reset');
-e.setTapAccent(true);tick();assert.equal(e.save.tapAccent,true);
+e.setTapAccent(true);e.setTapAccentStrength(4);tick();assert.equal(e.save.tapAccent,true);
 button('TAP AGAIN TO RESET EVERY DIAL').click();tick();
 assert.equal(e.save.tapAccent,false,'beta: the second tap resets the accent switch');
+assert.equal(e.save.tapAccentStrength,undefined,'beta: and the strength');
 assert.equal(e.save.testLab,undefined,'beta: and the Flight Test settings');
 // the Modes sheet is modes only now
 app.querySelector('.ac-testlab .ac-backbtn').click();tick();
@@ -112,9 +113,19 @@ assert.equal(e.world.screen,'play','beta: and the run is still going');
 const reads=[...app.querySelectorAll('.ac-ftreads b')].map(b=>b.textContent);
 assert(reads.length===5&&reads.every(r=>r!=='—'||true),'beta: five readouts');
 assert(reads[4]!=='—'&&Number(reads[4])>0,`beta: the taps/s readout is live (${reads[4]})`);
-// the dials fold out inside the run
+// the dials fold out inside the run - the only place they live now
 button('ION DIALS').click();tick();
-assert(app.querySelector('.ac-ftdock .ac-testlab-dials'),'beta: the worn suit\'s dials fold out in the dock');
+const dials=app.querySelector('.ac-ftdock .ac-testlab-dials');
+assert(dials,'beta: the worn suit\'s dials fold out in the dock');
+assert(dials.textContent.includes('TAP ACCENT')&&dials.textContent.includes('REPEAT TAP')&&dials.textContent.includes('TAP SHAPE')&&dials.textContent.includes('PITCH'),'beta: every dial is in the dock');
+e.setTapAccent(true);tick();
+assert(app.querySelector('.ac-ftdock input[aria-label="Strength"]'),'beta: the accent strength slider is in the dock with the accent on');
+// the transport row has its own 1x; the strength buttons are inside the dials
+const dialBtn=t=>[...app.querySelectorAll('.ac-ftdock .ac-testlab-dials button')].find(b=>b.textContent.trim()===t);
+dialBtn('3×').click();tick();
+assert.equal(e.save.tapAccentStrength,3,'beta: 3x sets the strength');
+dialBtn('1×').click();tick();
+assert.equal(e.save.tapAccentStrength,undefined,'beta: 1x is stock and stores nothing');
 // back to the lab: the sheet is waiting on Home
 button('TEST LAB').click();tick(2);
 assert.equal(e.world.screen,'title');
