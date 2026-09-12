@@ -15,6 +15,7 @@ goes with it is `illustrated-src/GOLD_STANDARD.md`.
 | --- | --- |
 | `cyber-contact-sheet.png` | The brief on one page: row 1 climb `asc-1..9`, row 2 dive `desc-1..9`, row 3 body / tail / still / registration guide. Green box = the silhouette's extent in its 256 px cell. |
 | `cyber-cutter-grid.png` | The 18 climb and dive silhouettes as white masks on transparent, 9 × 2 cells of 256 px. The cookie cutter. |
+| `cyber-tail-sweep.png` | The nine climb plumes (and the nine dive plumes) outlined over each other, tinted by frame, with each frame's plume angle. The whip: down, sweep up, overshoot. Rebuilt by `illustrated-src/build-gold-tail-sweep.mjs`, which also writes the `tail` block in `measurements.json`. |
 | `cyber-guide.png` | One cell with the registration marks: head dome centre 128,128 radius 40 (yellow), tail pivot 101,125 (magenta, the neck cut), centre lines. |
 | `masks/cyber-<frame>-mask.png` | One white-on-transparent silhouette per frame (alpha > 24 counts as pilot). |
 | `holes/cyber-<frame>-hole.png` | The inverse: opaque black everywhere except the pilot. Lay over a generated frame to check nothing leaked outside the shape, or use as an inpainting mask. |
@@ -30,11 +31,14 @@ goes with it is `illustrated-src/GOLD_STANDARD.md`.
 3. Nine climb frames, nine dive frames, plus a body layer and a tail layer
    for the still. The frames carry the tail: in flight the frame is the
    whole pilot and no separate tail is drawn.
-4. Keep the **progression** of the masks, not just their outline: climb
+4. Keep the **tail's path**: the plume winds down through frames 1–3,
+   sweeps up through level in frames 3–7, overshoots raised in 7–9. Frames
+   3–7 must each be a different place on that path (see `cyber-tail-sweep.png`).
+5. Keep the **progression** of the masks, not just their outline: climb
    compresses the box from 142 × 122 to 117 × 138 (the plume lifts and the
    body gathers), dive relaxes it from 143 × 124 to 129 × 134. Step sizes are
    in `GOLD_STANDARD.md`.
-5. Deviation is allowed. This is the target when nothing else is asked for,
+6. Deviation is allowed. This is the target when nothing else is asked for,
    not a rule. A suit that flies differently on purpose still starts from
    this cell, this registration and this frame count.
 
