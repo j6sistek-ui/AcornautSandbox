@@ -11,7 +11,7 @@ import { mapDebrisIndex } from "./zone-visuals";
 import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress";
 import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog";
 import { repeatTapMode, FLIGHT_TEST_PATTERNS, type FlightTestPattern } from "./sim";
-import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS } from "./control-constants";
+import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
 import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, FROZEN_SUITS, type ShipPick } from "./draw";
@@ -456,7 +456,7 @@ export async function bootStandalone(root: HTMLElement) {
         if (shape) sheet.append(shape);
         const spring = tailSpringDial(worn);
         if (spring) sheet.append(spring);
-        sheet.append(tapAccentDial());
+        sheet.append(tapAccentDial(worn));
       }
       // THE FLIGHT LAB (owner, 7 Sep 2026): free flight only, beta only
       if (IS_BETA && engine.world.flight === "fly" && !engine.world.lvl && !engine.world.tut && !engine.world.race && !engine.world.spill) sheet.append(flightLab());
@@ -1039,6 +1039,11 @@ export async function bootStandalone(root: HTMLElement) {
         () => !sv().helpOff, () => engine.setHelpOff(!sv().helpOff));
     row("Menu animation", "Pulses, fades and moving badges",
         () => !sv().motionOff, () => engine.setMotionOff(!sv().motionOff));
+    // CHARACTER GLOW (owner, 12 Sep 2026: "create toggle in profile tab,
+    // to disable or enable character glow effect"): the tap accent's
+    // ignition and body reaction, on every suit that has one
+    row("Character glow", "The flash and recoil on every tap",
+        () => !sv().glowOff, () => engine.setGlowOff(!sv().glowOff));
     row("Intro video", "The launch film after TAP TO START",
         () => !sv().introOff, () => engine.setIntroOff(!sv().introOff));
     return rows;
@@ -1135,31 +1140,36 @@ export async function bootStandalone(root: HTMLElement) {
     }
     return panel;
   }
-  function tapAccentDial() {
+  function tapAccentDial(suitId: string) {
     const panel = el("div", "ac-suit-pitch");
-    const on = !!engine.save.tapAccent;
-    panel.append(el("p", "ac-sub", `TAP ACCENT · ${on ? "ON" : "OFF"} · ignition + body reaction, every suit`));
+    const on = !engine.save.glowOff;
+    panel.append(el("p", "ac-sub", `CHARACTER GLOW · ${on ? "ON" : "OFF"} · the Profile switch, every suit`));
     const row = el("div", "ac-modes");
     (row as HTMLElement).style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
     for (const [label, v] of [["OFF", false], ["ON", true]] as const) {
       const b = el("button", on === v ? "ac-mode on" : "ac-mode", label);
-      b.onclick = () => engine.setTapAccent(v);
+      b.onclick = () => engine.setGlowOff(!v);
       row.append(b);
     }
     panel.append(row);
     // THE STRENGTH DIAL (owner, 12 Sep 2026: "build a dial, i can barely
-    // notice it"): one multiplier on the ignition, the squash and the
-    // nose-up. 1x is what first shipped; 4x is four times it.
+    // notice it"), per suit over TAP_ACCENT_STRENGTH: one multiplier on the
+    // ignition, the squash and the nose-up. 0 is none for this suit.
     if (on) {
-      const k = tapAccentStrengthFor(engine.save);
-      panel.append(dialRow("Strength", 0.25, 4, 0.25, k, (v) => `${v.toFixed(2)}×`, (v) => engine.setTapAccentStrength(v)));
+      const name = (SUITS.find((s) => s.id === suitId)?.name ?? suitId).toUpperCase();
+      const k = tapAccentStrengthFor(engine.save, suitId);
+      const stock = TAP_ACCENT_STRENGTH[suitId] ?? 1;
+      const dialled = engine.save.tapAccentStrength?.[suitId] !== undefined;
+      panel.append(el("p", "ac-sub", `${name} ACCENT · ${k}×${dialled ? ` · stock ${stock}×` : " · stock"}`));
+      panel.append(dialRow("Strength", TAP_ACCENT_MIN, TAP_ACCENT_MAX, 0.25, k, (v) => `${v.toFixed(2)}×`, (v) => engine.setTapAccentStrength(suitId, v)));
       const quick = el("div", "ac-modes");
-      (quick as HTMLElement).style.gridTemplateColumns = "repeat(4, minmax(0,1fr))";
-      for (const v of [1, 2, 3, 4]) {
+      (quick as HTMLElement).style.gridTemplateColumns = "repeat(6, minmax(0,1fr))";
+      for (const v of [0, 1, 2, 3, 4]) {
         const b = el("button", k === v ? "ac-mode on" : "ac-mode", `${v}×`);
-        b.onclick = () => engine.setTapAccentStrength(v);
+        b.onclick = () => engine.setTapAccentStrength(suitId, v);
         quick.append(b);
       }
+      const reset = el("button", "ac-mode", "STOCK"); reset.onclick = () => engine.setTapAccentStrength(suitId, null); quick.append(reset);
       panel.append(quick);
     }
     return panel;
@@ -1815,7 +1825,7 @@ export async function bootStandalone(root: HTMLElement) {
   /** the worn suit's five dials - the same builders the pause sheet uses */
   function wornSuitDials(suitId: string) {
     const col = el("div", "ac-testlab-dials");
-    col.append(tapAccentDial());
+    col.append(tapAccentDial(suitId));
     col.append(repeatTapDial(suitId));
     const shape = tapShapeDial(suitId);
     if (shape) col.append(shape);

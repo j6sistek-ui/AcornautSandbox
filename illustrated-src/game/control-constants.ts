@@ -78,6 +78,22 @@ export const TAIL_SPRING_ONE: TailSpring = { stiff: 1, damp: 1, kick: 1 };
 export const TAIL_SPRING: Record<string, TailSpring> = {};
 export const TAIL_SPRING_SUITS = ["flight", "robo", "bigbooty", "catsuit", "verdant", "cryostar", "eclipse", "volt", "cyber"];
 
+/** THE TAP ACCENT, LIVE (owner, 12 Sep 2026: "enable it in game ... by
+ *  default 1x is good"). The 167 ms ignition and the body reaction on every
+ *  accepted tap, on both pages, with a per-suit strength: a multiplier on
+ *  the ignition radius, the squash and the nose-up. 1 is the shipped
+ *  reaction; 0 turns the accent off for that suit; absent means 1.
+ *
+ *  Owner's numbers, same message: "ghost gets 4x, alien gets 2x, leviathan
+ *  gets 2x, volt gets 4x, briellas cat gets 0x, verdant, eclipse, cryostar
+ *  get 4x." The player's own switch is Character Glow on the Profile tab
+ *  (save.glowOff); the beta strength dial overrides this table per suit. */
+export const TAP_ACCENT_STRENGTH: Record<string, number> = {
+  ghost: 4, alien: 2, leviathan: 2, volt: 4, briellacat: 0,
+  verdant: 4, eclipse: 4, cryostar: 4,
+};
+export const TAP_ACCENT_MIN = 0, TAP_ACCENT_MAX = 4;
+
 /** THE WORMHOLE'S SETTLED FEEL.
  *
  *  These were FOUND BY FLYING, not chosen. The corridor's numbers were

@@ -38,7 +38,7 @@ import {
   type BoostId,
 } from "./catalog";
 import { platform } from "./platform";
-import { TAP_SHAPE, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_ONE, type TapShape, type TailSpring } from "./control-constants";
+import { TAP_SHAPE, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_ONE, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX, type TapShape, type TailSpring } from "./control-constants";
 
 // Pinned to the shipped pre-regrouping catalog (9 Sep 2026). These are
 // historical grant amounts, not the price of the new bundle layout.
@@ -203,11 +203,18 @@ export type SaveData = {
   tailSpring?: Record<string, TailSpring>;
   /** BETA dial, per suit: what a repeat tap does (see repeatTapMode in sim.ts) */
   tapRepeat?: Record<string, "rewind" | "finish" | "restart">;
-  /** BETA switch: the 167 ms tap accent and body reaction (drawPilot) */
+  /** retired 12 Sep 2026: the tap accent is live on both pages now, behind
+   *  the player's Character Glow switch (glowOff). Left in old saves. */
   tapAccent: boolean;
-  /** BETA dial: how hard the accent reads, 0.25..4, 1 = as first shipped
-   *  (owner, 12 Sep 2026: "build a dial, i can barely notice it") */
-  tapAccentStrength?: number;
+  /** CHARACTER GLOW, the player's switch on the Profile tab (owner, 12 Sep
+   *  2026: "create toggle in profile tab, to disable or enable character
+   *  glow effect"). Off hides the tap accent - ignition and body reaction -
+   *  on every suit. Default on. */
+  glowOff?: boolean;
+  /** BETA dial, per suit: the accent strength override, 0..4, over the
+   *  TAP_ACCENT_STRENGTH table (owner, 12 Sep 2026: "build a dial, i can
+   *  barely notice it"). A live build flies the table. */
+  tapAccentStrength?: Record<string, number>;
   /** BETA Test Lab: the Flight Test's last autopilot pattern and transport
    *  speed, so the bench opens the way it was left. Read only on the beta
    *  page; a live build never starts a Flight Test. */
@@ -484,8 +491,20 @@ export function loadSave(): SaveData {
   for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx", "tapRewind", "tapAccent"] as const) {
     if (typeof s[k] !== "boolean") s[k] = false;
   }
-  if (s.tapAccentStrength !== undefined
-    && !(typeof s.tapAccentStrength === "number" && isFinite(s.tapAccentStrength) && s.tapAccentStrength >= 0.25 && s.tapAccentStrength <= 4)) delete s.tapAccentStrength;
+  if (typeof s.glowOff !== "boolean") delete s.glowOff;
+  // the accent strength dial became per suit on 12 Sep 2026; a number from
+  // the one-day global dial is dropped, a record is kept where sane
+  if (s.tapAccentStrength !== undefined) {
+    const t = s.tapAccentStrength as unknown;
+    if (!t || typeof t !== "object") delete s.tapAccentStrength;
+    else {
+      const clean: Record<string, number> = {};
+      for (const [id, v] of Object.entries(t as Record<string, unknown>)) {
+        if (typeof v === "number" && isFinite(v) && v >= 0 && v <= 4) clean[id] = v;
+      }
+      s.tapAccentStrength = clean;
+    }
+  }
   // the Test Lab's Flight Test settings: a bad value falls back, never bricks
   if (s.testLab !== undefined) {
     const t = s.testLab as unknown;
@@ -957,11 +976,13 @@ export function tapShapeFor(save: SaveData | null | undefined, id: string): TapS
   return TAP_SHAPE[id] ?? null;
 }
 
-/** the tap accent's strength: the beta dial, else 1. A live build never
- *  draws the accent at all. */
-export function tapAccentStrengthFor(save: SaveData | null | undefined): number {
-  const v = IS_BETA ? save?.tapAccentStrength : undefined;
-  return typeof v === "number" && isFinite(v) ? Math.max(0.25, Math.min(4, v)) : 1;
+/** this suit's tap accent strength: the beta dial if set, else the
+ *  TAP_ACCENT_STRENGTH table, else 1. 0 means no accent on this suit. A
+ *  live build flies the table. */
+export function tapAccentStrengthFor(save: SaveData | null | undefined, suitId: string): number {
+  const dialled = IS_BETA ? save?.tapAccentStrength?.[suitId] : undefined;
+  const v = typeof dialled === "number" && isFinite(dialled) ? dialled : TAP_ACCENT_STRENGTH[suitId] ?? 1;
+  return Math.max(TAP_ACCENT_MIN, Math.min(TAP_ACCENT_MAX, v));
 }
 
 /** this suit's tail spring multipliers: the beta dial if set, else the

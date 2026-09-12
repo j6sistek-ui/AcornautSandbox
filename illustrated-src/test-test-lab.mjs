@@ -56,6 +56,10 @@ if (!beta) {
   assert.equal(w.timeScale, 1);
   tick(w, save, 60);
   assert.equal(w.run.taps, 0, 'production: nothing taps by itself');
+  // the accent itself is live here: the table is read, the beta dial is not
+  assert.equal(S.tapAccentStrengthFor(save, 'ghost'), 4, 'production: the table strength');
+  assert.equal(S.tapAccentStrengthFor({ ...save, tapAccentStrength: { ghost: 1 } }, 'ghost'), 4, 'production: the beta dial is ignored');
+  assert.equal(S.tapAccentStrengthFor(save, 'briellacat'), 0, "production: Briella's Cat has none");
   console.log(JSON.stringify({ suite: 'test lab', page: mode, result: 'PASS' }));
   process.exit(0);
 }
@@ -153,14 +157,20 @@ assert.equal(Sim.flightTestInterval('manual'), 0);
   assert.deepEqual(S.loadSave().testLab, { pattern: '6', speed: 0.5 }, 'and keeps sane ones');
   stored.set(Cat.SAVE_KEY, JSON.stringify({ ...base, testLab: 'junk' }));
   assert.equal(S.loadSave().testLab, undefined, 'and drops junk outright');
-  // the accent strength dial: 0.25..4 survives, anything else is stock
+  // the accent strength dial, per suit: 0..4 survives, anything else is stock
+  stored.set(Cat.SAVE_KEY, JSON.stringify({ ...base, tapAccentStrength: { iontrim: 3, ghost: 0, bad: 9, worse: 'x' } }));
+  assert.deepEqual(S.loadSave().tapAccentStrength, { iontrim: 3, ghost: 0 }, 'sane per-suit strengths survive, the rest are dropped');
+  assert.equal(S.tapAccentStrengthFor(S.loadSave(), 'iontrim'), 3, 'the beta dial wins over the table');
+  assert.equal(S.tapAccentStrengthFor(S.loadSave(), 'ghost'), 0, 'a 0 override turns a suit off');
   stored.set(Cat.SAVE_KEY, JSON.stringify({ ...base, tapAccentStrength: 3 }));
-  assert.equal(S.loadSave().tapAccentStrength, 3, 'a dialled strength survives');
-  assert.equal(S.tapAccentStrengthFor(S.loadSave()), 3);
-  for (const bad of [0, 9, 'x', NaN]) {
-    stored.set(Cat.SAVE_KEY, JSON.stringify({ ...base, tapAccentStrength: bad }));
-    assert.equal(S.loadSave().tapAccentStrength, undefined, `strength ${bad} is dropped`);
-  }
-  assert.equal(S.tapAccentStrengthFor(base), 1, 'no dial reads as 1x');
+  assert.equal(S.loadSave().tapAccentStrength, undefined, "the one-day global number is dropped");
+  assert.equal(S.tapAccentStrengthFor(base, 'iontrim'), 1, 'no dial, no table entry: 1x');
+  assert.equal(S.tapAccentStrengthFor(base, 'ghost'), 4, 'no dial: the table');
+  assert.equal(S.tapAccentStrengthFor(base, 'briellacat'), 0, "Briella's Cat: none");
+  // Character Glow is the player's switch, sanitised to a boolean or absent
+  stored.set(Cat.SAVE_KEY, JSON.stringify({ ...base, glowOff: 'yes' }));
+  assert.equal(S.loadSave().glowOff, undefined, 'a non-boolean glow switch is dropped');
+  stored.set(Cat.SAVE_KEY, JSON.stringify({ ...base, glowOff: true }));
+  assert.equal(S.loadSave().glowOff, true, 'and a real one survives');
 }
 console.log(JSON.stringify({ suite: 'test lab', page: mode, patterns: Sim.FLIGHT_TEST_PATTERNS.length, result: 'PASS' }));

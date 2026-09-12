@@ -49,6 +49,13 @@ if(mode==='production'){
   assert(button('MODES'),'production: Modes tile');button('MODES').click();tick();
   assert(!button('RIG EDITOR')&&!button('BACKGROUND TEST MODE'),'production: no lab doors on Modes');
   assert.equal(e.world.flightTest,null);
+  // the Character Glow switch is a player setting, so it ships on the live page too
+  app.querySelector('.ac-modecard .ac-backbtn').click();tick();
+  e.open('profile');tick();
+  const glowRow=[...app.querySelectorAll('.ac-setrow')].find(r=>r.textContent.includes('Character glow'));
+  assert(glowRow,'production: the Character glow row is on the Profile tab');
+  glowRow.click();tick();
+  assert.equal(e.save.glowOff,true,'production: the switch works');
   console.log(JSON.stringify({suite:'test lab ui',page:mode,result:'PASS'}));
   process.exit(0);
 }
@@ -69,10 +76,12 @@ assert(!sheet.querySelector('.ac-suit-pitch')&&!sheet.querySelector('.ac-lab')&&
 // reset takes two taps
 button('RESET ALL DIALS TO STOCK').click();tick();
 assert(button('TAP AGAIN TO RESET EVERY DIAL'),'beta: the first tap only arms the reset');
-e.setTapAccent(true);e.setTapAccentStrength(4);tick();assert.equal(e.save.tapAccent,true);
+e.setGlowOff(true);e.setTapAccentStrength('iontrim',4);tick();
+assert.equal(e.save.tapAccentStrength.iontrim,4);
 button('TAP AGAIN TO RESET EVERY DIAL').click();tick();
-assert.equal(e.save.tapAccent,false,'beta: the second tap resets the accent switch');
-assert.equal(e.save.tapAccentStrength,undefined,'beta: and the strength');
+assert.equal(e.save.tapAccentStrength,undefined,'beta: the second tap clears the strength overrides');
+assert.equal(e.save.glowOff,true,'beta: but leaves the player\'s Character Glow switch alone');
+e.setGlowOff(false);tick();
 assert.equal(e.save.testLab,undefined,'beta: and the Flight Test settings');
 // the Modes sheet is modes only now
 app.querySelector('.ac-testlab .ac-backbtn').click();tick();
@@ -117,19 +126,24 @@ assert(reads[4]!=='—'&&Number(reads[4])>0,`beta: the taps/s readout is live ($
 button('ION DIALS').click();tick();
 const dials=app.querySelector('.ac-ftdock .ac-testlab-dials');
 assert(dials,'beta: the worn suit\'s dials fold out in the dock');
-assert(dials.textContent.includes('TAP ACCENT')&&dials.textContent.includes('REPEAT TAP')&&dials.textContent.includes('TAP SHAPE')&&dials.textContent.includes('PITCH'),'beta: every dial is in the dock');
+assert(dials.textContent.includes('CHARACTER GLOW')&&dials.textContent.includes('REPEAT TAP')&&dials.textContent.includes('TAP SHAPE')&&dials.textContent.includes('PITCH'),'beta: every dial is in the dock');
 assert(app.querySelector('.ac-ftdock .ac-lab input[aria-label="Fog"]'),'beta: the Flight Lab sliders are in the dock too');
 // a rebuild mid-scroll keeps the dock where it was
-const dockEl=app.querySelector('.ac-ftdock');dockEl.scrollTop=140;e.setTapAccent(false);tick();
+const dockEl=app.querySelector('.ac-ftdock');dockEl.scrollTop=140;e.setGlowOff(true);tick();
 assert.equal(app.querySelector('.ac-ftdock').scrollTop,140,'beta: the dock keeps its scroll across a rebuild');
-e.setTapAccent(true);tick();
-assert(app.querySelector('.ac-ftdock input[aria-label="Strength"]'),'beta: the accent strength slider is in the dock with the accent on');
+assert(!app.querySelector('.ac-ftdock input[aria-label="Strength"]'),'beta: glow off hides the strength dial');
+e.setGlowOff(false);tick();
+assert(app.querySelector('.ac-ftdock input[aria-label="Strength"]'),'beta: the accent strength slider is in the dock with the glow on');
 // the transport row has its own 1x; the strength buttons are inside the dials
 const dialBtn=t=>[...app.querySelectorAll('.ac-ftdock .ac-testlab-dials button')].find(b=>b.textContent.trim()===t);
 dialBtn('3×').click();tick();
-assert.equal(e.save.tapAccentStrength,3,'beta: 3x sets the strength');
+assert.equal(e.save.tapAccentStrength.iontrim,3,'beta: 3x sets the worn suit\'s strength');
 dialBtn('1×').click();tick();
-assert.equal(e.save.tapAccentStrength,undefined,'beta: 1x is stock and stores nothing');
+assert.equal(e.save.tapAccentStrength.iontrim,undefined,'beta: 1x is Ion\'s stock and stores nothing');
+dialBtn('0×').click();tick();
+assert.equal(e.save.tapAccentStrength.iontrim,0,'beta: 0x turns the suit off');
+dialBtn('STOCK').click();tick();
+assert.equal(e.save.tapAccentStrength.iontrim,undefined,'beta: STOCK clears the override');
 // back to the lab: the sheet is waiting on Home
 button('TEST LAB').click();tick(2);
 assert.equal(e.world.screen,'title');
@@ -139,4 +153,13 @@ app.querySelector('.ac-testlab .ac-backbtn').click();tick();
 e.fly('fly');tick();
 assert.equal(e.world.flightTest,null,'beta: a plain free flight is not a Flight Test');
 assert.equal(e.world.timeScale,1);
+// the player's Character Glow switch lives on the Profile tab
+e.open('profile');tick();
+const glowRow=[...app.querySelectorAll('.ac-setrow')].find(r=>r.textContent.includes('Character glow'));
+assert(glowRow,'beta: the Character glow row is on the Profile tab');
+assert.equal(glowRow.getAttribute('aria-checked'),'true','beta: it ships on');
+glowRow.click();tick();
+assert.equal(e.save.glowOff,true,'beta: one tap turns the glow off');
+glowRow.click();tick();
+assert.equal(e.save.glowOff,false,'beta: and back on');
 console.log(JSON.stringify({suite:'test lab ui',page:mode,result:'PASS'}));
