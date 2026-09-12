@@ -1,0 +1,74 @@
+[
+  {
+    "id": "star-chart-holo",
+    "source": "art-src/home-icons/star-chart-holo.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceSha256": "ad6cbd639edca493451512f1674b0deb5ff8c7ebb4025edb2e365e7c4dfcf09f",
+    "output": "docs/art/ui/star-chart-holo.png",
+    "outputSize": [
+      256,
+      256
+    ],
+    "outputSha256": "44b8015ca00a568f637dd799e5687d4c588fabdeea179d0b8ec0906474b69f46",
+    "background": "black",
+    "displayBlend": "screen",
+    "cornerMaxRGB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "bytes": 121235
+  },
+  {
+    "id": "modes-orbit",
+    "source": "art-src/home-icons/modes-orbit.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceSha256": "5acec188a5c25b1263fd563766212f4681ef0293b154e8cbe23fb3c46450f8a1",
+    "output": "docs/art/ui/modes-orbit.png",
+    "outputSize": [
+      256,
+      256
+    ],
+    "outputSha256": "a3657c5b766930d4db12afe2cd6ceab1853c97221fb66107b7337b0846d45b65",
+    "background": "black",
+    "displayBlend": "screen",
+    "cornerMaxRGB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "bytes": 96841
+  },
+  {
+    "id": "launch-holo",
+    "source": "art-src/home-icons/launch-holo.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceSha256": "16eb3d870d9bc7a4134960385b8dfe696404cfa0d7cc94a08e401ea9be5743d1",
+    "output": "docs/art/ui/launch-holo.png",
+    "outputSize": [
+      256,
+      256
+    ],
+    "outputSha256": "0bdb562839edd929768fc1c88f2fea21986e088680d34f1b8a1e63b5c6775d3f",
+    "background": "black",
+    "displayBlend": "screen",
+    "cornerMaxRGB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "bytes": 89979
+  }
+]

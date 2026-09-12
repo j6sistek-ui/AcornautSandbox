@@ -13,7 +13,7 @@ import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog";
 import { repeatTapMode } from "./sim";
 import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
-import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, FROZEN_SUITS, type ShipPick } from "./draw";
 import { bundleQuote, type BundleItem } from "./catalog";
 import { drawSprite as drawSpriteOn } from "./art";
@@ -1500,7 +1500,7 @@ export async function bootStandalone(root: HTMLElement) {
     const launch = el("button", "ac-hubtile t-launch");
     launch.append(el("span", "ac-hub-ribbon", `${MODES[selectedMode].label} SELECTED`));
     const lic = el("span", "ac-hubic");
-    lic.append(hubIcon("rocket", false));
+    lic.append(hubIcon("launch-holo"));
     const ltxt = el("span", "ac-hub-launchtxt");
     const spillSelected = MODES[selectedMode].id === "spill";
     const suspended = spillSelected ? s.spillSuspended : null;
@@ -1547,11 +1547,11 @@ export async function bootStandalone(root: HTMLElement) {
     if (hubPals.length) {
       loadoutTile.append(el("span", "ac-hubsub ac-hubequip", `${hubPals.join(" + ")} equipped`));
     }
-    // Star Chart is a peer of Loadout and Modes; retain its original badge,
-    // reward threshold, completion state and route progress inside the tile.
+    // The holographic disc marks Star Chart; reward threshold, completion
+    // state and route progress remain inside the same navigation tile.
     const stars = starsOf(s);
     const nxt = nextStarReward(stars);
-    const chart = tile("t-chart", el("span", "ac-hub-starbadge", "★"), "STAR CHART",
+    const chart = tile("t-chart", hubIcon("star-chart-holo"), "STAR CHART",
       nxt ? `Next unlock ★ ${nxt.stars}` : "Complete", () => engine.open("log"),
       undefined, s.guide === "levels");
     chart.setAttribute("aria-label", `Star Chart. ${stars} of ${CHART_MAX_STARS} stars. ${nxt ? `Next unlock at ${nxt.stars} stars.` : "Complete."}`);
@@ -1560,11 +1560,9 @@ export async function bootStandalone(root: HTMLElement) {
     fill.style.width = `${Math.min(100, (stars / CHART_MAX_STARS) * 100)}%`;
     track.append(fill, el("em", "", `${stars} / ${CHART_MAX_STARS}`));
     chart.append(track);
-    const planet = miniCanvas(50, 50);
-    if (planet.ctx) drawSpriteOn(planet.ctx, engine.art?.planets?.[HUB_PLANET] ?? null, 25, 25, 46);
     // no dot: a badge should mean something NEW is inside, and nothing
     // in the mode sheet changes on its own
-    tile("t-modes", planet.c, "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`,
+    tile("t-modes", hubIcon("modes-orbit"), "MODES", `${MODES.length} ways to fly${IS_BETA && platform.devDoors ? " · Lab" : ""}`,
       () => { modesOpen = true; render(); });
     box.append(tiles);
 
