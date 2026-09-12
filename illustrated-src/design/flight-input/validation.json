@@ -98,5 +98,7 @@
     ]
   },
   "limitation": "Strict High Orbit fallback raster equality remains nonzero on Linux Canvas. Same main/candidate fallback pixels; historical PNG mismatch: Cinderforge22 bytes max28, Groveguard23 max2, Cosmic16 max8, Sunforged23 max4, Abyssal21 max2. Original assertion retained. Native iPhone validation and owner visual acceptance remain outstanding.",
-  "skipped": "Full harness; warp, tunnel, star-map-ui, vanguard-render, shop-visuals and broad helmet-animation/global art checks. Input physics, level/mode timing, art and fit registration are unchanged. Focused actual rig/helmet and AcorNut flight checks cover the reached behavior."
+  "skipped": "Full harness; warp, tunnel, star-map-ui, vanguard-render, shop-visuals and broad helmet-animation/global art checks. Input physics, level/mode timing, art and fit registration are unchanged. Focused actual rig/helmet and AcorNut flight checks cover the reached behavior.",
+  "testedRuntimeCommit": "8827b42a7cae96fe4afdaa2a49105d4402fc3942",
+  "lineEndings": "CRLF normalized to LF for repository formatting; no logic changes after verification."
 }
