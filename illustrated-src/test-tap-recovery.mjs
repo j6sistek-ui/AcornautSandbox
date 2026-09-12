@@ -26,6 +26,9 @@ const [{ makeWorld, flap, updateWorld }, { defaultSave }, { TAP_ANIM_DURATION }]
   ]);
 
 const save = defaultSave();
+// Flight now completes and queues its gesture. Robo retains the existing
+// reverse recovery contract exercised here; Flight has its own live test.
+save.equippedSuit = "robo";
 const world = makeWorld(390, 844);
 world.screen = "play";
 world.ready = false;

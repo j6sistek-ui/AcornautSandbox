@@ -1,0 +1,11 @@
+{
+  "base": "e94b2b47bb04d423e5b16ac157005eec901e5911",
+  "stamp": 273,
+  "generatedModules": 53,
+  "changedRuntimeModules": [
+    "high-orbit-motion.js",
+    "sim.js"
+  ],
+  "shippingArtMastersAndWebsiteUnchanged": true,
+  "retainedJs272Unchanged": true
+}

@@ -1,0 +1,102 @@
+{
+  "at": "2026-09-12T02:23:00.074Z",
+  "base": "e94b2b47bb04d423e5b16ac157005eec901e5911",
+  "stamp": 273,
+  "builds": {
+    "web": true,
+    "beta": true,
+    "lab": true,
+    "flightStudio": true,
+    "shellWebPackage": true,
+    "typecheck": true
+  },
+  "testsPassed": [
+    "flight-input",
+    "high-orbit-input",
+    "tap-recovery (Robo legacy contract)",
+    "rig-anatomy",
+    "high-orbit-integration (production/beta)",
+    "premium-pilots",
+    "vanguard-flight",
+    "platform-bridge",
+    "flight-studio"
+  ],
+  "additional": "High Orbit diagnostic passes all movement, geometry, helmet and pause/race checks after proving fallback pixels unchanged from main; premium states equal main at all 3600 samples.",
+  "browser": {
+    "viewport": [
+      390,
+      844
+    ],
+    "deviceScaleFactor": 2,
+    "isolatedStorage": true,
+    "errors": [],
+    "measurements": [
+      {
+        "id": "flight",
+        "stamp": "273",
+        "loaded": 3,
+        "screen": "play",
+        "poses": [
+          1,
+          2,
+          3
+        ],
+        "canvasWidth": 780,
+        "canvasHeight": 1688,
+        "documentWidth": 390
+      },
+      {
+        "id": "cinderforge",
+        "stamp": "273",
+        "loaded": true,
+        "screen": "play",
+        "poses": [],
+        "canvasWidth": 780,
+        "canvasHeight": 1688,
+        "documentWidth": 390
+      },
+      {
+        "id": "groveguard",
+        "stamp": "273",
+        "loaded": true,
+        "screen": "play",
+        "poses": [],
+        "canvasWidth": 780,
+        "canvasHeight": 1688,
+        "documentWidth": 390
+      },
+      {
+        "id": "cosmic",
+        "stamp": "273",
+        "loaded": true,
+        "screen": "play",
+        "poses": [],
+        "canvasWidth": 780,
+        "canvasHeight": 1688,
+        "documentWidth": 390
+      },
+      {
+        "id": "sunforged",
+        "stamp": "273",
+        "loaded": true,
+        "screen": "play",
+        "poses": [],
+        "canvasWidth": 780,
+        "canvasHeight": 1688,
+        "documentWidth": 390
+      },
+      {
+        "id": "abyssal",
+        "stamp": "273",
+        "loaded": true,
+        "screen": "play",
+        "poses": [],
+        "canvasWidth": 780,
+        "canvasHeight": 1688,
+        "documentWidth": 390
+      }
+    ]
+  },
+  "limitation": "Strict High Orbit fallback raster equality remains nonzero on Linux Canvas. Same main/candidate fallback pixels; historical PNG mismatch: Cinderforge22 bytes max28, Groveguard23 max2, Cosmic16 max8, Sunforged23 max4, Abyssal21 max2. Original assertion retained. Native iPhone validation and owner visual acceptance remain outstanding.",
+  "skipped": "Full harness; warp, tunnel, star-map-ui, vanguard-render, shop-visuals and broad helmet-animation/global art checks. Input physics, level/mode timing, art and fit registration are unchanged. Focused actual rig/helmet and AcorNut flight checks cover the reached behavior."
+}

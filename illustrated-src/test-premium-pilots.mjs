@@ -31,9 +31,10 @@ async function renderChecks(){
   assert.deepEqual(C.PREMIUM_SUIT_IDS,ids);
   assert.deepEqual(C.HIGH_ORBIT_RIG_IDS,['cinderforge','groveguard','cosmic','sunforged','abyssal'],'only the original five are cut rigs');
   assert.deepEqual(C.ORBIT_PILOT_IDS,[...C.HIGH_ORBIT_RIG_IDS,...ids]);
-  // Recorded from the unchanged controller at main db92f7c79ff0576f7f5ab242e59b31db396caaee.
-  // Hash every complete state, not just a final pose, to protect the old five.
-  const originalMotion={cinderforge:'d4d8944a719b17709ddd218f77df071a03f26f608940fd669d8a2c6deb9b9e77',groveguard:'264c514a5a24709b73e05a3a4dbda3a74e50dd5cfdabf52bbc16c43cd38ab249',cosmic:'cdd39d21fb65a34ff240cfcff682db820e829cc82540c2e7dc6326caeaf22c9b',sunforged:'17e94f99777dd710f0db0ccaf07d7566002d9b0eee364fdb7cbbd2bbffd98ac8',abyssal:'8c02eba4b2addc936a1f7f3c5995cf2523965816c580091ff9442384b1167153'};
+  // Premium playback must survive the owner-requested High Orbit retarget.
+  // These complete-state fixtures come from main e94b2b4. The old five-rig
+  // motion freeze is superseded by test-high-orbit-input's behavioral checks.
+  const originalMotion={porcelain:'db777d0ed8ba4c7dee9e78488e4f7d0febb93abb316d111969f574fc5f639172',nacre:'f5c2bf93a814e5ced303a10a65b8610ae2735fee0ae0d95771891bdccef1d8fb',origamist:'2331c52a2f82981385746582d4fb899e28ac12ca75a2d817b064b2000ff813eb'};
   for(const [id,expected] of Object.entries(originalMotion)){
     const state=M.createHighOrbitMotion(id),hash=createHash('sha256');
     for(let tick=0;tick<1200;tick++){

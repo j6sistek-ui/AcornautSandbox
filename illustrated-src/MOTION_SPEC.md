@@ -1,5 +1,15 @@
 # Acornaut motion spec — how a suit flies
 
+## Flight repeated-tap correction, 12 Sep 2026
+
+The Flight pilot keeps its three ascent and five descent paintings. Accepted
+repeat taps no longer rewind the active ascent gesture: it finishes before
+one coalesced replay. Rapid input therefore reaches every ascent frame, while
+release drains the bounded queue and returns to velocity-driven descent.
+Dive clears the pending replay; reset clears all playback state. Other
+banked suits retain their existing reverse recovery. Physics, artwork and
+per-frame helmet registration are unchanged.
+
 ## Premium pilot trio — explicit owner selection, 9 Sep 2026
 
 The owner selected Porcelain Paragon with Sovereign Shell (B), always worn;
@@ -16,6 +26,16 @@ proposal characters. Sources, measured attachments, deterministic rebuilds and
 review boundaries are in [the premium source README](../art-src/premium-pilots/README.md).
 
 ## High Orbit cut rigs — explicit owner grant, 9 Sep 2026
+
+12 Sep 2026 correction: these five retarget AcorNut's Flight maneuver banks
+and accepted-tap gesture to their existing anatomy. Rise, apex, fall and idle
+retain asymmetric limbs; short accepted taps visibly accent them. Tail drag
+follows vertical travel and tap recoil, with passive mid/tip lag; it no longer
+pumps on an independent sine clock. Head size, bone lengths, atlas art and
+exclusive wake power remain fixed. The premium trio's whole-frame playback
+and AcorNut's own controller are unchanged. `test-high-orbit-input.mjs`
+covers small-tap response and the absence of a repeating tail stroke at
+steady velocity. This supersedes the independent rhythm described below.
 
 Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now use eleven remastered
 painted parts each, with original continuous motion and a suit-exclusive
