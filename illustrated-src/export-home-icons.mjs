@@ -12,7 +12,7 @@ const root=fileURLToPath(new URL('../',import.meta.url));
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const receipt=[];
 mkdirSync(root+'docs/art/ui',{recursive:true});
-for(const id of ['star-chart-holo','modes-orbit','launch-holo']){
+for(const id of ['star-chart-holo','star-chart-rocket','modes-orbit','launch-holo']){
   const source=`art-src/home-icons/${id}.png`;
   const output=`docs/art/ui/${id}.png`;
   const bytes=readFileSync(root+source),img=await loadImage(root+source);
@@ -28,4 +28,4 @@ for(const id of ['star-chart-holo','modes-orbit','launch-holo']){
   receipt.push({id,source,sourceSize:[img.width,img.height],sourceSha256:sha(bytes),output,outputSize:[256,256],outputSha256:sha(png),background:'black',displayBlend:'screen',cornerMaxRGB:corners,bytes:png.length});
 }
 writeFileSync(root+'art-src/home-icons/export-receipt.json',JSON.stringify(receipt,null,2)+'\n');
-console.log('Home icons: three 256px exports for screen blending; original currency and game art untouched');
+console.log('Home icons: four 256px exports for screen blending; original currency and game art untouched');

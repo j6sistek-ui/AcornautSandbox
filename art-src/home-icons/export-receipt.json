@@ -24,6 +24,30 @@
     "bytes": 121235
   },
   {
+    "id": "star-chart-rocket",
+    "source": "art-src/home-icons/star-chart-rocket.png",
+    "sourceSize": [
+      1254,
+      1254
+    ],
+    "sourceSha256": "f51392e5e66e00b467822266bcecd5b620c3d88e9b4f25e8bd2655c7d7130d08",
+    "output": "docs/art/ui/star-chart-rocket.png",
+    "outputSize": [
+      256,
+      256
+    ],
+    "outputSha256": "7563168e8034afc323388e4ad5dbf07f14ea7832734e8042c02d3a3cd53fe736",
+    "background": "black",
+    "displayBlend": "screen",
+    "cornerMaxRGB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "bytes": 79619
+  },
+  {
     "id": "modes-orbit",
     "source": "art-src/home-icons/modes-orbit.png",
     "sourceSize": [

@@ -1362,9 +1362,9 @@ export async function bootStandalone(root: HTMLElement) {
     // meter on the left, the shop and the gear on the right
     const rail = el("div", "ac-hub-rail");
     const idcap = el("div", "ac-hub-id");
-    const prof = el("button", "ac-hub-idport");
+    const prof = el("button", "ac-hub-sq ac-hub-idport");
     prof.setAttribute("aria-label", "Profile");
-    prof.append(portraitOf(helm, suit, 34));
+    prof.append(portraitOf(helm, suit, 36));
     prof.onclick = () => engine.open("profile");
     // matched to the Star Dust pill so the two currencies read as a pair.
     // No plus: acorns are flown for, not bought, so there is nowhere to
@@ -1539,7 +1539,7 @@ export async function bootStandalone(root: HTMLElement) {
     launch.onclick = () => launchSelected();
     tiles.append(launch);
 
-    const loadoutTile = tile("t-loadout", portraitOf(helm, suit, 50), "LOADOUT", "Suits & gear",
+    const loadoutTile = tile("t-loadout", hubIcon("star-chart-holo"), "LOADOUT", "Suits & gear",
       () => engine.open("hangar"), undefined,
       s.guide === "hangar" || s.guide === "helmet");
     // an equipped pal announces itself on the tile — one green line
@@ -1547,11 +1547,11 @@ export async function bootStandalone(root: HTMLElement) {
     if (hubPals.length) {
       loadoutTile.append(el("span", "ac-hubsub ac-hubequip", `${hubPals.join(" + ")} equipped`));
     }
-    // The holographic disc marks Star Chart; reward threshold, completion
+    // The starbound rocket marks Star Chart; reward threshold, completion
     // state and route progress remain inside the same navigation tile.
     const stars = starsOf(s);
     const nxt = nextStarReward(stars);
-    const chart = tile("t-chart", hubIcon("star-chart-holo"), "STAR CHART",
+    const chart = tile("t-chart", hubIcon("star-chart-rocket"), "STAR CHART",
       nxt ? `Next unlock ★ ${nxt.stars}` : "Complete", () => engine.open("log"),
       undefined, s.guide === "levels");
     chart.setAttribute("aria-label", `Star Chart. ${stars} of ${CHART_MAX_STARS} stars. ${nxt ? `Next unlock at ${nxt.stars} stars.` : "Complete."}`);
