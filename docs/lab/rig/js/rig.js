@@ -21,6 +21,11 @@
 // Nothing here writes to the repo. Work is kept in localStorage and comes
 // back out as JSON or as paste-ready TypeScript.
 const STORE = "acornaut.rig.v1";
+// A draft saved on an older art build is not restored over the shipping
+// numbers (owner, 12 Sep 2026: helmets sat off the head in the bench and
+// on the head in the Loadout - the bench was wearing days-old drags).
+// Set aside on load; the bench says so once it is up.
+let staleDraft = "";
 const ART = () => window.__ACORNAUT_ART__ || "../../art";
 // ---------------------------------------------------------------- loading
 const bank = new Map();
@@ -203,6 +208,9 @@ function saveLocal() {
         return;
     try {
         localStorage.setItem(STORE, JSON.stringify({
+            // the build these numbers were dialled against; a later build
+            // sets the draft aside instead of wearing it (restoreLocal)
+            artVer: S.tables.artVer,
             suits: Object.fromEntries(S.tables.suits.map((s) => [s.key, s.dome])),
             helmets: Object.fromEntries(S.tables.helmets.map((h) => [h.id, h.glass])),
             over: S.over,
@@ -227,6 +235,18 @@ function restoreLocal() {
         return;
     try {
         const d = JSON.parse(raw);
+        // A DRAFT FROM ANOTHER BUILD IS NOT THE GAME. The tables it was dialled
+        // against have moved on, so wearing it here puts every helmet somewhere
+        // the Loadout does not - and no amount of dragging fixes that, because
+        // the bench never writes to the game. Set it aside and open clean.
+        if (d.artVer !== S.tables.artVer) {
+            staleDraft = String(d.artVer || "an older build");
+            try {
+                localStorage.removeItem(STORE);
+            }
+            catch { /* nothing to clear */ }
+            return;
+        }
         // slice(0, 4), not 3: a frame's fourth number is its pose rotation, and
         // truncating here quietly threw away every rotation dialled in the last
         // session the moment the page reloaded.
@@ -683,6 +703,26 @@ export async function bootRig(root) {
     };
     const resetB = el("button", "rg-act", "RESET");
     resetB.onclick = () => withActive((s, h) => resetTile(s, h));
+    // RESET ALL (owner, 12 Sep 2026: "i need a reset all, the reset seems to
+    // only reset the one i'm selecting"). Every number back to the shipping
+    // tables, every override and lock gone, and the saved draft cleared so a
+    // reload cannot bring it back. Two taps, because it is everything.
+    let resetArmedT = 0;
+    const resetAllB = el("button", "rg-act rg-danger", "RESET ALL");
+    const disarm = () => { resetAllB.textContent = "RESET ALL"; resetAllB.classList.remove("on"); };
+    resetAllB.onclick = () => {
+        if (!resetArmedT) {
+            resetAllB.textContent = "SURE? RESET ALL";
+            resetAllB.classList.add("on");
+            resetArmedT = window.setTimeout(() => { resetArmedT = 0; disarm(); }, 3000);
+            return;
+        }
+        clearTimeout(resetArmedT);
+        resetArmedT = 0;
+        disarm();
+        resetAll();
+        flash("every number back to the shipping values; draft cleared");
+    };
     const foldB = el("button", "rg-act rg-fold", "FOLD");
     foldB.onclick = () => {
         const h = helmOf(activeHelm());
@@ -713,7 +753,7 @@ export async function bootRig(root) {
     };
     const copyB = el("button", "rg-act rg-go", "COPY");
     copyB.onclick = () => showReport();
-    acts.append(undoB, resetB, lockB, foldB, copyB);
+    acts.append(undoB, resetB, resetAllB, lockB, foldB, copyB);
     foot.append(pad, dials, acts);
     const stat = el("div", "rg-stat");
     const toast = el("div", "rg-toast");
@@ -724,6 +764,22 @@ export async function bootRig(root) {
         toast.classList.add("on");
         clearTimeout(toastT);
         toastT = window.setTimeout(() => toast.classList.remove("on"), 2200);
+    }
+    /** everything back to the shipping tables, and the saved draft gone */
+    function resetAll() {
+        S.tables = JSON.parse(JSON.stringify(S.base));
+        S.over = {};
+        S.locks = {};
+        punched.clear();
+        undoStack.length = 0;
+        try {
+            localStorage.removeItem(STORE);
+        }
+        catch { /* private mode */ }
+        build();
+    }
+    if (staleDraft) {
+        window.setTimeout(() => flash(`draft from art v${staleDraft} set aside - opened on the shipping numbers (v${S.tables.artVer})`), 400);
     }
     function syncTarget() {
         for (const k of Object.keys(tBtns))
@@ -1081,12 +1137,9 @@ export async function bootRig(root) {
         };
         const clr = el("button", "rg-act rg-danger", "RESET ALL");
         clr.onclick = () => {
-            S.tables = JSON.parse(JSON.stringify(S.base));
-            S.over = {};
-            punched.clear();
             sheet.remove();
-            build();
-            flash("back to the shipping values");
+            resetAll();
+            flash("every number back to the shipping values; draft cleared");
         };
         const close = el("button", "rg-act", "CLOSE");
         close.onclick = () => sheet.remove();
