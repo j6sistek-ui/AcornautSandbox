@@ -1,0 +1,351 @@
+{
+  "cell": 256,
+  "dome": [
+    128,
+    128,
+    40
+  ],
+  "tailPivot": [
+    101,
+    125
+  ],
+  "alphaThreshold": 24,
+  "frames": [
+    {
+      "frame": "asc-1",
+      "source": "docs/art/suits/cyber-asc-1.png",
+      "opaquePixels": 7583,
+      "coverage": 0.1157,
+      "box": [
+        58,
+        57,
+        142,
+        122
+      ],
+      "centroid": [
+        136.5,
+        129.7
+      ]
+    },
+    {
+      "frame": "asc-2",
+      "source": "docs/art/suits/cyber-asc-2.png",
+      "opaquePixels": 7657,
+      "coverage": 0.1168,
+      "box": [
+        58,
+        56,
+        141,
+        125
+      ],
+      "centroid": [
+        134.8,
+        130.7
+      ]
+    },
+    {
+      "frame": "asc-3",
+      "source": "docs/art/suits/cyber-asc-3.png",
+      "opaquePixels": 7802,
+      "coverage": 0.119,
+      "box": [
+        58,
+        56,
+        139,
+        127
+      ],
+      "centroid": [
+        132.7,
+        131.6
+      ]
+    },
+    {
+      "frame": "asc-4",
+      "source": "docs/art/suits/cyber-asc-4.png",
+      "opaquePixels": 8239,
+      "coverage": 0.1257,
+      "box": [
+        64,
+        57,
+        131,
+        131
+      ],
+      "centroid": [
+        130.4,
+        131.7
+      ]
+    },
+    {
+      "frame": "asc-5",
+      "source": "docs/art/suits/cyber-asc-5.png",
+      "opaquePixels": 8709,
+      "coverage": 0.1329,
+      "box": [
+        71,
+        58,
+        123,
+        134
+      ],
+      "centroid": [
+        130.5,
+        130.6
+      ]
+    },
+    {
+      "frame": "asc-6",
+      "source": "docs/art/suits/cyber-asc-6.png",
+      "opaquePixels": 8847,
+      "coverage": 0.135,
+      "box": [
+        74,
+        58,
+        119,
+        136
+      ],
+      "centroid": [
+        131.3,
+        130.2
+      ]
+    },
+    {
+      "frame": "asc-7",
+      "source": "docs/art/suits/cyber-asc-7.png",
+      "opaquePixels": 8929,
+      "coverage": 0.1362,
+      "box": [
+        75,
+        59,
+        118,
+        136
+      ],
+      "centroid": [
+        131.6,
+        130
+      ]
+    },
+    {
+      "frame": "asc-8",
+      "source": "docs/art/suits/cyber-asc-8.png",
+      "opaquePixels": 9007,
+      "coverage": 0.1374,
+      "box": [
+        76,
+        60,
+        117,
+        138
+      ],
+      "centroid": [
+        132.3,
+        130
+      ]
+    },
+    {
+      "frame": "asc-9",
+      "source": "docs/art/suits/cyber-asc-9.png",
+      "opaquePixels": 9039,
+      "coverage": 0.1379,
+      "box": [
+        76,
+        62,
+        117,
+        138
+      ],
+      "centroid": [
+        132.8,
+        130.1
+      ]
+    },
+    {
+      "frame": "desc-1",
+      "source": "docs/art/suits/cyber-desc-1.png",
+      "opaquePixels": 7761,
+      "coverage": 0.1184,
+      "box": [
+        57,
+        62,
+        143,
+        124
+      ],
+      "centroid": [
+        136.6,
+        135.7
+      ]
+    },
+    {
+      "frame": "desc-2",
+      "source": "docs/art/suits/cyber-desc-2.png",
+      "opaquePixels": 7802,
+      "coverage": 0.119,
+      "box": [
+        56,
+        61,
+        144,
+        126
+      ],
+      "centroid": [
+        135.4,
+        136.3
+      ]
+    },
+    {
+      "frame": "desc-3",
+      "source": "docs/art/suits/cyber-desc-3.png",
+      "opaquePixels": 7842,
+      "coverage": 0.1197,
+      "box": [
+        57,
+        61,
+        142,
+        127
+      ],
+      "centroid": [
+        134.8,
+        136.7
+      ]
+    },
+    {
+      "frame": "desc-4",
+      "source": "docs/art/suits/cyber-desc-4.png",
+      "opaquePixels": 7885,
+      "coverage": 0.1203,
+      "box": [
+        57,
+        61,
+        142,
+        127
+      ],
+      "centroid": [
+        134.1,
+        137
+      ]
+    },
+    {
+      "frame": "desc-5",
+      "source": "docs/art/suits/cyber-desc-5.png",
+      "opaquePixels": 7992,
+      "coverage": 0.1219,
+      "box": [
+        57,
+        61,
+        141,
+        129
+      ],
+      "centroid": [
+        132.7,
+        137.6
+      ]
+    },
+    {
+      "frame": "desc-6",
+      "source": "docs/art/suits/cyber-desc-6.png",
+      "opaquePixels": 8165,
+      "coverage": 0.1246,
+      "box": [
+        60,
+        61,
+        137,
+        131
+      ],
+      "centroid": [
+        131.3,
+        137.9
+      ]
+    },
+    {
+      "frame": "desc-7",
+      "source": "docs/art/suits/cyber-desc-7.png",
+      "opaquePixels": 8241,
+      "coverage": 0.1257,
+      "box": [
+        60,
+        61,
+        136,
+        132
+      ],
+      "centroid": [
+        130.8,
+        138
+      ]
+    },
+    {
+      "frame": "desc-8",
+      "source": "docs/art/suits/cyber-desc-8.png",
+      "opaquePixels": 8429,
+      "coverage": 0.1286,
+      "box": [
+        64,
+        62,
+        131,
+        133
+      ],
+      "centroid": [
+        130.3,
+        137.7
+      ]
+    },
+    {
+      "frame": "desc-9",
+      "source": "docs/art/suits/cyber-desc-9.png",
+      "opaquePixels": 8566,
+      "coverage": 0.1307,
+      "box": [
+        66,
+        62,
+        129,
+        134
+      ],
+      "centroid": [
+        130.4,
+        137.5
+      ]
+    },
+    {
+      "frame": "body",
+      "source": "docs/art/suits/cyber-body.png",
+      "opaquePixels": 8509,
+      "coverage": 0.1298,
+      "box": [
+        75,
+        47,
+        139,
+        138
+      ],
+      "centroid": [
+        151.8,
+        131.7
+      ]
+    },
+    {
+      "frame": "tail",
+      "source": "docs/art/suits/cyber-tail.png",
+      "opaquePixels": 2742,
+      "coverage": 0.0418,
+      "box": [
+        35,
+        98,
+        81,
+        47
+      ],
+      "centroid": [
+        74.2,
+        120.9
+      ]
+    },
+    {
+      "frame": "still",
+      "source": "docs/art/suits/cyber.png",
+      "opaquePixels": 10812,
+      "coverage": 0.165,
+      "box": [
+        35,
+        47,
+        179,
+        138
+      ],
+      "centroid": [
+        134.2,
+        129.3
+      ]
+    }
+  ]
+}

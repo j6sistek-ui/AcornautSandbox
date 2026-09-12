@@ -438,3 +438,15 @@ drives them like any other suit. Flight Studio's premium default follows
 (retrigger = restart). Frame calibration for Percy and Envoy is a separate
 question; their measured step sizes are in the 12 Sep PR.
 
+## The gold standard is Cyber, 12 Sep 2026
+
+Owner: "Cyber is absolutely the best, by far of any of them ... It is the
+goal ... if the goal isn't unique, this is the target." Best practice, not a
+rule: `GOLD_STANDARD.md` documents Cyber's frames, the motion in the frames,
+the rules it flies under, the measured arc and its range under real tapping,
+and the spec/needs list for a new character built to it. Cutter sheets
+(silhouette masks, hole plates, registration guide) are in
+`art-src/gold-standard/cyber/`. `test-gold-standard.mjs` re-flies Cyber
+against the fixture frozen at stamp 282 and fails on the first tick that
+drifts.
+
