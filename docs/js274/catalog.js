@@ -1,7 +1,7 @@
-import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=270";
-import { platform } from "./platform.js?v=270";
-import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=270";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=270";
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=274";
+import { platform } from "./platform.js?v=274";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=274";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=274";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -17,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=270";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "270";
+export const ART_VER = "274";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-10 09:37 UTC";
+export const BUILD_TIME = "2026-09-12 04:49 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -250,6 +250,12 @@ if (!IS_BETA) {
             SUITS.splice(i, 1);
     }
 }
+/** Equipable Star Chart rewards with a retained, continuous flight stream.
+ * Suit-exclusive wakes keep their own nozzle-driven renderers. */
+export const STAR_CHART_TRAILS = new Set([
+    "ion", "bubble", "bloom", "comet", "prism", "plasma", "galaxy",
+    "aurora", "frost", "voidsmoke", "supernova", "phoenixplume", "opalfeather",
+]);
 const SUIT_BUILT_IN_TRAILS = {
     vanguard: "vanguardwake", arcflash: "arcflashwake",
     ...Object.fromEntries(ORBIT_PILOT_IDS.map(id => [id, HIGH_ORBIT_PROFILES[id].trail])),
@@ -761,8 +767,12 @@ for (const bundle of BUNDLES)
 // HOW MUCH OF THE CATALOGUE IS ON SALE TODAY. Deliberately small: the shelf
 // is a reason to come back, not an inventory. Trails are never sold singly
 // for now - they arrive free with their set.
+// FIVE CARDS, NOT FOUR (owner, 12 Sep 2026: "make sure the shop has one more
+// daily card showing, it's a bit of a gap on my screen, another helmet or
+// other option"). The fifth slot is gear: a third helmet on a no-pal day,
+// otherwise two helmets and the pal. Suits stay at two.
 export const SHOP_CYCLE = {
-    maxItems: 4, suits: 2, premiumSuits: 1, minHelms: 1, helms: 2, pals: 1, trails: 0,
+    maxItems: 5, suits: 2, premiumSuits: 1, minHelms: 1, helms: 3, pals: 1, trails: 0,
     excludedIds: ["raccoon", "ferret", "hedgehog"],
     excludedBundleIds: ["bundle-critters"],
 };
@@ -770,11 +780,20 @@ export const SHOP_CYCLE = {
 // the standard wardrobe; dust is bought (or claimed daily) and buys packs.
 // Two currencies, two jobs, and the header shows both so neither can be
 // mistaken for the other.
+// HALF THE DOLLARS, SAME DUST. Owner, 12 Sep 2026: "cut the stardust cost in
+// half globally in the store ... i meant the actual dollar values in half.
+// given the early adapter stage, don't need to make it look expensive,
+// anyone willing to pay should to do without it feeling expensive, it's a
+// barrier right now". Per-item dust prices did not move; each pack simply
+// costs half the money it did ($0.99 / $4.99 / $9.99 / $19.99 before).
+// These strings are the WEB sticker only - a native shell shows the store's
+// own localized price, so the same halving has to be set as the price
+// tier on each product in App Store Connect and Play Console.
 export const DUST_PACKS = [
-    { id: "dust-100", dust: 100, bonus: 0, price: "$0.99" },
-    { id: "dust-550", dust: 500, bonus: 50, price: "$4.99" },
-    { id: "dust-1200", dust: 1000, bonus: 200, price: "$9.99" },
-    { id: "dust-2600", dust: 2000, bonus: 600, price: "$19.99" },
+    { id: "dust-100", dust: 100, bonus: 0, price: "$0.49" },
+    { id: "dust-550", dust: 500, bonus: 50, price: "$2.49" },
+    { id: "dust-1200", dust: 1000, bonus: 200, price: "$4.99" },
+    { id: "dust-2600", dust: 2000, bonus: 600, price: "$9.99" },
 ];
 /** STAR CHART BOOSTS (owner, 8 Sep 2026: "a level skip item... instant 3
  *  star any level (make it 100 star dust). And instant unlock any star

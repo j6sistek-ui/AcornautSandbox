@@ -1,29 +1,29 @@
-import { selectShopCycle } from "./shop-cycle.js?v=270";
-import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=270";
-import { suitPitchFor } from "./save.js?v=270";
-import { platform } from "./platform.js?v=270";
-import { spillAppearance } from "./spill-appearance.js?v=270";
-import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=270";
-import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=270";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=270";
-import { addChartScenery } from "./star-map-view.js?v=270";
-import { mapDebrisIndex } from "./zone-visuals.js?v=270";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=270";
-import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=270";
-import { suitLean } from "./control-constants.js?v=270";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=270";
-import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=270";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=270";
-import { bundleQuote } from "./catalog.js?v=270";
-import { drawSprite as drawSpriteOn } from "./art.js?v=270";
-import { createEngine } from "./engine.js?v=270";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=270";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=270";
-import { formatRaceTicks } from "./race.js?v=270";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=270";
-import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=270";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=270";
-import { SPILL_SHOP, restoreSpill } from "./spill.js?v=270";
+import { selectShopCycle } from "./shop-cycle.js?v=274";
+import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=274";
+import { suitPitchFor } from "./save.js?v=274";
+import { platform } from "./platform.js?v=274";
+import { spillAppearance } from "./spill-appearance.js?v=274";
+import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=274";
+import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=274";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=274";
+import { addChartScenery } from "./star-map-view.js?v=274";
+import { mapDebrisIndex } from "./zone-visuals.js?v=274";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=274";
+import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=274";
+import { suitLean, PAINTED_TAP_SUITS } from "./control-constants.js?v=274";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=274";
+import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=274";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, FROZEN_SUITS } from "./draw.js?v=274";
+import { bundleQuote } from "./catalog.js?v=274";
+import { drawSprite as drawSpriteOn } from "./art.js?v=274";
+import { createEngine } from "./engine.js?v=274";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=274";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=274";
+import { formatRaceTicks } from "./race.js?v=274";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery } from "./spill-content.js?v=274";
+import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation.js?v=274";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=274";
+import { SPILL_SHOP, restoreSpill } from "./spill.js?v=274";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -473,6 +473,11 @@ export async function bootStandalone(root) {
             // beta"): the worn suit's forward lean, tuned mid-flight.
             if (IS_BETA)
                 sheet.append(suitPitchDial(engine.world.tutSuit ? "vanguard" : engine.save.equippedSuit));
+            // THE REPEAT-TAP DIAL (owner, 12 Sep 2026: "give me a toggle in pause
+            // menu in beta only, so i can decide which ones get the treatment").
+            // Frozen suits always rewind and only say so; the queue roster flips.
+            if (IS_BETA)
+                sheet.append(repeatTapDial(engine.world.tutSuit ? "vanguard" : engine.save.equippedSuit));
             // THE FLIGHT LAB (owner, 7 Sep 2026): free flight only, beta only
             if (IS_BETA && engine.world.flight === "fly" && !engine.world.lvl && !engine.world.tut && !engine.world.race && !engine.world.spill)
                 sheet.append(flightLab());
@@ -1118,6 +1123,26 @@ export async function bootStandalone(root) {
         toggles.append(reset);
         panel.append(toggles);
         panel.append(el("p", "ac-fine", "Stopwatch as your pal: every tap toggles the slow, like the frozen acorn."));
+        return panel;
+    }
+    function repeatTapDial(suitId) {
+        const panel = el("div", "ac-suit-pitch");
+        const name = (SUITS.find((s) => s.id === suitId)?.name ?? suitId).toUpperCase();
+        if (!PAINTED_TAP_SUITS.has(suitId)) {
+            if (FROZEN_SUITS.includes(suitId))
+                panel.append(el("p", "ac-sub", `${name} REPEAT TAP · REWIND · frozen`));
+            return panel;
+        }
+        const rewind = !!engine.save.tapRewind;
+        panel.append(el("p", "ac-sub", `${name} REPEAT TAP · ${rewind ? "REWIND" : "FINISH GESTURE"}`));
+        const row = el("div", "ac-modes");
+        row.style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
+        for (const [label, on] of [["FINISH GESTURE", false], ["REWIND", true]]) {
+            const b = el("button", rewind === on ? "ac-mode on" : "ac-mode", label);
+            b.onclick = () => engine.setTapRewind(on);
+            row.append(b);
+        }
+        panel.append(row);
         return panel;
     }
     function suitPitchDial(suitId) {
@@ -4590,7 +4615,7 @@ export async function bootStandalone(root) {
         // noopener/noreferrer because the destination is outside the game.
         const discord = document.createElement("a");
         discord.className = "ac-row ac-rowbtn ac-social";
-        discord.href = "https://discord.gg/xGnCuaSDG";
+        discord.href = "https://discord.gg/83RZMdmpvm";
         discord.target = "_blank";
         discord.rel = "noopener noreferrer";
         const dwrap = el("span", "ac-socialmark");

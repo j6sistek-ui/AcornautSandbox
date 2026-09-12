@@ -1,6 +1,8 @@
 // @ts-nocheck
 // Ported from live Acornaut character/hangar renderer.
 // One astronaut + pal + trail preview drives hangar and flight.
+import { STAR_CHART_TRAILS } from "./catalog.js?v=274";
+import { paintStarTrailPreview } from "./star-trails.js?v=274";
 let ctx;
 function use(c) {
     ctx = c;
@@ -1888,6 +1890,10 @@ function roundRect(x, y, w, h, r) {
     ctx.closePath();
 }
 function drawTrailPreview(id, cx, cy, t) {
+    if (STAR_CHART_TRAILS.has(id)) {
+        paintStarTrailPreview(ctx, id, cx, cy, t);
+        return;
+    }
     // a stylised burst frozen mid-flap
     const ph = (t * 2) % 1;
     ctx.save();

@@ -70,7 +70,10 @@ afternoon on the Mac.
 2. App Information → copy the **Apple ID** number into `ios.appStoreConnectAppId`.
 3. In-App Purchases → + → Consumable, four times. Reference name and product
    ID from the table (`acornaut.dust.100`, etc). Set a price tier and a
-   display name each. They can sit in "Ready to Submit" until the app's first review.
+   display name each. The tiers are **$0.49 / $2.49 / $4.99 / $9.99** for
+   dust-100 / 550 / 1200 / 2600 - halved on 12 Sep 2026 (owner: "anyone
+   willing to pay should do it without it feeling expensive"); the strings in
+   `DUST_PACKS` are only the web sticker, the store tier is the real price. They can sit in "Ready to Submit" until the app's first review.
 4. Game Center → Leaderboards → + → Classic. ID `acornaut.normal`, score
    format integer, sort high to low. Repeat for `acornaut.hyper` and
    `acornaut.spill`. For a monthly board add a **Recurring** leaderboard with

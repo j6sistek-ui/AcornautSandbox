@@ -42,6 +42,9 @@ globalThis.localStorage={getItem:()=>null,setItem(){},removeItem(){}};
 
 const D=await import('../docs/js/draw.js');
 const Cat=await import('../docs/js/catalog.js');
+const Control=await import('../docs/js/control-constants.js');
+const Sim=await import('../docs/js/sim.js');
+const S=await import('../docs/js/save.js');
 
 const ids=new Set(Cat.SUITS.map(u=>u.id));
 
@@ -121,6 +124,41 @@ assert.equal(spread.size,1,
   `integrator to ask me if i should apply to all 3". If the split is deliberate and approved, `+
   `update MATCHED_TRIO in draw.ts to drop whichever one is going its own way.`);
 
+// --- 5. A FROZEN SUIT'S REPEAT TAP REWINDS, AND NOTHING QUEUES IT --------
+// Owner, 12 Sep 2026, after PR #277 made a repeat tap on all 24 painted
+// banks finish the gesture instead of rewinding it - frozen suits included,
+// and nothing here noticed because this file only pinned dive depth: "a new
+// tap isn't driving anymore ... take the 8 frozen out. revert it on those."
+// (The roster is fourteen, twelve of them painted; all twelve are out.)
+// So the freeze now covers the tap clock: no frozen suit is on the queue
+// roster, and a second tap mid-gesture reverses the picture on every one.
+const queuedFrozen=D.FROZEN_SUITS.filter(id=>Control.PAINTED_TAP_SUITS.has(id));
+assert.deepEqual(queuedFrozen,[],
+  `frozen suits on the repeat-tap queue roster: ${queuedFrozen.join(', ')}. A frozen suit `+
+  `REWINDS on a repeat tap, as it did when it was approved - take it out of PAINTED_TAP_SUITS `+
+  `in control-constants.ts. The owner decides which suits get the queue, from the beta pause sheet.`);
+function secondTap(id){
+  const save=S.defaultSave();Object.assign(save,{equippedSuit:id,tutorialDone:true,guide:'done'});
+  const w=Sim.makeWorld(390,844);Sim.resetRun(w,save,'fly',false);
+  w.planets=[];w.debris=[];w.pickups=[];w.invulnLeft=999;w.screen='play';w.ready=false;
+  assert.equal(Sim.flap(w,save),'flap',`${id}: first tap`);
+  for(let i=0;i<10;i++)Sim.updateWorld(w,save,1/60);
+  assert.equal(Sim.flap(w,save),'flap',`${id}: second tap`);
+  return {dir:w.tapAnimDir,queued:w.tapAnimQueued};
+}
+for(const id of D.FROZEN_SUITS){
+  if(id==='vanguard'||id==='arcflash')continue;   // their own controllers, no bank clock
+  const r=secondTap(id);
+  assert.equal(r.dir,-1,`FROZEN: ${id} rewinds on a repeat tap (got dir ${r.dir})`);
+  assert.equal(r.queued,false,`FROZEN: ${id} never queues a replay`);
+}
+// and the rule is really per-suit: a queue-roster suit still queues on the live page
+{
+  const id=[...Control.PAINTED_TAP_SUITS][0],r=secondTap(id);
+  assert.equal(r.queued,true,`${id} is on the queue roster and queues (live page, no toggle)`);
+  assert.equal(r.dir,1,`${id} keeps playing forward while queued`);
+}
+
 // --- an unlisted id falls through to the default ------------------------
 // Only reachable for something that is not a suit at all; every shipped
 // suit is covered by check 1 above.
@@ -128,4 +166,5 @@ assert.equal(D.diveDepthFor('no-such-suit'),D.POSE_DIVE_DEPTH,'an unlisted id fl
 
 console.log(`Suit independence: ${Cat.SUITS.length} suits each carry their own dive value, `
   +`${D.FROZEN_SUITS.length} frozen (${Object.keys(PINNED).length} pinned), `
-  +`trio matched at ${trio[0][1]}, ${LIVE_SUITS.size} confirmed live, no new suit bypassing beta`);
+  +`trio matched at ${trio[0][1]}, ${LIVE_SUITS.size} confirmed live, no new suit bypassing beta, `
+  +`${Control.PAINTED_TAP_SUITS.size} on the repeat-tap queue roster and no frozen suit among them`);

@@ -2,6 +2,29 @@
 // and any race regime that promises the same control feel.
 export const FLIGHT_GRAVITY = 1300;
 export const QUICK_DROP_VY = 380;
+/** THE SUITS WHOSE REPEAT TAP QUEUES. A repeat tap on one of these finishes
+ *  the gesture that is playing and then replays it once; on every other suit
+ *  a repeat tap REWINDS the picture from wherever it is (sim.ts, flap).
+ *
+ *  This used to be all 24 painted banks. Owner, 12 Sep 2026, after the
+ *  queue landed on suits he had frozen: "a new tap isn't driving anymore ...
+ *  take the 8 frozen out. revert it on those. the rest, give me a toggle in
+ *  pause menu in beta only, so i can decide which ones get the treatment."
+ *  So the frozen roster (FROZEN_SUITS in draw.ts - twelve of the painted
+ *  banks, not eight) is gone from here for good, and test-frozen-roster
+ *  keeps the two lists disjoint. The twelve below queue by default and can
+ *  be flipped to rewind from the beta pause sheet (save.tapRewind); the
+ *  owner reports which ones keep the queue, and they leave this list too.
+ *
+ *  Kept in this data-only module so simulation does not load art. The real
+ *  painter test checks this roster against the shipping bank manifests
+ *  minus the frozen roster. */
+export const PAINTED_TAP_SUITS = new Set([
+    "iontrim", "copper", "voidsuit", "ember", "gemmie", "sammie", "frost",
+    "ghost", "leviathan", "raccoon", "ferret", "hedgehog",
+]);
+/** Spend less of the tap in its neutral lead-in, preserving the full gesture. */
+export const PAINTED_TAP_EASE = .73;
 /** THE WORMHOLE'S SETTLED FEEL.
  *
  *  These were FOUND BY FLYING, not chosen. The corridor's numbers were

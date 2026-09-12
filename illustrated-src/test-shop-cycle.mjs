@@ -7,7 +7,8 @@ const C=await import('../docs/js/catalog.js');
 const {selectShopCycle}=await import('../docs/js/shop-cycle.js');
 const none=()=>false,excluded=['raccoon','ferret','hedgehog'];
 assert.deepEqual(C.SHOP_CYCLE,{
-  maxItems:4,suits:2,premiumSuits:1,minHelms:1,helms:2,pals:1,trails:0,
+  // FIVE since 12 Sep 2026 (owner: "one more daily card showing ... another helmet or other option")
+  maxItems:5,suits:2,premiumSuits:1,minHelms:1,helms:3,pals:1,trails:0,
   excludedIds:excluded,excludedBundleIds:['bundle-critters'],
 },'the owner-approved daily roster is explicit and editable');
 const catalogBefore=JSON.stringify({suits:C.SUITS,helms:C.HELMETS,pals:C.PALS,bundles:C.BUNDLES,settings:C.SHOP_CYCLE});
@@ -35,15 +36,15 @@ function check(day,owns){
   assert.equal(cy.suits.length,premiumCount+Math.min(2-premiumCount,cheap.length),label+' fills one premium and one cheap, or up to two cheap when premiums are exhausted');
   assert.equal(cy.suits.filter(id=>C.DUST_STICKER[id]!==undefined).length,premiumCount,label+' never pins or doubles premium stock');
   const helmets=available(C.HELMETS).filter(h=>!cy.suits.includes(h.id));
-  assert(cy.helms.length<=2&&cy.helms.length<=helmets.length,label+' limits helmets to available stock');
+  assert(cy.helms.length<=3&&cy.helms.length<=helmets.length,label+' limits helmets to available stock');
   assert(cy.helms.length>=Math.min(1,helmets.length),label+' keeps at least one helmet when eligible');
   const palms=available(C.PALS).filter(p=>!cy.suits.includes(p.id)&&!cy.helms.includes(p.id));
   assert(cy.pals.length<=Math.min(1,palms.length),label+' offers zero or one eligible PAL');
   const availableByKind={suits:new Set(suits.map(i=>i.id)),helms:new Set(helmets.map(i=>i.id)),pals:new Set(palms.map(i=>i.id))};
   for(const kind of ['suits','helms','pals'])for(const id of cy[kind]){assert(availableByKind[kind].has(id),`${label} ${kind}:${id} is unowned, unheld and eligible`);seen[kind].add(id);}
   const displayed=idsOf(cy);assert.equal(new Set(displayed).size,displayed.length,label+' never duplicates a shared ownership ID across cards');
-  assert(displayed.length<=4,label+' never exceeds the four-item row');
-  assert(cy.helms.length+cy.pals.length<=4-cy.suits.length,label+' gear respects the remaining space in the row');
+  assert(displayed.length<=5,label+' never exceeds the five-item row');
+  assert(cy.helms.length+cy.pals.length<=5-cy.suits.length,label+' gear respects the remaining space in the row');
   // Compatible helmets take priority. Within that group, a shared kit is
   // preferred; if there is no compatible body, shared-kit styling wins.
   const rank=helm=>{
@@ -58,7 +59,7 @@ function check(day,owns){
   }
   // A possible PAL cannot claim a match to the second helmet it would
   // replace. Only the priority helmets that fit beside it are relevant.
-  const helmsBesidePal=cy.helms.slice(0,Math.max(0,4-cy.suits.length-1));
+  const helmsBesidePal=cy.helms.slice(0,Math.max(0,5-cy.suits.length-1));
   const palsFor=kind=>palms.filter(p=>C.BUNDLES.some(b=>b.items.some(i=>i.kind===kind&&(kind==='suit'?cy.suits:helmsBesidePal).includes(i.id))&&b.items.some(i=>i.kind==='pal'&&i.id===p.id)));
   const suitPals=palsFor('suit'),matchingPals=suitPals.length?suitPals:palsFor('helm');
   if(matchingPals.length){assert.equal(cy.pals.length,1,label+' includes an available matching companion');assert(matchingPals.some(p=>p.id===cy.pals[0]),label+' prefers a suit companion before an accessory companion');matchedPalCases++;}
@@ -74,14 +75,14 @@ Math.random=()=>{throw Error('daily selection must not use gameplay RNG');};
 try{
   for(let d=-7;d<0;d++)check(d,none);
   for(let d=20000;d<20366;d++){
-    const cycle=check(d,none);assert.equal(idsOf(cycle).length,4,'available stock fills the four daily choices');
-    assert(cycle.pals.length===1?cycle.helms.length===1:cycle.helms.length===2,'two gear slots show helmet/PAL or two helmets');
+    const cycle=check(d,none);assert.equal(idsOf(cycle).length,5,'available stock fills the five daily choices');
+    assert(cycle.pals.length===1?cycle.helms.length===2:cycle.helms.length===3,'three gear slots show two helmets and the PAL, or three helmets');
   }
   for(const id of [...premiumIds,...cheapIds])assert(seen.suits.has(id),id+' reaches an unowned daily suit slot');
   for(const h of C.HELMETS.filter(h=>C.isIap(h.id)))assert(seen.helms.has(h.id)||seen.suits.has(h.id),h.id+' reaches an individual purchase slot, including shared suit/helmet ownership');
   assert.equal(seen.features.size,C.BUNDLES.filter(b=>!b.fixed&&!b.alwaysAvailable&&!C.SHOP_CYCLE.excludedBundleIds.includes(b.id)).length,'all eligible daily bundles recur');
   const varied=new Set(Array.from({length:28},(_,d)=>JSON.stringify(serial(selectShopCycle(20000+d,none)))));
-  assert(varied.size>14,'the dated roster changes instead of pinning four premium pilots');
+  assert(varied.size>14,'the dated roster changes instead of pinning the same pilots');
   // Full-grant ownership, individual purchases, all premium exhausted,
   // cheap stock exhausted, scarce helmets/PALs, and fully owned catalog.
   const owners=[own(premiumIds),own(cheapIds),own(allIds),

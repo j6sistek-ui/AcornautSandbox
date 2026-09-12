@@ -1,31 +1,33 @@
-import { spillDockTravelDuration } from "./spill.js?v=270";
-import { clipHelmetGlass } from "./helmet-openings.js?v=270";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=270";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=270";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=270";
-import { arcflashPreview } from "./arcflash-motion.js?v=270";
-import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=270";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=270";
-import { highOrbitPreview } from "./high-orbit-motion.js?v=270";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=270";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=270";
-import { spillAppearance } from "./spill-appearance.js?v=270";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=270";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=270";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=270";
-import { goalHud } from "./campaign.js?v=270";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=270";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=270";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=270";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=270";
-import { suitPitchFor } from "./save.js?v=270";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=270";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT } from "./control-constants.js?v=270";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=270";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=270";
-import { spillEngineColor } from "./spill-content.js?v=270";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=270";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=270";
+import { spillDockTravelDuration } from "./spill.js?v=274";
+import { clipHelmetGlass } from "./helmet-openings.js?v=274";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=274";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=274";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=274";
+import { arcflashPreview } from "./arcflash-motion.js?v=274";
+import { paintLiveStarTrail } from "./star-trails.js?v=274";
+import { trailWornBy } from "./catalog.js?v=274";
+import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=274";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=274";
+import { highOrbitPreview } from "./high-orbit-motion.js?v=274";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=274";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=274";
+import { spillAppearance } from "./spill-appearance.js?v=274";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=274";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=274";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=274";
+import { goalHud } from "./campaign.js?v=274";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=274";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=274";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=274";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=274";
+import { suitPitchFor } from "./save.js?v=274";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=274";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=274";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=274";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=274";
+import { spillEngineColor } from "./spill-content.js?v=274";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=274";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=274";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3075,6 +3077,11 @@ function drawRetroWorld(ctx, w, save, art) {
     const wornId = pilotSuitId(w, save);
     const helm = helmetWornBy(save.equipped, wornId);
     const suit = SUITS.find((u) => u.id === wornId) ?? SUITS[0];
+    paintLiveStarTrail(ctx, w, trailWornBy(save.equippedTrail, wornId), {
+        time: w.time, x: W * PHYS.squirrelX - 25, y: w.squirrel.y + 8,
+        travel: w.distance, scale: 1, power: Math.min(1, Math.max(0, w.flapBoost) / .22),
+        active: !w.ready && w.screen === "play",
+    }, w.screen === "pause" || w.screen === "lvldone");
     drawAstronautOn(ctx, W * PHYS.squirrelX, w.squirrel.y, w.squirrel.rot, 1, helm, suit, {
         flame: w.flapBoost > 0 ? w.flapBoost / 0.22 : 0,
         seed: 0,
@@ -4599,7 +4606,9 @@ lean = SUIT_LEAN_DEFAULT,
 // the loadout case hands in the pose itself (-1 full climb .. +1 full
 // dive, already shaped), so its sweep lands on frames exactly, with no
 // smoother between; NaN means "derive it from the motion, as in play"
-poseOverride = NaN) {
+poseOverride = NaN,
+// Live bank playback is input-driven; isolated shelf previews may cycle.
+tapDriven = false) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     // Flight's animation frames already wear the Clear dome. Any other helmet
@@ -4807,8 +4816,8 @@ poseOverride = NaN) {
                 // So the climb runs on the TAP CLOCK for every banked suit, exactly
                 // the way Cat and Robo's sixteen-frame banks do a few branches
                 // below - the whole bank across the whole tap, linearly, whatever
-                // the velocity is doing. The sim rewinds that clock on a repeat tap,
-                // so a second tap replays the gesture instead of truncating it.
+                // the velocity is doing. Accepted repeat taps queue one replay;
+                // they never rewind or truncate the current painted gesture.
                 //
                 //   tap, pause, tap    robo (16f, shipped)  1345789bcdfg.1245689acde
                 //                      a bank on the clock  122344566788.11233455677
@@ -4830,7 +4839,7 @@ poseOverride = NaN) {
                 // window, home over the rest. It ends where the glide and the dive
                 // both begin, so the handover costs no frame.
                 const n = ascFrames.length;
-                const at = Math.min(1, Math.max(0, tapAnimT / TAP_ANIM_DURATION));
+                const at = Math.pow(Math.min(1, Math.max(0, tapAnimT / TAP_ANIM_DURATION)), PAINTED_TAP_EASE);
                 const OUT = 0.625;
                 const climb = at <= OUT ? at / OUT : 1 - (at - OUT) / (1 - OUT);
                 const k = Math.min(n - 1, Math.round(climb * (n - 1)));
@@ -4852,6 +4861,9 @@ poseOverride = NaN) {
                     v = sv < 0 ? -Math.min(1, -sv / POSE_CLIMB_SPAN) : Math.min(1, sv / 620);
                 }
                 // shape the attitude: the dive half shallowed, both halves curved
+                // After an input gesture, rising velocity must not restart its climb.
+                if (tapDriven)
+                    v = Math.max(0, v);
                 if (v > 0)
                     v *= diveDepthFor(suit.id);
             }
@@ -4894,14 +4906,14 @@ poseOverride = NaN) {
             // the pilot presses and the character does not answer.
             //
             // So the cycle plays across the tap, the same way every other painted
-            // bank now does, and the sim's rewind on a repeat tap replays it. With
+            // bank now does, and the sim queues one replay for repeat taps. With
             // no tap running the character rests on its first frame, which is what
             // a bank with no dive half can honestly show. The world clock stays
             // for the hangar and any caller with no tap of its own, so a shelf
             // card still breathes.
             const idx = tapAnimT >= 0
                 ? Math.min(loopFrames.length - 1, Math.floor((tapAnimT / TAP_ANIM_DURATION) * loopFrames.length))
-                : Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
+                : tapDriven ? 0 : Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
             const refL = loopFrames[0].box ?? ref;
             drawRigLayer(ctx, loopFrames[idx], refL, x, y, size, 0, undefined, halo);
         }
@@ -5002,6 +5014,13 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     const wornId = pilotSuitId(w, save);
     const suit = SUITS.find((s) => s.id === wornId) ?? SUITS[0];
     const helm = helmetWornBy(save.equipped, wornId);
+    // Paint before the body transform so old stream samples stay in the
+    // world when the pilot banks. Attach the stream at the pilot's rear edge.
+    paintLiveStarTrail(ctx, w, trailWornBy(save.equippedTrail, wornId), {
+        time: w.time, x: x - 25 * localScale, y: y + 8 * localScale,
+        travel: w.distance, scale: localScale, power: Math.min(1, Math.max(0, w.flapBoost) / .22),
+        active: !w.ready && w.screen === "play",
+    }, w.screen === "pause" || w.screen === "lvldone");
     // The repainted flap frames are one coherent character, so the tap
     // cycles them again — plus a soft nose-up kick and scale pop for punch.
     const flapping = w.flapBoost > 0;
@@ -5076,7 +5095,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
         paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
         // Cryostar and Verdant now share Eclipse's heading mapping by owner
         // request. All three use the same smoother, pose curve and frame index.
-        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed, lean);
+        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed, lean, NaN, true);
     if (flagship && w.shieldCharges > 0)
         paintVanguardShield(ctx, 0, 0, w.time);
     ctx.restore();

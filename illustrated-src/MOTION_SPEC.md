@@ -1,5 +1,18 @@
 # Acornaut motion spec — how a suit flies
 
+## Frozen suits rewind; the queue is the owner's call, 12 Sep 2026
+
+The correction below reached the frozen roster (FROZEN_SUITS in draw.ts),
+and the owner rejected it there the same day: "a new tap isn't driving
+anymore ... take the 8 frozen out. revert it on those." The roster is
+fourteen, twelve of them painted; all twelve are off the queue roster and
+a repeat tap rewinds their picture as it did when they were approved.
+Flight's tail is part of that - its twelve painted tail poses ride the same
+clock, so the queue was what stopped it re-kicking under fast taps. The
+other twelve painted suits queue by default and carry a beta-only pause
+toggle (save.tapRewind) so the owner can decide, suit by suit, which keep
+the queue. test-frozen-roster keeps the two lists disjoint.
+
 ## Painted-bank repeated-tap correction, 12 Sep 2026
 
 The owner's report concerns banked flight, including Eclipse and Ion, rather

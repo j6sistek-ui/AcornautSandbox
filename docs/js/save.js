@@ -1,12 +1,12 @@
-import { highOrbitTrailSuit, isPremiumSuit } from "./high-orbit-config.js?v=273";
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=273";
-import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=273";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=273";
-import { restoreSpill } from "./spill.js?v=273";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=273";
+import { highOrbitTrailSuit, isPremiumSuit } from "./high-orbit-config.js?v=274";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=274";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=274";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=274";
+import { restoreSpill } from "./spill.js?v=274";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=274";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, FIXED_SHOP_SUIT_IDS, bundleQuote, idDust, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=273";
-import { platform } from "./platform.js?v=273";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, FIXED_SHOP_SUIT_IDS, bundleQuote, idDust, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=274";
+import { platform } from "./platform.js?v=274";
 // Pinned to the shipped pre-regrouping catalog (9 Sep 2026). These are
 // historical grant amounts, not the price of the new bundle layout.
 export const BETA_DUST_GRANT_FLOOR = 12360;
@@ -47,6 +47,7 @@ export function defaultSave() {
         steadyGates: false,
         roughAir: false,
         noPalFx: false,
+        tapRewind: false,
         thrillSeeker: false,
         tutorialDone: false,
         unlocked: ["clear"],
@@ -303,7 +304,7 @@ export function loadSave() {
     if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak))
         s.dailyStreak = 0;
     // saves written before the flight mods existed
-    for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx"]) {
+    for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx", "tapRewind"]) {
         if (typeof s[k] !== "boolean")
             s[k] = false;
     }

@@ -6,6 +6,7 @@
     {
       "id": "porcelain",
       "frames": 16,
+      "gameplayFrames": 16,
       "frameHashes": [
         "25b610cd8734875b67abae64815ee2fd57e059509b444ca1b946225735b10c50",
         "6e663193aa2249b23884cd09627ff16a69ded24ae1add7fce16c9537cd2c243d",
@@ -154,7 +155,7 @@
           "bottom": 181
         }
       ],
-      "rapidTapAllFrames": true,
+      "rapidTapAllSelectedFrames": true,
       "helmetsChecked": 30,
       "wakeSamples": 720,
       "headPolicy": "integrated"
@@ -162,6 +163,7 @@
     {
       "id": "nacre",
       "frames": 16,
+      "gameplayFrames": 16,
       "frameHashes": [
         "c8f83db497bac8b0fada9b06e9a5500173e0516e0b15108bad1158919fdc4047",
         "7d324b154c12e5d5d4693f03d61d06d4c48f2c6df2664229f40b3215124e955e",
@@ -310,7 +312,7 @@
           "bottom": 191
         }
       ],
-      "rapidTapAllFrames": true,
+      "rapidTapAllSelectedFrames": true,
       "helmetsChecked": 30,
       "wakeSamples": 720,
       "headPolicy": "helmetless"
@@ -318,6 +320,7 @@
     {
       "id": "origamist",
       "frames": 16,
+      "gameplayFrames": 12,
       "frameHashes": [
         "0c0fd02baf71196e282078d3e6e1cd9786049aa9d91d49682cfa02eab543224a",
         "db82c1feca4b52537b1d62298331d6b3d4677743865cdaebc4d6d43fd8c7e246",
@@ -466,7 +469,7 @@
           "bottom": 184
         }
       ],
-      "rapidTapAllFrames": true,
+      "rapidTapAllSelectedFrames": true,
       "helmetsChecked": 30,
       "wakeSamples": 720,
       "headPolicy": "integrated"

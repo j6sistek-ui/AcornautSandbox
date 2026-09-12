@@ -1,23 +1,35 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=273";
-import { PAINTED_TAP_SUITS } from "./control-constants.js?v=273";
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=273";
-import { createHighOrbitMotion, stepHighOrbit, highOrbitTap } from "./high-orbit-motion.js?v=273";
-import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=273";
-import { trailWornBy, STAR_CHART_TRAILS } from "./catalog.js?v=273";
-import { missionRandom } from "./mission-rng.js?v=273";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=273";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=273";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, BOUNCE_ANIM_DURATION, LEGACY_DEBRIS_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, PHYS, TRAILS } from "./catalog.js?v=273";
-import { nextFamilyPlanet } from "./planet-family.js?v=273";
-import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=273";
-import { platform } from "./platform.js?v=273";
-import { TUTORIAL_SUIT } from "./catalog.js?v=273";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=273";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=273";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=273";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillTap, stepSpill, } from "./spill.js?v=273";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=273";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=273";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=274";
+import { PAINTED_TAP_SUITS } from "./control-constants.js?v=274";
+/** DOES A REPEAT TAP QUEUE OR REWIND? Two behaviours exist for a tap that
+ *  lands while the tap animation is still playing:
+ *    REWIND - the picture reverses from where it is, bounces off the start
+ *             and plays out again. Every tap moves the body that frame.
+ *    QUEUE  - the gesture finishes untouched, then replays once; taps in
+ *             between collapse into that one replay.
+ *  The frozen roster always rewinds (it is not in PAINTED_TAP_SUITS). The
+ *  rest queue, unless the owner has flipped the beta pause toggle to try
+ *  rewind on them - live builds never see the toggle, so there it is inert. */
+export function repeatTapQueues(id, save) {
+    return PAINTED_TAP_SUITS.has(id) && !(IS_BETA && save.tapRewind);
+}
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=274";
+import { createHighOrbitMotion, stepHighOrbit, highOrbitTap } from "./high-orbit-motion.js?v=274";
+import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=274";
+import { trailWornBy, STAR_CHART_TRAILS } from "./catalog.js?v=274";
+import { missionRandom } from "./mission-rng.js?v=274";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=274";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=274";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, BOUNCE_ANIM_DURATION, LEGACY_DEBRIS_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, PHYS, TRAILS } from "./catalog.js?v=274";
+import { nextFamilyPlanet } from "./planet-family.js?v=274";
+import { modsUnlocked, batteryUnlocked, writeSave, grantTutorialKit, equippedPals } from "./save.js?v=274";
+import { platform } from "./platform.js?v=274";
+import { TUTORIAL_SUIT } from "./catalog.js?v=274";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=274";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=274";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=274";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillTap, stepSpill, } from "./spill.js?v=274";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=274";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=274";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",
@@ -2577,7 +2589,7 @@ export function flap(w, save) {
         w.tapAnimDir = 1;
         w.tapAnimFromRot = w.squirrel.rot;
     }
-    else if (PAINTED_TAP_SUITS.has(pilotSuitId(w, save))) {
+    else if (repeatTapQueues(pilotSuitId(w, save), save)) {
         // Rewinding on every short tap traps painted banks in their first poses.
         // Finish the gesture, then replay once for input accepted during it.
         w.tapAnimQueued = true;
@@ -3509,7 +3521,7 @@ export function updateWorld(w, save, dt) {
             w.tapAnimDir = 1;
         }
         else if (w.tapAnimT >= TAP_ANIM_DURATION) {
-            const replay = PAINTED_TAP_SUITS.has(pilotSuitId(w, save)) && w.tapAnimQueued;
+            const replay = repeatTapQueues(pilotSuitId(w, save), save) && w.tapAnimQueued;
             w.tapAnimT = replay ? w.tapAnimT - TAP_ANIM_DURATION : -1;
             w.tapAnimQueued = false;
             w.tapAnimDir = 1;
