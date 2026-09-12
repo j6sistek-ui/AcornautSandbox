@@ -1,0 +1,20 @@
+{
+  "at": "2026-09-12T04:22:45.938Z",
+  "base": "3a19fe5de460467918243f2b18a3da19b62a420b",
+  "stamp": 274,
+  "generatedModulesCompared": 53,
+  "changedRuntimeModules": [
+    "docs/js/standalone.js"
+  ],
+  "shippingArtMastersWebsiteUnchanged": true,
+  "checks": {
+    "export": true,
+    "lab": true,
+    "studio": true,
+    "typecheck": true,
+    "browserCases": 4,
+    "whitespace": true
+  },
+  "skipped": "Full gameplay harness, global art and platform bridge checks: only static Help content and stamp changed. No static-string unit test added.",
+  "limitations": "Isolated Edge production/beta builds tested; native iPhone and live release unverified."
+}
