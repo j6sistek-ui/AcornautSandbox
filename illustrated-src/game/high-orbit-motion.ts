@@ -2,7 +2,14 @@ import {HIGH_ORBIT_PROFILES,isPremiumSuit,type HighOrbitId} from './high-orbit-c
 import {createManeuverMotion,maneuverTap,stepManeuver,type ManeuverMotion} from './vanguard-maneuver';
 
 export const PREMIUM_FLIGHT_DURATION=1;
-export type PremiumFramePlayback={age:number;active:boolean;queued:boolean};
+/** dir is present only while a rewind runs backwards (-1); the state shape is
+ *  otherwise unchanged from the frozen fixtures in test-premium-pilots. */
+export type PremiumFramePlayback={age:number;active:boolean;queued:boolean;dir?:-1};
+/** what a second tap does to a premium playback that is still running:
+ *  finish (queue one replay), restart (frame one again), rewind (play
+ *  backwards, bounce off frame one, run to the end) - the same three
+ *  answers sim.ts repeatTapMode gives the painted banks. */
+export type PremiumRepeat='finish'|'restart'|'rewind';
 
 /** AcorNut's maneuver banks retargeted to the five High Orbit anatomies.
  * Accepted taps accent the limbs and tail without resetting a joint. The
@@ -36,7 +43,7 @@ export function createHighOrbitMotion(id:HighOrbitId='cinderforge'):HighOrbitMot
 }
 /** An accepted tap accents even a short refresh below the velocity detector's
  * threshold. No pose/rate reset and no change to the approved wake power. */
-export function highOrbitTap(s:HighOrbitMotion,acceptedImpulse=450) {
+export function highOrbitTap(s:HighOrbitMotion,acceptedImpulse=450,repeat:PremiumRepeat='finish') {
   if(!Number.isFinite(acceptedImpulse)||acceptedImpulse<=0)return;
   s.recoil=Math.max(s.recoil,.5+.5*(1-Math.exp(-acceptedImpulse/360)));
   // High Orbit's smaller, retargeted limbs need a full readable accent even
@@ -44,11 +51,18 @@ export function highOrbitTap(s:HighOrbitMotion,acceptedImpulse=450) {
   if(s.maneuver)maneuverTap(s.maneuver,Math.max(450,acceptedImpulse));
   if(isPremiumSuit(s.id)){
     const f=s.frames??(s.frames={age:0,active:false,queued:false});
-    if(!f.active){f.age=0;f.active=true;}
-    // Finish every authored pose before replaying. Rapid taps must not hold
-    // the character on the first few frames. The explicit accepted-tap hook
-    // and its same-instant velocity observation count as only one request.
-    else if(f.age>1e-8)f.queued=true;
+    if(!f.active){f.age=0;f.active=true;delete f.dir;}
+    // The explicit accepted-tap hook and its same-instant velocity
+    // observation count as only one request (age is still zero).
+    else if(f.age>1e-8){
+      // Owner, 12 Sep 2026 (Patriot): "it's finishing its cycle before it
+      // starts animation. it's not a restart on tap. that's the issue." The
+      // repeat rule is the caller's (sim.ts repeatTapMode); finish is the
+      // stock answer for callers that pass nothing.
+      if(repeat==='restart'){f.age=0;f.queued=false;delete f.dir;}
+      else if(repeat==='rewind'){f.dir=-1;f.queued=false;}
+      else f.queued=true;
+    }
   }
 }
 function follow(s:HighOrbitMotion,key:keyof HighOrbitPose,target:number,dt:number,frequency:number,damping:number) {
@@ -73,7 +87,9 @@ export function stepHighOrbit(s:HighOrbitMotion,id:HighOrbitId,dt:number,vy:numb
     s.velocity+=(current-s.velocity)*(1-Math.exp(-h/.045));
     s.time+=h;s.phase+=h*2*Math.PI/profile.period;
     if(isPremiumSuit(id)&&s.frames?.active&&!ready){
-      const f=s.frames;f.age+=h;
+      const f=s.frames;f.age+=h*(f.dir??1);
+      // a rewinding playback bounces off frame one and runs forward again
+      if(f.age<=0&&f.dir){f.age=0;delete f.dir;}
       if(f.age>=PREMIUM_FLIGHT_DURATION-1e-10){
         if(f.queued){f.age=Math.max(0,f.age-PREMIUM_FLIGHT_DURATION);f.queued=false;}
         else{f.age=PREMIUM_FLIGHT_DURATION;f.active=false;}

@@ -418,3 +418,23 @@ flight now steps on the same fixed 1/60 accumulator as Race and Spill; a
 held Space key is one tap in flight; and a beta TAP ACCENT switch adds a
 167 ms ignition and a body reaction spring that read the accepted tap.
 The premium trio is a project of its own.
+
+## The premium trio restarts on every tap, 12 Sep 2026
+
+Owner, watching Patriot: "the issue isn't the first tap, it's the second.
+it's finishing its cycle before it starts animation. it's not a restart on
+tap." Confirmed in code: `highOrbitTap` queued a second tap behind the
+running sixteen-frame playback (the FINISH pattern), and nothing in that
+path read `repeatTapMode`, so the critter restart rule never reached
+Percy, Envoy or Patriot.
+
+Now `highOrbitTap(state, impulse, repeat)` takes the same three answers the
+painted banks take - finish (queue one replay), restart (frame one again),
+rewind (play backwards, bounce off frame one, run to the end) - and sim.ts
+passes `repeatTapMode(suit, save)` at all three call sites (flight, the
+tutorial tap, the race). `TAP_REPEAT` lists porcelain, nacre and origamist
+as restart, so live every tap is frame one again; the beta REPEAT TAP dial
+drives them like any other suit. Flight Studio's premium default follows
+(retrigger = restart). Frame calibration for Percy and Envoy is a separate
+question; their measured step sizes are in the 12 Sep PR.
+

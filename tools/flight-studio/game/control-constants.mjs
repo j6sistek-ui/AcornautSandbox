@@ -10,7 +10,13 @@ export const QUICK_DROP_VY = 380;
  *  (TAP_REPEAT below). The mechanism stays for the beta REPEAT TAP dial.
  *  Kept in this data-only module so simulation does not load art. */
 export const PAINTED_TAP_SUITS = new Set([]);
-export const TAP_REPEAT = { raccoon: "restart", ferret: "restart", hedgehog: "restart" };
+export const TAP_REPEAT = {
+    raccoon: "restart", ferret: "restart", hedgehog: "restart",
+    // the premium trio's whole-frame playback, same day: Patriot "is finishing
+    // its cycle before it starts animation. it's not a restart on tap. that's
+    // the issue" - every tap is frame one again (Percy, Envoy, Patriot)
+    porcelain: "restart", nacre: "restart", origamist: "restart",
+};
 /** Spend less of the tap in its neutral lead-in, preserving the full gesture. */
 export const PAINTED_TAP_EASE = .73;
 export const TAP_SHAPE_MIN = 0.1, TAP_SHAPE_MAX = 1.0;

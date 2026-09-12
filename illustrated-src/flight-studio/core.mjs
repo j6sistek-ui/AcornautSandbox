@@ -25,7 +25,7 @@ export function defaultProfile(model){
   const premium=model.family==='premium-flight';
   const tapOrder=premium?[...premiumFlightOrder(model.id)]:Array.from({length:n},(_,i)=>i);
   return {basePitch:model.family==='acornut'?12:0,tapPitch:premium?[0,0,0,0,0]:[0,-8,-3,0,0],risePitch:0,fallPitch:0,pitchResponse:.10,
-    tapSeconds:premium?PREMIUM_FLIGHT_DURATION:1,tapEase:premium?PREMIUM_FLIGHT_CURVE:tapSource==='asc'?PAINTED_TAP_EASE:1,retrigger:premium||model.family==='bank'?'queue':'restart',finishTap:true,tapPath:tapSource==='asc'?'out-back':'forward',returnAt:.625,loopContinuous:false,velocityFilter:.05,descentThreshold:40,
+    tapSeconds:premium?PREMIUM_FLIGHT_DURATION:1,tapEase:premium?PREMIUM_FLIGHT_CURVE:tapSource==='asc'?PAINTED_TAP_EASE:1,retrigger:model.family==='bank'?'queue':'restart',finishTap:true,tapPath:tapSource==='asc'?'out-back':'forward',returnAt:.625,loopContinuous:false,velocityFilter:.05,descentThreshold:40,
     descentFull:500,descentDelay:.08,descentSeconds:.55,descentEase:1,rigSpeed:1,
     tapSource,tapOrder,tapWeights:Array(tapOrder.length).fill(1),tapOffsets:Array(tapOrder.length).fill(0),
     descOrder:Array.from({length:model.banks.desc.length},(_,i)=>i),descOffsets:Array(model.banks.desc.length).fill(0),
@@ -104,7 +104,7 @@ export function acceptTap(s,p){
   else if(p.retrigger==='queue')s.queued=true;
   s.downAge=0;s.diving=false;s.tapCount++;
   if(s.model.family==='arcflash')arcflashTap(s.native,450);
-  if(['high-orbit','premium-flight'].includes(s.model.family))highOrbitTap(s.native,450);
+  if(['high-orbit','premium-flight'].includes(s.model.family))highOrbitTap(s.native,450,p.retrigger==='restart'?'restart':'finish');
   if(s.model.family==='acornut')maneuverTap(s.native,450);
 }
 export function acceptDive(s){s.diving=true;if(s.model.family==='arcflash')arcflashDive(s.native);}
@@ -120,7 +120,7 @@ export function stepAnimation(s,p,dt,vy){
     // avoiding a one-frame disagreement from separately accumulated time.
     stepHighOrbit(s.native,s.model.id,dt,vy);
     Object.assign(s.output,s.native);s.output.pose={...s.native.pose};
-    if(p.tapSeconds===PREMIUM_FLIGHT_DURATION&&p.retrigger==='queue'){
+    if(p.tapSeconds===PREMIUM_FLIGHT_DURATION&&(p.retrigger==='queue'||p.retrigger==='restart')){
       s.tapAge=s.native.frames.active?s.native.frames.age:p.tapSeconds;
       s.queued=s.native.frames.queued;
     }
