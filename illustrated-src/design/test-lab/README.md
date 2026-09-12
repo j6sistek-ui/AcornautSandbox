@@ -18,12 +18,12 @@ production page has no flask, no sheet and no way to start a Flight Test
 
 ## What is in the sheet
 
-- **FLIGHT TEST** - starts the self-flying run (below).
-- **Switches, saved on this device** - the worn suit's dials, the same
-  builders the pause sheet uses: tap accent, repeat tap, tap shape, tail
-  spring (or a note when the suit's tail is painted into its frames), pitch.
-- **Flight Lab** - the free-flight sliders (fog, sway, gates, rebound,
-  upside down, slow time, free revive).
+- **FLIGHT TEST** - starts the self-flying run (below). The worn suit's
+  dials (tap accent and its strength, repeat tap, tap shape, tail spring,
+  pitch) fold out in its dock; they are not on this sheet (owner, 12 Sep
+  2026: "you left toggles for the flight editor on the main screen that
+  are also in the testers, clean it up"). The pause sheet of an ordinary
+  beta free flight keeps them too, with the Flight Lab sliders, as before.
 - **Benches** - every page under `docs/lab/`: rig editor, ship bench,
   background test mode, visual audit, the Flight Lab page, High Orbit and
   Premium Pilots. The last four had no door anywhere before this.
