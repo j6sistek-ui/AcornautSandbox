@@ -43,19 +43,22 @@ app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('key
 assert(!app.querySelector('.ac-spillhelpwrap'));assert.equal(engine.world.screen,'help');
 assert.equal(document.activeElement.dataset.spillBriefing,'');
 assert.equal(JSON.stringify(engine.save),beforeHelp);
-// The Loadout equips earned starters, while the build planner cannot spend or alter a run.
+// THE SHIP TAB IS THE ENGINE COLOUR PICKER (owner, 12 Sep 2026: "Remove
+// everything from the ship loadout page except the engine color"). Starters
+// still equip through the engine, gated on the earned wave, with no picker.
 engine.save.spillBest=4;engine.open('hangar');engine.setShopTab('ship');
-assert.equal(app.querySelectorAll('[data-ship-tier]').length,15);assert(!app.textContent.includes('UNDER CONSTRUCTION'));assert(!app.textContent.includes('not active yet'));
-assert(ship('starter','magnet').disabled);engine.spillStarter('magnet');assert.equal(engine.save.spillStarter,null);
-engine.save.spillBest=20;engine.setShopTab('ship');ship('starter','magnet').click();assert.equal(Save.loadSave().spillStarter,'magnet');
+assert.equal(app.querySelectorAll('[data-ship-tier]').length,0,'no tier shelves on the ship tab');
+assert.equal(app.querySelectorAll('[data-ship-spec]').length,0,'no specialty options on the ship tab');
+assert.equal(app.querySelectorAll('[data-ship-starter]').length,0,'no starting-utility picker on the ship tab');
+assert(!app.textContent.includes('SHOW LAUNCH SHIP')&&!app.textContent.includes('DEPOT BUILD PREVIEW')&&!app.textContent.includes('DEPOT SERVICES'),'the build planner is gone');
+assert(!app.textContent.includes('UNDER CONSTRUCTION'));assert(!app.textContent.includes('not active yet'));
+engine.spillStarter('magnet');assert.equal(engine.save.spillStarter,null,'an unearned starter cannot be equipped');
+engine.save.spillBest=20;engine.setShopTab('ship');engine.spillStarter('magnet');assert.equal(Save.loadSave().spillStarter,'magnet');
 ship('color','copper').click();assert.equal(Save.loadSave().spillEngineColor,'copper');assert.equal(Save.loadSave().spillSignal,true);
 assert.equal(app.querySelectorAll('[data-ship-color]').length,5);assert(ship('color','void').disabled);assert(!engine.setSpillEngineColor('void'));
 engine.save.spillBest=30;engine.setShopTab('ship');assert.equal(ship('color','copper').getAttribute('aria-pressed'),'true','a new earned color does not replace the chosen color');
 ship('color','void').click();assert.equal(Save.loadSave().spillEngineColor,'void');ship('color','copper').click();
-const savedLaunch=JSON.stringify(engine.save);assert(ship('spec','brace').disabled);ship('tier','plating-2').click();ship('spec','brace').click();
-ship('tier','thrusters-3').click();ship('tier','pulse-2').click();ship('spec','efficient').click();assert(!app.querySelector('[data-ship-utility]'),'the preview-only utility shelf is gone; Starting utility is the one picker');assert.equal(app.querySelectorAll('[data-ship-starter]').length,5,'exactly one Starting utility picker: stock plus the four utilities, no duplicate shelf');assert.equal(ship('starter','magnet').getAttribute('aria-pressed'),'true');assert.equal(ship('starter','scanner').getAttribute('aria-pressed'),'false');assert(app.querySelector('.ac-shipreadout').textContent.includes('1/2 UTILITIES'),'the plan previews the chosen starter in its slot readout');
-ship('tier','plating-1').click();assert(ship('spec','brace').disabled);assert.equal(JSON.stringify(engine.save),savedLaunch,'planning changes no save fields');
-button('SHOW LAUNCH SHIP').click();assert.equal(ship('tier','plating-0').getAttribute('aria-pressed'),'true');
+assert(app.querySelector('.ac-caseplate')?.textContent.includes('Engine color'),'the case plate names the engine color');
 // ONE INSTRUCTIONS SHEET before an endless run: how to fly, the loop, the ship. Nothing to choose.
 engine.fly('spill');const setup=app.querySelector('.ac-spillsetup');assert(setup);assert(setup.querySelector('h2').textContent==='How to fly');assert(!app.textContent.includes('Your next ship'));
 assert.deepEqual(cardsOf(setup),TAP_CARDS,'the instructions sheet shows the three tap-to-fly cards');
@@ -146,7 +149,7 @@ control('cancel-swap').click();assert.deepEqual(s.utilities,['magnet','scanner']
 const swapOre=s.ore;control('scanner').click();control('magnet').click();assert.equal(s.ore,swapOre,'owned utilities refit free');assert.deepEqual(s.utilities,['brake','magnet']);
 const extras=app.querySelector('.ac-workshop-extras');extras.open=true;extras.dispatchEvent(new win.Event('toggle'));control('contract-clean').click();assert(app.querySelector('.ac-workshop-extras').open,'bonus goals stay open after choosing');assert(s.contract);
 const records=structuredClone(engine.save.spillRecords),ore=s.ore;control('save').click();assert.equal(engine.world.screen,'title');assert(engine.save.spillSuspended);
-engine.open('hangar');engine.setShopTab('ship');const savedCheckpoint=JSON.stringify(engine.save.spillSuspended);button('VIEW SAVED BUILD').click();assert.equal(ship('tier','plating-2').getAttribute('aria-pressed'),'true');ship('tier','plating-0').click();assert.equal(JSON.stringify(engine.save.spillSuspended),savedCheckpoint,'inspecting a saved build does not edit its checkpoint');
+engine.open('hangar');engine.setShopTab('ship');const savedCheckpoint=JSON.stringify(engine.save.spillSuspended);assert(![...app.querySelectorAll('button')].some(b=>b.textContent==='VIEW SAVED BUILD'),'the saved-build inspector left the ship tab with the planner');assert.equal(JSON.stringify(engine.save.spillSuspended),savedCheckpoint,'opening the ship tab does not edit the checkpoint');
 ship('color','cobalt').click();assert(engine.spillResume());tick(50);assert.equal(engine.world.spill.signal,'#79cfff','resuming uses the selected engine color');engine.setSpillEngineColor('copper');assert.equal(engine.world.spill.ore,ore);assert.deepEqual(engine.save.spillRecords,records);assert(app.querySelector('[role="dialog"]'));control('launch').click();assert.equal(engine.world.spill.wave,6);assert.equal(engine.save.spillSuspended,null);
 engine.save.spillBest=19;
 const end=fixture(20);assert.equal(engine.world.screen,'play');assert(end.firstPass);assert(app.textContent.includes('First pass complete'));assert(!app.textContent.includes('FINISH EXPEDITION'));assert.equal(engine.save.spillRecords.expeditions,1);assert.equal(engine.save.spillRecords.runs,0);

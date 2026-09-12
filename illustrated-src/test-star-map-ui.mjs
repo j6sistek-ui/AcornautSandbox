@@ -124,9 +124,10 @@ if(mode==='production'){
     if (def.base === 'spill') assert.equal(e.world.spill.target,def.spillFinish ? Number.MAX_SAFE_INTEGER : def.gates);
   }
 
-  e.open('hangar');e.setShopTab('ship');assert(button(rewardName('rust-runner')));button(rewardName('rust-runner')).click();button(rewardName('rust-wake')).click();
+  // the beta appearance sample left the ship tab (owner, 12 Sep 2026: engine colour only); the reward equips through the engine
+  e.open('hangar');e.setShopTab('ship');assert(!button(rewardName('rust-runner')),'no appearance sample on the ship tab');e.setSpillAppearance('finish','rust-runner');e.setSpillAppearance('trail','rust-wake');
   assert.equal(S.loadSave().spillAppearance.finish,'rust-runner');assert.equal(S.loadSave().spillAppearance.trail,'rust-wake');
-  assert(app.textContent.includes('Rivet · placeholder concept'));
+  assert(!app.textContent.includes('Rivet · placeholder concept'),'the Rivet concept left the ship tab with the appearance sample');
   e.fly('spill');const before=JSON.stringify(e.world.spill);assert(e.setSpillAppearance('finish','stock'));assert.equal(JSON.stringify(e.world.spill),before,'cosmetic selection cannot mutate simulation');
   assert.equal(localStorage.getItem('acornaut_star_map_sample_v1'),JSON.stringify({sentinel:'archived sample'}));
   chart();
