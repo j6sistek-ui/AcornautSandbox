@@ -12,6 +12,21 @@ export function createHighOrbitMotion(id = 'cinderforge') {
         ...(isPremiumSuit(id) ? { frames: { age: 0, active: false, queued: false } } : { maneuver: createManeuverMotion(false) }),
         pose: { ...rest }, rates: Object.fromEntries(keys.map(k => [k, 0])) };
 }
+/** The remastered trio uses the standard painted-bank controller. Retain
+ * only its cosmetic wake clock/power; no sixteen-frame playback can start. */
+export function createPremiumWake(id) {
+    const state = createHighOrbitMotion(id);
+    delete state.frames;
+    return state;
+}
+export function stepPremiumWake(s, id, dt, vy, ready = false) {
+    if (s.id !== id) {
+        delete s.maneuver;
+        Object.assign(s, createPremiumWake(id));
+    }
+    delete s.frames;
+    stepHighOrbit(s, id, dt, vy, ready);
+}
 /** An accepted tap accents even a short refresh below the velocity detector's
  * threshold. No pose/rate reset and no change to the approved wake power. */
 export function highOrbitTap(s, acceptedImpulse = 450, repeat = 'finish') {
@@ -22,8 +37,8 @@ export function highOrbitTap(s, acceptedImpulse = 450, repeat = 'finish') {
     // when a fast repeat tap refreshes only a few pixels/second of velocity.
     if (s.maneuver)
         maneuverTap(s.maneuver, Math.max(450, acceptedImpulse));
-    if (isPremiumSuit(s.id)) {
-        const f = s.frames ?? (s.frames = { age: 0, active: false, queued: false });
+    if (isPremiumSuit(s.id) && s.frames) {
+        const f = s.frames;
         if (!f.active) {
             f.age = 0;
             f.active = true;
@@ -135,6 +150,23 @@ export function stepHighOrbit(s, id, dt, vy, ready = false) {
     }
 }
 const previews = new WeakMap();
+const wakePreviews = new WeakMap();
+/** The shelf's standard preview supplies velocity; the wake never chooses art. */
+export function premiumWakePreview(owner, id, time, vy) {
+    let map = wakePreviews.get(owner);
+    if (!map) {
+        map = new Map();
+        wakePreviews.set(owner, map);
+    }
+    let p = map.get(id);
+    if (!p || time < p.time) {
+        p = { state: createPremiumWake(id), time: time - 1 / 60 };
+        map.set(id, p);
+    }
+    stepPremiumWake(p.state, id, clamp(time - p.time, 0, .1), vy);
+    p.time = time;
+    return p.state;
+}
 /** The same controller and a short physical gravity arc drive each shelf card. */
 export function highOrbitPreview(owner, id, time) {
     let map = previews.get(owner);

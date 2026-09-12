@@ -1,5 +1,5 @@
 {
- "artVer": "284",
+ "artVer": "287",
  "suits": [
   {
    "id": "flight",
@@ -6274,6 +6274,762 @@
    "name": "Cyber desc 9",
    "key": "cyber-desc-9",
    "file": "suits/cyber-desc-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-asc-1",
+   "name": "Envoy asc 1",
+   "key": "nacre-asc-1",
+   "file": "suits/nacre-asc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-asc-2",
+   "name": "Envoy asc 2",
+   "key": "nacre-asc-2",
+   "file": "suits/nacre-asc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-asc-3",
+   "name": "Envoy asc 3",
+   "key": "nacre-asc-3",
+   "file": "suits/nacre-asc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-asc-4",
+   "name": "Envoy asc 4",
+   "key": "nacre-asc-4",
+   "file": "suits/nacre-asc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-asc-5",
+   "name": "Envoy asc 5",
+   "key": "nacre-asc-5",
+   "file": "suits/nacre-asc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-asc-6",
+   "name": "Envoy asc 6",
+   "key": "nacre-asc-6",
+   "file": "suits/nacre-asc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-asc-7",
+   "name": "Envoy asc 7",
+   "key": "nacre-asc-7",
+   "file": "suits/nacre-asc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-asc-8",
+   "name": "Envoy asc 8",
+   "key": "nacre-asc-8",
+   "file": "suits/nacre-asc-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-asc-9",
+   "name": "Envoy asc 9",
+   "key": "nacre-asc-9",
+   "file": "suits/nacre-asc-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-desc-1",
+   "name": "Envoy desc 1",
+   "key": "nacre-desc-1",
+   "file": "suits/nacre-desc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-desc-2",
+   "name": "Envoy desc 2",
+   "key": "nacre-desc-2",
+   "file": "suits/nacre-desc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-desc-3",
+   "name": "Envoy desc 3",
+   "key": "nacre-desc-3",
+   "file": "suits/nacre-desc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-desc-4",
+   "name": "Envoy desc 4",
+   "key": "nacre-desc-4",
+   "file": "suits/nacre-desc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-desc-5",
+   "name": "Envoy desc 5",
+   "key": "nacre-desc-5",
+   "file": "suits/nacre-desc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-desc-6",
+   "name": "Envoy desc 6",
+   "key": "nacre-desc-6",
+   "file": "suits/nacre-desc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-desc-7",
+   "name": "Envoy desc 7",
+   "key": "nacre-desc-7",
+   "file": "suits/nacre-desc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-desc-8",
+   "name": "Envoy desc 8",
+   "key": "nacre-desc-8",
+   "file": "suits/nacre-desc-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "nacre-desc-9",
+   "name": "Envoy desc 9",
+   "key": "nacre-desc-9",
+   "file": "suits/nacre-desc-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-asc-1",
+   "name": "Patriot asc 1",
+   "key": "origamist-asc-1",
+   "file": "suits/origamist-asc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-asc-2",
+   "name": "Patriot asc 2",
+   "key": "origamist-asc-2",
+   "file": "suits/origamist-asc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-asc-3",
+   "name": "Patriot asc 3",
+   "key": "origamist-asc-3",
+   "file": "suits/origamist-asc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-asc-4",
+   "name": "Patriot asc 4",
+   "key": "origamist-asc-4",
+   "file": "suits/origamist-asc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-asc-5",
+   "name": "Patriot asc 5",
+   "key": "origamist-asc-5",
+   "file": "suits/origamist-asc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-asc-6",
+   "name": "Patriot asc 6",
+   "key": "origamist-asc-6",
+   "file": "suits/origamist-asc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-asc-7",
+   "name": "Patriot asc 7",
+   "key": "origamist-asc-7",
+   "file": "suits/origamist-asc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-asc-8",
+   "name": "Patriot asc 8",
+   "key": "origamist-asc-8",
+   "file": "suits/origamist-asc-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-asc-9",
+   "name": "Patriot asc 9",
+   "key": "origamist-asc-9",
+   "file": "suits/origamist-asc-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-desc-1",
+   "name": "Patriot desc 1",
+   "key": "origamist-desc-1",
+   "file": "suits/origamist-desc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-desc-2",
+   "name": "Patriot desc 2",
+   "key": "origamist-desc-2",
+   "file": "suits/origamist-desc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-desc-3",
+   "name": "Patriot desc 3",
+   "key": "origamist-desc-3",
+   "file": "suits/origamist-desc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-desc-4",
+   "name": "Patriot desc 4",
+   "key": "origamist-desc-4",
+   "file": "suits/origamist-desc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-desc-5",
+   "name": "Patriot desc 5",
+   "key": "origamist-desc-5",
+   "file": "suits/origamist-desc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-desc-6",
+   "name": "Patriot desc 6",
+   "key": "origamist-desc-6",
+   "file": "suits/origamist-desc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-desc-7",
+   "name": "Patriot desc 7",
+   "key": "origamist-desc-7",
+   "file": "suits/origamist-desc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-desc-8",
+   "name": "Patriot desc 8",
+   "key": "origamist-desc-8",
+   "file": "suits/origamist-desc-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "origamist-desc-9",
+   "name": "Patriot desc 9",
+   "key": "origamist-desc-9",
+   "file": "suits/origamist-desc-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-asc-1",
+   "name": "Percy asc 1",
+   "key": "porcelain-asc-1",
+   "file": "suits/porcelain-asc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-asc-2",
+   "name": "Percy asc 2",
+   "key": "porcelain-asc-2",
+   "file": "suits/porcelain-asc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-asc-3",
+   "name": "Percy asc 3",
+   "key": "porcelain-asc-3",
+   "file": "suits/porcelain-asc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-asc-4",
+   "name": "Percy asc 4",
+   "key": "porcelain-asc-4",
+   "file": "suits/porcelain-asc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-asc-5",
+   "name": "Percy asc 5",
+   "key": "porcelain-asc-5",
+   "file": "suits/porcelain-asc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-asc-6",
+   "name": "Percy asc 6",
+   "key": "porcelain-asc-6",
+   "file": "suits/porcelain-asc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-asc-7",
+   "name": "Percy asc 7",
+   "key": "porcelain-asc-7",
+   "file": "suits/porcelain-asc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-asc-8",
+   "name": "Percy asc 8",
+   "key": "porcelain-asc-8",
+   "file": "suits/porcelain-asc-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-asc-9",
+   "name": "Percy asc 9",
+   "key": "porcelain-asc-9",
+   "file": "suits/porcelain-asc-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-desc-1",
+   "name": "Percy desc 1",
+   "key": "porcelain-desc-1",
+   "file": "suits/porcelain-desc-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-desc-2",
+   "name": "Percy desc 2",
+   "key": "porcelain-desc-2",
+   "file": "suits/porcelain-desc-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-desc-3",
+   "name": "Percy desc 3",
+   "key": "porcelain-desc-3",
+   "file": "suits/porcelain-desc-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-desc-4",
+   "name": "Percy desc 4",
+   "key": "porcelain-desc-4",
+   "file": "suits/porcelain-desc-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-desc-5",
+   "name": "Percy desc 5",
+   "key": "porcelain-desc-5",
+   "file": "suits/porcelain-desc-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-desc-6",
+   "name": "Percy desc 6",
+   "key": "porcelain-desc-6",
+   "file": "suits/porcelain-desc-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-desc-7",
+   "name": "Percy desc 7",
+   "key": "porcelain-desc-7",
+   "file": "suits/porcelain-desc-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-desc-8",
+   "name": "Percy desc 8",
+   "key": "porcelain-desc-8",
+   "file": "suits/porcelain-desc-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "id": "porcelain-desc-9",
+   "name": "Percy desc 9",
+   "key": "porcelain-desc-9",
+   "file": "suits/porcelain-desc-9.png",
    "dome": [
     128,
     128,

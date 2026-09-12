@@ -33,11 +33,11 @@ const mod=f=>import(pathToFileURL(join(scratch,'js',f+'.js')).href);
 const [D,A,Sim,S,C,Control]=await Promise.all(['draw','art','sim','save','catalog','control-constants'].map(mod));
 
 // --- the tables: exactly what the owner asked for, nothing more ----------
-const VELOCITY=['eclipse','cryostar','verdant','cyber','seraph','alien','flight','briellacat','iontrim','copper','voidsuit','ember','frost','ghost','gemmie','sammie','leviathan'];
+const VELOCITY=['eclipse','cryostar','verdant','cyber','seraph','alien','flight','briellacat','iontrim','copper','voidsuit','ember','frost','ghost','gemmie','sammie','leviathan','porcelain','nacre','origamist'];
 assert.deepEqual(Object.keys(Control.TAP_SHAPE).sort(),[...VELOCITY].sort(),'TAP_SHAPE: every ascent-bank suit, and only those (owner, 12 Sep 2026: "everything I don\'t name otherwise, gets velocity rewind")');
 assert(Object.values(Control.TAP_SHAPE).every(v=>v==='velocity'),'and all of them are on velocity');
 assert.deepEqual([...VELOCITY].sort(),[...new Set([...Object.keys(A.ASC_BANKS)])].sort(),'the velocity roster is exactly the suits with an ascent bank');
-assert.deepEqual(Control.TAP_REPEAT,{raccoon:'restart',ferret:'restart',hedgehog:'restart',porcelain:'restart',nacre:'restart',origamist:'restart'},'the critters restart ("Critters, bandit, noodle and quill get velocity restart" - and A: restart only); the premium trio restarts too (Patriot "is finishing its cycle before it starts animation. it\'s not a restart on tap")');
+assert.deepEqual(Control.TAP_REPEAT,{raccoon:'restart',ferret:'restart',hedgehog:'restart'},'the critters restart; replacement Percy, Envoy and Patriot use Cyber default rewind');
 assert.equal(Control.PAINTED_TAP_SUITS.size,0,'no suit finishes/queues live any more');
 assert.deepEqual(Control.TAIL_SPRING,{},'TAIL_SPRING is empty until the owner reports numbers');
 assert.deepEqual([...Control.TAIL_SPRING_SUITS].sort(),[...A.RIGGED_SUITS].sort(),'the tail-spring roster is exactly the suits that draw their own tail layer');

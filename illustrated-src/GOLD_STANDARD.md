@@ -14,6 +14,19 @@ this. When Cyber itself stops matching this page, that is a regression:
 `test-gold-standard.mjs` re-flies the traces below against the fixture
 `fixtures/gold-standard-cyber.json` and fails on the first tick that drifts.
 
+**Later transfer, same day.** The owner explicitly requested this behavior
+for Percy, Envoy and Patriot. Those three now join Cyber in
+`RIG_PITCH_WITH_BANK` and are compared against the same frozen trace; this
+does not change Cyber's reference art or extend the rule to other suits.
+Their different heads and tail anatomy use measured registration, described
+in `art-src/cyber-standard-trio/README.md`. Envoy prioritizes body and both
+tails, with subtle natural arm/leg motion per the owner's follow-up.
+For all three, the owner's later priority is the tail's direction changes,
+frame counts, reset and follow-through, ahead of exact spec alignment.
+The 128,128 radius40 dome below is a rig convention, not the measured
+visible skull. With complete banks, ready poses also use whole frames;
+the split body/tail is the loading fallback, and portraits use the still.
+
 Everything below was measured on the shipped build at stamp 282 (main
 `cf0cc676`), not written from memory.
 
@@ -68,7 +81,7 @@ What that says, in words:
   over at level costs no visible cut.
 - **One ramp, two directions.** Cyber's bank carries how far the body
   EXTENDS, not which way it points: the rig supplies the pitch over the top
-  (`RIG_PITCH_WITH_BANK` in draw.ts, Cyber is its only member). That is what
+  (`RIG_PITCH_WITH_BANK` in draw.ts, originally Cyber alone). That is what
   lets nine frames read as a climb and a dive without two sheets that
   disagree at the seam.
 

@@ -1,6 +1,15 @@
 # Premium pilot release sources
 
-The current release uses the owner's supplied **sixteen complete flight
+**Historical release record, superseded 12 September 2026.** The active
+Percy, Envoy and Patriot sources, 9/9 banks and Cyber motion wiring are in
+[cyber-standard-trio](../cyber-standard-trio/README.md). Current review and
+gate results are [CYBER-REVIEW.md](../../illustrated-src/design/premium-pilots/CYBER-REVIEW.md)
+and [CYBER-VALIDATION.md](../../illustrated-src/design/premium-pilots/CYBER-VALIDATION.md).
+Both legacy premium exporters now redirect to `export-cyber-trio.mjs`.
+The release, pricing and runtime statements below describe the preceding
+implementation; current catalog/Shop tests remain the pricing authority.
+
+The preceding release used the owner's supplied **sixteen complete flight
 frames per suit**. The [whole-frame source README](../premium-flight/README.md)
 records the active masters, cleanup provenance and deterministic export.
 These replace the rejected cut-part assemblies. Reusable

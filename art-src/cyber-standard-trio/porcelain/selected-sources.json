@@ -1,0 +1,158 @@
+{
+  "tool": "Built-in imagegen",
+  "status": "Selected paintings independently reviewed; exact source files bound below",
+  "promptNote": "Retained original and local-repair briefs. This index does not imply earlier drafts were accepted.",
+  "frames": [
+    {
+      "frame": "asc-1",
+      "source": "frames/asc-1.png",
+      "sha256": "dcfc894c371082b7b6dab9fa13cb980c22aacb5f216ded1a59fd5673f4004e0d",
+      "retainedPromptFiles": [
+        "frames/asc-1-prompt.txt"
+      ]
+    },
+    {
+      "frame": "asc-2",
+      "source": "frames/asc-2.png",
+      "sha256": "b9e2fc881dfe92c498ffa999e996e9e1b38375b1c51d85a0f7daab76863742b7",
+      "retainedPromptFiles": [
+        "frames/asc-2-prompt.txt",
+        "frames/asc-2-repair-prompt.txt"
+      ]
+    },
+    {
+      "frame": "asc-3",
+      "source": "frames/asc-3.png",
+      "sha256": "3028c69b32490aba6d374813375aaab3385f8ad4f0e54d6239673810997e2f4b",
+      "retainedPromptFiles": [
+        "frames/asc-3-prompt.txt"
+      ]
+    },
+    {
+      "frame": "asc-4",
+      "source": "frames/asc-4.png",
+      "sha256": "7b0f78185abb12c03159fad8563d413ea4a57f5895999f69533525e15efdfba1",
+      "retainedPromptFiles": [
+        "frames/asc-4-prompt.txt"
+      ]
+    },
+    {
+      "frame": "asc-5",
+      "source": "frames/asc-5.png",
+      "sha256": "5afd2bc1d7635311a2675f7bd4b902bdb10433d738b66dcb6be69a2d62b28846",
+      "retainedPromptFiles": [
+        "frames/asc-5-prompt.txt",
+        "frames/asc-5-repair-prompt.txt"
+      ]
+    },
+    {
+      "frame": "asc-6",
+      "source": "frames/asc-6.png",
+      "sha256": "7a75251ebd44fb16af2497130622a2eab7416921fbbd267050ff32ff6b6e914e",
+      "retainedPromptFiles": [
+        "frames/asc-6-prompt.txt"
+      ]
+    },
+    {
+      "frame": "asc-7",
+      "source": "frames/asc-7.png",
+      "sha256": "ae4f44d7deb0290eaaf5148efc6d056c9807b3fdb4e8dd024b54c898c82e05eb",
+      "retainedPromptFiles": [
+        "frames/asc-7-prompt.txt",
+        "frames/asc-7-repair-prompt.txt"
+      ]
+    },
+    {
+      "frame": "asc-8",
+      "source": "frames/asc-8.png",
+      "sha256": "58eb44f8473afcb4eff6d116d308fef87c787feaa5f8202cf3e74b10dc26c2be",
+      "retainedPromptFiles": [
+        "frames/asc-8-prompt.txt"
+      ]
+    },
+    {
+      "frame": "asc-9",
+      "source": "frames/asc-9.png",
+      "sha256": "85778a37760421d235e430b2f99e74c662afaae6f71bdbc85a5ead759e50fee1",
+      "retainedPromptFiles": [
+        "frames/asc-9-prompt.txt",
+        "frames/asc-9-repair-prompt.txt"
+      ]
+    },
+    {
+      "frame": "desc-1",
+      "source": "frames/desc-1.png",
+      "sha256": "dade220539594f4b673e300598511b9c3c9519ccbf40de233d63ac0b149a3421",
+      "retainedPromptFiles": [
+        "frames/desc-1-prompt.txt"
+      ]
+    },
+    {
+      "frame": "desc-2",
+      "source": "frames/desc-2.png",
+      "sha256": "105f087a421ab242be2b199d32a86ac6e81a460c51d3448c2fa7917011fce5b0",
+      "retainedPromptFiles": [
+        "frames/desc-2-prompt.txt"
+      ]
+    },
+    {
+      "frame": "desc-3",
+      "source": "frames/desc-3.png",
+      "sha256": "c1670f85f68a1b4feda244725da60b87da7c8f87f6f6a36625fc1e0419f0bfd0",
+      "retainedPromptFiles": [
+        "frames/desc-3-prompt.txt"
+      ]
+    },
+    {
+      "frame": "desc-4",
+      "source": "frames/desc-4.png",
+      "sha256": "c7e39a47caeaaebe223293ee9aa5f20db78ab8178dd8c200c542118d6fe6278a",
+      "retainedPromptFiles": [
+        "frames/desc-4-prompt.txt"
+      ]
+    },
+    {
+      "frame": "desc-5",
+      "source": "frames/desc-5.png",
+      "sha256": "cfdd4e8d8a67d8663d58870719aec707fc440b5b6ddaad333433179e5f91abba",
+      "retainedPromptFiles": [
+        "frames/desc-5-prompt.txt"
+      ]
+    },
+    {
+      "frame": "desc-6",
+      "source": "frames/desc-6.png",
+      "sha256": "c8c99e02ea80f447f7a454b036dcb92bed462e357cc07f1a243591788d138297",
+      "retainedPromptFiles": [
+        "frames/desc-6-prompt.txt",
+        "frames/desc-6-repair-prompt.txt"
+      ]
+    },
+    {
+      "frame": "desc-7",
+      "source": "frames/desc-7.png",
+      "sha256": "56b8e66016a5eef15212ba42e15c6601340b18eb5229310d97ce46fdaaa71bc8",
+      "retainedPromptFiles": [
+        "frames/desc-7-prompt.txt",
+        "frames/desc-7-repair-prompt.txt"
+      ]
+    },
+    {
+      "frame": "desc-8",
+      "source": "frames/desc-8.png",
+      "sha256": "db293bd5a0984694537d3e7ab0c80c307605449d56ac494fce6d6fc156847fd3",
+      "retainedPromptFiles": [
+        "frames/desc-8-prompt.txt"
+      ]
+    },
+    {
+      "frame": "desc-9",
+      "source": "frames/desc-9.png",
+      "sha256": "70dbfee5128686591dc58894b28acfcc52ccaeb459f8a2c65e8bfc7616d76e17",
+      "retainedPromptFiles": [
+        "frames/desc-9-prompt.txt",
+        "frames/desc-9-repair-prompt.txt"
+      ]
+    }
+  ]
+}

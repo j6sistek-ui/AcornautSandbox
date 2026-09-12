@@ -1,0 +1,102 @@
+{
+  "suit": "nacre",
+  "reference": "cyber",
+  "status": "PASS",
+  "reviewedAt": "2026-09-12T22:52:14.636881+00:00",
+  "reviewerRole": "Independent auditor; did not generate production art or implement runtime",
+  "scope": "All18 source and exported paintings, costume continuity, two-tail anatomy/interaction, Cyber phase rhythm, actual production-renderer sampled transitions and loading fallback.",
+  "reason": "Opaque-wholemass PCA is shape-dependent and ill-conditioned near equal covariance eigenvalues. This approval pins the exact visually reviewed twin-tail bank and is supplemented by separate body/tail motion checks; it is not a general PCA waiver.",
+  "method": "Native256 source contacts plus fixed head/body enlargements and Cyber overlays. Exported production Sim+drawPilot at52/192px,60Hz, single tap,150ms repeat,burst,dive,reset; real paintIllustrated loading fallback at tail angles\u2212.75..+.75rad. Two-row shared-renderer check600/600 equal; isolated traces1200/1200 equal toCyber.",
+  "phaseFindings": "Ascent1\u21923 gives two droop steps;3\u21927 gathers/lifts while two tails briefly cross and then unwind;7\u21929 follows through. Separate roots/tips remain traceable. Descent paired curls settle with modest relative plume motion. DESC2\u21923 local upper-plume opening changes a fixed-ROI angle but does not create a fresh whip in production captures.",
+  "costumeFindings": "Same pearl face/eyes/fin count, aubergine suit, ivory bracers/boots and thin piping. ASC7 missing neckline restored and reviewed. Minor pearl highlights/shading are retained; no significant native-size feature/color flicker seen.",
+  "limitations": "Independent browser surface was unavailable. Approval derives from source inspections and actual-renderer filmstrips, not an interactive browser session; fixed60Hz sampled scenarios are not every possible input/display rate. Anatomical anchors are approximate.",
+  "outputHashes": {
+    "nacre-asc-1.png": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481",
+    "nacre-asc-2.png": "ca2c9c0bec84fa7e4c0ad616ee9c8d7dfac725defe78325a10a682aa0d12510c",
+    "nacre-asc-3.png": "cab090eadfc5eae3304decb3b2d27970e27da740b506e2f9056007ec25fd5fde",
+    "nacre-asc-4.png": "0ccc19eba8ae2b656ab3fdd0842e7eb6bbaff52a3b28012206a342c7bedaaabf",
+    "nacre-asc-5.png": "bdd01345809b9f89f6295612f82f2d5f4886242ec776cc815d0c4bc712800bfd",
+    "nacre-asc-6.png": "4acc3a7d711a4ee06bf8b7ae7f4327bde4f1297af6038729f4beb868bca8e625",
+    "nacre-asc-7.png": "775facc7471fc8d315f4a9cbaf8d2b6e02a72c6d890c7d62e347860c956035cb",
+    "nacre-asc-8.png": "2e201392a4cf82aad4f54bb3c6ac592a7727e30d0ff916bdbc4f07790db4bb8b",
+    "nacre-asc-9.png": "e65ab074a139f9721ba3a087bba5034de7e3c62d8cf7db6224d77e410644ce8d",
+    "nacre-desc-1.png": "57fc85a50eebdfaea743a9fa7633af8b9e434472834afce35f908144693f3826",
+    "nacre-desc-2.png": "53c93b89d2ca656cd71b7181e5cfb94b06b8c946a8785469e6c8218564144ec3",
+    "nacre-desc-3.png": "878f3a432cfb02f773101540dc4d1a2fd2b0047d3be8ce19d25c122cacd0192e",
+    "nacre-desc-4.png": "35024f44bd2d11580d4ae3f0be4e305e8bd68d9f6eb030399eec38a56056c8b8",
+    "nacre-desc-5.png": "3601c14223ed9e1ab19a0342498de977e6336e61b1b318bf0ea29fbfe172008f",
+    "nacre-desc-6.png": "7f4350f1495b35e48fdcc8277878729af2231515934b0363e32d03dfa5c3c716",
+    "nacre-desc-7.png": "4e5e317dd7d007abc56ae469d8babcdcd78d07fbfe7dfdb918cdb54eca263246",
+    "nacre-desc-8.png": "90a98df15a42dde5550a77d0cbb939ddac4881eb56686bc386fca8004b4c7a65",
+    "nacre-desc-9.png": "bd3c78691a7c895a96edf18063d92c2f1c4e997acd52444cc3c0e085d6be6b1f"
+  },
+  "sourceHashes": {
+    "asc-1.png": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db",
+    "asc-2.png": "f07718b7bfc7dbcb399bd9819fccb00ec57c0ea230502ac2d1e7097845654652",
+    "asc-3.png": "185285b67afd21e628f57c5bb42eb4ba6316a47e2edd7ac0e7e4f712be2d8d9d",
+    "asc-4.png": "fb6a5a986c69e3e94a6c923d13a094627922ac0c49071e59f05aa35033a81cce",
+    "asc-5.png": "b92b188614bc5dc79f17dc30e5ebc8ffd0bbde403fa786320636385552fd0219",
+    "asc-6.png": "b7830761252cc2b3881a06df2b398f0a50083fbe9da2c5a4c2bfd492c41fdd47",
+    "asc-7.png": "f0b4a58dcfa7dd887055768698a4394333906dc1a5261f6c562881f70f223c3a",
+    "asc-8.png": "c82eddd5c0b0bd962071675cc033694202c25f509114eed8abce8cc0a8bd49b1",
+    "asc-9.png": "f64f769e8a4315e315451c8b890e1bf3383f00191979ce38d3ff0655003bbd69",
+    "desc-1.png": "d1ba483bdc8b5a52cf06d065cbad8a0450d012749ac3c101b9a72194b6e6a6e2",
+    "desc-2.png": "4e69d373e7bd856127c2ba59353c01168aed7d5bea44a3e8ab9b995430dd3e51",
+    "desc-3.png": "5a50218e0a9e25cc3ce2f7832f347b8b6b41bf5226988df3aca41398061649b3",
+    "desc-4.png": "c49625e101eafd2148b28b435d81cbefa7e37828f2e7748cb27c7fcd72e1d0d0",
+    "desc-5.png": "4cff8072ab2e9e8de2f8c6591d9e59258741b45bbbb4d2d8a96f22faa4ec729c",
+    "desc-6.png": "dd9d403b2ddaf0326da5a87bc7afde38ff953d56d3c8f62e5510531c7b8418ef",
+    "desc-7.png": "259da623590a9e51ba8b1677e30751ec061138ac255e6185be7d42696e55f67e",
+    "desc-8.png": "c7d21ccc33a9db21369fd9fe7385a83198e6a67d7171d9a296780277257b48b2",
+    "desc-9.png": "bd467e2bd7b584a2fbab5117a051a735a54157a440c81e022e9490a396d3e7c9"
+  },
+  "referenceHashes": {
+    "cyber-asc-1.png": "d2334ad1ab53ee8386ac6dc3969df3ef5cf002fdcfad282d691ef2a71928ae49",
+    "cyber-asc-2.png": "558d599a81d3cfac5f703506d1189194aaf0c099ce3acb0a1cb281d7d4dec523",
+    "cyber-asc-3.png": "53335c6942917020f954a4997bb543ddb5175a4f79ce90e6f5ced7e9e86bdb86",
+    "cyber-asc-4.png": "6915a700b185ad4390e9155d1b7e7e648c1a1d3a0e9ae5e11a522626d54a6788",
+    "cyber-asc-5.png": "d9cfcfc7806bc132243599063159d960d4ca14a13dbda806d137ddda081e4648",
+    "cyber-asc-6.png": "8deb01ec09918775f7ffd050ad2acf60bc2f8f974f0517edda367c92b7a50dd0",
+    "cyber-asc-7.png": "80121ec684399e9453770d077f82863957f36a99d2ed8d2d2a4919d800c10986",
+    "cyber-asc-8.png": "e088c15ae84bcdb7fb651ae95833ad41e837cc834046233fcc54c54073cb936e",
+    "cyber-asc-9.png": "bc11e107cce1a863ed0fa929dd6ee3c5b5e10788b647e4302aa93ea566343808",
+    "cyber-desc-1.png": "8aa0186902f64333c0caf74a8af414b6543a64e03a5a18411e64fa312b90541e",
+    "cyber-desc-2.png": "a72db815fc994493fd5718ca31c3e21fd262442e686896ddc99bce67a632b178",
+    "cyber-desc-3.png": "3eba8644a1489fe0d6411cd634bfb77881e396ae3ba42a1eb818020898cf40c1",
+    "cyber-desc-4.png": "592881e3a0ec1920602d0be52fefd09edc5e99ad777cd7cc77a7525691b36fc6",
+    "cyber-desc-5.png": "046387f314b590571a9f3e7b5136740fb71332a7c52ce5ed781045aaddc38a7b",
+    "cyber-desc-6.png": "54ffb725ef6ac16ce07a967d74eb7c2cee0bfd5ea25fe27594e327daa6387656",
+    "cyber-desc-7.png": "b2f1c7a87f452b09dc1a548d09e9e617d0aa2ea965725de0aaf4a523dc3cc0b9",
+    "cyber-desc-8.png": "e995063ebfa65d8685f968dfe04ef65578f7de6a83c9a8922c46030cad113b7c",
+    "cyber-desc-9.png": "cc78e3481ed3801888db55a47a4a7fe7d4ab9ef31791cc4c772059bc5d6d67d2"
+  },
+  "runtimeAtCapture": [
+    {
+      "path": "docs/js/draw.js",
+      "sha256": "506fc30f97fbb37696c4a0bf0f37fae2543168cdcdd56c6b95e8b3ea9c389390"
+    },
+    {
+      "path": "docs/js/sim.js",
+      "sha256": "afdac1929d33715a88b8c48386390d483aa42aeda04d127d6d38b8699f360430"
+    },
+    {
+      "path": "docs/js/art.js",
+      "sha256": "6a5bee6ecfd97a99e7533ba917e670245274268eefafb52c7f88d98ec66f8061"
+    },
+    {
+      "path": "docs/js/catalog.js",
+      "sha256": "25972a6ec12bd796d1febda5d518339d11c504a18b8e4fc6616b0e76400b453a"
+    },
+    {
+      "path": "docs/js/premium-bank-wake.js",
+      "sha256": "a16b54f52baeee80b6064282b9463da4764ba044b6e6b729192a04680121ae10"
+    }
+  ],
+  "retainedEvidence": "illustrated-src/design/premium-pilots/cyber-review/nacre-capture.json",
+  "captureReceiptSha256": "757af50154ec2cd5c59f77a6c01551f8584cdb292b6ab45fbe765f11d2d686ae",
+  "fallbackHashes": {
+    "nacre.png": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481",
+    "nacre-body.png": "69f8fdf9af1efcb35af92abc50cfff233d4e7a8a6837b69933d4d2c6b22f3114",
+    "nacre-tail.png": "3cfb2426c5200c9f819d456960d3db74c4c1fa0608cbcf3dd43d5d35037aa81b"
+  }
+}

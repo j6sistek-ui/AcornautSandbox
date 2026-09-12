@@ -31,8 +31,8 @@ export function repeatTapQueues(id: string, save: SaveData): boolean {
   return repeatTapMode(id, save) === "finish";
 }
 import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact, type ArcflashMotion } from "./arcflash-motion";
-import { createHighOrbitMotion, stepHighOrbit, highOrbitTap, type HighOrbitMotion } from "./high-orbit-motion";
-import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config";
+import { createHighOrbitMotion, createPremiumWake, stepPremiumWake, stepHighOrbit, highOrbitTap, type HighOrbitMotion } from "./high-orbit-motion";
+import { isHighOrbit, isPremiumSuit, highOrbitTrailSuit } from "./high-orbit-config";
 import { trailWornBy, STAR_CHART_TRAILS } from "./catalog";
 import { missionRandom } from "./mission-rng";
 import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress";
@@ -1818,7 +1818,8 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.tapAnimT = -1;
   w.vanguard = createVanguardMotion();
   w.arcflash = createArcflashMotion();
-  w.highOrbit = createHighOrbitMotion(isHighOrbit(save.equippedSuit)?save.equippedSuit:'cinderforge');
+  w.highOrbit = isPremiumSuit(save.equippedSuit) ? createPremiumWake(save.equippedSuit)
+    : createHighOrbitMotion(isHighOrbit(save.equippedSuit)?save.equippedSuit:'cinderforge');
   w.tapAnimDir = 1;
   w.tapAnimQueued = false;
   // a Flight Test never survives into another run; beginFlightTest sets it
@@ -3972,7 +3973,8 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       && w.shieldFreeze<=0 && w.warpT<=0 && !w.stuck) {
       if(w.race.phase==='normal'&&w.race.held&&(!priorHeld||(w.race.boost&&!priorBoost)))
         highOrbitTap(w.highOrbit,Math.max(1,priorRaceVy-w.race.vy),premiumRepeat(w,save));
-      stepHighOrbit(w.highOrbit,orbitRaceSuit,RACE_DT,w.race.vy);
+      if(isPremiumSuit(orbitRaceSuit))stepPremiumWake(w.highOrbit,orbitRaceSuit,RACE_DT,w.race.vy);
+      else stepHighOrbit(w.highOrbit,orbitRaceSuit,RACE_DT,w.race.vy);
     }
     w.speed = w.race.speed;
     w.distance = w.race.coursePosition;
@@ -4158,7 +4160,8 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   if (isHighOrbit(orbitSuit) && !w.tut?.hold && !w.spill && w.shieldFreeze<=0 && w.warpT<=0 && !w.stuck) {
     const slow=w.powerLeft>0||w.tapFrozen?PHYS.slowFactor:1;
     const visualDt=w.ready?dt:dt*slow*(w.shieldSlow>0?.55:1)*paceOf(save,w);
-    stepHighOrbit(w.highOrbit,orbitSuit,visualDt,w.squirrel.vy,w.ready);
+    if(isPremiumSuit(orbitSuit))stepPremiumWake(w.highOrbit,orbitSuit,visualDt,w.squirrel.vy,w.ready);
+    else stepHighOrbit(w.highOrbit,orbitSuit,visualDt,w.squirrel.vy,w.ready);
   }
   // THE AUTOPILOT TAPS HERE, on the fixed tick, through the same flap()
   // a thumb uses - so every painter, dial and accent sees an accepted tap,

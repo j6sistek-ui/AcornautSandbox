@@ -1,0 +1,861 @@
+{
+  "date": "2026-09-12T23:20:47.390807+00:00",
+  "status": "PASS: independent source and sampled production-renderer visual review; see CYBER-REVIEW.md for scope and limits",
+  "sourceFrames": [
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/asc-1.png",
+      "sha256": "dcfc894c371082b7b6dab9fa13cb980c22aacb5f216ded1a59fd5673f4004e0d"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/asc-2.png",
+      "sha256": "b9e2fc881dfe92c498ffa999e996e9e1b38375b1c51d85a0f7daab76863742b7"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/asc-3.png",
+      "sha256": "3028c69b32490aba6d374813375aaab3385f8ad4f0e54d6239673810997e2f4b"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/asc-4.png",
+      "sha256": "7b0f78185abb12c03159fad8563d413ea4a57f5895999f69533525e15efdfba1"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/asc-5.png",
+      "sha256": "5afd2bc1d7635311a2675f7bd4b902bdb10433d738b66dcb6be69a2d62b28846"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/asc-6.png",
+      "sha256": "7a75251ebd44fb16af2497130622a2eab7416921fbbd267050ff32ff6b6e914e"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/asc-7.png",
+      "sha256": "ae4f44d7deb0290eaaf5148efc6d056c9807b3fdb4e8dd024b54c898c82e05eb"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/asc-8.png",
+      "sha256": "58eb44f8473afcb4eff6d116d308fef87c787feaa5f8202cf3e74b10dc26c2be"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/asc-9.png",
+      "sha256": "85778a37760421d235e430b2f99e74c662afaae6f71bdbc85a5ead759e50fee1"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/desc-1.png",
+      "sha256": "dade220539594f4b673e300598511b9c3c9519ccbf40de233d63ac0b149a3421"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/desc-2.png",
+      "sha256": "105f087a421ab242be2b199d32a86ac6e81a460c51d3448c2fa7917011fce5b0"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/desc-3.png",
+      "sha256": "c1670f85f68a1b4feda244725da60b87da7c8f87f6f6a36625fc1e0419f0bfd0"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/desc-4.png",
+      "sha256": "c7e39a47caeaaebe223293ee9aa5f20db78ab8178dd8c200c542118d6fe6278a"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/desc-5.png",
+      "sha256": "cfdd4e8d8a67d8663d58870719aec707fc440b5b6ddaad333433179e5f91abba"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/desc-6.png",
+      "sha256": "c8c99e02ea80f447f7a454b036dcb92bed462e357cc07f1a243591788d138297"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/desc-7.png",
+      "sha256": "56b8e66016a5eef15212ba42e15c6601340b18eb5229310d97ce46fdaaa71bc8"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/desc-8.png",
+      "sha256": "db293bd5a0984694537d3e7ab0c80c307605449d56ac494fce6d6fc156847fd3"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/frames/desc-9.png",
+      "sha256": "70dbfee5128686591dc58894b28acfcc52ccaeb459f8a2c65e8bfc7616d76e17"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/asc-1.png",
+      "sha256": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/asc-2.png",
+      "sha256": "f07718b7bfc7dbcb399bd9819fccb00ec57c0ea230502ac2d1e7097845654652"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/asc-3.png",
+      "sha256": "185285b67afd21e628f57c5bb42eb4ba6316a47e2edd7ac0e7e4f712be2d8d9d"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/asc-4.png",
+      "sha256": "fb6a5a986c69e3e94a6c923d13a094627922ac0c49071e59f05aa35033a81cce"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/asc-5.png",
+      "sha256": "b92b188614bc5dc79f17dc30e5ebc8ffd0bbde403fa786320636385552fd0219"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/asc-6.png",
+      "sha256": "b7830761252cc2b3881a06df2b398f0a50083fbe9da2c5a4c2bfd492c41fdd47"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/asc-7.png",
+      "sha256": "f0b4a58dcfa7dd887055768698a4394333906dc1a5261f6c562881f70f223c3a"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/asc-8.png",
+      "sha256": "c82eddd5c0b0bd962071675cc033694202c25f509114eed8abce8cc0a8bd49b1"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/asc-9.png",
+      "sha256": "f64f769e8a4315e315451c8b890e1bf3383f00191979ce38d3ff0655003bbd69"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/desc-1.png",
+      "sha256": "d1ba483bdc8b5a52cf06d065cbad8a0450d012749ac3c101b9a72194b6e6a6e2"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/desc-2.png",
+      "sha256": "4e69d373e7bd856127c2ba59353c01168aed7d5bea44a3e8ab9b995430dd3e51"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/desc-3.png",
+      "sha256": "5a50218e0a9e25cc3ce2f7832f347b8b6b41bf5226988df3aca41398061649b3"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/desc-4.png",
+      "sha256": "c49625e101eafd2148b28b435d81cbefa7e37828f2e7748cb27c7fcd72e1d0d0"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/desc-5.png",
+      "sha256": "4cff8072ab2e9e8de2f8c6591d9e59258741b45bbbb4d2d8a96f22faa4ec729c"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/desc-6.png",
+      "sha256": "dd9d403b2ddaf0326da5a87bc7afde38ff953d56d3c8f62e5510531c7b8418ef"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/desc-7.png",
+      "sha256": "259da623590a9e51ba8b1677e30751ec061138ac255e6185be7d42696e55f67e"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/desc-8.png",
+      "sha256": "c7d21ccc33a9db21369fd9fe7385a83198e6a67d7171d9a296780277257b48b2"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/frames/desc-9.png",
+      "sha256": "bd467e2bd7b584a2fbab5117a051a735a54157a440c81e022e9490a396d3e7c9"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/asc-1.png",
+      "sha256": "f85efa3c3d99f39411ffd0e8a8a1b84272bc3a31c6c475d56a4808d33c6a3209"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/asc-2.png",
+      "sha256": "b283ea31c1fd4bfca0c0dbaf8617775288c11adb78b6c8478bf88e72ba759294"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/asc-3.png",
+      "sha256": "b03d2af5b1e9a026f061a0ef204ed94daa9f3d4089c041b1ba38b8a64acf4876"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/asc-4.png",
+      "sha256": "093d7bfdec7df82aaf1573854e8d9689363cf0cfdcb85ec7754dc0971d894896"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/asc-5.png",
+      "sha256": "ae0b55f33ad1a4c96fe8b1ae1efc1cc908eb2b19a2d60de215fef6d209aeba16"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/asc-6.png",
+      "sha256": "2c3015360d195e2f36cfe0f49db0a2e2108fb2e1c0e74c4f0dff14d5b71803fa"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/asc-7.png",
+      "sha256": "4a516a43afa9001463e2c79763aa619eeea28cd04dd49f5f066a7c9c1980390a"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/asc-8.png",
+      "sha256": "9dd8416ef5fe51f88d5eaf23d72151192b2b63271594e7388f3b2590756863a4"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/asc-9.png",
+      "sha256": "8d8123f57b9a84115cdc238922b55f6fb637dff707dd4fd04f5733d5aadba92a"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/desc-1.png",
+      "sha256": "185bfb9afe0d1c2a6b81cfd4ea21256c40c4c48a357a1fe722ecb9f39866adf6"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/desc-2.png",
+      "sha256": "3c27ed67efda5844aaad06b07d2c1686e10df5999a38ae43b2a5d1548e9673e9"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/desc-3.png",
+      "sha256": "ad1148e051977c2b95bac9e884982ec6168b0ebcc57b4f56e4e5e4939792e7e4"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/desc-4.png",
+      "sha256": "e36160668488e4531bdaf498fe1663ee4c849a758cb9c5c7a922072d352ac9c1"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/desc-5.png",
+      "sha256": "773008b4e1f61b9754e58d244a254d55f64d6d14a74f5b8b91705954fc5d5c1f"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/desc-6.png",
+      "sha256": "97daad83fbe7dc31dec6d122960899032d97e94edc8ba5b852cfb301b8232225"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/desc-7.png",
+      "sha256": "cbcb4a26066e99d801b6cb387257b3df2ea8d0c327b03ad8fa2ab1933a2ef2f3"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/desc-8.png",
+      "sha256": "6cd8c793a96f743390e545d23025cd693e452042db8afbac5390af64ffbdabe4"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/frames/desc-9.png",
+      "sha256": "45bdd9c7260b58d6a9b63fa32e6eb27ed1a8619dfe3942f020945e95455d6fb5"
+    }
+  ],
+  "loadedArt": [
+    {
+      "path": "docs/art/suits/cyber.png",
+      "sha256": "8959b90e4f34bb275bae9af5370d6d7bb7e716cfa2a0a6921d8f693f5aeb51e2"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-2.png",
+      "sha256": "558d599a81d3cfac5f703506d1189194aaf0c099ce3acb0a1cb281d7d4dec523"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-1.png",
+      "sha256": "d2334ad1ab53ee8386ac6dc3969df3ef5cf002fdcfad282d691ef2a71928ae49"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-5.png",
+      "sha256": "d9cfcfc7806bc132243599063159d960d4ca14a13dbda806d137ddda081e4648"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-3.png",
+      "sha256": "53335c6942917020f954a4997bb543ddb5175a4f79ce90e6f5ced7e9e86bdb86"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-4.png",
+      "sha256": "6915a700b185ad4390e9155d1b7e7e648c1a1d3a0e9ae5e11a522626d54a6788"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-6.png",
+      "sha256": "8deb01ec09918775f7ffd050ad2acf60bc2f8f974f0517edda367c92b7a50dd0"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-7.png",
+      "sha256": "80121ec684399e9453770d077f82863957f36a99d2ed8d2d2a4919d800c10986"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-8.png",
+      "sha256": "e088c15ae84bcdb7fb651ae95833ad41e837cc834046233fcc54c54073cb936e"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-9.png",
+      "sha256": "bc11e107cce1a863ed0fa929dd6ee3c5b5e10788b647e4302aa93ea566343808"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-1.png",
+      "sha256": "8aa0186902f64333c0caf74a8af414b6543a64e03a5a18411e64fa312b90541e"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-5.png",
+      "sha256": "046387f314b590571a9f3e7b5136740fb71332a7c52ce5ed781045aaddc38a7b"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-2.png",
+      "sha256": "a72db815fc994493fd5718ca31c3e21fd262442e686896ddc99bce67a632b178"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-3.png",
+      "sha256": "3eba8644a1489fe0d6411cd634bfb77881e396ae3ba42a1eb818020898cf40c1"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-7.png",
+      "sha256": "b2f1c7a87f452b09dc1a548d09e9e617d0aa2ea965725de0aaf4a523dc3cc0b9"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-4.png",
+      "sha256": "592881e3a0ec1920602d0be52fefd09edc5e99ad777cd7cc77a7525691b36fc6"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-6.png",
+      "sha256": "54ffb725ef6ac16ce07a967d74eb7c2cee0bfd5ea25fe27594e327daa6387656"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-8.png",
+      "sha256": "e995063ebfa65d8685f968dfe04ef65578f7de6a83c9a8922c46030cad113b7c"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-9.png",
+      "sha256": "cc78e3481ed3801888db55a47a4a7fe7d4ab9ef31791cc4c772059bc5d6d67d2"
+    },
+    {
+      "path": "docs/art/suits/cyber-body.png",
+      "sha256": "fe76e0c15034dd323c33cf71c747506ea2958c99ae2ecd9763787d690b33d356"
+    },
+    {
+      "path": "docs/art/suits/cyber-tail.png",
+      "sha256": "044080b2520ec2a85b034cc3d3cb1016125e4a107fedc940219244df6630f5a3"
+    },
+    {
+      "path": "docs/art/suits/porcelain.png",
+      "sha256": "74d64a092c694095429e8ca45faea2762fcdd1632912be6ff0efa2d063aadc43"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-1.png",
+      "sha256": "74d64a092c694095429e8ca45faea2762fcdd1632912be6ff0efa2d063aadc43"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-4.png",
+      "sha256": "159e275bf74fcb5d39ad25bc1ea26cd1e12f9c5c5e054d5e7bf9dd3995b77f03"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-3.png",
+      "sha256": "f78d97dc7a199e8b0cd761096b7d73f8a2e3dac1cd56914ee45e93cdf3dede29"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-2.png",
+      "sha256": "ccb7517f58ab8e3f83c825fd030e8b77644683e2f9d6bf46d07782b143f33aa5"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-7.png",
+      "sha256": "5c908435b1b0f7c6ea99a10dbdcab47fbcbbd322e0a1b0d346be2fb1583b9746"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-6.png",
+      "sha256": "8770a09f47b30b4189f8ef4ec3cdad7acb570865273a1ae458f803f783c5b055"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-8.png",
+      "sha256": "f377400f5041354d65f62a2f5acde18f954a98cf9fef7b0f89e44b2e8b51b238"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-5.png",
+      "sha256": "63e3bfc40353181f5282e3a7f67de49a90a87d7d54442b24596d56b905311bb7"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-9.png",
+      "sha256": "5673267f67c1c87576ef4070a1a96470ad925408d4fc58c95faffa98c285400a"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-2.png",
+      "sha256": "b43da0564975c416e7b6e2baec21c900a8460c5407085319b1399090aa962923"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-1.png",
+      "sha256": "5983de81024c1998f16fd371021b46de353e15493d0446f54b550b704236e2de"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-4.png",
+      "sha256": "6fe9983c8d4d2e77e2b358df7502a524ed8b028a3338287b4220cca6fb7818cd"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-3.png",
+      "sha256": "4929e256c43c80d5d1b2549d69d79b3a01af55fc1f2a15506d9276cb91b3c742"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-7.png",
+      "sha256": "d650a107c6724a5188ae14ddf3f6bf51776ed8551f5531161353f0cbc25c96d9"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-5.png",
+      "sha256": "a7cfcd5716d19f1d817bf139a3eee06a7fd0e2f1481f13aa559249c97e09f607"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-6.png",
+      "sha256": "4cd8cc10727fa4077f63caf1b2ecb3107bf22eb4ceadaa30e11f534aa2fcb92d"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-8.png",
+      "sha256": "eeb195d95fd5f8c5154a6dfdbd778f26639bf96f51bd786acd2f1388e4e2c4d8"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-9.png",
+      "sha256": "e94a7cae3a1eefa6ae81f88bc41c5fd7b96b93dfa9358ff79fcc7ceb874a0dab"
+    },
+    {
+      "path": "docs/art/suits/porcelain-body.png",
+      "sha256": "5afda1c9e3c0d00301f4083e926c16c7b5d7bfae0f3099ef57437b48465b094b"
+    },
+    {
+      "path": "docs/art/suits/porcelain-tail.png",
+      "sha256": "7ae1b942f95257ee5623f5c464c65793959077c43e75f498156f2c53fa2a9031"
+    },
+    {
+      "path": "docs/art/suits/nacre.png",
+      "sha256": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-2.png",
+      "sha256": "ca2c9c0bec84fa7e4c0ad616ee9c8d7dfac725defe78325a10a682aa0d12510c"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-1.png",
+      "sha256": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-3.png",
+      "sha256": "cab090eadfc5eae3304decb3b2d27970e27da740b506e2f9056007ec25fd5fde"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-4.png",
+      "sha256": "0ccc19eba8ae2b656ab3fdd0842e7eb6bbaff52a3b28012206a342c7bedaaabf"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-6.png",
+      "sha256": "4acc3a7d711a4ee06bf8b7ae7f4327bde4f1297af6038729f4beb868bca8e625"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-5.png",
+      "sha256": "bdd01345809b9f89f6295612f82f2d5f4886242ec776cc815d0c4bc712800bfd"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-9.png",
+      "sha256": "e65ab074a139f9721ba3a087bba5034de7e3c62d8cf7db6224d77e410644ce8d"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-7.png",
+      "sha256": "775facc7471fc8d315f4a9cbaf8d2b6e02a72c6d890c7d62e347860c956035cb"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-8.png",
+      "sha256": "2e201392a4cf82aad4f54bb3c6ac592a7727e30d0ff916bdbc4f07790db4bb8b"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-1.png",
+      "sha256": "57fc85a50eebdfaea743a9fa7633af8b9e434472834afce35f908144693f3826"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-3.png",
+      "sha256": "878f3a432cfb02f773101540dc4d1a2fd2b0047d3be8ce19d25c122cacd0192e"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-2.png",
+      "sha256": "53c93b89d2ca656cd71b7181e5cfb94b06b8c946a8785469e6c8218564144ec3"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-4.png",
+      "sha256": "35024f44bd2d11580d4ae3f0be4e305e8bd68d9f6eb030399eec38a56056c8b8"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-5.png",
+      "sha256": "3601c14223ed9e1ab19a0342498de977e6336e61b1b318bf0ea29fbfe172008f"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-6.png",
+      "sha256": "7f4350f1495b35e48fdcc8277878729af2231515934b0363e32d03dfa5c3c716"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-7.png",
+      "sha256": "4e5e317dd7d007abc56ae469d8babcdcd78d07fbfe7dfdb918cdb54eca263246"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-8.png",
+      "sha256": "90a98df15a42dde5550a77d0cbb939ddac4881eb56686bc386fca8004b4c7a65"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-9.png",
+      "sha256": "bd3c78691a7c895a96edf18063d92c2f1c4e997acd52444cc3c0e085d6be6b1f"
+    },
+    {
+      "path": "docs/art/suits/nacre-body.png",
+      "sha256": "69f8fdf9af1efcb35af92abc50cfff233d4e7a8a6837b69933d4d2c6b22f3114"
+    },
+    {
+      "path": "docs/art/suits/nacre-tail.png",
+      "sha256": "3cfb2426c5200c9f819d456960d3db74c4c1fa0608cbcf3dd43d5d35037aa81b"
+    },
+    {
+      "path": "docs/art/suits/origamist.png",
+      "sha256": "53ca027936f6892e55952f61951afe1f32f6c9fdb8dc0271395e43235bd3f546"
+    },
+    {
+      "path": "docs/art/suits/origamist-asc-3.png",
+      "sha256": "1951be2a6ff71a062e1000effffe1a421562e926ece41ce390f8f613f235151f"
+    },
+    {
+      "path": "docs/art/suits/origamist-asc-2.png",
+      "sha256": "17360063f8c8efcd85cb947f6c7eb6e85abf3a594270ccfd01b344c85671a75c"
+    },
+    {
+      "path": "docs/art/suits/origamist-asc-4.png",
+      "sha256": "c450c78ed265907b473effd81f8e3b5261dfaa7fe3760327a0a9dbcdad245d8f"
+    },
+    {
+      "path": "docs/art/suits/origamist-asc-1.png",
+      "sha256": "53ca027936f6892e55952f61951afe1f32f6c9fdb8dc0271395e43235bd3f546"
+    },
+    {
+      "path": "docs/art/suits/origamist-asc-5.png",
+      "sha256": "137ba9ad7a4376ba41796ad87629ae8f03310dc8b062d6476b740648d48fa27a"
+    },
+    {
+      "path": "docs/art/suits/origamist-asc-9.png",
+      "sha256": "d81eb3f8b6f1a959a4b0ec4391076719255fe8af6d13d86feb998107b7a7b80d"
+    },
+    {
+      "path": "docs/art/suits/origamist-asc-7.png",
+      "sha256": "d5a7db89e6d2306014aa54c402cf300186b8a2180cf839f2ddfd8ca69f7077f8"
+    },
+    {
+      "path": "docs/art/suits/origamist-asc-6.png",
+      "sha256": "cfb1335e3f0b98fe4d85abcf9c06f6aff8238262afde54da99ae32763ec8c03c"
+    },
+    {
+      "path": "docs/art/suits/origamist-asc-8.png",
+      "sha256": "a8a088854eebe4ddd6816f46c567332a334f6bfbbf38c5d53aae17fd194a4330"
+    },
+    {
+      "path": "docs/art/suits/origamist-desc-1.png",
+      "sha256": "24f36bc1644f06d96816db90933abb22b05579e259a3ee43f7d84cd486ee83cf"
+    },
+    {
+      "path": "docs/art/suits/origamist-desc-6.png",
+      "sha256": "af9754cceb8297048f3f6e7327efbe7d510a670c1e9de1fafc193c3e20ecc57f"
+    },
+    {
+      "path": "docs/art/suits/origamist-desc-2.png",
+      "sha256": "ad5fdd167c68685a399e80c6e8d7475455ddfe1aee98d8d16af1cf542d40c25a"
+    },
+    {
+      "path": "docs/art/suits/origamist-desc-4.png",
+      "sha256": "90be785dbbceed483ed11de973c32f299687b072405cd4e08e030631f9c50989"
+    },
+    {
+      "path": "docs/art/suits/origamist-desc-3.png",
+      "sha256": "d1b458ae4dd38dfdec61a3f79c28af5ab70b3b89a9b199f85b36e0d7c4720250"
+    },
+    {
+      "path": "docs/art/suits/origamist-desc-5.png",
+      "sha256": "6f26d7ba9178347fe18c72bffabc62a28602bbe8c44ffea3c939cb596f5af763"
+    },
+    {
+      "path": "docs/art/suits/origamist-desc-7.png",
+      "sha256": "6c9fb596c9b4c4b8d09a347523b8c487ff9d10efaffa4fdb36893e20a9d944b4"
+    },
+    {
+      "path": "docs/art/suits/origamist-desc-8.png",
+      "sha256": "76680088970aad8966e98122d9d08c0b7046155f788dc0a73c2532d854595961"
+    },
+    {
+      "path": "docs/art/suits/origamist-desc-9.png",
+      "sha256": "0ab2da072cf438e283a66691d714a978ae35964ba9266d3eebde0db4c1720ade"
+    },
+    {
+      "path": "docs/art/suits/origamist-body.png",
+      "sha256": "e7e66f7f5e608a25b3baa1df0a459f025bf98845f0612e6f3cfd5ef81fc64d46"
+    },
+    {
+      "path": "docs/art/suits/origamist-tail.png",
+      "sha256": "34b9bc69b37309474157add38720baf46347f444e25013753928d0caf2ee8746"
+    },
+    {
+      "path": "docs/art/helms/clear.png",
+      "sha256": "77cf59bf573d732deb24d8da8ab836937f880c648e3183f4cbce09477066ad32"
+    },
+    {
+      "path": "docs/art/squirrel/idle-1.png",
+      "sha256": "dec590e3b1d1b68279680b88f1bc70576983a39ed44ce6e3ccae218741f23007"
+    },
+    {
+      "path": "docs/art/squirrel/flap-1.png",
+      "sha256": "5ddc9a7b314dcd37793c1164fd8dcf953b87e8111458775b6fb3a721e4a93e8c"
+    }
+  ],
+  "artConfiguration": [
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/export.json",
+      "sha256": "d81e951d5fd70c474b0eb4712e59fc3b80ecc553fb315092e7742ed1fed03776"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/geometry.json",
+      "sha256": "074c43a5eb3b41228e8fdb24cf3ba3051a538ac010a855538b04fbf090b87c18"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/registration-review.json",
+      "sha256": "8e83ebcbdcc334c866cb8a981421801762c978e4c7a6a5b937db79c2c57d90c8"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/selected-sources.json",
+      "sha256": "d1cd7edcf37be184ae027ac1a7625721df408f34c41b2441e7979477d9a9a7c0"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/porcelain/still-tail-mask.png",
+      "sha256": "d6eb07cfd04d4e20c6bc8c50e44b2631d2ab5ef8af2d5a418dc20589dab84ff1"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/export.json",
+      "sha256": "1bd8501e75ec14a31b061d8e03d8aec828ac9138fa91dfa728029857af5308d3"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/geometry.json",
+      "sha256": "93fb4d7d69d4a383bf6d31205259b7813d984f725ed6211cc51d518e420e08ef"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/registration-review.json",
+      "sha256": "a118d448ffbfcee199629c8837c0afa38f64cedce30910ed227a23d8d6c4d1e7"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/selected-sources.json",
+      "sha256": "f15d9e2c1eb28b0212516c39f2c0f83734b5dd1ac4c1789e5f134fbed99c2ed2"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/nacre/still-tail-mask.png",
+      "sha256": "bbe110fe4d215b91d50e0d11d55904f221855dc30bf760359fb1aff6c04b7cbd"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/export.json",
+      "sha256": "881acd9f0aae97d598c29b9a70186c127791fbf1788a8a4efa80755868db8373"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/geometry.json",
+      "sha256": "289904fbef50735183b76bd68885730e05a308873785a7760d4d9e36118e52cc"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/registration-review.json",
+      "sha256": "872e9a3169acbdee0776b48d1874973185adf8764256ea2ca2f6c402ca73db12"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/selected-sources.json",
+      "sha256": "70c6a8c8516d1c467f5b76428b3f2c4025c2b8a880a250eeb96c73c8ca6e8444"
+    },
+    {
+      "path": "art-src/cyber-standard-trio/origamist/still-tail-mask.png",
+      "sha256": "4cffd53cff988dbd59fdc955acf2cf70884418d54438838c21b33e67e0e4c7ec"
+    }
+  ],
+  "runtimeModuleSnapshot": [
+    {
+      "path": "docs/js/arcflash-motion.js",
+      "sha256": "402eb12ad33e2b72fa58cf730e5707186c7daf7e6f3af837c9a729fe20ba00e0"
+    },
+    {
+      "path": "docs/js/arcflash-parts.js",
+      "sha256": "6917039b81873470b16529a923361899c35c10a7490d6b606bcd304955d2b11e"
+    },
+    {
+      "path": "docs/js/arcflash.js",
+      "sha256": "c12047d7d9435f9587fed46d62495fed47388bd8aebfb990de5c2709018ce885"
+    },
+    {
+      "path": "docs/js/art.js",
+      "sha256": "6a5bee6ecfd97a99e7533ba917e670245274268eefafb52c7f88d98ec66f8061"
+    },
+    {
+      "path": "docs/js/audio.js",
+      "sha256": "983405f072c8223ea0e5709dd0d8b15c7d764091f60a0c527236f3175c6354d0"
+    },
+    {
+      "path": "docs/js/beta-campaign-manifest.js",
+      "sha256": "c1e841a03f9782c4914eeff8edcbe8c3eb2e95269c9da41fa25e7c9e29e34854"
+    },
+    {
+      "path": "docs/js/campaign-manifest.js",
+      "sha256": "302a32aaa6897dd5f355467aa0ea4776714f31f1048823e46455c7a09bc71388"
+    },
+    {
+      "path": "docs/js/campaign-progress.js",
+      "sha256": "875e1c6eb416253b2d8fc3dff2b6e0c647d94fecf0bde0ba4541e39a1351d281"
+    },
+    {
+      "path": "docs/js/campaign.js",
+      "sha256": "e61e0833cbc8e6ebd48d44c066e2bea49a8722bc6024caa64ab55211a6574e08"
+    },
+    {
+      "path": "docs/js/catalog.js",
+      "sha256": "68a0532d9318e44a903d0db50270296c1118b66509ca52411712e7fff149e9d1"
+    },
+    {
+      "path": "docs/js/control-constants.js",
+      "sha256": "598684b99a95a4fb290e8fce9ce9a097e8bb7c48dd583c37acd8c1d83d269f53"
+    },
+    {
+      "path": "docs/js/cosmetics.js",
+      "sha256": "926407294c3fc50c967a90989f3f0f993941388ff278436958fd0773309bb4b9"
+    },
+    {
+      "path": "docs/js/cyber-trio-registration.js",
+      "sha256": "19bab7de1ec7dd200d169cd63f6a62b2dffaaa661636d4a9ce926ea85f525fef"
+    },
+    {
+      "path": "docs/js/draw.js",
+      "sha256": "506fc30f97fbb37696c4a0bf0f37fae2543168cdcdd56c6b95e8b3ea9c389390"
+    },
+    {
+      "path": "docs/js/engine.js",
+      "sha256": "fd70b5b29bb5901cbf3451ab552516ec0f45dcb22d94cb00ca7ffb23edf015cd"
+    },
+    {
+      "path": "docs/js/helmet-openings.js",
+      "sha256": "6f428cd8f57fb8a57251985d0640f865f3738c33fd3cd98f08723904b3070b21"
+    },
+    {
+      "path": "docs/js/high-orbit-config.js",
+      "sha256": "fe655c496e5dd63fa61f5ea8e9c262cedf72ab0e2affafa1c194bd1e83de3167"
+    },
+    {
+      "path": "docs/js/high-orbit-effects.js",
+      "sha256": "f0ffd742c785b12410c2e0ff4715451b726b6b312167f541cc64fa21e121493c"
+    },
+    {
+      "path": "docs/js/high-orbit-motion.js",
+      "sha256": "77fdcfd731daa672ccb4575b33fe81192d4dffcfd5c48209859f785135adc80f"
+    },
+    {
+      "path": "docs/js/high-orbit-parts.js",
+      "sha256": "3771e12fe3a7be208cdab0b484823ced0af82d1bbd13eaabea5c0e578e789bbf"
+    },
+    {
+      "path": "docs/js/high-orbit.js",
+      "sha256": "fa7fdae85cc0a7462d808f4e67d249680c974c0c1f53d694939d1f1cf37dd0ff"
+    },
+    {
+      "path": "docs/js/mission-rng.js",
+      "sha256": "5b6577f638edca5fa64b1e209662ae2b6554422514f110cab4491c8e5de6773e"
+    },
+    {
+      "path": "docs/js/planet-contrast.js",
+      "sha256": "ff14bee24e5922c5470eb16f44906135a4d50ab978c76215c5d8511e698df923"
+    },
+    {
+      "path": "docs/js/planet-family.js",
+      "sha256": "eb623009aa7a69f196f87ca95b237e2832e609549a19ea89ee04db4ae20be6b9"
+    },
+    {
+      "path": "docs/js/platform.js",
+      "sha256": "9ff43191025b4c0956071475e7c180c11cefa3d9dbeaa6696438fe4d4a92b127"
+    },
+    {
+      "path": "docs/js/premium-bank-wake.js",
+      "sha256": "a16b54f52baeee80b6064282b9463da4764ba044b6e6b729192a04680121ae10"
+    },
+    {
+      "path": "docs/js/premium-flight-frames.js",
+      "sha256": "3721e54fcd53f34035dcbb8071aa4f01e0fb1cf624f84c57ac25f71f8822066a"
+    },
+    {
+      "path": "docs/js/premium-flight.js",
+      "sha256": "c9afe96e1489268785edaa7f4bc5cb6e469896841a8af58a5e6aa265f21a05d4"
+    },
+    {
+      "path": "docs/js/race-gesture.js",
+      "sha256": "3c60c8fadbc0d5cc59dbcadd63ceea558b111dafbaab3601aaec364ce08dff16"
+    },
+    {
+      "path": "docs/js/race-viewport.js",
+      "sha256": "8b2b579837c6cb1a1a10a1844309707ad7a2a9b455c7c7efb8953f5c76ff7d5f"
+    },
+    {
+      "path": "docs/js/race.js",
+      "sha256": "a07ec0cfb5b113a0866cb6a0a5d90e3ea350930d96f823185c2054a9a22362b7"
+    },
+    {
+      "path": "docs/js/retro.js",
+      "sha256": "702a19e5a070a3eeeafc1cebd15c2dfa0a8cf3935d75b911bc2ee4330c460e0d"
+    },
+    {
+      "path": "docs/js/rig-limb-fit.js",
+      "sha256": "9329be1978096c3d58846c86bc9af2a48169b746f44dedd583d055267f425bab"
+    },
+    {
+      "path": "docs/js/save.js",
+      "sha256": "92b65bf6bfc157d2443be745a91d1bd75bc5907abe97a66090328a6ad8dde4e3"
+    },
+    {
+      "path": "docs/js/shop-cycle.js",
+      "sha256": "7a70a7c076fe85449c1abc7782160db99d4f4878dd9aba8a3a3648c014114778"
+    },
+    {
+      "path": "docs/js/sim.js",
+      "sha256": "afdac1929d33715a88b8c48386390d483aa42aeda04d127d6d38b8699f360430"
+    },
+    {
+      "path": "docs/js/sky-gen.js",
+      "sha256": "eab744a5aa3d56a0b663bb59f7ff1ab1865eccd098d9c4776cb5dcd6aa019450"
+    },
+    {
+      "path": "docs/js/spill-appearance.js",
+      "sha256": "fac8878fb008f80819334c41a71c7184d4a626b3c26849fda8416b81a745835b"
+    },
+    {
+      "path": "docs/js/spill-content.js",
+      "sha256": "5c6fe30c14ddc588002e0790da4a90bc46ae70426b348de25261b58a7681a3f7"
+    },
+    {
+      "path": "docs/js/spill-control-art.js",
+      "sha256": "3dbb64cc824655ffdc92bccbb8f807cb3f0d7fdf987f46145f61125617b3a379"
+    },
+    {
+      "path": "docs/js/spill-depot-bear.js",
+      "sha256": "7b7cadce4affb844ff172eb2bf24e4072fbea431ab3a77190e8769571abdc7ea"
+    },
+    {
+      "path": "docs/js/spill-depot-gag.js",
+      "sha256": "7b2eb346e7eeb9065c9a6b55b2f530fc7cecd7732afb632a40bc141f70ac0196"
+    },
+    {
+      "path": "docs/js/spill-presentation.js",
+      "sha256": "24710b07e876900ed728724b35f2636c9559cbc60b9e975f5370299647054c7c"
+    },
+    {
+      "path": "docs/js/spill-workshop.js",
+      "sha256": "3bbb8542aeb1dfc98782be7a6afad98d97b550c14cbacda46ab19eac8c3814e9"
+    },
+    {
+      "path": "docs/js/spill.js",
+      "sha256": "6ac2bc8e073c5358bf264de4ae64a05e51b598e6b85b632a0d4f70e90e929286"
+    },
+    {
+      "path": "docs/js/standalone.js",
+      "sha256": "5c4d35f0e64c463a4fc5772d8147620bc78a0aeb81e7bc88093c2d85ef4e3ca8"
+    },
+    {
+      "path": "docs/js/star-map-rewards.js",
+      "sha256": "c1630b85adc20136c50ab19c8ed3910861d01d89689438c85979f376e9b4c3f9"
+    },
+    {
+      "path": "docs/js/star-map-view.js",
+      "sha256": "e718f5e7b891e8085ecf4ec9df6df7a081556203abdcc2555405a4f0aae213a2"
+    },
+    {
+      "path": "docs/js/star-trails.js",
+      "sha256": "415d6897470d1e4149b755215b6c6670b1126484f3a465a80a5b98cecb607981"
+    },
+    {
+      "path": "docs/js/vanguard-maneuver.js",
+      "sha256": "a72d98d10fc290ae0d9aaac2a362bbf6d8c48b3114fd9379cc62d1b23378e426"
+    },
+    {
+      "path": "docs/js/vanguard-parts.js",
+      "sha256": "34716dfa694ac04ef25b5e347595c4122327ae1a153c7e90e95944b4bc470f5a"
+    },
+    {
+      "path": "docs/js/vanguard-rig.js",
+      "sha256": "38c3fe750070c1f6003ecf03d7d56717e5481b601ef93959dc16e030d980339d"
+    },
+    {
+      "path": "docs/js/vanguard.js",
+      "sha256": "2d3b0c9951a6ccdd37088b9152b0f1e743dfc2c7b40707e566f3c9ab0b93b4b1"
+    },
+    {
+      "path": "docs/js/zone-planet-colors.js",
+      "sha256": "f62fdef0b7c2c6227500c72c736a4b483ec820a17c3b2b11d95831508a3d1f3b"
+    },
+    {
+      "path": "docs/js/zone-visuals.js",
+      "sha256": "11200ba4e7a22c0729d0ae9a937f3658f137045ad28f731aab8d4bdc8718cbab"
+    }
+  ],
+  "captureSummary": {
+    "path": "illustrated-src/design/premium-pilots/cyber-review/final-capture.json",
+    "sha256": "7ee5ee20bb113edb33e861d660ef3e98e7b32991e3ca7f0802115261ebe61554"
+  },
+  "nacreMotionReviewSha256": "e8fc45a69955e3cb0a80cbfb2eb08c6f587e856b7796bc6b9a7fbc50666efc2e"
+}

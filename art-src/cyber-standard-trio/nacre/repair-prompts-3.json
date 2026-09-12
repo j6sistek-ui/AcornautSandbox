@@ -1,0 +1,22 @@
+[
+  {
+    "n": 4,
+    "path": "imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-d22d43d5-80b5-4655-af90-7e78f1abb34b.png",
+    "prompt": "Precise localized repair on IMAGE1, keep all shapes/pose/pixels placement. Restore two missing suit features from IMAGE2: (a) broad pale-rose waist stripe crossing dorsal back behind shoulder, continuing down near side, (b) a single thin rose-gold U-shaped piping line around the lower belly below forearm. Keep existing simple V neckline. These are fabric seam trim, not extra plates; add NO angular grid or chest pentagon. Also preserve TWO tailplumes: add a thin green separation gap from adjacent rump roots following their existing curves, clearly two equally substantial silky tails and two tips. Do not move/repose/resize any part; every other detail unchanged. Flat#00ff00."
+  },
+  {
+    "n": 6,
+    "path": "imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-71573eb2-aa7b-4d5b-96ad-9096b15c9022.png",
+    "prompt": "Precise localized repair to IMAGE1 ONLY. Restore missing suit features from IMAGE2: a broad pale rose waist stripe over dorsal back behind shoulder continuing down near side, and ONE thin rose-gold U-shaped lower-belly piping curve below forearm. Keep the existing simple V neckline, simple smooth oval hip outline and pale lavender paws. Add NO angular grid, pentagon or chest badge. Keep all current head/body/limb/tail pixel placement, fourpaws, ivorybracers and boots EXACT. Do not change TWO separated tails, palette or material. Everything except those two seam features unchanged. Flat#00ff00."
+  },
+  {
+    "n": 7,
+    "path": "imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-05c97bab-268d-4e2a-afbf-95e89f754926.png",
+    "prompt": "Tiny localized suit repair to IMAGE1 only, preserve ENTIRE exact pose, head location/size, limb placement and twin tails. Near hip seam currently pointed teardrop: replace it with ONE simple smooth OVAL thin rose-gold outline matching IMAGE2. Shoulder has diagonal stripes: replace with ONE oval pale-rose shoulder ring/cap as IMAGE2. Restore ONE thin U-shaped piping curve around lower belly and broad pale-rose dorsal waist stripe as IMAGE2; no extra panels or chest grid. Keep all fourpaws, ivorybracers/boots, openeyes and two tailplumes unchanged. Do NOT copy IMAGE2's pose, placement or proportions. Flat#00ff00."
+  },
+  {
+    "n": 8,
+    "path": "art-src/cyber-standard-trio/nacre/frames/asc-8.png",
+    "prompt": "Edit only tiny jagged serrations on the tail edges in IMAGE1: smooth them into broad flowing silky pearl-lilac ribbon curves, like IMAGE2. Retain TWO separately rooted tailplumes, their existing separate tips, green gap and EXACT current curves, positions, outer envelope and total mass. The material should have broad pearl/lilac streaks instead of spiky hair. Do not change ANY head, face, costume, body, limb, pose, scale, canvas margin or green background pixels. Exact current framing. Flat#00ff00."
+  }
+]

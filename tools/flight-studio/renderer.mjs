@@ -1,5 +1,7 @@
 import {paintHighOrbit,highOrbitLandmarks} from './game/high-orbit.mjs';
 import {paintPremiumFlightFrame} from './game/premium-flight.mjs';
+import {isPremiumSuit} from './game/high-orbit-config.mjs';
+import {paintPremiumBankWake} from './game/premium-bank-wake.mjs';
 import {paintArcflash} from './game/arcflash.mjs';
 import {paintManeuver} from './game/vanguard-maneuver.mjs';
 import {clipHelmetGlass} from './game/helmet-openings.mjs';
@@ -63,7 +65,10 @@ export class StudioRenderer{
     }else{
       const list=model.banks[s.bank]||[],path=list[s.frame]||model.file,img=this.image(path);if(!img)return;
       const extra=(s.bank==='desc'?p.descOffsets:p.tapOffsets)[s.slot]||0;
-      ctx.save();ctx.translate(x,y);ctx.rotate(pitch+extra*DEG);ctx.scale(size/192,size/192);
+      ctx.save();ctx.translate(x,y);ctx.rotate(pitch+extra*DEG);
+      if(isPremiumSuit(model.id)&&view.effects&&['asc','desc'].includes(s.bank))
+        paintPremiumBankWake(ctx,model.id,s.bank,s.frame,{x:32,y:32,w:192,h:192},0,0,size,{state:s.output,travel:simulation.time*200});
+      ctx.scale(size/192,size/192);
       // Fixed 256px registration; never fit each frame to its moving bounds.
       ctx.drawImage(img,-128,-128,256,256);
       const key=path.slice(6,-4),anchor=this.manifest.anchors[key]||model.dome;

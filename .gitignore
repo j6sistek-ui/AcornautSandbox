@@ -4,3 +4,7 @@ __pycache__/
 node_modules
 node_modules/
 package-lock.json
+
+# Local iterations and diagnostic boards; reviewed evidence is kept with sources.
+/outputs/cyber-standard-trio/
+/.agent/check-deps/

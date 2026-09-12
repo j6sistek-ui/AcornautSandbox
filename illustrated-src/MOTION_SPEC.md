@@ -1,5 +1,21 @@
 # Acornaut motion spec — how a suit flies
 
+## Percy, Envoy and Patriot follow Cyber, 12 Sep 2026
+
+The owner's later instruction supersedes the trio's cut-rig, sixteen-frame
+playback and restart-tap entries below. `porcelain`, `nacre` and `origamist`
+receive nine ascent and nine descent full-character paintings following the
+current Cyber poses, plus the matching still and still body/tail split.
+They use Cyber's velocity profile, default rewind behavior, full-motion draw
+route and still tail spring. Their integrated-shell/helmetless head policies,
+identity details, prices and signature wakes remain intact. This instruction
+applies only to these three pilots; Cyber remains the frozen reference.
+For Envoy, the owner's follow-up prioritizes body and both tails with
+slight arm/leg movement to keep her stance natural.
+For all three, Cyber's tail direction changes, frame counts, reset and
+follow-through take priority over exact spec alignment.
+See `art-src/cyber-standard-trio/README.md` for source and review boundaries.
+
 ## Frozen suits rewind; the queue is the owner's call, 12 Sep 2026
 
 The correction below reached the frozen roster (FROZEN_SUITS in draw.ts),
@@ -464,4 +480,3 @@ and the spec/needs list for a new character built to it. Cutter sheets
 `art-src/gold-standard/cyber/`. `test-gold-standard.mjs` re-flies Cyber
 against the fixture frozen at stamp 282 and fails on the first tick that
 drifts.
-

@@ -19,10 +19,6 @@ export const PAINTED_TAP_SUITS = new Set<string>([]);
 export type TapRepeat = "rewind" | "finish" | "restart";
 export const TAP_REPEAT: Record<string, TapRepeat> = {
   raccoon: "restart", ferret: "restart", hedgehog: "restart",
-  // the premium trio's whole-frame playback, same day: Patriot "is finishing
-  // its cycle before it starts animation. it's not a restart on tap. that's
-  // the issue" - every tap is frame one again (Percy, Envoy, Patriot)
-  porcelain: "restart", nacre: "restart", origamist: "restart",
 };
 /** Spend less of the tap in its neutral lead-in, preserving the full gesture. */
 export const PAINTED_TAP_EASE = .73;
@@ -61,6 +57,8 @@ export const TAP_SHAPE: Record<string, TapShape | "velocity"> = {
   alien: "velocity", flight: "velocity", briellacat: "velocity", iontrim: "velocity", copper: "velocity",
   voidsuit: "velocity", ember: "velocity", frost: "velocity", ghost: "velocity", gemmie: "velocity",
   sammie: "velocity", leviathan: "velocity",
+  // Owner-requested replacement banks follow Cyber's exact live path.
+  porcelain: "velocity", nacre: "velocity", origamist: "velocity",
 };
 
 /** THE TAIL SPRING, per suit. The plume on a suit with its own tail layer
@@ -76,7 +74,7 @@ export type TailSpring = { stiff: number; damp: number; kick: number };
 export const TAIL_SPRING_MIN = 0.25, TAIL_SPRING_MAX = 3;
 export const TAIL_SPRING_ONE: TailSpring = { stiff: 1, damp: 1, kick: 1 };
 export const TAIL_SPRING: Record<string, TailSpring> = {};
-export const TAIL_SPRING_SUITS = ["flight", "robo", "bigbooty", "catsuit", "verdant", "cryostar", "eclipse", "volt", "cyber"];
+export const TAIL_SPRING_SUITS = ["flight", "robo", "bigbooty", "catsuit", "verdant", "cryostar", "eclipse", "volt", "cyber", "porcelain", "nacre", "origamist"];
 
 /** THE TAP ACCENT, LIVE (owner, 12 Sep 2026: "enable it in game ... by
  *  default 1x is good"). The 167 ms ignition and the body reaction on every

@@ -1,0 +1,510 @@
+{
+  "method": "Independent covariance implementation on alpha>24 pixels. Removes only x>135,y<90 upper-head extrema; no body or tail movement occurs. Axis is undirected modulo180 degrees. Near-unity eigenvalue ratios make orientation sensitive to small changes in silhouette.",
+  "conclusion": "Whole-mass orientation span is shape-dependent, not direct evidence of Cyber tail phase or torso articulation. Exact reviewed hashes plus separate body/tail movement and visual phase checks are required for Nacre.",
+  "records": [
+    {
+      "file": "cyber-asc-1.png",
+      "sha256": "d2334ad1ab53ee8386ac6dc3969df3ef5cf002fdcfad282d691ef2a71928ae49",
+      "whole": {
+        "axisDegrees": -11.2701,
+        "eigenRatio": 2.5495,
+        "pixels": 7583
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -4.1256,
+        "eigenRatio": 3.1053,
+        "pixels": 7223
+      }
+    },
+    {
+      "file": "cyber-asc-2.png",
+      "sha256": "558d599a81d3cfac5f703506d1189194aaf0c099ce3acb0a1cb281d7d4dec523",
+      "whole": {
+        "axisDegrees": -15.1508,
+        "eigenRatio": 2.7112,
+        "pixels": 7657
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -7.8419,
+        "eigenRatio": 3.3716,
+        "pixels": 7246
+      }
+    },
+    {
+      "file": "cyber-asc-3.png",
+      "sha256": "53335c6942917020f954a4997bb543ddb5175a4f79ce90e6f5ced7e9e86bdb86",
+      "whole": {
+        "axisDegrees": -17.0812,
+        "eigenRatio": 2.6749,
+        "pixels": 7802
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -9.4899,
+        "eigenRatio": 3.3394,
+        "pixels": 7354
+      }
+    },
+    {
+      "file": "cyber-asc-4.png",
+      "sha256": "6915a700b185ad4390e9155d1b7e7e648c1a1d3a0e9ae5e11a522626d54a6788",
+      "whole": {
+        "axisDegrees": -19.3154,
+        "eigenRatio": 2.0495,
+        "pixels": 8239
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -9.7635,
+        "eigenRatio": 2.3557,
+        "pixels": 7791
+      }
+    },
+    {
+      "file": "cyber-asc-5.png",
+      "sha256": "d9cfcfc7806bc132243599063159d960d4ca14a13dbda806d137ddda081e4648",
+      "whole": {
+        "axisDegrees": -24.0049,
+        "eigenRatio": 1.5551,
+        "pixels": 8709
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -9.5291,
+        "eigenRatio": 1.6518,
+        "pixels": 8273
+      }
+    },
+    {
+      "file": "cyber-asc-6.png",
+      "sha256": "8deb01ec09918775f7ffd050ad2acf60bc2f8f974f0517edda367c92b7a50dd0",
+      "whole": {
+        "axisDegrees": -30.3711,
+        "eigenRatio": 1.3598,
+        "pixels": 8847
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -10.0834,
+        "eigenRatio": 1.3722,
+        "pixels": 8435
+      }
+    },
+    {
+      "file": "cyber-asc-7.png",
+      "sha256": "80121ec684399e9453770d077f82863957f36a99d2ed8d2d2a4919d800c10986",
+      "whole": {
+        "axisDegrees": -34.5395,
+        "eigenRatio": 1.2789,
+        "pixels": 8929
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -9.3726,
+        "eigenRatio": 1.2597,
+        "pixels": 8533
+      }
+    },
+    {
+      "file": "cyber-asc-8.png",
+      "sha256": "e088c15ae84bcdb7fb651ae95833ad41e837cc834046233fcc54c54073cb936e",
+      "whole": {
+        "axisDegrees": -47.4415,
+        "eigenRatio": 1.171,
+        "pixels": 9007
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -1.437,
+        "eigenRatio": 1.1006,
+        "pixels": 8636
+      }
+    },
+    {
+      "file": "cyber-asc-9.png",
+      "sha256": "bc11e107cce1a863ed0fa929dd6ee3c5b5e10788b647e4302aa93ea566343808",
+      "whole": {
+        "axisDegrees": -70.0686,
+        "eigenRatio": 1.1172,
+        "pixels": 9039
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": 44.7569,
+        "eigenRatio": 1.0751,
+        "pixels": 8712
+      }
+    },
+    {
+      "file": "cyber-desc-1.png",
+      "sha256": "8aa0186902f64333c0caf74a8af414b6543a64e03a5a18411e64fa312b90541e",
+      "whole": {
+        "axisDegrees": -11.1428,
+        "eigenRatio": 2.5538,
+        "pixels": 7761
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -5.4555,
+        "eigenRatio": 2.9666,
+        "pixels": 7507
+      }
+    },
+    {
+      "file": "cyber-desc-2.png",
+      "sha256": "a72db815fc994493fd5718ca31c3e21fd262442e686896ddc99bce67a632b178",
+      "whole": {
+        "axisDegrees": -14.0155,
+        "eigenRatio": 2.6901,
+        "pixels": 7802
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -8.4006,
+        "eigenRatio": 3.1585,
+        "pixels": 7530
+      }
+    },
+    {
+      "file": "cyber-desc-3.png",
+      "sha256": "3eba8644a1489fe0d6411cd634bfb77881e396ae3ba42a1eb818020898cf40c1",
+      "whole": {
+        "axisDegrees": -15.1041,
+        "eigenRatio": 2.7189,
+        "pixels": 7842
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -9.527,
+        "eigenRatio": 3.2035,
+        "pixels": 7563
+      }
+    },
+    {
+      "file": "cyber-desc-4.png",
+      "sha256": "592881e3a0ec1920602d0be52fefd09edc5e99ad777cd7cc77a7525691b36fc6",
+      "whole": {
+        "axisDegrees": -16.027,
+        "eigenRatio": 2.7259,
+        "pixels": 7885
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -10.3673,
+        "eigenRatio": 3.2245,
+        "pixels": 7596
+      }
+    },
+    {
+      "file": "cyber-desc-5.png",
+      "sha256": "046387f314b590571a9f3e7b5136740fb71332a7c52ce5ed781045aaddc38a7b",
+      "whole": {
+        "axisDegrees": -17.0987,
+        "eigenRatio": 2.6861,
+        "pixels": 7992
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -11.4715,
+        "eigenRatio": 3.1636,
+        "pixels": 7697
+      }
+    },
+    {
+      "file": "cyber-desc-6.png",
+      "sha256": "54ffb725ef6ac16ce07a967d74eb7c2cee0bfd5ea25fe27594e327daa6387656",
+      "whole": {
+        "axisDegrees": -17.9407,
+        "eigenRatio": 2.4276,
+        "pixels": 8165
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -11.8685,
+        "eigenRatio": 2.8032,
+        "pixels": 7864
+      }
+    },
+    {
+      "file": "cyber-desc-7.png",
+      "sha256": "b2f1c7a87f452b09dc1a548d09e9e617d0aa2ea965725de0aaf4a523dc3cc0b9",
+      "whole": {
+        "axisDegrees": -18.0912,
+        "eigenRatio": 2.3106,
+        "pixels": 8241
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -11.8806,
+        "eigenRatio": 2.6383,
+        "pixels": 7946
+      }
+    },
+    {
+      "file": "cyber-desc-8.png",
+      "sha256": "e995063ebfa65d8685f968dfe04ef65578f7de6a83c9a8922c46030cad113b7c",
+      "whole": {
+        "axisDegrees": -19.3053,
+        "eigenRatio": 2.0441,
+        "pixels": 8429
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -12.1126,
+        "eigenRatio": 2.2757,
+        "pixels": 8132
+      }
+    },
+    {
+      "file": "cyber-desc-9.png",
+      "sha256": "cc78e3481ed3801888db55a47a4a7fe7d4ab9ef31791cc4c772059bc5d6d67d2",
+      "whole": {
+        "axisDegrees": -20.3135,
+        "eigenRatio": 1.9034,
+        "pixels": 8566
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -12.4476,
+        "eigenRatio": 2.0821,
+        "pixels": 8268
+      }
+    },
+    {
+      "file": "nacre-asc-1.png",
+      "sha256": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481",
+      "whole": {
+        "axisDegrees": -3.1173,
+        "eigenRatio": 3.1773,
+        "pixels": 7626
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -2.122,
+        "eigenRatio": 3.2997,
+        "pixels": 7528
+      }
+    },
+    {
+      "file": "nacre-asc-2.png",
+      "sha256": "ca2c9c0bec84fa7e4c0ad616ee9c8d7dfac725defe78325a10a682aa0d12510c",
+      "whole": {
+        "axisDegrees": -8.7247,
+        "eigenRatio": 3.4824,
+        "pixels": 7529
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -7.4803,
+        "eigenRatio": 3.6316,
+        "pixels": 7413
+      }
+    },
+    {
+      "file": "nacre-asc-3.png",
+      "sha256": "8abccbd290a11915ea0c22803f3aaee25b7e7c24ab036ea3f249a8edb318130c",
+      "whole": {
+        "axisDegrees": -8.0647,
+        "eigenRatio": 3.3642,
+        "pixels": 8059
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -6.4999,
+        "eigenRatio": 3.5472,
+        "pixels": 7895
+      }
+    },
+    {
+      "file": "nacre-asc-4.png",
+      "sha256": "eecf014f479244000860e4c2d7c5c550ea9f298304c3d16492bfd3cd9d436b6d",
+      "whole": {
+        "axisDegrees": -13.16,
+        "eigenRatio": 2.2524,
+        "pixels": 8206
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -9.7803,
+        "eigenRatio": 2.3759,
+        "pixels": 7965
+      }
+    },
+    {
+      "file": "nacre-asc-5.png",
+      "sha256": "d4bee77789b753f5a3b869da72f0584b105672bce15afec62fb52c4d8751962a",
+      "whole": {
+        "axisDegrees": -13.3892,
+        "eigenRatio": 1.6466,
+        "pixels": 8363
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -8.9271,
+        "eigenRatio": 1.6722,
+        "pixels": 8173
+      }
+    },
+    {
+      "file": "nacre-asc-6.png",
+      "sha256": "67cb298658d3036062bd840655fbddd15dc28ae9cbfe0d15f14290a1534336e7",
+      "whole": {
+        "axisDegrees": -11.1889,
+        "eigenRatio": 1.5507,
+        "pixels": 8542
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -9.1738,
+        "eigenRatio": 1.5592,
+        "pixels": 8462
+      }
+    },
+    {
+      "file": "nacre-asc-7.png",
+      "sha256": "316b6eb557caf8031aa9d4495f503ccbfc0d44d9831fe36e5c06514609451982",
+      "whole": {
+        "axisDegrees": -20.1236,
+        "eigenRatio": 1.3054,
+        "pixels": 8629
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -11.3971,
+        "eigenRatio": 1.3005,
+        "pixels": 8408
+      }
+    },
+    {
+      "file": "nacre-asc-8.png",
+      "sha256": "2e201392a4cf82aad4f54bb3c6ac592a7727e30d0ff916bdbc4f07790db4bb8b",
+      "whole": {
+        "axisDegrees": -10.9529,
+        "eigenRatio": 1.2663,
+        "pixels": 8416
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -8.5101,
+        "eigenRatio": 1.2719,
+        "pixels": 8360
+      }
+    },
+    {
+      "file": "nacre-asc-9.png",
+      "sha256": "e65ab074a139f9721ba3a087bba5034de7e3c62d8cf7db6224d77e410644ce8d",
+      "whole": {
+        "axisDegrees": 13.5175,
+        "eigenRatio": 1.1789,
+        "pixels": 8842
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": 14.0165,
+        "eigenRatio": 1.1826,
+        "pixels": 8830
+      }
+    },
+    {
+      "file": "nacre-desc-1.png",
+      "sha256": "57fc85a50eebdfaea743a9fa7633af8b9e434472834afce35f908144693f3826",
+      "whole": {
+        "axisDegrees": -3.3558,
+        "eigenRatio": 3.4173,
+        "pixels": 7371
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -3.3558,
+        "eigenRatio": 3.4173,
+        "pixels": 7371
+      }
+    },
+    {
+      "file": "nacre-desc-2.png",
+      "sha256": "53c93b89d2ca656cd71b7181e5cfb94b06b8c946a8785469e6c8218564144ec3",
+      "whole": {
+        "axisDegrees": -9.5731,
+        "eigenRatio": 3.9601,
+        "pixels": 7698
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -9.5731,
+        "eigenRatio": 3.9601,
+        "pixels": 7698
+      }
+    },
+    {
+      "file": "nacre-desc-3.png",
+      "sha256": "878f3a432cfb02f773101540dc4d1a2fd2b0047d3be8ce19d25c122cacd0192e",
+      "whole": {
+        "axisDegrees": -7.6154,
+        "eigenRatio": 4.0058,
+        "pixels": 7585
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -7.6154,
+        "eigenRatio": 4.0058,
+        "pixels": 7585
+      }
+    },
+    {
+      "file": "nacre-desc-4.png",
+      "sha256": "35024f44bd2d11580d4ae3f0be4e305e8bd68d9f6eb030399eec38a56056c8b8",
+      "whole": {
+        "axisDegrees": -9.186,
+        "eigenRatio": 4.0676,
+        "pixels": 7530
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -9.186,
+        "eigenRatio": 4.0676,
+        "pixels": 7530
+      }
+    },
+    {
+      "file": "nacre-desc-5.png",
+      "sha256": "3601c14223ed9e1ab19a0342498de977e6336e61b1b318bf0ea29fbfe172008f",
+      "whole": {
+        "axisDegrees": -11.968,
+        "eigenRatio": 3.9586,
+        "pixels": 7626
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -11.1914,
+        "eigenRatio": 4.0786,
+        "pixels": 7546
+      }
+    },
+    {
+      "file": "nacre-desc-6.png",
+      "sha256": "7f4350f1495b35e48fdcc8277878729af2231515934b0363e32d03dfa5c3c716",
+      "whole": {
+        "axisDegrees": -9.3184,
+        "eigenRatio": 3.0483,
+        "pixels": 7724
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -9.1858,
+        "eigenRatio": 3.0597,
+        "pixels": 7713
+      }
+    },
+    {
+      "file": "nacre-desc-7.png",
+      "sha256": "4e5e317dd7d007abc56ae469d8babcdcd78d07fbfe7dfdb918cdb54eca263246",
+      "whole": {
+        "axisDegrees": -11.9578,
+        "eigenRatio": 2.464,
+        "pixels": 7706
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -11.3301,
+        "eigenRatio": 2.4954,
+        "pixels": 7663
+      }
+    },
+    {
+      "file": "nacre-desc-8.png",
+      "sha256": "90a98df15a42dde5550a77d0cbb939ddac4881eb56686bc386fca8004b4c7a65",
+      "whole": {
+        "axisDegrees": -8.4476,
+        "eigenRatio": 2.6734,
+        "pixels": 7773
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -8.2784,
+        "eigenRatio": 2.6855,
+        "pixels": 7760
+      }
+    },
+    {
+      "file": "nacre-desc-9.png",
+      "sha256": "bd3c78691a7c895a96edf18063d92c2f1c4e997acd52444cc3c0e085d6be6b1f",
+      "whole": {
+        "axisDegrees": -11.0468,
+        "eigenRatio": 2.5712,
+        "pixels": 7855
+      },
+      "upperExtremaRemoved": {
+        "axisDegrees": -10.5387,
+        "eigenRatio": 2.5978,
+        "pixels": 7817
+      }
+    }
+  ]
+}

@@ -1,12 +1,28 @@
 # Premium pilot release review
 
+**Current route: Cyber transfer, 12 September 2026.** The owner requested
+replacement 9/9 banks for Percy, Envoy and Patriot with Cyber's controller
+and painter. See
+[`art-src/cyber-standard-trio`](../../../art-src/cyber-standard-trio/README.md).
+The premium comparison lab now calls the production `Sim` and `paintPilot`,
+with Cyber beside the three replacements. The sixteen-frame design and
+validation record below describe the preceding implementation.
+
+Current evidence belongs in [CYBER-REVIEW.md](CYBER-REVIEW.md) and
+[CYBER-VALIDATION.md](CYBER-VALIDATION.md). Cyber's tail direction changes,
+frame counts, follow-through and settling are the owner's first priority;
+exact spec alignment is secondary. Envoy keeps two distinct tails and their
+loose crossing/unwind, with modest natural limb movement.
+
+## Historical sixteen-frame release
+
 The owner authorized release of the supplied sixteen complete flight frames
 for each of **Porcelain Paragon**, **Nacre Envoy** and **Foldspace Origamist**,
 with cast shadows removed and Porcelain's surrounding boxes cleaned away.
 This supersedes the rejected cut-rig posture work. Further reusable cut kits
 remain off repo for later work.
 
-The current Envoy candidate uses the latest owner-supplied replacement
+The preceding Envoy release used the owner-supplied replacement
 (attachment `0084A7E8`), preserved as `art-src/premium-flight/nacre-original.jpg`.
 The required sequence has two equally substantial pearl tails with distinct
 adjacent roots at the back of the rump. Both move: separate relaxed curls,
@@ -25,7 +41,7 @@ featured pack.
 The [five remaining proposal cards](proposals/index.html) reuse existing
 artwork only. They add no production kits or catalog entries.
 
-## Current review boundary
+## Historical sixteen-frame review boundary
 
 The whole-frame lab is `docs/lab/premium-pilots/index.html`, generated from
 `illustrated-src/lab/premium-pilots.html`. It loads the production
@@ -54,7 +70,7 @@ individual and bundle checkout must remain available on different dates.
 Verify fallback portraits and cockpit crops as well as flight and preview
 playback.
 
-[VALIDATION.md](VALIDATION.md) tracks the new release evidence. Implementation
+[VALIDATION.md](VALIDATION.md) tracks that historical release evidence. Implementation
 authorization does not by itself certify a generated output or a passing
 release gate. No new visual acceptance is recorded until the cleaned
 whole-frame assets and their actual playback have been reviewed.

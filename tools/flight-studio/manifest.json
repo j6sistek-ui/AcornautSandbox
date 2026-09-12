@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "286",
-  "sourceCommit": "5e043575eecf5bc31b457da9d4787fae80530962",
+  "artVer": "287",
+  "sourceCommit": "6f85ca0ba3dc2d277f5ed43515b3a968eb71ef05",
   "models": [
     {
       "id": "flight",
@@ -128,7 +128,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/arcflash/body.png": "1c7f0c52e4ba575169ce4af23022ad6de4fe8cd4591d195384729b50cf636be6",
+        "suits/arcflash/body.png": "f20dee34d666ee8c48894b7df27729231e980bb4eee578d4bf54793d0826d69a",
         "suits/arcflash/parts.png": "3b243a739643dedd4f7e27c650e7a2071473aeac99111f46a91f20afa963f0aa"
       }
     },
@@ -145,313 +145,54 @@
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
-      "family": "premium-flight",
-      "atlas": "suits/porcelain/flight.png",
-      "sheet": {
-        "frameCount": 16,
-        "cellSize": 256,
-        "fallbackFrame": 0,
-        "frames": [
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35.3465,
-            "emitters": [
-              [
-                79.505,
-                168.5545
-              ],
-              [
-                119.703,
-                164.396
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35.3465,
-            "emitters": [
-              [
-                79.505,
-                168.5545
-              ],
-              [
-                119.703,
-                164.396
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35.3465,
-            "emitters": [
-              [
-                79.505,
-                168.5545
-              ],
-              [
-                119.703,
-                164.396
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35.3465,
-            "emitters": [
-              [
-                80.198,
-                168.5545
-              ],
-              [
-                120.396,
-                164.396
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35.3465,
-            "emitters": [
-              [
-                88.5149,
-                190.0396
-              ],
-              [
-                125.2475,
-                188.6535
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35.3465,
-            "emitters": [
-              [
-                89.2079,
-                193.505
-              ],
-              [
-                126.6337,
-                192.1188
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35.3465,
-            "emitters": [
-              [
-                91.9802,
-                200.4356
-              ],
-              [
-                129.4059,
-                199.0495
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35.3465,
-            "emitters": [
-              [
-                91.9802,
-                203.2079
-              ],
-              [
-                130.7921,
-                201.8218
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 33.9604,
-            "emitters": [
-              [
-                94.7525,
-                206.6733
-              ],
-              [
-                134.2574,
-                203.901
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 33.9604,
-            "emitters": [
-              [
-                96.1386,
-                205.9802
-              ],
-              [
-                133.5644,
-                203.2079
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 33.9604,
-            "emitters": [
-              [
-                97.5248,
-                205.9802
-              ],
-              [
-                134.2574,
-                203.2079
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 33.9604,
-            "emitters": [
-              [
-                98.2178,
-                205.9802
-              ],
-              [
-                135.6436,
-                203.2079
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 34.6535,
-            "emitters": [
-              [
-                86.4356,
-                182.4158
-              ],
-              [
-                126.6337,
-                179.6436
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 34.6535,
-            "emitters": [
-              [
-                83.6634,
-                178.2574
-              ],
-              [
-                122.4752,
-                171.3267
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 34.6535,
-            "emitters": [
-              [
-                81.5842,
-                176.8713
-              ],
-              [
-                120.396,
-                169.2475
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 34.6535,
-            "emitters": [
-              [
-                81.5842,
-                167.8614
-              ],
-              [
-                120.396,
-                160.9307
-              ]
-            ]
-          }
-        ]
-      },
+      "family": "bank",
+      "atlas": null,
       "banks": {
         "tap": [],
-        "asc": [],
-        "desc": [],
-        "loop": [
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png",
-          "suits/porcelain/flight.png"
-        ]
+        "asc": [
+          "suits/porcelain-asc-1.png",
+          "suits/porcelain-asc-2.png",
+          "suits/porcelain-asc-3.png",
+          "suits/porcelain-asc-4.png",
+          "suits/porcelain-asc-5.png",
+          "suits/porcelain-asc-6.png",
+          "suits/porcelain-asc-7.png",
+          "suits/porcelain-asc-8.png",
+          "suits/porcelain-asc-9.png"
+        ],
+        "desc": [
+          "suits/porcelain-desc-1.png",
+          "suits/porcelain-desc-2.png",
+          "suits/porcelain-desc-3.png",
+          "suits/porcelain-desc-4.png",
+          "suits/porcelain-desc-5.png",
+          "suits/porcelain-desc-6.png",
+          "suits/porcelain-desc-7.png",
+          "suits/porcelain-desc-8.png",
+          "suits/porcelain-desc-9.png"
+        ],
+        "loop": []
       },
       "hashes": {
-        "suits/porcelain.png": "671ddf5e3672782760bb8faf98d07b05ce1aa30d437caceb50025cc9e5b848a9",
-        "suits/porcelain/flight.png": "7797a22ac8d0723ccf39b6738adb3253e2beb485ef07234b8073d10ad386b4fe"
+        "suits/porcelain.png": "74d64a092c694095429e8ca45faea2762fcdd1632912be6ff0efa2d063aadc43",
+        "suits/porcelain-asc-1.png": "74d64a092c694095429e8ca45faea2762fcdd1632912be6ff0efa2d063aadc43",
+        "suits/porcelain-asc-2.png": "ccb7517f58ab8e3f83c825fd030e8b77644683e2f9d6bf46d07782b143f33aa5",
+        "suits/porcelain-asc-3.png": "f78d97dc7a199e8b0cd761096b7d73f8a2e3dac1cd56914ee45e93cdf3dede29",
+        "suits/porcelain-asc-4.png": "159e275bf74fcb5d39ad25bc1ea26cd1e12f9c5c5e054d5e7bf9dd3995b77f03",
+        "suits/porcelain-asc-5.png": "63e3bfc40353181f5282e3a7f67de49a90a87d7d54442b24596d56b905311bb7",
+        "suits/porcelain-asc-6.png": "8770a09f47b30b4189f8ef4ec3cdad7acb570865273a1ae458f803f783c5b055",
+        "suits/porcelain-asc-7.png": "5c908435b1b0f7c6ea99a10dbdcab47fbcbbd322e0a1b0d346be2fb1583b9746",
+        "suits/porcelain-asc-8.png": "f377400f5041354d65f62a2f5acde18f954a98cf9fef7b0f89e44b2e8b51b238",
+        "suits/porcelain-asc-9.png": "5673267f67c1c87576ef4070a1a96470ad925408d4fc58c95faffa98c285400a",
+        "suits/porcelain-desc-1.png": "5983de81024c1998f16fd371021b46de353e15493d0446f54b550b704236e2de",
+        "suits/porcelain-desc-2.png": "b43da0564975c416e7b6e2baec21c900a8460c5407085319b1399090aa962923",
+        "suits/porcelain-desc-3.png": "4929e256c43c80d5d1b2549d69d79b3a01af55fc1f2a15506d9276cb91b3c742",
+        "suits/porcelain-desc-4.png": "6fe9983c8d4d2e77e2b358df7502a524ed8b028a3338287b4220cca6fb7818cd",
+        "suits/porcelain-desc-5.png": "a7cfcd5716d19f1d817bf139a3eee06a7fd0e2f1481f13aa559249c97e09f607",
+        "suits/porcelain-desc-6.png": "4cd8cc10727fa4077f63caf1b2ecb3107bf22eb4ceadaa30e11f534aa2fcb92d",
+        "suits/porcelain-desc-7.png": "d650a107c6724a5188ae14ddf3f6bf51776ed8551f5531161353f0cbc25c96d9",
+        "suits/porcelain-desc-8.png": "eeb195d95fd5f8c5154a6dfdbd778f26639bf96f51bd786acd2f1388e4e2c4d8",
+        "suits/porcelain-desc-9.png": "e94a7cae3a1eefa6ae81f88bc41c5fd7b96b93dfa9358ff79fcc7ceb874a0dab"
       }
     },
     {
@@ -467,313 +208,54 @@
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
-      "family": "premium-flight",
-      "atlas": "suits/nacre/flight.png",
-      "sheet": {
-        "frameCount": 16,
-        "cellSize": 256,
-        "fallbackFrame": 0,
-        "frames": [
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                86.6393,
-                178.0574
-              ],
-              [
-                120.082,
-                171.7869
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                86.6393,
-                176.6639
-              ],
-              [
-                120.082,
-                170.3934
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                86.6393,
-                172.4836
-              ],
-              [
-                119.3852,
-                166.9098
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                88.7295,
-                201.0492
-              ],
-              [
-                121.4754,
-                194.082
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                99.1803,
-                214.2869
-              ],
-              [
-                127.0492,
-                209.4098
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                99.877,
-                208.0164
-              ],
-              [
-                127.0492,
-                205.9262
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                104.0574,
-                204.5328
-              ],
-              [
-                129.8361,
-                201.0492
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                105.4508,
-                203.1393
-              ],
-              [
-                131.2295,
-                199.6557
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                97.7869,
-                199.6557
-              ],
-              [
-                124.2623,
-                197.5656
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                100.5738,
-                198.2623
-              ],
-              [
-                125.6557,
-                196.1721
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                103.3607,
-                196.8689
-              ],
-              [
-                128.4426,
-                194.082
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.7459,
-            "emitters": [
-              [
-                99.1803,
-                184.3279
-              ],
-              [
-                128.4426,
-                180.1475
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                86.6393,
-                178.7541
-              ],
-              [
-                120.7787,
-                173.877
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                86.6393,
-                180.1475
-              ],
-              [
-                120.082,
-                175.2705
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                86.6393,
-                178.7541
-              ],
-              [
-                120.082,
-                173.877
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 32.0492,
-            "emitters": [
-              [
-                88.0328,
-                182.2377
-              ],
-              [
-                120.7787,
-                178.7541
-              ]
-            ]
-          }
-        ]
-      },
+      "family": "bank",
+      "atlas": null,
       "banks": {
         "tap": [],
-        "asc": [],
-        "desc": [],
-        "loop": [
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png",
-          "suits/nacre/flight.png"
-        ]
+        "asc": [
+          "suits/nacre-asc-1.png",
+          "suits/nacre-asc-2.png",
+          "suits/nacre-asc-3.png",
+          "suits/nacre-asc-4.png",
+          "suits/nacre-asc-5.png",
+          "suits/nacre-asc-6.png",
+          "suits/nacre-asc-7.png",
+          "suits/nacre-asc-8.png",
+          "suits/nacre-asc-9.png"
+        ],
+        "desc": [
+          "suits/nacre-desc-1.png",
+          "suits/nacre-desc-2.png",
+          "suits/nacre-desc-3.png",
+          "suits/nacre-desc-4.png",
+          "suits/nacre-desc-5.png",
+          "suits/nacre-desc-6.png",
+          "suits/nacre-desc-7.png",
+          "suits/nacre-desc-8.png",
+          "suits/nacre-desc-9.png"
+        ],
+        "loop": []
       },
       "hashes": {
-        "suits/nacre.png": "8f20e380fb56fb8bf3bcd9da31516745dde21081dd68a4b0aa14c7d9055fc7b5",
-        "suits/nacre/flight.png": "ee3dc1286ece3aebd99e20bc4684dfc6f4e6bb481bccf26f844d31ec3e500ce4"
+        "suits/nacre.png": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481",
+        "suits/nacre-asc-1.png": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481",
+        "suits/nacre-asc-2.png": "ca2c9c0bec84fa7e4c0ad616ee9c8d7dfac725defe78325a10a682aa0d12510c",
+        "suits/nacre-asc-3.png": "cab090eadfc5eae3304decb3b2d27970e27da740b506e2f9056007ec25fd5fde",
+        "suits/nacre-asc-4.png": "0ccc19eba8ae2b656ab3fdd0842e7eb6bbaff52a3b28012206a342c7bedaaabf",
+        "suits/nacre-asc-5.png": "bdd01345809b9f89f6295612f82f2d5f4886242ec776cc815d0c4bc712800bfd",
+        "suits/nacre-asc-6.png": "4acc3a7d711a4ee06bf8b7ae7f4327bde4f1297af6038729f4beb868bca8e625",
+        "suits/nacre-asc-7.png": "775facc7471fc8d315f4a9cbaf8d2b6e02a72c6d890c7d62e347860c956035cb",
+        "suits/nacre-asc-8.png": "2e201392a4cf82aad4f54bb3c6ac592a7727e30d0ff916bdbc4f07790db4bb8b",
+        "suits/nacre-asc-9.png": "e65ab074a139f9721ba3a087bba5034de7e3c62d8cf7db6224d77e410644ce8d",
+        "suits/nacre-desc-1.png": "57fc85a50eebdfaea743a9fa7633af8b9e434472834afce35f908144693f3826",
+        "suits/nacre-desc-2.png": "53c93b89d2ca656cd71b7181e5cfb94b06b8c946a8785469e6c8218564144ec3",
+        "suits/nacre-desc-3.png": "878f3a432cfb02f773101540dc4d1a2fd2b0047d3be8ce19d25c122cacd0192e",
+        "suits/nacre-desc-4.png": "35024f44bd2d11580d4ae3f0be4e305e8bd68d9f6eb030399eec38a56056c8b8",
+        "suits/nacre-desc-5.png": "3601c14223ed9e1ab19a0342498de977e6336e61b1b318bf0ea29fbfe172008f",
+        "suits/nacre-desc-6.png": "7f4350f1495b35e48fdcc8277878729af2231515934b0363e32d03dfa5c3c716",
+        "suits/nacre-desc-7.png": "4e5e317dd7d007abc56ae469d8babcdcd78d07fbfe7dfdb918cdb54eca263246",
+        "suits/nacre-desc-8.png": "90a98df15a42dde5550a77d0cbb939ddac4881eb56686bc386fca8004b4c7a65",
+        "suits/nacre-desc-9.png": "bd3c78691a7c895a96edf18063d92c2f1c4e997acd52444cc3c0e085d6be6b1f"
       }
     },
     {
@@ -789,313 +271,54 @@
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
-      "family": "premium-flight",
-      "atlas": "suits/origamist/flight.png",
-      "sheet": {
-        "frameCount": 16,
-        "cellSize": 256,
-        "fallbackFrame": 0,
-        "frames": [
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                74.2857,
-                175.4286
-              ],
-              [
-                117.1429,
-                169.7143
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                74.2857,
-                175.4286
-              ],
-              [
-                117.1429,
-                169.7143
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                74.2857,
-                172.5714
-              ],
-              [
-                117.1429,
-                166.8571
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                74.2857,
-                169.7143
-              ],
-              [
-                117.1429,
-                164
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                72.8571,
-                174
-              ],
-              [
-                115.7143,
-                168.2857
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                74.2857,
-                189
-              ],
-              [
-                117.1429,
-                183.2857
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 33.5714,
-            "emitters": [
-              [
-                84.2857,
-                214.7143
-              ],
-              [
-                127.1429,
-                210.4286
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 33.5714,
-            "emitters": [
-              [
-                86.4286,
-                216.1429
-              ],
-              [
-                129.2857,
-                211.8571
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 33.5714,
-            "emitters": [
-              [
-                86.4286,
-                216.1429
-              ],
-              [
-                129.2857,
-                211.8571
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 33.5714,
-            "emitters": [
-              [
-                86.4286,
-                216.1429
-              ],
-              [
-                129.2857,
-                211.8571
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 33.5714,
-            "emitters": [
-              [
-                84.2857,
-                216.1429
-              ],
-              [
-                127.1429,
-                211.8571
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                73.5714,
-                176.8571
-              ],
-              [
-                116.4286,
-                172.5714
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                74.2857,
-                170.4286
-              ],
-              [
-                117.1429,
-                166.1429
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                74.2857,
-                170.4286
-              ],
-              [
-                117.1429,
-                166.1429
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                74.2857,
-                170.4286
-              ],
-              [
-                117.1429,
-                166.1429
-              ]
-            ]
-          },
-          {
-            "head": [
-              180,
-              84
-            ],
-            "radius": 35,
-            "emitters": [
-              [
-                74.2857,
-                170.4286
-              ],
-              [
-                117.1429,
-                166.1429
-              ]
-            ]
-          }
-        ]
-      },
+      "family": "bank",
+      "atlas": null,
       "banks": {
         "tap": [],
-        "asc": [],
-        "desc": [],
-        "loop": [
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png",
-          "suits/origamist/flight.png"
-        ]
+        "asc": [
+          "suits/origamist-asc-1.png",
+          "suits/origamist-asc-2.png",
+          "suits/origamist-asc-3.png",
+          "suits/origamist-asc-4.png",
+          "suits/origamist-asc-5.png",
+          "suits/origamist-asc-6.png",
+          "suits/origamist-asc-7.png",
+          "suits/origamist-asc-8.png",
+          "suits/origamist-asc-9.png"
+        ],
+        "desc": [
+          "suits/origamist-desc-1.png",
+          "suits/origamist-desc-2.png",
+          "suits/origamist-desc-3.png",
+          "suits/origamist-desc-4.png",
+          "suits/origamist-desc-5.png",
+          "suits/origamist-desc-6.png",
+          "suits/origamist-desc-7.png",
+          "suits/origamist-desc-8.png",
+          "suits/origamist-desc-9.png"
+        ],
+        "loop": []
       },
       "hashes": {
-        "suits/origamist.png": "89b99e8314caaddbb603a82bbb73780da1bcf7b0261688c78566bb09ab93d6eb",
-        "suits/origamist/flight.png": "d9e0f96b5ff99bd6424fc914835c4bac445c18a7a20158d1234505bf2e7d5936"
+        "suits/origamist.png": "53ca027936f6892e55952f61951afe1f32f6c9fdb8dc0271395e43235bd3f546",
+        "suits/origamist-asc-1.png": "53ca027936f6892e55952f61951afe1f32f6c9fdb8dc0271395e43235bd3f546",
+        "suits/origamist-asc-2.png": "17360063f8c8efcd85cb947f6c7eb6e85abf3a594270ccfd01b344c85671a75c",
+        "suits/origamist-asc-3.png": "1951be2a6ff71a062e1000effffe1a421562e926ece41ce390f8f613f235151f",
+        "suits/origamist-asc-4.png": "c450c78ed265907b473effd81f8e3b5261dfaa7fe3760327a0a9dbcdad245d8f",
+        "suits/origamist-asc-5.png": "137ba9ad7a4376ba41796ad87629ae8f03310dc8b062d6476b740648d48fa27a",
+        "suits/origamist-asc-6.png": "cfb1335e3f0b98fe4d85abcf9c06f6aff8238262afde54da99ae32763ec8c03c",
+        "suits/origamist-asc-7.png": "d5a7db89e6d2306014aa54c402cf300186b8a2180cf839f2ddfd8ca69f7077f8",
+        "suits/origamist-asc-8.png": "a8a088854eebe4ddd6816f46c567332a334f6bfbbf38c5d53aae17fd194a4330",
+        "suits/origamist-asc-9.png": "d81eb3f8b6f1a959a4b0ec4391076719255fe8af6d13d86feb998107b7a7b80d",
+        "suits/origamist-desc-1.png": "24f36bc1644f06d96816db90933abb22b05579e259a3ee43f7d84cd486ee83cf",
+        "suits/origamist-desc-2.png": "ad5fdd167c68685a399e80c6e8d7475455ddfe1aee98d8d16af1cf542d40c25a",
+        "suits/origamist-desc-3.png": "d1b458ae4dd38dfdec61a3f79c28af5ab70b3b89a9b199f85b36e0d7c4720250",
+        "suits/origamist-desc-4.png": "90be785dbbceed483ed11de973c32f299687b072405cd4e08e030631f9c50989",
+        "suits/origamist-desc-5.png": "6f26d7ba9178347fe18c72bffabc62a28602bbe8c44ffea3c939cb596f5af763",
+        "suits/origamist-desc-6.png": "af9754cceb8297048f3f6e7327efbe7d510a670c1e9de1fafc193c3e20ecc57f",
+        "suits/origamist-desc-7.png": "6c9fb596c9b4c4b8d09a347523b8c487ff9d10efaffa4fdb36893e20a9d944b4",
+        "suits/origamist-desc-8.png": "76680088970aad8966e98122d9d08c0b7046155f788dc0a73c2532d854595961",
+        "suits/origamist-desc-9.png": "0ab2da072cf438e283a66691d714a978ae35964ba9266d3eebde0db4c1720ade"
       }
     },
     {
@@ -5445,6 +4668,276 @@
       128,
       40
     ],
+    "nacre-asc-1": [
+      128,
+      128,
+      40
+    ],
+    "nacre-asc-2": [
+      128,
+      128,
+      40
+    ],
+    "nacre-asc-3": [
+      128,
+      128,
+      40
+    ],
+    "nacre-asc-4": [
+      128,
+      128,
+      40
+    ],
+    "nacre-asc-5": [
+      128,
+      128,
+      40
+    ],
+    "nacre-asc-6": [
+      128,
+      128,
+      40
+    ],
+    "nacre-asc-7": [
+      128,
+      128,
+      40
+    ],
+    "nacre-asc-8": [
+      128,
+      128,
+      40
+    ],
+    "nacre-asc-9": [
+      128,
+      128,
+      40
+    ],
+    "nacre-desc-1": [
+      128,
+      128,
+      40
+    ],
+    "nacre-desc-2": [
+      128,
+      128,
+      40
+    ],
+    "nacre-desc-3": [
+      128,
+      128,
+      40
+    ],
+    "nacre-desc-4": [
+      128,
+      128,
+      40
+    ],
+    "nacre-desc-5": [
+      128,
+      128,
+      40
+    ],
+    "nacre-desc-6": [
+      128,
+      128,
+      40
+    ],
+    "nacre-desc-7": [
+      128,
+      128,
+      40
+    ],
+    "nacre-desc-8": [
+      128,
+      128,
+      40
+    ],
+    "nacre-desc-9": [
+      128,
+      128,
+      40
+    ],
+    "origamist-asc-1": [
+      128,
+      128,
+      40
+    ],
+    "origamist-asc-2": [
+      128,
+      128,
+      40
+    ],
+    "origamist-asc-3": [
+      128,
+      128,
+      40
+    ],
+    "origamist-asc-4": [
+      128,
+      128,
+      40
+    ],
+    "origamist-asc-5": [
+      128,
+      128,
+      40
+    ],
+    "origamist-asc-6": [
+      128,
+      128,
+      40
+    ],
+    "origamist-asc-7": [
+      128,
+      128,
+      40
+    ],
+    "origamist-asc-8": [
+      128,
+      128,
+      40
+    ],
+    "origamist-asc-9": [
+      128,
+      128,
+      40
+    ],
+    "origamist-desc-1": [
+      128,
+      128,
+      40
+    ],
+    "origamist-desc-2": [
+      128,
+      128,
+      40
+    ],
+    "origamist-desc-3": [
+      128,
+      128,
+      40
+    ],
+    "origamist-desc-4": [
+      128,
+      128,
+      40
+    ],
+    "origamist-desc-5": [
+      128,
+      128,
+      40
+    ],
+    "origamist-desc-6": [
+      128,
+      128,
+      40
+    ],
+    "origamist-desc-7": [
+      128,
+      128,
+      40
+    ],
+    "origamist-desc-8": [
+      128,
+      128,
+      40
+    ],
+    "origamist-desc-9": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-asc-1": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-asc-2": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-asc-3": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-asc-4": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-asc-5": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-asc-6": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-asc-7": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-asc-8": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-asc-9": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-desc-1": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-desc-2": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-desc-3": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-desc-4": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-desc-5": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-desc-6": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-desc-7": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-desc-8": [
+      128,
+      128,
+      40
+    ],
+    "porcelain-desc-9": [
+      128,
+      128,
+      40
+    ],
     "catsuit-tap-1": [
       128,
       128,
@@ -5786,13 +5279,15 @@
     "arcflash": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "caf4433a9d61a3917fd5466c574a4bd532ad7824ccc7388dfe2111e2119ce445",
+    "control-constants": "9a8f2de651ee04a10884fecf4ca6745848843ae54c123f807b982e65c64e2cdd",
+    "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
     "high-orbit": "0a4d14f1e6b76eb8d83aeb1f08ac09a633ef0bfc4449c91dabcf5aa00a78738c",
     "high-orbit-config": "07ecb9b97faf6a5f65049bb183f095aa97fc5a6139c3db65f32b966ddd7777fc",
     "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
-    "high-orbit-motion": "0f86cb410b1c9c2a9add3631a92e2ef72eac55dc989f3f1c49cdfda66cf1a83f",
+    "high-orbit-motion": "08e7ec309a2bb197950773b427d01b1fe181f0c8503ed4886d9eb96f1e6064e2",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",
+    "premium-bank-wake": "2a087b58fda4320454346b09f5ff485f2de98020d21f123f7f33019f4d190901",
     "premium-flight": "3407656d559b99a152da02554a04e81827109e2dc5c6bd679a201f44cdb646d3",
     "premium-flight-frames": "d130d90ee5ea9c28a2425fe67f269d84c0619b91db5207250fc253675d355e0c",
     "rig-limb-fit": "3a4f500e7f35bdfa2f8a97e21f9457e3bdb846ab8da9ff3d540fb909d1e035f3",

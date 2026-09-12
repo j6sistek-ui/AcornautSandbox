@@ -1,0 +1,241 @@
+{
+  "status": "Source costume/anatomy and tail-phase sequence independently cleared. Whole-image registration refreshed on final selected sources; final production-renderer verdict and limits are recorded in illustrated-src/design/premium-pilots/CYBER-REVIEW.md.",
+  "method": "Single uniform scale1, integer whole-image translation maximizing weighted silhouette Dice. Body ROI x112..209,y133..209 weight1; head ROI x145..214,y96..144 weight2. Tail and most ears/antennae excluded. Does not measure a skull center/radius.",
+  "records": [
+    {
+      "frame": "asc-1",
+      "offset": [
+        0,
+        0
+      ],
+      "before": 0.9728,
+      "after": 0.9728,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-asc-1.png",
+      "sha256": "53ca027936f6892e55952f61951afe1f32f6c9fdb8dc0271395e43235bd3f546",
+      "sourceFrame": "frames/asc-1.png",
+      "sourceFrameSha256": "f85efa3c3d99f39411ffd0e8a8a1b84272bc3a31c6c475d56a4808d33c6a3209"
+    },
+    {
+      "frame": "asc-2",
+      "offset": [
+        -1,
+        -1
+      ],
+      "before": 0.9609,
+      "after": 0.9648,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-asc-2.png",
+      "sha256": "29c5a634f956155954be2639e61140eff92e13eaa3d662b7884860cdea9684d4",
+      "sourceFrame": "frames/asc-2.png",
+      "sourceFrameSha256": "b283ea31c1fd4bfca0c0dbaf8617775288c11adb78b6c8478bf88e72ba759294"
+    },
+    {
+      "frame": "asc-3",
+      "offset": [
+        -2,
+        -1
+      ],
+      "before": 0.9456,
+      "after": 0.9597,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-asc-3.png",
+      "sha256": "76e93a56019e28b8be52c7263544f4cf5dc07cbd881699127ad3b5a437aef3c4",
+      "sourceFrame": "frames/asc-3.png",
+      "sourceFrameSha256": "b03d2af5b1e9a026f061a0ef204ed94daa9f3d4089c041b1ba38b8a64acf4876"
+    },
+    {
+      "frame": "asc-4",
+      "offset": [
+        0,
+        1
+      ],
+      "before": 0.969,
+      "after": 0.9693,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-asc-4.png",
+      "sha256": "4b97d1902878301289e4bbaccf8dccb6918f5d382cade5cbc52aa28097cbc87f",
+      "sourceFrame": "frames/asc-4.png",
+      "sourceFrameSha256": "093d7bfdec7df82aaf1573854e8d9689363cf0cfdcb85ec7754dc0971d894896"
+    },
+    {
+      "frame": "asc-5",
+      "offset": [
+        0,
+        -1
+      ],
+      "before": 0.9618,
+      "after": 0.9658,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-asc-5.png",
+      "sha256": "7709208a93b332292d2f56cfa1a6491b2f1cbb1a847380c9bc0c06c79a0494b7",
+      "sourceFrame": "frames/asc-5.png",
+      "sourceFrameSha256": "ae0b55f33ad1a4c96fe8b1ae1efc1cc908eb2b19a2d60de215fef6d209aeba16"
+    },
+    {
+      "frame": "asc-6",
+      "offset": [
+        0,
+        -2
+      ],
+      "before": 0.9475,
+      "after": 0.9598,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-asc-6.png",
+      "sha256": "df5f62087f9eda3aaf5a962edd0c8222474f5cd6e974e1b9348638a06fa9b967",
+      "sourceFrame": "frames/asc-6.png",
+      "sourceFrameSha256": "2c3015360d195e2f36cfe0f49db0a2e2108fb2e1c0e74c4f0dff14d5b71803fa"
+    },
+    {
+      "frame": "asc-7",
+      "offset": [
+        -5,
+        -1
+      ],
+      "before": 0.9009,
+      "after": 0.944,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-asc-7.png",
+      "sha256": "3e280fe2a0624e6a92f65e1b78562a2dc074d596b24462c3366805919d045c0e",
+      "sourceFrame": "frames/asc-7.png",
+      "sourceFrameSha256": "4a516a43afa9001463e2c79763aa619eeea28cd04dd49f5f066a7c9c1980390a"
+    },
+    {
+      "frame": "asc-8",
+      "offset": [
+        -4,
+        0
+      ],
+      "before": 0.9119,
+      "after": 0.9414,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-asc-8.png",
+      "sha256": "5fbff75dae45606e2e8d685fc5be0b5f569eec7421ae0ce7e2ca181da4f18b43",
+      "sourceFrame": "frames/asc-8.png",
+      "sourceFrameSha256": "9dd8416ef5fe51f88d5eaf23d72151192b2b63271594e7388f3b2590756863a4"
+    },
+    {
+      "frame": "asc-9",
+      "offset": [
+        0,
+        0
+      ],
+      "before": 0.9772,
+      "after": 0.9772,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-asc-9.png",
+      "sha256": "d81eb3f8b6f1a959a4b0ec4391076719255fe8af6d13d86feb998107b7a7b80d",
+      "sourceFrame": "frames/asc-9.png",
+      "sourceFrameSha256": "8d8123f57b9a84115cdc238922b55f6fb637dff707dd4fd04f5733d5aadba92a"
+    },
+    {
+      "frame": "desc-1",
+      "offset": [
+        -1,
+        -3
+      ],
+      "before": 0.939,
+      "after": 0.9608,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-desc-1.png",
+      "sha256": "6a2bd3c6c881742866bea65132588e686f977ab93edfa6c21e5caa4e06c747ad",
+      "sourceFrame": "frames/desc-1.png",
+      "sourceFrameSha256": "185bfb9afe0d1c2a6b81cfd4ea21256c40c4c48a357a1fe722ecb9f39866adf6"
+    },
+    {
+      "frame": "desc-2",
+      "offset": [
+        -1,
+        1
+      ],
+      "before": 0.9694,
+      "after": 0.9707,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-desc-2.png",
+      "sha256": "4cf8b6972169b89f6bc8d0a70da9c0c10cfdcde0a03dff741690a0139302973d",
+      "sourceFrame": "frames/desc-2.png",
+      "sourceFrameSha256": "3c27ed67efda5844aaad06b07d2c1686e10df5999a38ae43b2a5d1548e9673e9"
+    },
+    {
+      "frame": "desc-3",
+      "offset": [
+        -1,
+        0
+      ],
+      "before": 0.9641,
+      "after": 0.9655,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-desc-3.png",
+      "sha256": "c927732b72a5c9bd33f7c4c1104311bdb05ba9f35671ff4b520fdff50a50b8f8",
+      "sourceFrame": "frames/desc-3.png",
+      "sourceFrameSha256": "ad1148e051977c2b95bac9e884982ec6168b0ebcc57b4f56e4e5e4939792e7e4"
+    },
+    {
+      "frame": "desc-4",
+      "offset": [
+        0,
+        0
+      ],
+      "before": 0.9745,
+      "after": 0.9745,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-desc-4.png",
+      "sha256": "90be785dbbceed483ed11de973c32f299687b072405cd4e08e030631f9c50989",
+      "sourceFrame": "frames/desc-4.png",
+      "sourceFrameSha256": "e36160668488e4531bdaf498fe1663ee4c849a758cb9c5c7a922072d352ac9c1"
+    },
+    {
+      "frame": "desc-5",
+      "offset": [
+        0,
+        0
+      ],
+      "before": 0.9663,
+      "after": 0.9663,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-desc-5.png",
+      "sha256": "6f26d7ba9178347fe18c72bffabc62a28602bbe8c44ffea3c939cb596f5af763",
+      "sourceFrame": "frames/desc-5.png",
+      "sourceFrameSha256": "773008b4e1f61b9754e58d244a254d55f64d6d14a74f5b8b91705954fc5d5c1f"
+    },
+    {
+      "frame": "desc-6",
+      "offset": [
+        -3,
+        3
+      ],
+      "before": 0.9112,
+      "after": 0.9377,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-desc-6.png",
+      "sha256": "c7e02aad16127b7639cfbef74bae19f5dfe76ddaed701bec1e04f6441556f6b1",
+      "sourceFrame": "frames/desc-6.png",
+      "sourceFrameSha256": "97daad83fbe7dc31dec6d122960899032d97e94edc8ba5b852cfb301b8232225"
+    },
+    {
+      "frame": "desc-7",
+      "offset": [
+        -1,
+        1
+      ],
+      "before": 0.95,
+      "after": 0.9524,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-desc-7.png",
+      "sha256": "0f4c59017a5f9819ec3d388d54025f515f2b50d4cdf53a67a0279cfedf7dadc4",
+      "sourceFrame": "frames/desc-7.png",
+      "sourceFrameSha256": "cbcb4a26066e99d801b6cb387257b3df2ea8d0c327b03ad8fa2ab1933a2ef2f3"
+    },
+    {
+      "frame": "desc-8",
+      "offset": [
+        -1,
+        1
+      ],
+      "before": 0.9501,
+      "after": 0.9506,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-desc-8.png",
+      "sha256": "cdbdfc31237f38f1a005cc2f0152a4288014bd4e67ff17054665eaaee5285730",
+      "sourceFrame": "frames/desc-8.png",
+      "sourceFrameSha256": "6cd8c793a96f743390e545d23025cd693e452042db8afbac5390af64ffbdabe4"
+    },
+    {
+      "frame": "desc-9",
+      "offset": [
+        3,
+        0
+      ],
+      "before": 0.9431,
+      "after": 0.954,
+      "source": "outputs/cyber-standard-trio/patriot-candidate/origamist-desc-9.png",
+      "sha256": "b056403225a50c0b6eeef4092b924f458ecfbfbdc778102c81398c5fc3c9da46",
+      "sourceFrame": "frames/desc-9.png",
+      "sourceFrameSha256": "45bdd9c7260b58d6a9b63fa32e6eb27ed1a8619dfe3942f020945e95455d6fb5"
+    }
+  ],
+  "review": "Independent reviewer approved weighted whole-image alignment; no scale change or relative body-part fitting."
+}

@@ -1,0 +1,151 @@
+{
+  "suit": "nacre",
+  "pathsRelativeTo": "this directory",
+  "hashAlgorithm": "sha256",
+  "independentReview": "motion-review.json",
+  "reviewedAt": "2026-09-12T22:52:14.636881+00:00",
+  "sources": [
+    {
+      "source": "frames/asc-1.png",
+      "sha256": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db",
+      "prompt": {
+        "file": "frames/asc-1-bracer-fix-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/asc-2.png",
+      "sha256": "f07718b7bfc7dbcb399bd9819fccb00ec57c0ea230502ac2d1e7097845654652",
+      "prompt": {
+        "file": "frames/asc-2-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/asc-3.png",
+      "sha256": "185285b67afd21e628f57c5bb42eb4ba6316a47e2edd7ac0e7e4f712be2d8d9d",
+      "prompt": {
+        "file": "tail-phase-prompts.json",
+        "selector": {
+          "n": 3
+        }
+      }
+    },
+    {
+      "source": "frames/asc-4.png",
+      "sha256": "fb6a5a986c69e3e94a6c923d13a094627922ac0c49071e59f05aa35033a81cce",
+      "prompt": {
+        "file": "tail-phase-prompts.json",
+        "selector": {
+          "n": 4
+        }
+      }
+    },
+    {
+      "source": "frames/asc-5.png",
+      "sha256": "b92b188614bc5dc79f17dc30e5ebc8ffd0bbde403fa786320636385552fd0219",
+      "prompt": {
+        "file": "paired-tail-prompts.json",
+        "selector": {
+          "bank": "asc",
+          "n": 5
+        }
+      }
+    },
+    {
+      "source": "frames/asc-6.png",
+      "sha256": "b7830761252cc2b3881a06df2b398f0a50083fbe9da2c5a4c2bfd492c41fdd47",
+      "prompt": {
+        "file": "repair-prompts-4.json",
+        "selector": {
+          "n": 6
+        }
+      }
+    },
+    {
+      "source": "frames/asc-7.png",
+      "sha256": "f0b4a58dcfa7dd887055768698a4394333906dc1a5261f6c562881f70f223c3a",
+      "prompt": {
+        "file": "frames/asc-7-neckline-repair-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/asc-8.png",
+      "sha256": "c82eddd5c0b0bd962071675cc033694202c25f509114eed8abce8cc0a8bd49b1",
+      "prompt": {
+        "file": "repair-prompts-3.json",
+        "selector": {
+          "n": 8
+        }
+      }
+    },
+    {
+      "source": "frames/asc-9.png",
+      "sha256": "f64f769e8a4315e315451c8b890e1bf3383f00191979ce38d3ff0655003bbd69",
+      "prompt": {
+        "file": "repair-asc-9.txt"
+      }
+    },
+    {
+      "source": "frames/desc-1.png",
+      "sha256": "d1ba483bdc8b5a52cf06d065cbad8a0450d012749ac3c101b9a72194b6e6a6e2",
+      "prompt": {
+        "file": "frames/desc-1-final-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/desc-2.png",
+      "sha256": "4e69d373e7bd856127c2ba59353c01168aed7d5bea44a3e8ab9b995430dd3e51",
+      "prompt": {
+        "file": "frames/desc-2-final-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/desc-3.png",
+      "sha256": "5a50218e0a9e25cc3ce2f7832f347b8b6b41bf5226988df3aca41398061649b3",
+      "prompt": {
+        "file": "frames/desc-3-final-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/desc-4.png",
+      "sha256": "c49625e101eafd2148b28b435d81cbefa7e37828f2e7748cb27c7fcd72e1d0d0",
+      "prompt": {
+        "file": "frames/desc-4-final-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/desc-5.png",
+      "sha256": "4cff8072ab2e9e8de2f8c6591d9e59258741b45bbbb4d2d8a96f22faa4ec729c",
+      "prompt": {
+        "file": "frames/desc-5-final-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/desc-6.png",
+      "sha256": "dd9d403b2ddaf0326da5a87bc7afde38ff953d56d3c8f62e5510531c7b8418ef",
+      "prompt": {
+        "file": "frames/desc-6-final-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/desc-7.png",
+      "sha256": "259da623590a9e51ba8b1677e30751ec061138ac255e6185be7d42696e55f67e",
+      "prompt": {
+        "file": "frames/desc-7-final-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/desc-8.png",
+      "sha256": "c7d21ccc33a9db21369fd9fe7385a83198e6a67d7171d9a296780277257b48b2",
+      "prompt": {
+        "file": "frames/desc-8-final-prompt.txt"
+      }
+    },
+    {
+      "source": "frames/desc-9.png",
+      "sha256": "bd467e2bd7b584a2fbab5117a051a735a54157a440c81e022e9490a396d3e7c9",
+      "prompt": {
+        "file": "frames/desc-9-retexture-prompt.txt"
+      }
+    }
+  ]
+}

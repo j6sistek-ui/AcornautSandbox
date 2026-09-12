@@ -96,6 +96,9 @@ try {
   // ONLY roster change since; every other suit must still match the baseline
   // object for object, and no suit may quietly lose its wearable head.
   const HIGH_ORBIT=['cinderforge','groveguard','cosmic','sunforged','abyssal'];
+  // Owner,12 Sep2026: these existing own-head pilots now use Cyber's9/9
+  // banks and loading rig. Their head policies are checked in the trio suite.
+  const CYBER_TRIO=['porcelain','nacre','origamist'];
   const suits=NewCat.SUITS.filter(suit=>!NewCat.wearsOwnHead(suit));
   assert.equal(suits.length,21,'all twenty-one production suits with wearable helmets are covered');
   const promoted=suits.filter(suit=>HIGH_ORBIT.includes(suit.id));
@@ -116,11 +119,17 @@ try {
   const legacy=suits.filter(suit=>!HIGH_ORBIT.includes(suit.id)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id));
   assert.deepEqual(legacy,OldCat.SUITS.filter(suit=>!OldCat.wearsOwnHead(suit)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id)),'helmet fitting does not change the pre-existing suit roster');
   assert.deepEqual(promoted.map(suit=>suit.id),HIGH_ORBIT,'HIGH ORBIT promotions are the only roster additions');
-  const withoutHighOrbit=table=>Array.isArray(table) ? table.filter(id=>!HIGH_ORBIT.includes(id))
-    : Object.fromEntries(Object.entries(table).filter(([id])=>!HIGH_ORBIT.includes(id)));
+  const withoutAuthorizedRigs=table=>Array.isArray(table) ? table.filter(id=>!HIGH_ORBIT.includes(id)&&!CYBER_TRIO.includes(id))
+    : Object.fromEntries(Object.entries(table).filter(([id])=>!HIGH_ORBIT.includes(id)&&!CYBER_TRIO.includes(id)));
   for(const name of ['RIGGED_SUITS','TAP_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS','ASC_BANKS','DESC_BANKS']) {
     const old=name==='RIGGED_SUITS'?OldArt[name].filter(id=>!NATURAL.includes(id)):OldArt[name];
-    assert.deepEqual(withoutHighOrbit(NewArt[name]),old,`${name}: only the natural-flight split rigs retire`);
+    assert.deepEqual(withoutAuthorizedRigs(NewArt[name]),old,`${name}: only the recorded owner-authorized rig changes`);
+  }
+  for(const id of CYBER_TRIO){
+    assert(NewArt.RIGGED_SUITS.includes(id),id+' Cyber-style loading rig');
+    assert.equal(NewArt.ASC_BANKS[id],9);assert.equal(NewArt.DESC_BANKS[id],9);
+    for(const name of ['TAP_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS'])assert.equal(NewArt[name][id],undefined,id+' has no extra '+name);
+    assert(NewCat.wearsOwnHead(NewCat.SUITS.find(s=>s.id===id)),id+' no interchangeable helmet');
   }
   for(const id of HIGH_ORBIT) {
     assert.equal(NewArt.ASC_BANKS[id],undefined,`${id}: old ascent repaint bank is retired`);

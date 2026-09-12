@@ -1,4 +1,4 @@
-import {HIGH_ORBIT_PROFILES,isPremiumSuit,type HighOrbitId} from './high-orbit-config';
+import {HIGH_ORBIT_PROFILES,isPremiumSuit,type HighOrbitId,type PremiumSuitId} from './high-orbit-config';
 import {createManeuverMotion,maneuverTap,stepManeuver,type ManeuverMotion} from './vanguard-maneuver';
 
 export const PREMIUM_FLIGHT_DURATION=1;
@@ -41,6 +41,16 @@ export function createHighOrbitMotion(id:HighOrbitId='cinderforge'):HighOrbitMot
     ...(isPremiumSuit(id)?{frames:{age:0,active:false,queued:false}}:{maneuver:createManeuverMotion(false)}),
     pose:{...rest},rates:Object.fromEntries(keys.map(k=>[k,0])) as HighOrbitPose};
 }
+/** The remastered trio uses the standard painted-bank controller. Retain
+ * only its cosmetic wake clock/power; no sixteen-frame playback can start. */
+export function createPremiumWake(id:PremiumSuitId):HighOrbitMotion {
+  const state=createHighOrbitMotion(id);delete state.frames;return state;
+}
+export function stepPremiumWake(s:HighOrbitMotion,id:PremiumSuitId,dt:number,vy:number,ready=false){
+  if(s.id!==id){delete s.maneuver;Object.assign(s,createPremiumWake(id));}
+  delete s.frames;
+  stepHighOrbit(s,id,dt,vy,ready);
+}
 /** An accepted tap accents even a short refresh below the velocity detector's
  * threshold. No pose/rate reset and no change to the approved wake power. */
 export function highOrbitTap(s:HighOrbitMotion,acceptedImpulse=450,repeat:PremiumRepeat='finish') {
@@ -49,8 +59,8 @@ export function highOrbitTap(s:HighOrbitMotion,acceptedImpulse=450,repeat:Premiu
   // High Orbit's smaller, retargeted limbs need a full readable accent even
   // when a fast repeat tap refreshes only a few pixels/second of velocity.
   if(s.maneuver)maneuverTap(s.maneuver,Math.max(450,acceptedImpulse));
-  if(isPremiumSuit(s.id)){
-    const f=s.frames??(s.frames={age:0,active:false,queued:false});
+  if(isPremiumSuit(s.id)&&s.frames){
+    const f=s.frames;
     if(!f.active){f.age=0;f.active=true;delete f.dir;}
     // The explicit accepted-tap hook and its same-instant velocity
     // observation count as only one request (age is still zero).
@@ -130,6 +140,14 @@ export function stepHighOrbit(s:HighOrbitMotion,id:HighOrbitId,dt:number,vy:numb
   }
 }
 const previews=new WeakMap<object,Map<HighOrbitId,{state:HighOrbitMotion,time:number}>>();
+const wakePreviews=new WeakMap<object,Map<PremiumSuitId,{state:HighOrbitMotion,time:number}>>();
+/** The shelf's standard preview supplies velocity; the wake never chooses art. */
+export function premiumWakePreview(owner:object,id:PremiumSuitId,time:number,vy:number):HighOrbitMotion {
+  let map=wakePreviews.get(owner);if(!map){map=new Map();wakePreviews.set(owner,map);}
+  let p=map.get(id);
+  if(!p||time<p.time){p={state:createPremiumWake(id),time:time-1/60};map.set(id,p);}
+  stepPremiumWake(p.state,id,clamp(time-p.time,0,.1),vy);p.time=time;return p.state;
+}
 /** The same controller and a short physical gravity arc drive each shelf card. */
 export function highOrbitPreview(owner:object,id:HighOrbitId,time:number):HighOrbitMotion {
   let map=previews.get(owner);if(!map){map=new Map();previews.set(owner,map);}

@@ -20,8 +20,8 @@ const pages = join(root, "docs");
 execFileSync(process.execPath, [join(root, "illustrated-src/export-home-icons.mjs")], { cwd: root, stdio: "inherit" });
 // Regenerated helmets contain complete glass; only their outside backing is removed.
 execFileSync(process.execPath, [join(root, "illustrated-src/export-visor-glass.mjs")], { cwd: root, stdio: "inherit" });
-// The approved premium trio is one registered full-body sheet per suit.
-execFileSync(process.execPath, [join(root, "illustrated-src/export-premium-flight.mjs")], { cwd: root, stdio: "inherit" });
+// The premium trio now uses Cyber's registered nine-pose ascent/descent banks.
+execFileSync(process.execPath, [join(root, "illustrated-src/export-cyber-trio.mjs")], { cwd: root, stdio: "inherit" });
 // Zone planets/debris ship from transparent masters through the same build.
 // This is strict: an incomplete local production batch cannot be shipped.
 execFileSync(process.execPath, [join(root, "illustrated-src/export-zone-art.mjs")], { cwd: root, stdio: "inherit" });

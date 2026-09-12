@@ -1,0 +1,168 @@
+{
+  "date": "2026-09-12T23:12:47.436Z",
+  "method": "Exported production Sim+drawPilot independently executed with native canvas, fixed60Hz. Renderer captures are not an interactive browser UI test. Signature wake effects disabled; intrinsic tap accents remain. Loading fallback deliberately omits banks and samples maximum normal tail range.",
+  "captureFileSha256": "531b32dd4a801d452e2c8b5c29a228107813d7a1eb1817a8a4f0418571dbbbb7",
+  "scenarios": {
+    "single-52": {
+      "porcelain": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "nacre": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "origamist": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      }
+    },
+    "repeat150-52": {
+      "porcelain": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "nacre": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "origamist": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      }
+    },
+    "dive-52": {
+      "porcelain": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "nacre": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "origamist": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      }
+    },
+    "burst-52": {
+      "porcelain": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "nacre": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "origamist": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      }
+    },
+    "reset-52": {
+      "porcelain": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "nacre": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "origamist": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      }
+    },
+    "single-192": {
+      "porcelain": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "nacre": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "origamist": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      }
+    },
+    "repeat150-192": {
+      "porcelain": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "nacre": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "origamist": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      }
+    },
+    "dive-192": {
+      "porcelain": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "nacre": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "origamist": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      }
+    },
+    "burst-192": {
+      "porcelain": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "nacre": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "origamist": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      }
+    },
+    "reset-192": {
+      "porcelain": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "nacre": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      },
+      "origamist": {
+        "ticks": 120,
+        "matchingFrameVelocityTailTicks": 120
+      }
+    }
+  },
+  "retainedCaptures": {
+    "final-porcelain-single-52.png": "db685e7c13baa40e1ceef643bbe71abf3efea77501cfed10b7f12e83b2201dd4",
+    "final-nacre-single-52.png": "ed8521d67b55bfe58a2762bab7955567c47acf953526be52f1ef1f71437878fa",
+    "final-origamist-single-52.png": "c5485bd1740771b6d3514d86d00a86b816c8482017667ed1b2ea7c30b2af3476",
+    "final-porcelain-single-192.png": "f68d7cfd1de854f1df522a8dc0b45578792c807433b9a373e07b4fe8dac53021",
+    "final-nacre-single-192.png": "ef3af024864cdf71488de88d8a23f286b8e566325f06cc443bba82a956fb8b7f",
+    "final-origamist-single-192.png": "dd3b00c7da5b44f40cf8e076ea6e102e15ed774059ff2e1f62f939f827dbb7d5",
+    "final-porcelain-loading-fallback.png": "24c633743a874d431a25338f96594cac68b78d539b972d100211a8caaddcfce4",
+    "final-nacre-loading-fallback.png": "235ada430a690a82c3c8eed60adaaf2e8950c978301cd600d555e17f745bd49b",
+    "final-origamist-loading-fallback.png": "184368d3710e75b3f1dbe608eb2d134eaf89cc7477ac3d7f98e3a72b788d157c"
+  },
+  "synchronizedRows": {
+    "suits": [
+      "cyber",
+      "porcelain",
+      "nacre",
+      "origamist"
+    ],
+    "ticks": 600,
+    "equalTicks": 600
+  }
+}

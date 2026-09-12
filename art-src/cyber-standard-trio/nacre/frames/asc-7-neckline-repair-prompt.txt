@@ -1,0 +1,5 @@
+A single tiny localized correction to IMAGE1: restore the missing THIN rose-gold V/U-shaped neckline piping immediately BELOW the ivory collar on the exposed upper chest, matching that same delicate contour in IMAGE2. Add only this thin neckline contour. Preserve absolutely everything else in IMAGE1: existing ivory shoulder patch, bracers, thin lower belly piping, hip oval, waist stripe, all four paws, head/eyes/face/palette, BOTH tail curves and tips, exact body pose and framing. Do not add a badge, pentagon, grid, broad strap or new panel. No other pixel placement or material changes. Same flat #00ff00.
+
+Generated images are saved to imagegen:01a09772-65df-7a30-a2dd-1a10870fa506 as imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-6885a552-133a-4c78-9d9b-73320eddd2fd.png by default.
+If you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.
+The generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.

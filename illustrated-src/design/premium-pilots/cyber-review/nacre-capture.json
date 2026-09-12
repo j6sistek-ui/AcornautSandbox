@@ -1,0 +1,432 @@
+{
+  "capturedAt": "2026-09-12T22:48:38.256Z",
+  "method": "Exported production Sim+drawPilot independently executed with native canvas, fixed60Hz. Renderer captures are not an interactive browser UI test. Signature wake effects disabled; intrinsic tap accents remain. Loading fallback deliberately omits banks and samples maximum normal tail range.",
+  "runtime": [
+    {
+      "path": "docs/js/draw.js",
+      "sha256": "506fc30f97fbb37696c4a0bf0f37fae2543168cdcdd56c6b95e8b3ea9c389390"
+    },
+    {
+      "path": "docs/js/sim.js",
+      "sha256": "afdac1929d33715a88b8c48386390d483aa42aeda04d127d6d38b8699f360430"
+    },
+    {
+      "path": "docs/js/art.js",
+      "sha256": "6a5bee6ecfd97a99e7533ba917e670245274268eefafb52c7f88d98ec66f8061"
+    },
+    {
+      "path": "docs/js/catalog.js",
+      "sha256": "25972a6ec12bd796d1febda5d518339d11c504a18b8e4fc6616b0e76400b453a"
+    },
+    {
+      "path": "docs/js/premium-bank-wake.js",
+      "sha256": "a16b54f52baeee80b6064282b9463da4764ba044b6e6b729192a04680121ae10"
+    }
+  ],
+  "art": [
+    {
+      "path": "docs/art/suits/cyber.png",
+      "sha256": "8959b90e4f34bb275bae9af5370d6d7bb7e716cfa2a0a6921d8f693f5aeb51e2"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-3.png",
+      "sha256": "53335c6942917020f954a4997bb543ddb5175a4f79ce90e6f5ced7e9e86bdb86"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-1.png",
+      "sha256": "d2334ad1ab53ee8386ac6dc3969df3ef5cf002fdcfad282d691ef2a71928ae49"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-5.png",
+      "sha256": "d9cfcfc7806bc132243599063159d960d4ca14a13dbda806d137ddda081e4648"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-2.png",
+      "sha256": "558d599a81d3cfac5f703506d1189194aaf0c099ce3acb0a1cb281d7d4dec523"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-4.png",
+      "sha256": "6915a700b185ad4390e9155d1b7e7e648c1a1d3a0e9ae5e11a522626d54a6788"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-6.png",
+      "sha256": "8deb01ec09918775f7ffd050ad2acf60bc2f8f974f0517edda367c92b7a50dd0"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-8.png",
+      "sha256": "e088c15ae84bcdb7fb651ae95833ad41e837cc834046233fcc54c54073cb936e"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-7.png",
+      "sha256": "80121ec684399e9453770d077f82863957f36a99d2ed8d2d2a4919d800c10986"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-9.png",
+      "sha256": "bc11e107cce1a863ed0fa929dd6ee3c5b5e10788b647e4302aa93ea566343808"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-2.png",
+      "sha256": "a72db815fc994493fd5718ca31c3e21fd262442e686896ddc99bce67a632b178"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-6.png",
+      "sha256": "54ffb725ef6ac16ce07a967d74eb7c2cee0bfd5ea25fe27594e327daa6387656"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-3.png",
+      "sha256": "3eba8644a1489fe0d6411cd634bfb77881e396ae3ba42a1eb818020898cf40c1"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-1.png",
+      "sha256": "8aa0186902f64333c0caf74a8af414b6543a64e03a5a18411e64fa312b90541e"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-4.png",
+      "sha256": "592881e3a0ec1920602d0be52fefd09edc5e99ad777cd7cc77a7525691b36fc6"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-5.png",
+      "sha256": "046387f314b590571a9f3e7b5136740fb71332a7c52ce5ed781045aaddc38a7b"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-8.png",
+      "sha256": "e995063ebfa65d8685f968dfe04ef65578f7de6a83c9a8922c46030cad113b7c"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-9.png",
+      "sha256": "cc78e3481ed3801888db55a47a4a7fe7d4ab9ef31791cc4c772059bc5d6d67d2"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-7.png",
+      "sha256": "b2f1c7a87f452b09dc1a548d09e9e617d0aa2ea965725de0aaf4a523dc3cc0b9"
+    },
+    {
+      "path": "docs/art/suits/cyber-body.png",
+      "sha256": "fe76e0c15034dd323c33cf71c747506ea2958c99ae2ecd9763787d690b33d356"
+    },
+    {
+      "path": "docs/art/suits/cyber-tail.png",
+      "sha256": "044080b2520ec2a85b034cc3d3cb1016125e4a107fedc940219244df6630f5a3"
+    },
+    {
+      "path": "docs/art/suits/nacre.png",
+      "sha256": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-3.png",
+      "sha256": "cab090eadfc5eae3304decb3b2d27970e27da740b506e2f9056007ec25fd5fde"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-2.png",
+      "sha256": "ca2c9c0bec84fa7e4c0ad616ee9c8d7dfac725defe78325a10a682aa0d12510c"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-5.png",
+      "sha256": "bdd01345809b9f89f6295612f82f2d5f4886242ec776cc815d0c4bc712800bfd"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-1.png",
+      "sha256": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-4.png",
+      "sha256": "0ccc19eba8ae2b656ab3fdd0842e7eb6bbaff52a3b28012206a342c7bedaaabf"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-8.png",
+      "sha256": "2e201392a4cf82aad4f54bb3c6ac592a7727e30d0ff916bdbc4f07790db4bb8b"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-6.png",
+      "sha256": "4acc3a7d711a4ee06bf8b7ae7f4327bde4f1297af6038729f4beb868bca8e625"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-7.png",
+      "sha256": "775facc7471fc8d315f4a9cbaf8d2b6e02a72c6d890c7d62e347860c956035cb"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-9.png",
+      "sha256": "e65ab074a139f9721ba3a087bba5034de7e3c62d8cf7db6224d77e410644ce8d"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-5.png",
+      "sha256": "3601c14223ed9e1ab19a0342498de977e6336e61b1b318bf0ea29fbfe172008f"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-3.png",
+      "sha256": "878f3a432cfb02f773101540dc4d1a2fd2b0047d3be8ce19d25c122cacd0192e"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-4.png",
+      "sha256": "35024f44bd2d11580d4ae3f0be4e305e8bd68d9f6eb030399eec38a56056c8b8"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-1.png",
+      "sha256": "57fc85a50eebdfaea743a9fa7633af8b9e434472834afce35f908144693f3826"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-6.png",
+      "sha256": "7f4350f1495b35e48fdcc8277878729af2231515934b0363e32d03dfa5c3c716"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-7.png",
+      "sha256": "4e5e317dd7d007abc56ae469d8babcdcd78d07fbfe7dfdb918cdb54eca263246"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-8.png",
+      "sha256": "90a98df15a42dde5550a77d0cbb939ddac4881eb56686bc386fca8004b4c7a65"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-9.png",
+      "sha256": "bd3c78691a7c895a96edf18063d92c2f1c4e997acd52444cc3c0e085d6be6b1f"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-2.png",
+      "sha256": "53c93b89d2ca656cd71b7181e5cfb94b06b8c946a8785469e6c8218564144ec3"
+    },
+    {
+      "path": "docs/art/suits/nacre-body.png",
+      "sha256": "69f8fdf9af1efcb35af92abc50cfff233d4e7a8a6837b69933d4d2c6b22f3114"
+    },
+    {
+      "path": "docs/art/suits/nacre-tail.png",
+      "sha256": "3cfb2426c5200c9f819d456960d3db74c4c1fa0608cbcf3dd43d5d35037aa81b"
+    },
+    {
+      "path": "docs/art/helms/clear.png",
+      "sha256": "77cf59bf573d732deb24d8da8ab836937f880c648e3183f4cbce09477066ad32"
+    },
+    {
+      "path": "docs/art/squirrel/idle-1.png",
+      "sha256": "dec590e3b1d1b68279680b88f1bc70576983a39ed44ce6e3ccae218741f23007"
+    },
+    {
+      "path": "docs/art/squirrel/flap-1.png",
+      "sha256": "5ddc9a7b314dcd37793c1164fd8dcf953b87e8111458775b6fb3a721e4a93e8c"
+    }
+  ],
+  "captureFileSha256": "93193f7e61c84925194371bb3e4ddabe9382f9762e241e67e938ffc8a4844999",
+  "scenarios": {
+    "single-52": {
+      "ticks": 120,
+      "matchingFrameVelocityTailTicks": 120,
+      "selectedFrames": [
+        "asc-1",
+        "asc-2",
+        "asc-3",
+        "asc-4",
+        "asc-5",
+        "asc-6",
+        "asc-7",
+        "asc-8",
+        "asc-9",
+        "desc-1",
+        "desc-2",
+        "desc-3",
+        "desc-4",
+        "desc-5",
+        "desc-6",
+        "desc-7",
+        "desc-8",
+        "desc-9"
+      ]
+    },
+    "repeat150-52": {
+      "ticks": 120,
+      "matchingFrameVelocityTailTicks": 120,
+      "selectedFrames": [
+        "asc-5",
+        "asc-9"
+      ]
+    },
+    "dive-52": {
+      "ticks": 120,
+      "matchingFrameVelocityTailTicks": 120,
+      "selectedFrames": [
+        "asc-1",
+        "asc-2",
+        "asc-3",
+        "asc-4",
+        "asc-5",
+        "asc-6",
+        "asc-7",
+        "asc-8",
+        "asc-9",
+        "desc-1",
+        "desc-2",
+        "desc-3",
+        "desc-4",
+        "desc-5",
+        "desc-6",
+        "desc-7",
+        "desc-8",
+        "desc-9"
+      ]
+    },
+    "burst-52": {
+      "ticks": 120,
+      "matchingFrameVelocityTailTicks": 120,
+      "selectedFrames": [
+        "asc-1",
+        "asc-2",
+        "asc-3",
+        "asc-4",
+        "asc-5",
+        "asc-6",
+        "asc-7",
+        "asc-8",
+        "asc-9",
+        "desc-1",
+        "desc-2",
+        "desc-3",
+        "desc-4",
+        "desc-5",
+        "desc-6",
+        "desc-7",
+        "desc-8",
+        "desc-9"
+      ]
+    },
+    "reset-52": {
+      "ticks": 120,
+      "matchingFrameVelocityTailTicks": 120,
+      "selectedFrames": [
+        "asc-1",
+        "asc-2",
+        "asc-3",
+        "asc-4",
+        "asc-5",
+        "asc-6",
+        "asc-7",
+        "asc-8",
+        "asc-9",
+        "desc-1",
+        "desc-2",
+        "desc-3",
+        "desc-4",
+        "desc-5",
+        "desc-6",
+        "desc-7",
+        "desc-8",
+        "desc-9"
+      ]
+    },
+    "single-192": {
+      "ticks": 120,
+      "matchingFrameVelocityTailTicks": 120,
+      "selectedFrames": [
+        "asc-1",
+        "asc-2",
+        "asc-3",
+        "asc-4",
+        "asc-5",
+        "asc-6",
+        "asc-7",
+        "asc-8",
+        "asc-9",
+        "desc-1",
+        "desc-2",
+        "desc-3",
+        "desc-4",
+        "desc-5",
+        "desc-6",
+        "desc-7",
+        "desc-8",
+        "desc-9"
+      ]
+    },
+    "repeat150-192": {
+      "ticks": 120,
+      "matchingFrameVelocityTailTicks": 120,
+      "selectedFrames": [
+        "asc-5",
+        "asc-9"
+      ]
+    },
+    "dive-192": {
+      "ticks": 120,
+      "matchingFrameVelocityTailTicks": 120,
+      "selectedFrames": [
+        "asc-1",
+        "asc-2",
+        "asc-3",
+        "asc-4",
+        "asc-5",
+        "asc-6",
+        "asc-7",
+        "asc-8",
+        "asc-9",
+        "desc-1",
+        "desc-2",
+        "desc-3",
+        "desc-4",
+        "desc-5",
+        "desc-6",
+        "desc-7",
+        "desc-8",
+        "desc-9"
+      ]
+    },
+    "burst-192": {
+      "ticks": 120,
+      "matchingFrameVelocityTailTicks": 120,
+      "selectedFrames": [
+        "asc-1",
+        "asc-2",
+        "asc-3",
+        "asc-4",
+        "asc-5",
+        "asc-6",
+        "asc-7",
+        "asc-8",
+        "asc-9",
+        "desc-1",
+        "desc-2",
+        "desc-3",
+        "desc-4",
+        "desc-5",
+        "desc-6",
+        "desc-7",
+        "desc-8",
+        "desc-9"
+      ]
+    },
+    "reset-192": {
+      "ticks": 120,
+      "matchingFrameVelocityTailTicks": 120,
+      "selectedFrames": [
+        "asc-1",
+        "asc-2",
+        "asc-3",
+        "asc-4",
+        "asc-5",
+        "asc-6",
+        "asc-7",
+        "asc-8",
+        "asc-9",
+        "desc-1",
+        "desc-2",
+        "desc-3",
+        "desc-4",
+        "desc-5",
+        "desc-6",
+        "desc-7",
+        "desc-8",
+        "desc-9"
+      ]
+    }
+  },
+  "retainedCaptures": {
+    "illustrated-src/design/premium-pilots/cyber-review/nacre-single-192.png": "722eb7a5ac71d7d9736f328277574474ca8d964c9cf8f5148f500ada457714fb",
+    "illustrated-src/design/premium-pilots/cyber-review/nacre-single-52.png": "7570a5cdf649a35cdc26faeb573bc5a7d4d37ae2d51af12c9ff1eb56914d78f8",
+    "illustrated-src/design/premium-pilots/cyber-review/nacre-loading-fallback.png": "235ada430a690a82c3c8eed60adaaf2e8950c978301cd600d555e17f745bd49b"
+  },
+  "synchronizedRows": {
+    "suits": [
+      "cyber",
+      "nacre"
+    ],
+    "ticks": 600,
+    "equalTicks": 600
+  }
+}

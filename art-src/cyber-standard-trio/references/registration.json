@@ -1,0 +1,213 @@
+{
+  "sourceCell": 256,
+  "boardCell": 512,
+  "boardSize": 1536,
+  "scale": 2,
+  "order": "row-major",
+  "alphaThreshold": 24,
+  "registration": "Exact shipped pixels scaled 2x. The nominal dome 128,128 r40 is a rig convention, not the actual own-head location. Do not relocate artwork to that dome.",
+  "banks": {
+    "asc": [
+      {
+        "source": "docs/art/suits/cyber-asc-1.png",
+        "cell": 0,
+        "sourceBox": [
+          58,
+          57,
+          142,
+          122
+        ],
+        "coverage": 0.1157073974609375
+      },
+      {
+        "source": "docs/art/suits/cyber-asc-2.png",
+        "cell": 1,
+        "sourceBox": [
+          58,
+          56,
+          141,
+          125
+        ],
+        "coverage": 0.1168365478515625
+      },
+      {
+        "source": "docs/art/suits/cyber-asc-3.png",
+        "cell": 2,
+        "sourceBox": [
+          58,
+          56,
+          139,
+          127
+        ],
+        "coverage": 0.119049072265625
+      },
+      {
+        "source": "docs/art/suits/cyber-asc-4.png",
+        "cell": 3,
+        "sourceBox": [
+          64,
+          57,
+          131,
+          131
+        ],
+        "coverage": 0.1257171630859375
+      },
+      {
+        "source": "docs/art/suits/cyber-asc-5.png",
+        "cell": 4,
+        "sourceBox": [
+          71,
+          58,
+          123,
+          134
+        ],
+        "coverage": 0.1328887939453125
+      },
+      {
+        "source": "docs/art/suits/cyber-asc-6.png",
+        "cell": 5,
+        "sourceBox": [
+          74,
+          58,
+          119,
+          136
+        ],
+        "coverage": 0.1349945068359375
+      },
+      {
+        "source": "docs/art/suits/cyber-asc-7.png",
+        "cell": 6,
+        "sourceBox": [
+          75,
+          59,
+          118,
+          136
+        ],
+        "coverage": 0.1362457275390625
+      },
+      {
+        "source": "docs/art/suits/cyber-asc-8.png",
+        "cell": 7,
+        "sourceBox": [
+          76,
+          60,
+          117,
+          138
+        ],
+        "coverage": 0.1374359130859375
+      },
+      {
+        "source": "docs/art/suits/cyber-asc-9.png",
+        "cell": 8,
+        "sourceBox": [
+          76,
+          62,
+          117,
+          138
+        ],
+        "coverage": 0.1379241943359375
+      }
+    ],
+    "desc": [
+      {
+        "source": "docs/art/suits/cyber-desc-1.png",
+        "cell": 0,
+        "sourceBox": [
+          57,
+          62,
+          143,
+          124
+        ],
+        "coverage": 0.1184234619140625
+      },
+      {
+        "source": "docs/art/suits/cyber-desc-2.png",
+        "cell": 1,
+        "sourceBox": [
+          56,
+          61,
+          144,
+          126
+        ],
+        "coverage": 0.119049072265625
+      },
+      {
+        "source": "docs/art/suits/cyber-desc-3.png",
+        "cell": 2,
+        "sourceBox": [
+          57,
+          61,
+          142,
+          127
+        ],
+        "coverage": 0.119659423828125
+      },
+      {
+        "source": "docs/art/suits/cyber-desc-4.png",
+        "cell": 3,
+        "sourceBox": [
+          57,
+          61,
+          142,
+          127
+        ],
+        "coverage": 0.1203155517578125
+      },
+      {
+        "source": "docs/art/suits/cyber-desc-5.png",
+        "cell": 4,
+        "sourceBox": [
+          57,
+          61,
+          141,
+          129
+        ],
+        "coverage": 0.1219482421875
+      },
+      {
+        "source": "docs/art/suits/cyber-desc-6.png",
+        "cell": 5,
+        "sourceBox": [
+          60,
+          61,
+          137,
+          131
+        ],
+        "coverage": 0.1245880126953125
+      },
+      {
+        "source": "docs/art/suits/cyber-desc-7.png",
+        "cell": 6,
+        "sourceBox": [
+          60,
+          61,
+          136,
+          132
+        ],
+        "coverage": 0.1257476806640625
+      },
+      {
+        "source": "docs/art/suits/cyber-desc-8.png",
+        "cell": 7,
+        "sourceBox": [
+          64,
+          62,
+          131,
+          133
+        ],
+        "coverage": 0.1286163330078125
+      },
+      {
+        "source": "docs/art/suits/cyber-desc-9.png",
+        "cell": 8,
+        "sourceBox": [
+          66,
+          62,
+          129,
+          134
+        ],
+        "coverage": 0.130706787109375
+      }
+    ]
+  }
+}

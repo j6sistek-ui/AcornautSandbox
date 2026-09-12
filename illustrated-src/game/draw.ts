@@ -6,9 +6,11 @@ import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcfla
 import { arcflashPreview } from "./arcflash-motion";
 import { paintLiveStarTrail } from "./star-trails";
 import { trailWornBy } from "./catalog";
-import {isHighOrbit,highOrbitTrailSuit,type HighOrbitId} from "./high-orbit-config";
+import {isHighOrbitRig,isPremiumSuit,highOrbitTrailSuit,type HighOrbitId} from "./high-orbit-config";
 import {paintHighOrbit,paintHighOrbitCockpit} from "./high-orbit";
-import {highOrbitPreview,type HighOrbitMotion} from "./high-orbit-motion";
+import {highOrbitPreview,premiumWakePreview,type HighOrbitMotion} from "./high-orbit-motion";
+import {paintPremiumBankWake,type PremiumBankWake} from "./premium-bank-wake";
+import {CYBER_TRIO_REGISTRATION} from "./cyber-trio-registration";
 import {paintHighOrbitWake,type HighOrbitTravel} from "./high-orbit-effects";
 import { runPals, fxOf, worldFlipped } from "./sim";
 import { spillAppearance } from "./spill-appearance";
@@ -1862,7 +1864,7 @@ function spillCanopyFrame(sp: Sprite) {
 
 function paintSpillHead(ctx: CanvasRenderingContext2D, art: ArtBank, save: SaveData, hole: SpillHole) {
   const suit = SUITS.find(u => u.id === save.equippedSuit) ?? SUITS[0];
-  if(isHighOrbit(suit.id)){
+  if(isHighOrbitRig(suit.id)){
     paintHighOrbitCockpit(ctx,art,suit.id,hole.cx,hole.cy,hole.rx,hole.ry);
     return;
   }
@@ -1873,7 +1875,7 @@ function paintSpillHead(ctx: CanvasRenderingContext2D, art: ArtBank, save: SaveD
   const body = art.suits[suit.id] ?? art.squirrelIdle[0];
   if (!body) return;
   const key = art.suits[suit.id] ? `suit:${suit.id}` : "idle-1";
-  const anchor = DOME[key] ?? DOME["suit:flight"];
+  const anchor = isPremiumSuit(suit.id) ? CYBER_TRIO_REGISTRATION[suit.id].head : DOME[key] ?? DOME["suit:flight"];
   const helmet = helmetWornBy(save.equipped, suit.id);
   const b = naturalFlightKey(key) ? NATURAL_FLIGHT_BOX : body.box;
   const scale = hole.rx * 0.94 / anchor[2];
@@ -1882,7 +1884,7 @@ function paintSpillHead(ctx: CanvasRenderingContext2D, art: ArtBank, save: SaveD
   ctx.save(); ctx.beginPath();
   ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2); ctx.clip();
   ctx.drawImage(body, hole.cx - anchor[0] * scale, hole.cy - anchor[1] * scale, body.width * scale, body.height * scale);
-  paintDome(ctx, body, key, helmet, x, y, Math.max(b.w, b.h) * scale, art);
+  if (!isPremiumSuit(suit.id)) paintDome(ctx, body, key, helmet, x, y, Math.max(b.w, b.h) * scale, art);
   ctx.restore();
 }
 
@@ -4004,6 +4006,9 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   // is why a swing tore a piece off the animal instead of sweeping along
   // it. Re-cut the art and these must be re-read from the same run.
   cyber: [101, 125],
+  porcelain: [...CYBER_TRIO_REGISTRATION.porcelain.tailPivot],
+  nacre: [...CYBER_TRIO_REGISTRATION.nacre.tailPivot],
+  origamist: [...CYBER_TRIO_REGISTRATION.origamist.tailPivot],
   bigbooty: [92, 129],
   catsuit: [74, 149],
   copper: [108, 142],
@@ -4609,7 +4614,7 @@ const LOOP_FPS = 12;
 // EXTENDS rather than which way it points, and the rig supplies the
 // direction over the top. That is what lets nine frames read as a climb and
 // a dive instead of needing two sheets that never quite agree at the seam.
-const RIG_PITCH_WITH_BANK = new Set(["cyber"]);
+const RIG_PITCH_WITH_BANK = new Set(["cyber", "porcelain", "nacre", "origamist"]);
 
 // THE FRAMES A GENERATED BANK LOST. Twenty-two of the tap banks were made
 // from one shared motion, and that motion loses the pilot's LOWER BODY at
@@ -4752,6 +4757,7 @@ function paintIllustrated(
   // the freeze-day path, {fwd, back} = the owner's linear dial (see
   // TAP_SHAPE in control-constants; tapShapeFor resolves the beta dial)
   tapShape: TapShape | "velocity" | null = null,
+  wake?: PremiumBankWake,
 ) {
   // the equipped suit IS the body: its painted render replaces the
   // default flight frames, carried by the pilot's motion
@@ -4769,7 +4775,7 @@ function paintIllustrated(
     paintArcflash(ctx, art, x, y, size);
     return;
   }
-  if (isHighOrbit(suit.id)) {
+  if (isHighOrbitRig(suit.id)) {
     paintOrbitPilot(ctx,art,suit.id,x,y,size,helmet);
     return;
   }
@@ -5023,6 +5029,7 @@ function paintIllustrated(
       (window as unknown as { __acornautPose?: unknown }).__acornautPose =
         { suit: suit.id, bank: diving ? "desc" : "asc", idx: idxM + 1, v };
       const refM = NATURAL_FLIGHT_SUITS.has(suit.id) ? NATURAL_FLIGHT_BOX : (ascFrames[0] as Sprite).box ?? ref;
+      if (isPremiumSuit(suit.id) && wake) paintPremiumBankWake(ctx,suit.id,diving?"desc":"asc",idxM,refM,x,y,size,wake);
       drawRigLayer(ctx, frame, refM, x, y, size, 0, undefined, halo);
       // the helmet rides the HEAD, which these frames move with the
       // attitude - each frame carries its own dome anchor. The anchor is
@@ -5156,6 +5163,7 @@ function drawPilot(
   localScale = 1,
   yOverride?: number,
   bankScale = 0.8,
+  effects = true,
 ) {
   const x = xOverride ?? w.W * PHYS.squirrelX;
   const y = yOverride ?? w.squirrel.y;
@@ -5185,7 +5193,7 @@ function drawPilot(
   const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
   const flagship = suit.id === "vanguard";
   const arcflash = suit.id === "arcflash";
-  const orbit = isHighOrbit(suit.id);
+  const orbit = isHighOrbitRig(suit.id);
   const independentRig = flagship || arcflash || orbit;
   if (flagship) paintVanguardContacts(ctx, w.vanguard);
   const articulatedTap = independentRig || (NATURAL_FLIGHT_SUITS.has(suit.id) || !!art.suitBody?.[suit.id]) && w.tapAnimT >= 0;
@@ -5276,7 +5284,7 @@ function drawPilot(
   else if (arcflash) paintArcflash(ctx, art, 0, 2, 52, w.arcflash,
     { x: x/localScale, y: y/localScale, travel: w.distance/localScale }, true,
     (suitPitchFor(save, suit.id) * Math.PI) / 180);
-  else if (isHighOrbit(suit.id)) paintOrbitPilot(ctx,art,suit.id,0,2,52,helm,w.highOrbit,
+  else if (isHighOrbitRig(suit.id)) paintOrbitPilot(ctx,art,suit.id,0,2,52,helm,w.highOrbit,
     {x:x/localScale,y:(y+2*localScale)/localScale,travel:w.distance/localScale},true,
     (suitPitchFor(save,suit.id)*Math.PI)/180);
   else paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey,
@@ -5285,12 +5293,17 @@ function drawPilot(
     // Cryostar and Verdant now share Eclipse's heading mapping by owner
     // request. All three use the same smoother, pose curve and frame index.
     w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed,
-    lean, NaN, true, tapShapeFor(save, suit.id));
+    lean, NaN, true, tapShapeFor(save, suit.id),
+    effects && isPremiumSuit(suit.id) ? {state:w.highOrbit,travel:w.distance/localScale} : undefined);
   if (flagship && w.shieldCharges > 0) paintVanguardShield(ctx, 0, 0, w.time);
   ctx.restore();
 }
 
 const PAL_ANIM_FPS = 12;
+
+// The offline review uses the exact production pilot painter and a local
+// simulation. It never writes a player's save or substitutes a pose player.
+export {drawPilot as paintPilot};
 
 /** the companions to paint: the tutorial's Acorn alone during its lesson,
  *  otherwise every pal the run flies, high slot first */
@@ -5366,7 +5379,7 @@ export function paintPortrait(
   size: number,
   _t = 0,
 ) {
-  if(isHighOrbit(suit.id)){
+  if(isHighOrbitRig(suit.id)){
     paintOrbitPilot(ctx,art,suit.id,cx,cy+2,size,helmet,undefined,undefined,false);
     return;
   }
@@ -5497,7 +5510,7 @@ export function paintFlightPreview(
     paintArcflash(ctx, art, cx, cy, size, arcflashPreview(ctx,t), undefined, true, pitch);
     return;
   }
-  if (isHighOrbit(suit.id)) {
+  if (isHighOrbitRig(suit.id)) {
     paintOrbitPilot(ctx,art,suit.id,cx,cy,size,helmet,highOrbitPreview(ctx,suit.id,t),undefined,true,pitch);
     return;
   }
@@ -5631,7 +5644,8 @@ export function paintFlightPreview(
     (flapping ? "flap-" : "idle-") + (idx + 1),
     frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend,
     "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean, sweptPose, false,
-    tapShapeFor(null, suit.id));   // the table only: a preview has no save
+    tapShapeFor(null, suit.id),   // the table only: a preview has no save
+    isPremiumSuit(suit.id) ? {state:premiumWakePreview(ctx,suit.id,t,vy),travel:t*300} : undefined);
   ctx.restore();
 }
 

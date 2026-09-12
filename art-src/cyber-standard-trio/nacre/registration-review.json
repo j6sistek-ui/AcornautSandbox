@@ -1,0 +1,204 @@
+{
+  "status": "CANDIDATE - visual overlay review required, no acceptance from score",
+  "method": "Single uniform scale1, integer whole-image translation maximizing weighted silhouette Dice. Body ROI x112..209,y133..209 weight1; head ROI x145..214,y96..144 weight2. Tail and most ears/antennae excluded. Does not measure a skull center/radius.",
+  "records": [
+    {
+      "frame": "asc-1",
+      "offset": [
+        -8,
+        0
+      ],
+      "before": 0.8703,
+      "after": 0.9481,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-asc-1.png",
+      "sha256": "ece37bee48d5001e3afe3027cc01ec97e83e103431ae2e990a3043c0c079a5a8"
+    },
+    {
+      "frame": "asc-2",
+      "offset": [
+        -5,
+        0
+      ],
+      "before": 0.9136,
+      "after": 0.9473,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-asc-2.png",
+      "sha256": "5cc4ae648db03a1478258e1b22b01ad58294610fb54aeb4b89e06d39532d9a46"
+    },
+    {
+      "frame": "asc-3",
+      "offset": [
+        -6,
+        -1
+      ],
+      "before": 0.9049,
+      "after": 0.9377,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-asc-3.png",
+      "sha256": "8dc875f66eb3c4b736c6560414c0565e90d29ca9c2f4e7cfb53642c57fdad131"
+    },
+    {
+      "frame": "asc-4",
+      "offset": [
+        -3,
+        0
+      ],
+      "before": 0.9517,
+      "after": 0.9645,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-asc-4.png",
+      "sha256": "125137293bdcf3c09b1a1d81f144221e2031036624a218096cb85fdf6d3f03a7"
+    },
+    {
+      "frame": "asc-5",
+      "offset": [
+        -3,
+        0
+      ],
+      "before": 0.9467,
+      "after": 0.9561,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-asc-5.png",
+      "sha256": "f8f3e7fd79aa2467f547073737c55486abdfcd0e6a23d6329059454a83081de6"
+    },
+    {
+      "frame": "asc-6",
+      "offset": [
+        -5,
+        0
+      ],
+      "before": 0.9134,
+      "after": 0.9402,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-asc-6.png",
+      "sha256": "ce302056ceec4048fa219dec8e4250b52664ff6766b44c32d222b9808ebfc198"
+    },
+    {
+      "frame": "asc-7",
+      "offset": [
+        -1,
+        1
+      ],
+      "before": 0.9539,
+      "after": 0.9589,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-asc-7.png",
+      "sha256": "418eaf460bd5713253d5a14ede6f850dd1ef274051b73e0a02a05100d4057ee3"
+    },
+    {
+      "frame": "asc-8",
+      "offset": [
+        -3,
+        1
+      ],
+      "before": 0.9251,
+      "after": 0.9487,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-asc-8.png",
+      "sha256": "a5383037ff313fc8974721e6538ffd70e1e5a0501733093f4c2b6b0878a6601e"
+    },
+    {
+      "frame": "asc-9",
+      "offset": [
+        -5,
+        1
+      ],
+      "before": 0.9038,
+      "after": 0.9318,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-asc-9.png",
+      "sha256": "3c3d9c8c125ca24b0a765446f517554fe39a51201ebe86ee2d2b54f43ccd6a0a"
+    },
+    {
+      "frame": "desc-1",
+      "offset": [
+        -7,
+        6
+      ],
+      "before": 0.8503,
+      "after": 0.9424,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-desc-1.png",
+      "sha256": "be503371b168a9424d65683c3995d29e54c1535618ab3722a9a1774410f6288e"
+    },
+    {
+      "frame": "desc-2",
+      "offset": [
+        -8,
+        5
+      ],
+      "before": 0.8593,
+      "after": 0.9387,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-desc-2.png",
+      "sha256": "890912082dc7667b61e5091f1ad055a6b1230b4742fdacdaaa0d33724884f2d3"
+    },
+    {
+      "frame": "desc-3",
+      "offset": [
+        -9,
+        4
+      ],
+      "before": 0.8507,
+      "after": 0.937,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-desc-3.png",
+      "sha256": "bcbb1b9a3fe84b75fb581a28ace007937b15bebee405f80df64092c38059b988"
+    },
+    {
+      "frame": "desc-4",
+      "offset": [
+        -8,
+        3
+      ],
+      "before": 0.8588,
+      "after": 0.9363,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-desc-4.png",
+      "sha256": "a730e08e9818fc23332c33b28470388566ab4dc696ec4e8bbdf568997e1468a2"
+    },
+    {
+      "frame": "desc-5",
+      "offset": [
+        -9,
+        2
+      ],
+      "before": 0.864,
+      "after": 0.9241,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-desc-5.png",
+      "sha256": "891f3f9e47ede6254d3b08b2190d9da45e4a7c7dbfa63e898277321dc1e845d7"
+    },
+    {
+      "frame": "desc-6",
+      "offset": [
+        -6,
+        -1
+      ],
+      "before": 0.8962,
+      "after": 0.9455,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-desc-6.png",
+      "sha256": "3d62580e0db0a6fd020c006b2b7ae0eabd09de83fa772257776eb14e2f0a696f"
+    },
+    {
+      "frame": "desc-7",
+      "offset": [
+        -3,
+        0
+      ],
+      "before": 0.9429,
+      "after": 0.9573,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-desc-7.png",
+      "sha256": "4dc73b03128ccf4dfdac51dff8d1b4a90fbd5788a1cb537154467dd516931cb7"
+    },
+    {
+      "frame": "desc-8",
+      "offset": [
+        -2,
+        3
+      ],
+      "before": 0.9266,
+      "after": 0.9495,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-desc-8.png",
+      "sha256": "be3f610c9ed15aec86cccf3ba3d0c79c6117550ff9a076ebb2cd227a9d7eabd6"
+    },
+    {
+      "frame": "desc-9",
+      "offset": [
+        -9,
+        1
+      ],
+      "before": 0.8672,
+      "after": 0.934,
+      "source": "outputs/cyber-standard-trio/nacre-final-unregistered/nacre-desc-9.png",
+      "sha256": "77b6112cd2966ccb29295642637cd9fe121b920869865bb3410ab8c9265850ea"
+    }
+  ]
+}
