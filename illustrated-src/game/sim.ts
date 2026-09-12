@@ -377,6 +377,13 @@ export type World = {
   tapAnimDir: number;
   /** Painted banks finish the current gesture before one coalesced replay. */
   tapAnimQueued: boolean;
+  /** THE FLIGHT TEST (beta Test Lab): the run flies itself. null on every
+   *  other run. See beginFlightTest / stepFlightTest. */
+  flightTest: FlightTest | null;
+  /** the Flight Test transport's world-clock multiplier (1, 1/2, 1/4, or 0
+   *  for a hold); the engine loop scales its fixed-step accumulator by it.
+   *  1 on every other run. */
+  timeScale: number;
   /** the tap accent's body reaction spring (draw reads it, beta dial): 0 at rest, kicked per tap */
   tapReact: number;
   tapReactV: number;
@@ -594,6 +601,8 @@ export function makeWorld(W: number, H: number): World {
     highOrbit: createHighOrbitMotion(),
     tapAnimDir: 1,
     tapAnimQueued: false,
+    flightTest: null,
+    timeScale: 1,
     tapReact: 0,
     tapReactV: 0,
     tapAnimFromRot: 0,
@@ -1656,6 +1665,84 @@ export function pilotSuitId(w: World, save: SaveData) {
   return w.tutSuit ? TUTORIAL_SUIT : save.equippedSuit;
 }
 
+/** THE FLIGHT TEST (owner, 12 Sep 2026: "add you self flying simulator in
+ *  there. 2/4/6/8 auto flap speed. and then some dials, to tweak it ...
+ *  always there always. beta only").
+ *
+ *  A free flight that flies itself: an empty sky, a floor that bounces,
+ *  a crash that cannot end it, and an autopilot that taps on the fixed
+ *  tick through the real flap(). The patterns are the tap-retrofit spec's
+ *  acceptance cases plus two for staring at one suit:
+ *
+ *    manual   the tester's taps only
+ *    hover    one tap every 2V/g - zero net height, the cadence real play
+ *             settles into (692 ms at the shipped -450 / 1300)
+ *    2 4 6 8  that many taps a second, on the tick
+ *    pairs    two taps 120 ms apart, then 0.8-1.1 s of nothing
+ *    station  a tap whenever the pilot is below the centre line and
+ *             falling, at most ten a second - stays on screen at any rate
+ *
+ *  Nothing here is reachable on the live page: beginFlightTest refuses
+ *  outside the beta, and no live screen offers it. */
+export type FlightTestPattern = "manual" | "hover" | "2" | "4" | "6" | "8" | "pairs" | "station";
+export const FLIGHT_TEST_PATTERNS: readonly FlightTestPattern[] = ["manual", "hover", "2", "4", "6", "8", "pairs", "station"];
+export type FlightTest = {
+  pattern: FlightTestPattern;
+  /** seconds of world clock until the autopilot's next tap */
+  next: number;
+  /** PAIRS: whether the next tap is the close second of a pair */
+  pair: boolean;
+  /** world-clock times of the last accepted taps (any source); the dock
+   *  reads a measured taps/s off it */
+  tapLog: number[];
+};
+/** seconds between taps for the fixed-cadence patterns; hover is 2V/g */
+export function flightTestInterval(pattern: FlightTestPattern): number {
+  switch (pattern) {
+    case "hover": return 2 * Math.abs(PHYS.flap) / PHYS.gravity;
+    case "2": return 1 / 2;
+    case "4": return 1 / 4;
+    case "6": return 1 / 6;
+    case "8": return 1 / 8;
+    default: return 0;
+  }
+}
+export function beginFlightTest(w: World, save: SaveData, pattern: FlightTestPattern = "hover"): boolean {
+  if (!IS_BETA) return false;
+  resetRun(w, save, "fly", false);
+  // an empty sky: the three opening pairs go, and the spawn cursor is
+  // pushed so far out that the scroll never reaches it (the same trick
+  // the painter harness uses)
+  w.planets = [];
+  w.pickups = [];
+  w.lastSpawnX = 1e9;
+  w.lab = { ...w.lab, freeRevive: true };
+  w.flightTest = { pattern: FLIGHT_TEST_PATTERNS.includes(pattern) ? pattern : "hover", next: 0.35, pair: false, tapLog: [] };
+  return true;
+}
+/** one fixed tick of the autopilot; dt is the world clock's step */
+function stepFlightTest(w: World, save: SaveData, dt: number) {
+  const t = w.flightTest!;
+  while (t.tapLog.length && t.tapLog[0] < w.time - 6) t.tapLog.shift();
+  if (t.pattern === "manual") return;
+  t.next -= dt;
+  if (t.next > 0) return;
+  if (t.pattern === "station") {
+    // below the line and falling: tap. Otherwise look again next tick.
+    // The READY hold counts as "falling": nothing moves until a tap does,
+    // so the first one is the autopilot's, as on every other pattern.
+    if (w.ready || (w.squirrel.y > w.H * 0.5 && w.squirrel.vy > 0)) { flap(w, save); t.next = 0.1; }
+    return;
+  }
+  flap(w, save);
+  if (t.pattern === "pairs") {
+    t.pair = !t.pair;
+    t.next += t.pair ? 0.12 : 0.8 + 0.3 * Math.random();
+  } else {
+    t.next += flightTestInterval(t.pattern);
+  }
+}
+
 export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial: boolean, level?: LevelDef, tunnelSeed?: number) {
   // the pause-sheet lab rides only a beta free flight; everything else
   // flies clean so no mission and no live run can inherit a dial
@@ -1734,6 +1821,10 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.highOrbit = createHighOrbitMotion(isHighOrbit(save.equippedSuit)?save.equippedSuit:'cinderforge');
   w.tapAnimDir = 1;
   w.tapAnimQueued = false;
+  // a Flight Test never survives into another run; beginFlightTest sets it
+  // back after this reset
+  w.flightTest = null;
+  w.timeScale = 1;
   w.tapReact = 0; w.tapReactV = 0;
   w.tapAnimFromRot = 0;
   w.bounceAnimT = -1;
@@ -3089,6 +3180,12 @@ export function flap(w: World, save: SaveData) {
   if (w.lvl) {
     w.lvl.stats.taps += 1;
   }
+  // the Flight Test dock reads a measured taps/s off this log - the
+  // autopilot's taps and the tester's own thumb alike
+  if (w.flightTest) {
+    w.flightTest.tapLog.push(w.time);
+    if (w.flightTest.tapLog.length > 64) w.flightTest.tapLog.shift();
+  }
   w.lampT = 0;              // NIGHTGLIDER's lamp is lit the same way
   // A repeated tap while the burst is still playing keeps the current body
   // pose and recovery clock. Physics, particles, pitch, and the live tail
@@ -3563,6 +3660,16 @@ export function settleLevel(w: World, save: SaveData, finished: boolean) {
 }
 
 function die(w: World, save: SaveData) {
+  // THE FLIGHT TEST CANNOT END. Its sky is empty and its floor bounces, so
+  // nothing here should reach this - but a tester who dials the lab's
+  // hazards back on must still keep the pilot: scoop them back onto the
+  // flight line and carry on, the way the first flight does.
+  if (w.flightTest) {
+    w.squirrel.y = Math.max(PHYS.squirrelR, Math.min(w.H - PHYS.squirrelR, w.squirrel.y));
+    w.squirrel.vy = Math.min(0, w.squirrel.vy);
+    w.invulnLeft = Math.max(w.invulnLeft, 0.5);
+    return "shield";
+  }
   // A crash inside a wormhole detour is a crash on the run that flew into
   // it - the corridor is fifteen seconds of that run, not a run of its
   // own. Come home first, so the score, the best and the result screen all
@@ -4053,6 +4160,11 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
     const visualDt=w.ready?dt:dt*slow*(w.shieldSlow>0?.55:1)*paceOf(save,w);
     stepHighOrbit(w.highOrbit,orbitSuit,visualDt,w.squirrel.vy,w.ready);
   }
+  // THE AUTOPILOT TAPS HERE, on the fixed tick, through the same flap()
+  // a thumb uses - so every painter, dial and accent sees an accepted tap,
+  // never a shortcut. Before the READY hold below: its first tap is what
+  // releases the hold, exactly as a pilot's would.
+  if (w.flightTest && w.screen === "play" && !w.tut) stepFlightTest(w, save, dt);
   const frozen = w.ready || (w.tut?.hold ?? false) || w.shieldFreeze > 0;
   if (w.shieldFreeze > 0) w.shieldFreeze = Math.max(0, w.shieldFreeze - dt);
 
@@ -4269,7 +4381,9 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   }
   // a bounce house has a floor: the pilot springs back up instead of
   // falling out of the run (Space Puppy)
-  if (w.bounceHouse && sy > w.H - PHYS.squirrelR && w.squirrel.vy > 0) {
+  // The Flight Test has the same floor: a suit being watched on MANUAL
+  // with no taps must sit on the floor and bob, not fall out of the run.
+  if ((w.bounceHouse || w.flightTest) && sy > w.H - PHYS.squirrelR && w.squirrel.vy > 0) {
     w.squirrel.y = w.H - PHYS.squirrelR;
     w.squirrel.vy = -(Math.abs(w.squirrel.vy) * 0.6 + 260);
     w.squirrel.rot = -0.5;

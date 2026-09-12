@@ -1,8 +1,9 @@
 # The Lab
 
 Prototypes. Nothing here is imported by the game and nothing here is in the
-main build; the only threads back are the PROTOTYPES doors at the bottom of
-the Modes sheet, each a link to a separate page rather than a dependency. A
+main build; the only threads back are the doors on the beta Test Lab sheet
+(the flask on the Home rail), each a link to a separate page rather than a
+dependency. A
 lab experiment can be kept, reworked or deleted without touching a build
 that is close to shipping — that isolation is the point, and it is why
 `build-lab.mjs` is separate from `export-sandbox.mjs`.
@@ -33,8 +34,8 @@ text you can paste into a chat.
 node illustrated-src/build-lab.mjs     # -> docs/lab/rig/js + tables.json
 ```
 
-Modes → **PROTOTYPES** → **RIG EDITOR** (Help carries the same door on the
-live page). Delete-when-frozen, like every lab door.
+Home → **flask** (Test Lab, beta only) → **RIG EDITOR**. Delete-when-frozen,
+like every lab door.
 
 ## What it edits, and what it refuses to edit
 

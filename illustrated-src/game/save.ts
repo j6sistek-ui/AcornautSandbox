@@ -205,6 +205,10 @@ export type SaveData = {
   tapRepeat?: Record<string, "rewind" | "finish" | "restart">;
   /** BETA switch: the 167 ms tap accent and body reaction (drawPilot) */
   tapAccent: boolean;
+  /** BETA Test Lab: the Flight Test's last autopilot pattern and transport
+   *  speed, so the bench opens the way it was left. Read only on the beta
+   *  page; a live build never starts a Flight Test. */
+  testLab?: { pattern?: string; speed?: number };
   // Retired dials, left in old saves and ignored: diveDepth / poseMode (the
   // dive is shallow and every frame flies, see POSE_DIVE_DEPTH in draw.ts)
   // and eclipseMotionMode (Eclipse flies heading; every other suit flies
@@ -476,6 +480,18 @@ export function loadSave(): SaveData {
   // saves written before the flight mods existed
   for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx", "tapRewind", "tapAccent"] as const) {
     if (typeof s[k] !== "boolean") s[k] = false;
+  }
+  // the Test Lab's Flight Test settings: a bad value falls back, never bricks
+  if (s.testLab !== undefined) {
+    const t = s.testLab as unknown;
+    if (!t || typeof t !== "object") delete s.testLab;
+    else {
+      const o = t as { pattern?: unknown; speed?: unknown };
+      const clean: { pattern?: string; speed?: number } = {};
+      if (typeof o.pattern === "string" && ["manual", "hover", "2", "4", "6", "8", "pairs", "station"].includes(o.pattern)) clean.pattern = o.pattern;
+      if (typeof o.speed === "number" && isFinite(o.speed) && o.speed >= 0.25 && o.speed <= 1) clean.speed = o.speed;
+      s.testLab = clean;
+    }
   }
   // Steady Gates and Rough Air are opposites; a save carrying both is
   // incoherent, and stilling the gates is the safer of the two to honour.
