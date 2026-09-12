@@ -1,5 +1,26 @@
 # Acornaut motion spec — how a suit flies
 
+## Painted-bank repeated-tap correction, 12 Sep 2026
+
+The owner's report concerns banked flight, including Eclipse and Ion, rather
+than only the pilot named Flight. All 24 registered ascent/tap/loop suits
+complete the active gesture before one coalesced replay. Ascent playback uses
+a front-loaded .73 timing curve for visible onset within100ms. Rapid taps therefore
+reach every painted pose; release drains the bounded queue. Asc/desc suits
+then follow downward velocity, while loop-only critters rest on frame one.
+Rising velocity cannot restart a completed climb without a tap. Dive clears
+the pending replay; reset clears playback state. Shelf previews retain their
+authored cycles. Physics, art, helmet anchors and independent controllers are
+unchanged. The roster in control-constants.ts is checked against the shipping
+art manifests by test-flight-input.mjs.
+
+## Patriot onset correction, 12 Sep 2026
+
+Patriot (origamist) now plays source frames1,6–16 after a tap, skipping four
+near-identical opening crouches. First lift arrives around33ms; the stronger
+lift by100ms. All16 source images and explicit-frame access remain intact.
+Percy and Envoy retain their full sequence. Flight Studio uses the same order.
+
 ## Premium pilot trio — explicit owner selection, 9 Sep 2026
 
 The owner selected Porcelain Paragon with Sovereign Shell (B), always worn;
@@ -16,6 +37,16 @@ proposal characters. Sources, measured attachments, deterministic rebuilds and
 review boundaries are in [the premium source README](../art-src/premium-pilots/README.md).
 
 ## High Orbit cut rigs — explicit owner grant, 9 Sep 2026
+
+12 Sep 2026 correction: these five retarget AcorNut's Flight maneuver banks
+and accepted-tap gesture to their existing anatomy. Rise, apex, fall and idle
+retain asymmetric limbs; short accepted taps visibly accent them. Tail drag
+follows vertical travel and tap recoil, with passive mid/tip lag; it no longer
+pumps on an independent sine clock. Head size, bone lengths, atlas art and
+exclusive wake power remain fixed. The premium trio's whole-frame playback
+and AcorNut's own controller are unchanged. `test-high-orbit-input.mjs`
+covers small-tap response and the absence of a repeating tail stroke at
+steady velocity. This supersedes the independent rhythm described below.
 
 Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now use eleven remastered
 painted parts each, with original continuous motion and a suit-exclusive

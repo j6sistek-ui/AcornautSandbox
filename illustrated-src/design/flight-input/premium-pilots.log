@@ -1,0 +1,83 @@
+{
+  "suite": "premium full-body frames",
+  "passed": true,
+  "frames": 48,
+  "legacyControllerTicks": 6000,
+  "results": [
+    {
+      "id": "porcelain",
+      "frames": 16,
+      "gameplayFrames": 16,
+      "rapidTapAllSelectedFrames": true,
+      "helmetsChecked": 30,
+      "wakeSamples": 720,
+      "headPolicy": "integrated"
+    },
+    {
+      "id": "nacre",
+      "frames": 16,
+      "gameplayFrames": 16,
+      "rapidTapAllSelectedFrames": true,
+      "helmetsChecked": 30,
+      "wakeSamples": 720,
+      "headPolicy": "helmetless"
+    },
+    {
+      "id": "origamist",
+      "frames": 16,
+      "gameplayFrames": 12,
+      "rapidTapAllSelectedFrames": true,
+      "helmetsChecked": 30,
+      "wakeSamples": 720,
+      "headPolicy": "integrated"
+    }
+  ]
+}
+{
+  "suite": "premium pilot production",
+  "passed": true,
+  "results": [
+    {
+      "id": "porcelain",
+      "price": 1000,
+      "headPolicy": "integrated",
+      "wake": "porcelainwake"
+    },
+    {
+      "id": "nacre",
+      "price": 1000,
+      "headPolicy": "helmetless",
+      "wake": "nacrewake"
+    },
+    {
+      "id": "origamist",
+      "price": 1000,
+      "headPolicy": "integrated",
+      "wake": "origamistwake"
+    }
+  ]
+}
+{
+  "suite": "premium pilot beta",
+  "passed": true,
+  "results": [
+    {
+      "id": "porcelain",
+      "price": 1000,
+      "headPolicy": "integrated",
+      "wake": "porcelainwake"
+    },
+    {
+      "id": "nacre",
+      "price": 1000,
+      "headPolicy": "helmetless",
+      "wake": "nacrewake"
+    },
+    {
+      "id": "origamist",
+      "price": 1000,
+      "headPolicy": "integrated",
+      "wake": "origamistwake"
+    }
+  ]
+}

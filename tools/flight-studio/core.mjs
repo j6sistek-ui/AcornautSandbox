@@ -2,7 +2,8 @@
 // This module and the exported preset form the integration contract; game
 // simulation remains the authority when applying a tuned profile later.
 import {createHighOrbitMotion,stepHighOrbit,highOrbitTap,PREMIUM_FLIGHT_DURATION} from './game/high-orbit-motion.mjs';
-import {PREMIUM_FLIGHT_CURVE} from './game/premium-flight.mjs';
+import {PREMIUM_FLIGHT_CURVE,premiumFlightOrder} from './game/premium-flight.mjs';
+import {PAINTED_TAP_EASE} from './game/control-constants.mjs';
 import {createArcflashMotion,stepArcflash,arcflashTap,arcflashDive} from './game/arcflash-motion.mjs';
 import {createManeuverMotion,stepManeuver,maneuverTap} from './game/vanguard-maneuver.mjs';
 export const VERSION=1,STEP=1/120;
@@ -19,13 +20,14 @@ export function defaultPattern(){return {duration:13.5,gravity:300,lift:300,maxF
     {at:6.4,type:'tap'},{at:6.9,type:'tap'},{at:7.05,type:'tap'},
     {at:10,type:'tap'},{at:10.5,type:'tap'},{at:10.65,type:'tap'}]};}
 export function defaultProfile(model){
-  const tapSource=model.banks.tap.length?'tap':model.banks.asc.length?'asc':model.banks.loop.length?'loop':'still';
+  const tapSource=model.banks.asc.length?'asc':model.banks.tap.length?'tap':model.banks.loop.length?'loop':'still';
   const n=tapSource==='still'?1:model.banks[tapSource].length;
   const premium=model.family==='premium-flight';
+  const tapOrder=premium?[...premiumFlightOrder(model.id)]:Array.from({length:n},(_,i)=>i);
   return {basePitch:model.family==='acornut'?12:0,tapPitch:premium?[0,0,0,0,0]:[0,-8,-3,0,0],risePitch:0,fallPitch:0,pitchResponse:.10,
-    tapSeconds:premium?PREMIUM_FLIGHT_DURATION:1,tapEase:premium?PREMIUM_FLIGHT_CURVE:1,retrigger:premium?'queue':'restart',finishTap:true,tapPath:tapSource==='asc'?'out-back':'forward',returnAt:.625,loopContinuous:false,velocityFilter:.05,descentThreshold:40,
+    tapSeconds:premium?PREMIUM_FLIGHT_DURATION:1,tapEase:premium?PREMIUM_FLIGHT_CURVE:tapSource==='asc'?PAINTED_TAP_EASE:1,retrigger:premium||model.family==='bank'?'queue':'restart',finishTap:true,tapPath:tapSource==='asc'?'out-back':'forward',returnAt:.625,loopContinuous:false,velocityFilter:.05,descentThreshold:40,
     descentFull:500,descentDelay:.08,descentSeconds:.55,descentEase:1,rigSpeed:1,
-    tapSource,tapOrder:Array.from({length:n},(_,i)=>i),tapWeights:Array(n).fill(1),tapOffsets:Array(n).fill(0),
+    tapSource,tapOrder,tapWeights:Array(tapOrder.length).fill(1),tapOffsets:Array(tapOrder.length).fill(0),
     descOrder:Array.from({length:model.banks.desc.length},(_,i)=>i),descOffsets:Array(model.banks.desc.length).fill(0),
     parts:model.family==='premium-flight'?{}:Object.fromEntries(Object.keys(PARTS).map(k=>[k,{offset:0,motion:1,rise:0,fall:0,
       tap:[0,0,0,0,0],velocity:[0,0,0,0,0],lag:0,response:0}]))};

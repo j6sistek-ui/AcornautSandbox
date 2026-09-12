@@ -1,0 +1,1677 @@
+{
+  "baseline": true,
+  "ids": [
+    "alien",
+    "bigbooty",
+    "briellacat",
+    "catsuit",
+    "copper",
+    "cryostar",
+    "cyber",
+    "eclipse",
+    "ember",
+    "ferret",
+    "flight",
+    "frost",
+    "gemmie",
+    "ghost",
+    "hedgehog",
+    "iontrim",
+    "leviathan",
+    "raccoon",
+    "robo",
+    "sammie",
+    "seraph",
+    "verdant",
+    "voidsuit",
+    "volt"
+  ],
+  "verified": false,
+  "failures": [
+    "alien at 0.15s only visits 3/8 asc poses",
+    "alien at 0.3s only visits 4/8 asc poses",
+    "bigbooty at 0.15s only visits 3/16 tap poses",
+    "bigbooty at 0.3s only visits 5/16 tap poses",
+    "bigbooty at 0.6s only visits 10/16 tap poses",
+    "briellacat at 0.15s only visits 2/7 asc poses",
+    "briellacat at 0.3s only visits 4/7 asc poses",
+    "catsuit at 0.15s only visits 3/16 tap poses",
+    "catsuit at 0.3s only visits 5/16 tap poses",
+    "catsuit at 0.6s only visits 10/16 tap poses",
+    "copper at 0.15s only visits 3/8 asc poses",
+    "copper at 0.3s only visits 4/8 asc poses",
+    "cryostar at 0.15s only visits 3/8 asc poses",
+    "cryostar at 0.3s only visits 4/8 asc poses",
+    "cyber at 0.15s only visits 3/9 asc poses",
+    "cyber at 0.3s only visits 5/9 asc poses",
+    "eclipse at 0.15s only visits 3/8 asc poses",
+    "eclipse at 0.3s only visits 4/8 asc poses",
+    "ember at 0.15s only visits 3/8 asc poses",
+    "ember at 0.3s only visits 4/8 asc poses",
+    "ferret at 0.15s only visits 3/16 loop poses",
+    "ferret must not cycle with no input at steady travel",
+    "ferret at 0.3s only visits 5/16 loop poses",
+    "ferret must not cycle with no input at steady travel",
+    "ferret at 0.6s only visits 10/16 loop poses",
+    "ferret must not cycle with no input at steady travel",
+    "ferret must not cycle with no input at steady travel",
+    "frost at 0.15s only visits 3/8 asc poses",
+    "frost at 0.3s only visits 4/8 asc poses",
+    "gemmie at 0.15s only visits 3/8 asc poses",
+    "gemmie at 0.3s only visits 4/8 asc poses",
+    "ghost at 0.15s only visits 3/8 asc poses",
+    "ghost at 0.3s only visits 4/8 asc poses",
+    "hedgehog at 0.15s only visits 3/16 loop poses",
+    "hedgehog must not cycle with no input at steady travel",
+    "hedgehog at 0.3s only visits 5/16 loop poses",
+    "hedgehog must not cycle with no input at steady travel",
+    "hedgehog at 0.6s only visits 10/16 loop poses",
+    "hedgehog must not cycle with no input at steady travel",
+    "hedgehog must not cycle with no input at steady travel",
+    "iontrim at 0.15s only visits 3/8 asc poses",
+    "iontrim at 0.3s only visits 4/8 asc poses",
+    "leviathan at 0.15s only visits 3/8 asc poses",
+    "leviathan at 0.3s only visits 4/8 asc poses",
+    "raccoon at 0.15s only visits 3/16 loop poses",
+    "raccoon must not cycle with no input at steady travel",
+    "raccoon at 0.3s only visits 5/16 loop poses",
+    "raccoon must not cycle with no input at steady travel",
+    "raccoon at 0.6s only visits 10/16 loop poses",
+    "raccoon must not cycle with no input at steady travel",
+    "raccoon must not cycle with no input at steady travel",
+    "robo at 0.15s only visits 3/16 tap poses",
+    "robo at 0.3s only visits 5/16 tap poses",
+    "robo at 0.6s only visits 10/16 tap poses",
+    "sammie at 0.15s only visits 3/8 asc poses",
+    "sammie at 0.3s only visits 4/8 asc poses",
+    "seraph at 0.15s only visits 3/8 asc poses",
+    "seraph at 0.3s only visits 4/8 asc poses",
+    "verdant at 0.15s only visits 3/8 asc poses",
+    "verdant at 0.3s only visits 4/8 asc poses",
+    "voidsuit at 0.15s only visits 3/8 asc poses",
+    "voidsuit at 0.3s only visits 4/8 asc poses",
+    "volt at 0.15s only visits 3/16 tap poses",
+    "volt at 0.3s only visits 5/16 tap poses",
+    "volt at 0.6s only visits 10/16 tap poses"
+  ],
+  "results": [
+    {
+      "id": "alien",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "alien",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "alien",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "alien",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "bigbooty",
+      "kind": "tap",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "bigbooty",
+      "kind": "tap",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "bigbooty",
+      "kind": "tap",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "bigbooty",
+      "kind": "tap",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "briellacat",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2
+      ],
+      "expected": 7,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "briellacat",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 7,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "briellacat",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "expected": 7,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "briellacat",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "expected": 7,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "catsuit",
+      "kind": "tap",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "catsuit",
+      "kind": "tap",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "catsuit",
+      "kind": "tap",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "catsuit",
+      "kind": "tap",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "copper",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "copper",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "copper",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "copper",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "cryostar",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "cryostar",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "cryostar",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "cryostar",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "cyber",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 9,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "cyber",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "expected": 9,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "cyber",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "expected": 9,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "cyber",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "expected": 9,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "eclipse",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "eclipse",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "eclipse",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "eclipse",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "ember",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "ember",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "ember",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "ember",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "ferret",
+      "kind": "loop",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "ferret",
+      "kind": "loop",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "ferret",
+      "kind": "loop",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "ferret",
+      "kind": "loop",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "flight",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 3,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "flight",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 3,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "flight",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 3,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "flight",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 3,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "frost",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "frost",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "frost",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "frost",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "gemmie",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "gemmie",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "gemmie",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "gemmie",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "ghost",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "ghost",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "ghost",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "ghost",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "hedgehog",
+      "kind": "loop",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "hedgehog",
+      "kind": "loop",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "hedgehog",
+      "kind": "loop",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "hedgehog",
+      "kind": "loop",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "iontrim",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "iontrim",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "iontrim",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "iontrim",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "leviathan",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "leviathan",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "leviathan",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "leviathan",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "raccoon",
+      "kind": "loop",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "raccoon",
+      "kind": "loop",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "raccoon",
+      "kind": "loop",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "raccoon",
+      "kind": "loop",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "expected": 16,
+      "idleFrames": 16,
+      "releaseClock": -1
+    },
+    {
+      "id": "robo",
+      "kind": "tap",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "robo",
+      "kind": "tap",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "robo",
+      "kind": "tap",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "robo",
+      "kind": "tap",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "sammie",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "sammie",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "sammie",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "sammie",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "seraph",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "seraph",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "seraph",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "seraph",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "verdant",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "verdant",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "verdant",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "verdant",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "voidsuit",
+      "kind": "asc",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "voidsuit",
+      "kind": "asc",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "voidsuit",
+      "kind": "asc",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "voidsuit",
+      "kind": "asc",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "expected": 8,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "volt",
+      "kind": "tap",
+      "interval": 0.15,
+      "framesDuringInput": [
+        1,
+        2,
+        3
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "volt",
+      "kind": "tap",
+      "interval": 0.3,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "volt",
+      "kind": "tap",
+      "interval": 0.6,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    },
+    {
+      "id": "volt",
+      "kind": "tap",
+      "interval": 1.2,
+      "framesDuringInput": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "expected": 16,
+      "idleFrames": 1,
+      "releaseClock": -1
+    }
+  ]
+}

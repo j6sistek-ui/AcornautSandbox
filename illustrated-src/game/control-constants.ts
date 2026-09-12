@@ -3,6 +3,18 @@
 export const FLIGHT_GRAVITY = 1_300;
 export const QUICK_DROP_VY = 380;
 
+/** Whole-character tap/ascent/loop banks complete a gesture before replaying.
+ *  Kept in this data-only module so simulation does not load art. The real
+ *  painter test checks this roster against all shipping bank manifests. */
+export const PAINTED_TAP_SUITS = new Set([
+  "eclipse", "flight", "cyber", "seraph", "iontrim", "copper", "voidsuit",
+  "alien", "ember", "cryostar", "verdant", "gemmie", "sammie", "frost",
+  "ghost", "leviathan", "briellacat", "robo", "bigbooty", "catsuit", "volt",
+  "raccoon", "ferret", "hedgehog",
+]);
+/** Spend less of the tap in its neutral lead-in, preserving the full gesture. */
+export const PAINTED_TAP_EASE = .73;
+
 /** THE WORMHOLE'S SETTLED FEEL.
  *
  *  These were FOUND BY FLYING, not chosen. The corridor's numbers were
