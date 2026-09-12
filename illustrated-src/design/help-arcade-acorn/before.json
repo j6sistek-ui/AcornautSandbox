@@ -1,0 +1,173 @@
+{
+  "tag": "before",
+  "rows": [
+    {
+      "beta": false,
+      "width": 390,
+      "items": [
+        {
+          "name": "ACORN",
+          "description": "Fly to earn. Spend in the Loadout."
+        },
+        {
+          "name": "STAR DUST",
+          "description": "Premium currency. 5 free every day, +25 on day 7."
+        },
+        {
+          "name": "ACORN COINS",
+          "description": "Debris Field's run-only currency. Spend it at the Depot; it resets each run."
+        },
+        {
+          "name": "FREEZE ACORN",
+          "description": "Slows everything for 3.5s."
+        },
+        {
+          "name": "SHIELD ACORN",
+          "description": "Blocks one debris hit."
+        },
+        {
+          "name": "GOLDEN ACORN",
+          "description": "Debris can't hurt you. Planets still bounce."
+        },
+        {
+          "name": "BLACK HOLE",
+          "description": "15s of warped flight: reversed or tilted."
+        },
+        {
+          "name": "WORMHOLE",
+          "description": "Pulls you into a corridor. Tap to rise; gravity brings you down."
+        }
+      ],
+      "iconPixels": null,
+      "pageErrors": [],
+      "scrollWidth": 390,
+      "rowOverflow": false
+    },
+    {
+      "beta": false,
+      "width": 320,
+      "items": [
+        {
+          "name": "ACORN",
+          "description": "Fly to earn. Spend in the Loadout."
+        },
+        {
+          "name": "STAR DUST",
+          "description": "Premium currency. 5 free every day, +25 on day 7."
+        },
+        {
+          "name": "ACORN COINS",
+          "description": "Debris Field's run-only currency. Spend it at the Depot; it resets each run."
+        },
+        {
+          "name": "FREEZE ACORN",
+          "description": "Slows everything for 3.5s."
+        },
+        {
+          "name": "SHIELD ACORN",
+          "description": "Blocks one debris hit."
+        },
+        {
+          "name": "GOLDEN ACORN",
+          "description": "Debris can't hurt you. Planets still bounce."
+        },
+        {
+          "name": "BLACK HOLE",
+          "description": "15s of warped flight: reversed or tilted."
+        },
+        {
+          "name": "WORMHOLE",
+          "description": "Pulls you into a corridor. Tap to rise; gravity brings you down."
+        }
+      ],
+      "iconPixels": null,
+      "pageErrors": [],
+      "scrollWidth": 320,
+      "rowOverflow": false
+    },
+    {
+      "beta": true,
+      "width": 390,
+      "items": [
+        {
+          "name": "ACORN",
+          "description": "Fly to earn. Spend in the Loadout."
+        },
+        {
+          "name": "STAR DUST",
+          "description": "Premium currency. 5 free every day, +25 on day 7."
+        },
+        {
+          "name": "ACORN COINS",
+          "description": "Debris Field's run-only currency. Spend it at the Depot; it resets each run."
+        },
+        {
+          "name": "FREEZE ACORN",
+          "description": "Slows everything for 3.5s."
+        },
+        {
+          "name": "SHIELD ACORN",
+          "description": "Blocks one debris hit."
+        },
+        {
+          "name": "GOLDEN ACORN",
+          "description": "Debris can't hurt you. Planets still bounce."
+        },
+        {
+          "name": "BLACK HOLE",
+          "description": "15s of warped flight: reversed or tilted."
+        },
+        {
+          "name": "WORMHOLE",
+          "description": "Pulls you into a corridor. Tap to rise; gravity brings you down."
+        }
+      ],
+      "iconPixels": null,
+      "pageErrors": [],
+      "scrollWidth": 390,
+      "rowOverflow": false
+    },
+    {
+      "beta": true,
+      "width": 320,
+      "items": [
+        {
+          "name": "ACORN",
+          "description": "Fly to earn. Spend in the Loadout."
+        },
+        {
+          "name": "STAR DUST",
+          "description": "Premium currency. 5 free every day, +25 on day 7."
+        },
+        {
+          "name": "ACORN COINS",
+          "description": "Debris Field's run-only currency. Spend it at the Depot; it resets each run."
+        },
+        {
+          "name": "FREEZE ACORN",
+          "description": "Slows everything for 3.5s."
+        },
+        {
+          "name": "SHIELD ACORN",
+          "description": "Blocks one debris hit."
+        },
+        {
+          "name": "GOLDEN ACORN",
+          "description": "Debris can't hurt you. Planets still bounce."
+        },
+        {
+          "name": "BLACK HOLE",
+          "description": "15s of warped flight: reversed or tilted."
+        },
+        {
+          "name": "WORMHOLE",
+          "description": "Pulls you into a corridor. Tap to rise; gravity brings you down."
+        }
+      ],
+      "iconPixels": null,
+      "pageErrors": [],
+      "scrollWidth": 320,
+      "rowOverflow": false
+    }
+  ]
+}
