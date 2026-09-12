@@ -60,6 +60,17 @@ Pattern and speed persist under `save.testLab` (sanitised on load). A hold
 is never saved. `resetRun` clears the Flight Test, so no other run can
 inherit it.
 
+## The accent is live (12 Sep, third PR)
+
+Owner: "enable it in game. create toggle in profile tab, to disable or
+enable character glow effect. by default 1x is good." Per suit: ghost 4x,
+alien 2x, leviathan 2x, volt 4x, Briella's Cat 0x, verdant, eclipse and
+cryostar 4x - `TAP_ACCENT_STRENGTH` in control-constants. The player's
+switch is **Character glow** on the Profile tab (`save.glowOff`, default
+on, both pages). The Test Lab's CHARACTER GLOW dial is the same switch;
+its strength dial is a per-suit beta override over the table, cleared by
+STOCK or reset-all. Reset-all leaves the player's switch alone.
+
 ## The accent strength dial (12 Sep, second PR)
 
 Owner, after a frame-by-frame look at Cyber with the accent on and off:
@@ -92,6 +103,8 @@ tap accent on. `1-home.jpg` the flask on the rail; `2-sheet.jpg` the Test
 Lab; `3-flight-test.jpg` the run on HOVER; `4-six-per-second.jpg` the
 autopilot at 6/s (taps/s reads 6.0, pose and tap clock live);
 `5-dials.jpg` the worn suit's dials folded out inside the run;
+`8-profile-glow.jpg` the Character glow switch on the production Profile
+tab, shipping on;
 `6-strength-dial.jpg` the accent strength slider and 1x-4x buttons under
 the TAP ACCENT switch; `7-ignition-4x-quarter-speed.jpg` four frames 90 ms
 apart on Flight at 4x, quarter speed: the white-cored ignition behind the

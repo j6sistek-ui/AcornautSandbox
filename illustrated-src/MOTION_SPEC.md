@@ -382,6 +382,21 @@ The active 512px RGBA bank is now 16 MiB decoded and stays equip-only. Original
 rebuild steps and actual short-arc phone-field evidence live in
 `design/vanguard/README.md`. Human phone review remains the quality gate.
 
+## The tap accent is live, 12 Sep 2026
+
+After flying it with the strength dial: "enable it in game. create toggle
+in profile tab, to disable or enable character glow effect. by default 1x
+is good. ghost gets 4x, alien gets 2x, leviathan gets 2x, volt gets 4x,
+briellas cat gets 0x, verdant, eclipse, cryostar get 4x."
+
+The 167 ms ignition and the body reaction spring (peak ~70 ms, settled by
+~250 ms, both reading the accepted tap) draw on both pages for every suit
+that is not an independent rig. `TAP_ACCENT_STRENGTH` in control-constants
+carries the owner's per-suit numbers (absent = 1, 0 = none); the beta Test
+Lab dial overrides it per suit. The player's switch is **Character glow**
+on the Profile tab (`save.glowOff`), default on. The ignition burns white
+at the core with the suit glow as the rim, so it reads on Cyber too.
+
 ## The tap-shape and tail-spring dials, 12 Sep 2026
 
 A freeze-vs-today trace of Eclipse (same tap script, every per-tick number)

@@ -90,7 +90,7 @@ function fly(script){
 }
 const flown=Object.fromEntries(Object.entries(SCENARIOS).map(([k,s])=>[k,fly(s)]));
 if(process.env.ACORNAUT_GOLD_WRITE){
-  writeFileSync(fixturePath,JSON.stringify({suit:ID,frozen:'12 Sep 2026, stamp 282',columns:['tick','frame','bodyAngleRad','vy','y','tailA','layersDrawn'],scenarios:flown})+'\n');
+  writeFileSync(fixturePath,JSON.stringify({suit:ID,frozen:'12 Sep 2026, stamp 286 (the tap accent live at 1x; motion unchanged from stamp 282)',columns:['tick','frame','bodyAngleRad','vy','y','tailA','layersDrawn'],scenarios:flown})+'\n');
   console.log('gold standard fixture written:',fixturePath);
 }
 const fixture=JSON.parse(readFileSync(fixturePath,'utf8'));

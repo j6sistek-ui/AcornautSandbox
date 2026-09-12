@@ -5217,8 +5217,14 @@ function drawPilot(
   // the suit's glow as the rim: Cyber's glow is the same violet as its
   // body, so a glow-only ignition vanished on the one suit the owner was
   // judging it on.
-  if (IS_BETA && save.tapAccent && !independentRig) {
-    const k = tapAccentStrengthFor(save);
+  //
+  // LIVE ON BOTH PAGES since 12 Sep 2026 (owner: "enable it in game").
+  // The player's switch is Character Glow on the Profile tab; the strength
+  // is per suit from TAP_ACCENT_STRENGTH (0 = none on that suit), with the
+  // beta dial over it.
+  const accentK = !save.glowOff && !independentRig ? tapAccentStrengthFor(save, suit.id) : 0;
+  if (accentK > 0) {
+    const k = accentK;
     const age = 0.22 - Math.max(0, w.flapBoost);   // seconds since the last tap
     if (w.flapBoost > 0 && age < 0.167) {
       const stage = age < 0.017 ? 1 : age < 0.05 ? 2 : age < 0.1 ? 3 : 4;

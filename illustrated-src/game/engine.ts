@@ -1,7 +1,7 @@
 import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId } from "./catalog";
 import { platform } from "./platform";
 import { beginFlightTest, type FlightTestPattern } from "./sim";
-import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, type TapShape, type TailSpring } from "./control-constants";
+import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX, type TapShape, type TailSpring } from "./control-constants";
 import { isPremiumSuit } from "./high-orbit-config";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, rewardId } from "./campaign-progress";
@@ -205,9 +205,13 @@ export type Engine = {
   /** the beta repeat-tap dial: rewind instead of queue on the queue-roster suits */
   setTapRewind: (on: boolean) => void;
   /** the beta tap accent + body reaction switch */
+  /** the Character Glow switch (Profile tab, both pages): on = the tap
+   *  accent draws; the Test Lab's TAP ACCENT dial is the same switch */
+  setGlowOff: (off: boolean) => void;
   setTapAccent: (on: boolean) => void;
-  /** the beta accent strength dial, 0.25..4 (1 = as first shipped) */
-  setTapAccentStrength: (k: number) => void;
+  /** the beta accent strength dial, per suit, 0..4 over the table; null
+   *  clears the override back to the table */
+  setTapAccentStrength: (suitId: string, k: number | null) => void;
   /** the beta repeat-tap dial, per suit: rewind / finish / restart; null clears it */
   setTapRepeat: (suitId: string, mode: "rewind" | "finish" | "restart" | null) => void;
   /** the beta tap-shape dial, per suit; null clears the dial back to the table */
@@ -616,14 +620,26 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       writeSave(save);
       notify();
     },
-    setTapAccent(on) {
-      save.tapAccent = !!on;
+    setGlowOff(off) {
+      save.glowOff = !!off;
       writeSave(save);
       notify();
     },
-    setTapAccentStrength(k) {
-      const v = Math.max(0.25, Math.min(4, Math.round(k * 4) / 4));
-      if (v === 1) delete save.tapAccentStrength; else save.tapAccentStrength = v;
+    setTapAccent(on) {
+      // the Test Lab's dial and the Profile switch are one setting
+      save.glowOff = !on;
+      writeSave(save);
+      notify();
+    },
+    setTapAccentStrength(suitId, k) {
+      if (!save.tapAccentStrength) save.tapAccentStrength = {};
+      if (k === null) delete save.tapAccentStrength[suitId];
+      else {
+        const v = Math.max(TAP_ACCENT_MIN, Math.min(TAP_ACCENT_MAX, Math.round(k * 4) / 4));
+        // the table's own value is not an override
+        if (v === (TAP_ACCENT_STRENGTH[suitId] ?? 1)) delete save.tapAccentStrength[suitId];
+        else save.tapAccentStrength[suitId] = v;
+      }
       writeSave(save);
       notify();
     },
@@ -701,7 +717,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       delete save.suitPitch;
       delete save.testLab;
       delete save.tapAccentStrength;
-      save.tapAccent = false;
+      // glowOff is the player's own switch, not a dial: reset-all leaves it
       save.tapRewind = false;
       save.lab = {};
       if (!world.lvl) world.lab = world.flightTest ? { freeRevive: true } : {};

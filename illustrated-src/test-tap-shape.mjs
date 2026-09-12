@@ -135,7 +135,13 @@ assert.equal(S.tapShapeFor(null,'flight'),'velocity','flight is on the velocity 
  assert(Math.max(...trace)>0.3&&Math.max(...trace)<=1,`reaction peaks between 0.3 and 1 (got ${Math.max(...trace).toFixed(3)})`);
  assert(peakAt>=2&&peakAt<=7,`reaction peaks 50-120 ms after the tap (tick ${peakAt})`);
  assert(trace[23]<0.15,`reaction has settled by 400 ms (${trace[23].toFixed(3)})`);
- assert.equal(S.defaultSave().tapAccent,false,'the accent ships OFF');
+ // LIVE since 12 Sep 2026 (owner: "enable it in game ... by default 1x is
+ // good"): the accent draws on both pages unless the player's Character
+ // Glow switch is off, at a per-suit strength from the table.
+ assert.equal(S.defaultSave().glowOff,undefined,'Character Glow ships ON');
+ assert.equal(S.tapAccentStrengthFor(S.defaultSave(),'iontrim'),1,'an unlisted suit flies 1x');
+ for(const [id,k] of Object.entries({ghost:4,alien:2,leviathan:2,volt:4,briellacat:0,verdant:4,eclipse:4,cryostar:4}))
+  assert.equal(Control.TAP_ACCENT_STRENGTH[id],k,`${id} accent ${k}x, as the owner ruled`);
 }
 
 // --- the tail spring, in the sim -----------------------------------------
