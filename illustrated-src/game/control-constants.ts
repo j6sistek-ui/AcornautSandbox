@@ -17,7 +17,13 @@ export const PAINTED_TAP_SUITS = new Set<string>([]);
  *  restart" - and, asked what velocity means for a swim loop with no
  *  rising/falling poses, "A": restart only, the loop cycles as it does. */
 export type TapRepeat = "rewind" | "finish" | "restart";
-export const TAP_REPEAT: Record<string, TapRepeat> = { raccoon: "restart", ferret: "restart", hedgehog: "restart" };
+export const TAP_REPEAT: Record<string, TapRepeat> = {
+  raccoon: "restart", ferret: "restart", hedgehog: "restart",
+  // the premium trio's whole-frame playback, same day: Patriot "is finishing
+  // its cycle before it starts animation. it's not a restart on tap. that's
+  // the issue" - every tap is frame one again (Percy, Envoy, Patriot)
+  porcelain: "restart", nacre: "restart", origamist: "restart",
+};
 /** Spend less of the tap in its neutral lead-in, preserving the full gesture. */
 export const PAINTED_TAP_EASE = .73;
 

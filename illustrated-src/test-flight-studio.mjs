@@ -35,7 +35,7 @@ for(const model of premium){
   assert.equal(model.banks.loop.length,16);assert(model.banks.loop.every(path=>path===model.atlas));
   assert(Object.keys(model.hashes).every(path=>!path.endsWith('/parts.png')),'full-body model cannot load the discarded cut-parts atlas');
   const project=makeProject(manifest,model),s=createAnimation(model),seen=new Set();assert.deepEqual(project.profile.parts,{});
-  assert.equal(project.profile.retrigger,'queue','rapid taps finish the supplied paintings');assert.equal(project.profile.loopContinuous,false);
+  assert.equal(project.profile.retrigger,'restart','a repeat tap is frame one again, as the game plays it (owner, 12 Sep 2026)');assert.equal(project.profile.loopContinuous,false);
   acceptTap(s,project.profile);
   for(let i=0;i<240;i++){
     if(i===30)acceptTap(s,project.profile);
