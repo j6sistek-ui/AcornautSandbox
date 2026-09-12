@@ -203,6 +203,8 @@ export type Engine = {
   resetLab: () => void;
   /** the beta repeat-tap dial: rewind instead of queue on the queue-roster suits */
   setTapRewind: (on: boolean) => void;
+  /** the beta tap accent + body reaction switch */
+  setTapAccent: (on: boolean) => void;
   /** the beta repeat-tap dial, per suit: rewind / finish / restart; null clears it */
   setTapRepeat: (suitId: string, mode: "rewind" | "finish" | "restart" | null) => void;
   /** the beta tap-shape dial, per suit; null clears the dial back to the table */
@@ -598,6 +600,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     setTapRewind(on) {
       save.tapRewind = on;
       world.tapAnimQueued = false;   // a queued replay from the other rule is not owed
+      writeSave(save);
+      notify();
+    },
+    setTapAccent(on) {
+      save.tapAccent = !!on;
       writeSave(save);
       notify();
     },
@@ -1430,8 +1437,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // keydowns. It may not auto-resume the paused race or become a new
       // press until the physical key has first been released.
       if (raceResizeKeyboardReleasePending) return;
-      // a key held down is one tap in the field, never a stream of them
-      if (world.spill && e.repeat) return;
+      // a key held down is one tap, never a stream of them - in the field
+      // and, since 12 Sep 2026 (tap retrofit study), in ordinary flight too
+      if (e.repeat && (world.spill || world.screen === "play")) return;
       if (world.screen === "splash") engine.open("title");
       else if (world.screen === "title") engine.fly("fly");
       // A focus/visibility/Escape pause cancels the semantic owner. Ignore an
@@ -1621,22 +1629,21 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         !!scene?.depot && scene?.bear?.length === 36 && !!scene?.vanguardDepot && !!engine.art.spillShip[`hull-${world.spill.up.plating}`]);
       if (save.motionOff && world.spill.depotGag) world.spill.depotGag = false;
     }
-    if (world.race || world.spill) {
-      raceAccumulator += frameDt;
-      while (raceAccumulator + 1e-12 >= 1 / 60) {
-        // Race cues are drained after every authority step, not once per
-        // render frame. This preserves simultaneous pass/debris feedback and
-        // prevents high-refresh rendering from replaying audio side effects.
-        const ev = updateWorld(world, save, 1 / 60);
-        if (world.race) dispatchRaceCues(takeRaceCueEffects(world));
-        else { dispatchWorldEvent(ev); dispatchSpillCues(takeSpillCues(world)); }
-        raceAccumulator -= 1 / 60;
-        if (world.screen === "lvldone") break;
-      }
-    } else {
-      raceAccumulator = 0;
-      dispatchWorldEvent(updateWorld(world, save, Math.min(0.033, frameDt)));
-      if (world.spill) dispatchSpillCues(takeSpillCues(world));
+    // ONE FIXED 1/60 STEP FOR EVERY MODE. Race and Spill always ran here;
+    // ordinary flight joined them on 12 Sep 2026 (tap retrofit study). It
+    // used to integrate on the frame delta clamped to 33 ms, so a 120 Hz
+    // phone and a 60 Hz phone flew slightly different arcs through the same
+    // taps. A hitch replays up to the 0.25 s cap.
+    raceAccumulator += frameDt;
+    while (raceAccumulator + 1e-12 >= 1 / 60) {
+      // Race cues are drained after every authority step, not once per
+      // render frame. This preserves simultaneous pass/debris feedback and
+      // prevents high-refresh rendering from replaying audio side effects.
+      const ev = updateWorld(world, save, 1 / 60);
+      if (world.race) dispatchRaceCues(takeRaceCueEffects(world));
+      else { dispatchWorldEvent(ev); dispatchSpillCues(takeSpillCues(world)); }
+      raceAccumulator -= 1 / 60;
+      if (world.screen === "lvldone") break;
     }
     // Four scores, one at a time: the chiptune rides the retro renderer
     // (arcade + shifted stretches, exactly as always); the Hyper Run time

@@ -444,6 +444,7 @@ export async function bootStandalone(root: HTMLElement) {
         if (shape) sheet.append(shape);
         const spring = tailSpringDial(worn);
         if (spring) sheet.append(spring);
+        sheet.append(tapAccentDial());
       }
       // THE FLIGHT LAB (owner, 7 Sep 2026): free flight only, beta only
       if (IS_BETA && engine.world.flight === "fly" && !engine.world.lvl && !engine.world.tut && !engine.world.race && !engine.world.spill) sheet.append(flightLab());
@@ -1118,6 +1119,20 @@ export async function bootStandalone(root: HTMLElement) {
       panel.append(dialRow("Forward", TAP_SHAPE_MIN, TAP_SHAPE_MAX, 0.05, cur.fwd, sec, (v) => engine.setTapShape(suitId, { fwd: v, back: cur.back })));
       panel.append(dialRow("Return", TAP_SHAPE_MIN, TAP_SHAPE_MAX, 0.05, cur.back, sec, (v) => engine.setTapShape(suitId, { fwd: cur.fwd, back: v })));
     }
+    return panel;
+  }
+  function tapAccentDial() {
+    const panel = el("div", "ac-suit-pitch");
+    const on = !!engine.save.tapAccent;
+    panel.append(el("p", "ac-sub", `TAP ACCENT · ${on ? "ON" : "OFF"} · ignition + body reaction, every suit`));
+    const row = el("div", "ac-modes");
+    (row as HTMLElement).style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
+    for (const [label, v] of [["OFF", false], ["ON", true]] as const) {
+      const b = el("button", on === v ? "ac-mode on" : "ac-mode", label);
+      b.onclick = () => engine.setTapAccent(v);
+      row.append(b);
+    }
+    panel.append(row);
     return panel;
   }
   function tailSpringDial(suitId: string) {

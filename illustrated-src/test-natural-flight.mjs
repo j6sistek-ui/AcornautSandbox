@@ -97,13 +97,17 @@ for(const id of standard){
  const save=S.defaultSave();Object.assign(save,{equippedSuit:id,equippedTrail:'ion',tutorialDone:true,guide:'done'});
  const random=Math.random;Math.random=()=>.5;const w=Sim.makeWorld(390,20000);Sim.resetRun(w,save,'fly',false);Math.random=random;
  w.planets=[];w.pickups=[];w.lastSpawnX=100000;w.warpT=0;
- let last=0,seen=new Set(),trace=[];
+ // a velocity-shaped suit (12 Sep 2026 ruling: every ascent-bank suit) snaps
+ // to the deep ascent frame on the tap itself and eases back frame by frame;
+ // only the ramp suits step one pose per tick through the tap too
+ const velocity=S.tapShapeFor(null,id)==='velocity';
+ let last=0,seen=new Set(),trace=[],lastTap=-99;
  for(let tick=0;tick<360;tick++){
-  if(tick<180&&tick%36===0)Sim.flap(w,save);if(tick===210)Sim.dive(w,save);
+  if(tick<180&&tick%36===0){Sim.flap(w,save);lastTap=tick;}if(tick===210)Sim.dive(w,save);
   Math.random=()=>.5;Sim.updateWorld(w,save,1/60);Math.random=random;
   drawn=[];ctx.clearRect(0,0,256,256);D.drawPilot(ctx,w,save,art,128,1,126);
   const p=window.__acornautPose,index=(p.bank==='asc'?-1:1)*(p.idx-1);
-  assert(Math.abs(index-last)<=1,`${id}: no skipped tail pose at tick ${tick}`);last=index;seen.add(index);trace.push([p.bank,p.idx]);report.liveFrames++;
+  assert(Math.abs(index-last)<=1||(velocity&&tick-lastTap<8),`${id}: no skipped tail pose at tick ${tick}`);last=index;seen.add(index);trace.push([p.bank,p.idx]);report.liveFrames++;
   if(tick===90){const paused=canvas.toBuffer('image/png');ctx.clearRect(0,0,256,256);D.drawPilot(ctx,w,save,art,128,1,126);assert(canvas.toBuffer('image/png').equals(paused),`${id}: pause holds pose`);}
  }
  assert(seen.has(7),`${id}: live dive reaches the final pose`);assert(seen.size>=10,`${id}: tap cadence exercises the natural arc`);report.traces[id]=trace;

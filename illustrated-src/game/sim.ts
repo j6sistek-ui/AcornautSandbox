@@ -1,5 +1,6 @@
 import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate, type VanguardMotion } from "./vanguard";
-import { PAINTED_TAP_SUITS } from "./control-constants";
+import { PAINTED_TAP_SUITS, TAP_REPEAT, type TapRepeat } from "./control-constants";
+export type { TapRepeat };
 
 /** WHAT A REPEAT TAP DOES to a tap animation still playing. Three answers:
  *    "rewind"  the picture reverses from where it is, bounces off the start
@@ -12,14 +13,13 @@ import { PAINTED_TAP_SUITS } from "./control-constants";
  *  the older whole-roster switch (save.tapRewind). Owner, 12 Sep 2026:
  *  "give me a toggle in pause menu in beta only, so i can decide which
  *  ones get the treatment." A live build never reads either dial. */
-export type TapRepeat = "rewind" | "finish" | "restart";
 export function repeatTapMode(id: string, save: SaveData): TapRepeat {
   if (IS_BETA) {
     const dialled = save.tapRepeat?.[id];
     if (dialled) return dialled;
     if (save.tapRewind && PAINTED_TAP_SUITS.has(id)) return "rewind";
   }
-  return PAINTED_TAP_SUITS.has(id) ? "finish" : "rewind";
+  return TAP_REPEAT[id] ?? (PAINTED_TAP_SUITS.has(id) ? "finish" : "rewind");
 }
 export function repeatTapQueues(id: string, save: SaveData): boolean {
   return repeatTapMode(id, save) === "finish";
@@ -371,6 +371,9 @@ export type World = {
   tapAnimDir: number;
   /** Painted banks finish the current gesture before one coalesced replay. */
   tapAnimQueued: boolean;
+  /** the tap accent's body reaction spring (draw reads it, beta dial): 0 at rest, kicked per tap */
+  tapReact: number;
+  tapReactV: number;
   /** displayed pitch at burst entry, used to ease the otherwise instant snap */
   tapAnimFromRot: number;
   /** elapsed rendering time for the planet-contact response; -1 idle */
@@ -585,6 +588,8 @@ export function makeWorld(W: number, H: number): World {
     highOrbit: createHighOrbitMotion(),
     tapAnimDir: 1,
     tapAnimQueued: false,
+    tapReact: 0,
+    tapReactV: 0,
     tapAnimFromRot: 0,
     bounceAnimT: -1,
     bounceAnimDir: 0,
@@ -1723,6 +1728,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.highOrbit = createHighOrbitMotion(isHighOrbit(save.equippedSuit)?save.equippedSuit:'cinderforge');
   w.tapAnimDir = 1;
   w.tapAnimQueued = false;
+  w.tapReact = 0; w.tapReactV = 0;
   w.tapAnimFromRot = 0;
   w.bounceAnimT = -1;
   w.bounceAnimDir = 0;
@@ -3110,6 +3116,9 @@ export function flap(w: World, save: SaveData) {
     if (isHighOrbit(pilotSuitId(w, save))) highOrbitTap(w.highOrbit, impulse);
   }
   w.flapBoost = 0.22;
+  // the body reaction spring takes a bounded impulse per accepted tap
+  w.tapReactV += 26;
+  if (w.tapReact > 1) w.tapReact = 1;
   // the tail drags DOWN as the pilot shoots up, then whips back
   w.tailV += TAIL.flap * tailSpringFor(save, pilotSuitId(w, save)).kick;
   spawnTrail(w, save);
@@ -3982,6 +3991,15 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
   // world breathes — it just does not move or pull.
   // the tail keeps swinging through freezes and warps — it is the
   // pilot's own motion, not the world's
+  // THE BODY REACTION SPRING behind the beta tap accent: second-order,
+  // peak about 70 ms after a tap, settled by about 250 ms (from the tap
+  // retrofit study, 12 Sep 2026). Stepped always, drawn only with the dial.
+  {
+    const wR = 22, zR = 0.65;
+    w.tapReactV += (-wR * wR * w.tapReact - 2 * zR * wR * w.tapReactV) * dt;
+    w.tapReact += w.tapReactV * dt;
+    if (w.tapReact > 1) { w.tapReact = 1; w.tapReactV = Math.min(0, w.tapReactV); }
+  }
   // per-suit spring multipliers (TAIL_SPRING / the beta tail dial), 1/1/1 as shipped
   const spring = tailSpringFor(save, pilotSuitId(w, save));
   w.tailV += (-TAIL.stiffness * spring.stiff * w.tailA - TAIL.damping * spring.damp * w.tailV) * dt;

@@ -2,31 +2,32 @@
 // and any race regime that promises the same control feel.
 export const FLIGHT_GRAVITY = 1300;
 export const QUICK_DROP_VY = 380;
-/** THE SUITS WHOSE REPEAT TAP QUEUES. A repeat tap on one of these finishes
- *  the gesture that is playing and then replays it once; on every other suit
- *  a repeat tap REWINDS the picture from wherever it is (sim.ts, flap).
- *
- *  This used to be all 24 painted banks. Owner, 12 Sep 2026, after the
- *  queue landed on suits he had frozen: "a new tap isn't driving anymore ...
- *  take the 8 frozen out. revert it on those. the rest, give me a toggle in
- *  pause menu in beta only, so i can decide which ones get the treatment."
- *  So the frozen roster (FROZEN_SUITS in draw.ts - twelve of the painted
- *  banks, not eight) is gone from here for good, and test-frozen-roster
- *  keeps the two lists disjoint. The twelve below queue by default and can
- *  be flipped to rewind from the beta pause sheet (save.tapRewind); the
- *  owner reports which ones keep the queue, and they leave this list too.
- *
- *  Kept in this data-only module so simulation does not load art. The real
- *  painter test checks this roster against the shipping bank manifests
- *  minus the frozen roster. */
-export const PAINTED_TAP_SUITS = new Set([
-    "iontrim", "copper", "voidsuit", "ember", "gemmie", "sammie", "frost",
-    "ghost", "leviathan", "raccoon", "ferret", "hedgehog",
-]);
+/** THE SUITS WHOSE REPEAT TAP QUEUES ("finish"). A repeat tap on one of
+ *  these finishes the gesture that is playing and then replays it once.
+ *  EMPTY since 12 Sep 2026: the owner flew the dials and ruled that every
+ *  painted bank rewinds ("briellas cat, cyber, eclipse, and everything I
+ *  don't name otherwise, gets velocity rewind") and the critters restart
+ *  (TAP_REPEAT below). The mechanism stays for the beta REPEAT TAP dial.
+ *  Kept in this data-only module so simulation does not load art. */
+export const PAINTED_TAP_SUITS = new Set([]);
+export const TAP_REPEAT = { raccoon: "restart", ferret: "restart", hedgehog: "restart" };
 /** Spend less of the tap in its neutral lead-in, preserving the full gesture. */
 export const PAINTED_TAP_EASE = .73;
 export const TAP_SHAPE_MIN = 0.1, TAP_SHAPE_MAX = 1.0;
-export const TAP_SHAPE = { eclipse: "velocity" };
+// THE RULING, 12 Sep 2026, after the owner flew the dials: "briellas cat,
+// cyber, eclipse, and everything I don't name otherwise, gets velocity
+// rewind." Every suit with an ascent bank is on velocity - the freeze-day
+// painter, the path the Eclipse trace matched tick for tick. Robo, Big
+// Booty, Cat and Volt "stay default rewind" (16-frame tap clips, no ascent
+// bank - velocity cannot apply). Percy, Envoy and Patriot are a project of
+// their own ("its artwork, its frame work"). High Orbit, AcorNut and
+// Arcflash have their own controllers.
+export const TAP_SHAPE = {
+    eclipse: "velocity", cryostar: "velocity", verdant: "velocity", cyber: "velocity", seraph: "velocity",
+    alien: "velocity", flight: "velocity", briellacat: "velocity", iontrim: "velocity", copper: "velocity",
+    voidsuit: "velocity", ember: "velocity", frost: "velocity", ghost: "velocity", gemmie: "velocity",
+    sammie: "velocity", leviathan: "velocity",
+};
 export const TAIL_SPRING_MIN = 0.25, TAIL_SPRING_MAX = 3;
 export const TAIL_SPRING_ONE = { stiff: 1, damp: 1, kick: 1 };
 export const TAIL_SPRING = {};
