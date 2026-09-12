@@ -239,5 +239,7 @@
     "reusedBecause": "Five-rig controller, atlas art, helmet anchors and Canvas dependencies are unchanged by this follow-up."
   },
   "skipped": "Full unrelated suite, warp, tunnel, star-map-ui, vanguard-render, shop-visuals and broad helmet/global art gates. No forces, level/mode timing, saves, prices or artwork changed; affected bank painters and helmets received focused coverage.",
-  "limitation": "Native iPhone and owner visual acceptance remain outstanding. Historical High Orbit Linux fallback mismatch remains disclosed; prior verified main/candidate pixel equality is reused."
+  "limitation": "Native iPhone and owner visual acceptance remain outstanding. Historical High Orbit Linux fallback mismatch remains disclosed; prior verified main/candidate pixel equality is reused.",
+  "testedRuntimeCommit": "0d42993b3d14a9aec74ac239bd573a0e8ef07395",
+  "finalMetadata": "Subsequent commit only binds the Studio manifest and review receipts to this tested source."
 }

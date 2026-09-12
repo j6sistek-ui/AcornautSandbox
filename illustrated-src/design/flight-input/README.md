@@ -17,3 +17,5 @@ Web/beta, lab, Flight Studio and shell builds and typecheck pass. Ten targeted s
 The real-painter regression covers 24 suits at four tap cadences (96 traces), settled idle, descent handover, onset, pause and dive/reset. Natural-flight covers 8,640 pose/helmet/size samples. Premium checks cover all 48 original paintings, the selected gameplay sequences at 30/60/120 Hz and retained wake attachment. Live browser checks cover Eclipse, Ion and Patriot at 390×844 DPR 2 with no errors/overflow. Raw results and the exact scope are in validation.json, tap-bank-input.json and patriot-input.json.
 
 The previous five-rig validation is reused because its controller/art/anchors/dependencies did not change. Its historical Linux fallback PNG mismatch remains disclosed; candidate and main fallback pixels were equal. Full unrelated suites were skipped. Native iPhone testing and owner visual acceptance remain outstanding. Nothing is merged or released.
+
+Tested runtime: `0d42993b3d14a9aec74ac239bd573a0e8ef07395`. The final receipt commit updates only review metadata and the Studio source-commit field.
