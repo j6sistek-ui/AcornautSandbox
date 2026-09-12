@@ -1,0 +1,75 @@
+{
+  "viewport": [
+    390,
+    844
+  ],
+  "deviceScaleFactor": 2,
+  "isolatedStorage": true,
+  "errors": [],
+  "measurements": [
+    {
+      "id": "flight",
+      "stamp": "273",
+      "loaded": 3,
+      "screen": "play",
+      "poses": [
+        1,
+        2,
+        3
+      ],
+      "canvasWidth": 780,
+      "canvasHeight": 1688,
+      "documentWidth": 390
+    },
+    {
+      "id": "cinderforge",
+      "stamp": "273",
+      "loaded": true,
+      "screen": "play",
+      "poses": [],
+      "canvasWidth": 780,
+      "canvasHeight": 1688,
+      "documentWidth": 390
+    },
+    {
+      "id": "groveguard",
+      "stamp": "273",
+      "loaded": true,
+      "screen": "play",
+      "poses": [],
+      "canvasWidth": 780,
+      "canvasHeight": 1688,
+      "documentWidth": 390
+    },
+    {
+      "id": "cosmic",
+      "stamp": "273",
+      "loaded": true,
+      "screen": "play",
+      "poses": [],
+      "canvasWidth": 780,
+      "canvasHeight": 1688,
+      "documentWidth": 390
+    },
+    {
+      "id": "sunforged",
+      "stamp": "273",
+      "loaded": true,
+      "screen": "play",
+      "poses": [],
+      "canvasWidth": 780,
+      "canvasHeight": 1688,
+      "documentWidth": 390
+    },
+    {
+      "id": "abyssal",
+      "stamp": "273",
+      "loaded": true,
+      "screen": "play",
+      "poses": [],
+      "canvasWidth": 780,
+      "canvasHeight": 1688,
+      "documentWidth": 390
+    }
+  ]
+}

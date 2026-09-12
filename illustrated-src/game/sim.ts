@@ -1,8 +1,9 @@
 import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate, type VanguardMotion } from "./vanguard";
+import { PAINTED_TAP_SUITS } from "./control-constants";
 import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact, type ArcflashMotion } from "./arcflash-motion";
 import { createHighOrbitMotion, stepHighOrbit, highOrbitTap, type HighOrbitMotion } from "./high-orbit-motion";
 import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config";
-import { trailWornBy } from "./catalog";
+import { trailWornBy, STAR_CHART_TRAILS } from "./catalog";
 import { missionRandom } from "./mission-rng";
 import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress";
 import { CHART_LEVELS, reachedGate } from "./campaign";
@@ -344,6 +345,8 @@ export type World = {
   /** playback direction: 1 forward; -1 after a repeat tap, rewinding to
    *  the start before playing through to the end again */
   tapAnimDir: number;
+  /** Painted banks finish the current gesture before one coalesced replay. */
+  tapAnimQueued: boolean;
   /** displayed pitch at burst entry, used to ease the otherwise instant snap */
   tapAnimFromRot: number;
   /** elapsed rendering time for the planet-contact response; -1 idle */
@@ -557,6 +560,7 @@ export function makeWorld(W: number, H: number): World {
     arcflash: createArcflashMotion(),
     highOrbit: createHighOrbitMotion(),
     tapAnimDir: 1,
+    tapAnimQueued: false,
     tapAnimFromRot: 0,
     bounceAnimT: -1,
     bounceAnimDir: 0,
@@ -1694,6 +1698,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.arcflash = createArcflashMotion();
   w.highOrbit = createHighOrbitMotion(isHighOrbit(save.equippedSuit)?save.equippedSuit:'cinderforge');
   w.tapAnimDir = 1;
+  w.tapAnimQueued = false;
   w.tapAnimFromRot = 0;
   w.bounceAnimT = -1;
   w.bounceAnimDir = 0;
@@ -2595,6 +2600,9 @@ export function spawnTrail(w: World, save: SaveData, scale = 1) {
   // painter. Do not add the generic tail-origin particles or consume RNG.
   if (trail === "arcflashwake") return;
   if (highOrbitTrailSuit(trail)) return;
+  // Continuous Star Chart streams are presentation history, like the
+  // exclusive wakes above. Do not stack random particle bursts over them.
+  if (STAR_CHART_TRAILS.has(trail)) return;
   // the painted pilot's tail sweeps far to the left — emit behind it or
   // the whole plume is swallowed by the sprite
   const sx = pilotX(w) - 34;
@@ -3054,6 +3062,10 @@ export function flap(w: World, save: SaveData) {
     w.tapAnimT = 0;
     w.tapAnimDir = 1;
     w.tapAnimFromRot = w.squirrel.rot;
+  } else if (PAINTED_TAP_SUITS.has(pilotSuitId(w, save))) {
+    // Rewinding on every short tap traps painted banks in their first poses.
+    // Finish the gesture, then replay once for input accepted during it.
+    w.tapAnimQueued = true;
   } else {
     // A repeat tap REWINDS the picture: the animation plays backward from
     // wherever it is, bounces off the start, and runs through to the end
@@ -3076,6 +3088,7 @@ export function flap(w: World, save: SaveData) {
 
 export function dive(w: World, save: SaveData) {
   if (w.screen !== "play" || w.ready) return "none";
+  w.tapAnimQueued = false;
   // a dive throws the tail the other way, harder — it over-rotates past
   // home on the way back and rings down, which reads as weight falling
   w.tailV -= TAIL.dive;
@@ -3951,7 +3964,9 @@ export function updateWorld(w: World, save: SaveData, dt: number): string | null
       w.tapAnimT = 0;
       w.tapAnimDir = 1;
     } else if (w.tapAnimT >= TAP_ANIM_DURATION) {
-      w.tapAnimT = -1;
+      const replay = PAINTED_TAP_SUITS.has(pilotSuitId(w, save)) && w.tapAnimQueued;
+      w.tapAnimT = replay ? w.tapAnimT - TAP_ANIM_DURATION : -1;
+      w.tapAnimQueued = false;
       w.tapAnimDir = 1;
     }
   }

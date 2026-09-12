@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "271";
+export const ART_VER = "273";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -316,6 +316,13 @@ if (!IS_BETA) {
 }
 
 export type Trail = { id: string; name: string; cost: number; colors: string[] };
+
+/** Equipable Star Chart rewards with a retained, continuous flight stream.
+ * Suit-exclusive wakes keep their own nozzle-driven renderers. */
+export const STAR_CHART_TRAILS = new Set([
+  "ion", "bubble", "bloom", "comet", "prism", "plasma", "galaxy",
+  "aurora", "frost", "voidsmoke", "supernova", "phoenixplume", "opalfeather",
+]);
 
 const SUIT_BUILT_IN_TRAILS: Record<string,string> = {
   vanguard:"vanguardwake", arcflash:"arcflashwake",

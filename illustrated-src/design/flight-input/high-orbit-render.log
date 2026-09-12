@@ -1,0 +1,70 @@
+Unchanged main fallback mismatch: cinderforge fallback equals rig pixels at canonical size — 22 of 262144 bytes differ, max channel delta 28, first at byte 64900 (pixel 16225, channel R)
+Unchanged main fallback mismatch: groveguard fallback equals rig pixels at canonical size — 23 of 262144 bytes differ, max channel delta 2, first at byte 63108 (pixel 15777, channel R)
+Unchanged main fallback mismatch: cosmic fallback equals rig pixels at canonical size — 16 of 262144 bytes differ, max channel delta 8, first at byte 62166 (pixel 15541, channel B)
+Unchanged main fallback mismatch: sunforged fallback equals rig pixels at canonical size — 23 of 262144 bytes differ, max channel delta 4, first at byte 55605 (pixel 13901, channel G)
+Unchanged main fallback mismatch: abyssal fallback equals rig pixels at canonical size — 21 of 262144 bytes differ, max channel delta 2, first at byte 86648 (pixel 21662, channel R)
+{
+  "passed": true,
+  "results": [
+    {
+      "id": "cinderforge",
+      "maxJointStep": 1.975844954063632,
+      "minHeadGap": 21.062970009683944,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 3,
+      "minTailAreaRatio": 0.9999999999999974,
+      "maxTailAreaRatio": 1.0000000000000033,
+      "headRange": 19.779598862583534,
+      "bodyRange": 29.165003956235566,
+      "tailRange": 42.4770192820493
+    },
+    {
+      "id": "groveguard",
+      "maxJointStep": 2.052391599868834,
+      "minHeadGap": 25.00374390446047,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 6,
+      "minTailAreaRatio": 0.9999999999999967,
+      "maxTailAreaRatio": 1.0000000000000029,
+      "headRange": 19.806268962543456,
+      "bodyRange": 29.199967826812657,
+      "tailRange": 44.117896801593325
+    },
+    {
+      "id": "cosmic",
+      "maxJointStep": 1.9923200642124428,
+      "minHeadGap": 21.657061806666405,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 3,
+      "minTailAreaRatio": 0.9999999999999972,
+      "maxTailAreaRatio": 1.0000000000000029,
+      "headRange": 19.78421719580096,
+      "bodyRange": 29.171264950985496,
+      "tailRange": 42.473514865350324
+    },
+    {
+      "id": "sunforged",
+      "maxJointStep": 1.9330213071034024,
+      "minHeadGap": 25.886872842429995,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 3,
+      "minTailAreaRatio": 0.9999999999999972,
+      "maxTailAreaRatio": 1.0000000000000029,
+      "headRange": 19.767845116038487,
+      "bodyRange": 29.150196799938048,
+      "tailRange": 40.40370979767064
+    },
+    {
+      "id": "abyssal",
+      "maxJointStep": 2.023589166854215,
+      "minHeadGap": 23.958577255162957,
+      "minJointCoverage": 1,
+      "maxDetachedPixels": 4,
+      "minTailAreaRatio": 0.9999999999999969,
+      "maxTailAreaRatio": 1.0000000000000033,
+      "headRange": 19.794591020581557,
+      "bodyRange": 29.185474786270014,
+      "tailRange": 46.62913758995646
+    }
+  ]
+}

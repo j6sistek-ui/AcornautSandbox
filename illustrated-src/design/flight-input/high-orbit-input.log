@@ -1,0 +1,32 @@
+[
+  {
+    "id": "cinderforge",
+    "steadyTailRange": 0,
+    "handResponse": 3.516426364743964,
+    "tailResponse": 9.072112692116777
+  },
+  {
+    "id": "groveguard",
+    "steadyTailRange": 0,
+    "handResponse": 3.7150494446514415,
+    "tailResponse": 9.683621126369742
+  },
+  {
+    "id": "cosmic",
+    "steadyTailRange": 0,
+    "handResponse": 3.556951681388014,
+    "tailResponse": 9.121664510961269
+  },
+  {
+    "id": "sunforged",
+    "steadyTailRange": 0,
+    "handResponse": 3.4143283849746524,
+    "tailResponse": 8.516695147973149
+  },
+  {
+    "id": "abyssal",
+    "steadyTailRange": 0,
+    "handResponse": 3.6370003830884485,
+    "tailResponse": 10.116312974942293
+  }
+]

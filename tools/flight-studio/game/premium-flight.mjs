@@ -23,13 +23,21 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
  * 0.250s; frame 15 still lands on TAP_ANIM_DURATION, so the tap is not
  * shortened - only its early frames stop dawdling. */
 export const PREMIUM_FLIGHT_CURVE = 0.73;
+const FULL_TAP_ORDER = Array.from({ length: 16 }, (_, i) => i);
+// Patriot opens with five near-identical crouches. Go from its neutral to
+// the first visible lift, keeping every painting and explicit-frame access.
+const PATRIOT_TAP_ORDER = [0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+export function premiumFlightOrder(id) {
+    return id === 'origamist' ? PATRIOT_TAP_ORDER : FULL_TAP_ORDER;
+}
 /** Sixteen complete source poses, never an articulated skeleton. */
 export function premiumFlightFrame(id, state) {
     const spec = PREMIUM_FLIGHT_FRAMES[id], playback = state?.frames;
     if (!playback?.active)
         return spec.fallbackFrame;
     const at = clamp(playback.age / PREMIUM_FLIGHT_DURATION, 0, 1);
-    return clamp(Math.floor(Math.pow(at, PREMIUM_FLIGHT_CURVE) * spec.frameCount), 0, spec.frameCount - 1);
+    const order = premiumFlightOrder(id);
+    return order[clamp(Math.floor(Math.pow(at, PREMIUM_FLIGHT_CURVE) * order.length), 0, order.length - 1)];
 }
 /** Public explicit-frame API shared by the game, review page and Studio.
  * Only whole-frame translation, uniform scale and optional pitch are applied.

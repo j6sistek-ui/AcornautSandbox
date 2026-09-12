@@ -1,4 +1,5 @@
 import { HIGH_ORBIT_PROFILES, isPremiumSuit } from './high-orbit-config.mjs';
+import { createManeuverMotion, maneuverTap, stepManeuver } from './vanguard-maneuver.mjs';
 export const PREMIUM_FLIGHT_DURATION = 1;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = (v) => { v = clamp(v, 0, 1); return v * v * (3 - 2 * v); };
@@ -8,7 +9,7 @@ const rest = { body: 49, head: 0, heave: 0, nearArm: 60, nearElbow: 50, farArm: 
     nearThigh: 18, nearKnee: -32, farThigh: 12, farKnee: -26, tailRoot: 0, tailMid: 0, tailTip: 0 };
 export function createHighOrbitMotion(id = 'cinderforge') {
     return { id, time: 0, phase: 0, velocity: 0, previousVy: 0, initialized: false, pulse: 0, recoil: 0, power: .12,
-        ...(isPremiumSuit(id) ? { frames: { age: 0, active: false, queued: false } } : {}),
+        ...(isPremiumSuit(id) ? { frames: { age: 0, active: false, queued: false } } : { maneuver: createManeuverMotion(false) }),
         pose: { ...rest }, rates: Object.fromEntries(keys.map(k => [k, 0])) };
 }
 /** An accepted tap accents even a short refresh below the velocity detector's
@@ -17,6 +18,10 @@ export function highOrbitTap(s, acceptedImpulse = 450) {
     if (!Number.isFinite(acceptedImpulse) || acceptedImpulse <= 0)
         return;
     s.recoil = Math.max(s.recoil, .5 + .5 * (1 - Math.exp(-acceptedImpulse / 360)));
+    // High Orbit's smaller, retargeted limbs need a full readable accent even
+    // when a fast repeat tap refreshes only a few pixels/second of velocity.
+    if (s.maneuver)
+        maneuverTap(s.maneuver, Math.max(450, acceptedImpulse));
     if (isPremiumSuit(s.id)) {
         const f = s.frames ?? (s.frames = { age: 0, active: false, queued: false });
         if (!f.active) {
@@ -80,31 +85,33 @@ export function stepHighOrbit(s, id, dt, vy, ready = false) {
         s.power += (power - s.power) * (1 - Math.exp(-h / .07));
         if (isPremiumSuit(id))
             continue;
-        const wave = Math.sin(s.phase), lag = Math.sin(s.phase - 1.1);
-        const energy = ready ? .32 : 1;
+        const maneuver = s.maneuver ?? (s.maneuver = createManeuverMotion(false));
+        stepManeuver(maneuver, h, current, false, false);
+        const p = maneuver.pose, energy = ready ? .32 : 1;
+        // Retarget deltas from AcorNut's neutral Flight pose. High Orbit keeps
+        // its own rest angles, short bones, head registration and flight pitch.
         const target = {
-            body: 49 - 17 * lift + 11 * fall + energy * wave * 1.6,
-            head: -10 * lift + 8 * fall + energy * (Math.sin(s.phase - .4) * 1.8 - s.recoil * 3),
-            heave: energy * (Math.sin(s.phase - .7) * 1.2 - .8 * lift),
-            nearArm: 60 - 17 * lift + 10 * fall + energy * (wave * 7 - s.pulse * 9),
-            nearElbow: 50 - 14 * lift + 9 * fall + energy * (lag * 9 + s.pulse * 12),
-            farArm: 70 - 20 * lift + 7 * fall + energy * Math.sin(s.phase + .55) * 5,
-            farElbow: 48 - 9 * lift + 10 * fall + energy * Math.sin(s.phase - .5) * 7,
-            nearThigh: 18 + 9 * lift - 5 * fall + energy * Math.sin(s.phase - 1.1) * 4,
-            nearKnee: -32 - 12 * lift + 8 * fall + energy * Math.sin(s.phase - 1.8) * 5,
-            farThigh: 12 + 8 * lift - 4 * fall + energy * Math.sin(s.phase + .6) * 3,
-            farKnee: -26 - 10 * lift + 6 * fall + energy * Math.sin(s.phase - .4) * 4,
-            // Tap recoil reinforces the aft sweep; the old positive accent
-            // cancelled lift. The mid/tip springs then rock back with their own lag.
-            tailRoot: profile.whip * (energy * wave * 10 - 20 * lift + 10 * fall - s.recoil * 24),
+            body: 49 - 17 * lift + 11 * fall + energy * (p.body - 29) * .2,
+            head: -10 * lift + 8 * fall + energy * ((p.head + 3) * .15 - s.recoil * 3),
+            heave: energy * p.heave * .3,
+            nearArm: 60 + energy * (p.nearArm - 9) * .7,
+            nearElbow: 50 + energy * (p.nearElbow - 55) * .55,
+            farArm: 70 + energy * (p.farArm - 67) * .7,
+            farElbow: 48 + energy * (p.farElbow - 25) * .55,
+            nearThigh: 18 + energy * (p.nearThigh - 10) * .45,
+            nearKnee: -32 + energy * (p.nearKnee + 47) * .35,
+            farThigh: 12 + energy * (p.farThigh + 8) * .4,
+            farKnee: -26 + energy * (p.farKnee + 10) * .3,
+            // Travel and accepted input drive the root; passive lag drives the tip.
+            tailRoot: profile.whip * (-20 * lift + 10 * fall - s.recoil * 24),
             tailMid: 0, tailTip: 0,
         };
         for (const key of keys.slice(0, 11))
             follow(s, key, target[key], h, (key === 'head' ? 4.2 : key === 'body' ? 3.5 : 3.1) / profile.inertia, .86);
         follow(s, 'tailRoot', target.tailRoot, h, 3.4 / profile.inertia, .72);
         // Cascaded sections retain momentum after the torso reverses.
-        follow(s, 'tailMid', s.pose.tailRoot + energy * Math.sin(s.phase - .85) * 8 * profile.whip, h, 2.2 / profile.inertia, .76);
-        follow(s, 'tailTip', s.pose.tailMid + energy * Math.sin(s.phase - 1.45) * 8 * profile.whip, h, 1.85 / profile.inertia, .8);
+        follow(s, 'tailMid', s.pose.tailRoot, h, 2.2 / profile.inertia, .76);
+        follow(s, 'tailTip', s.pose.tailMid, h, 1.85 / profile.inertia, .8);
     }
 }
 const previews = new WeakMap();

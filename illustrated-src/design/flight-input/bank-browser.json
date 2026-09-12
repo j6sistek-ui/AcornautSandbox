@@ -1,0 +1,47 @@
+{
+  "viewport": [
+    390,
+    844
+  ],
+  "deviceScaleFactor": 2,
+  "isolatedStorage": true,
+  "errors": [],
+  "measurements": [
+    {
+      "id": "eclipse",
+      "stamp": "273",
+      "loaded": 8,
+      "screen": "play",
+      "poses": [
+        2,
+        3
+      ],
+      "canvasWidth": 780,
+      "canvasHeight": 1688,
+      "documentWidth": 390
+    },
+    {
+      "id": "iontrim",
+      "stamp": "273",
+      "loaded": 8,
+      "screen": "play",
+      "poses": [
+        2,
+        3
+      ],
+      "canvasWidth": 780,
+      "canvasHeight": 1688,
+      "documentWidth": 390
+    },
+    {
+      "id": "origamist",
+      "stamp": "273",
+      "loaded": true,
+      "screen": "play",
+      "poses": [],
+      "canvasWidth": 780,
+      "canvasHeight": 1688,
+      "documentWidth": 390
+    }
+  ]
+}

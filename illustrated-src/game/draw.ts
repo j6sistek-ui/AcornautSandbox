@@ -4,6 +4,8 @@ import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
 import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash";
 import { arcflashPreview } from "./arcflash-motion";
+import { paintLiveStarTrail } from "./star-trails";
+import { trailWornBy } from "./catalog";
 import {isHighOrbit,highOrbitTrailSuit,type HighOrbitId} from "./high-orbit-config";
 import {paintHighOrbit,paintHighOrbitCockpit} from "./high-orbit";
 import {highOrbitPreview,type HighOrbitMotion} from "./high-orbit-motion";
@@ -20,7 +22,7 @@ import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type S
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import { suitPitchFor, type SaveData } from "./save";
 import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS, type Particle, type World } from "./sim";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, type SuitLean } from "./control-constants";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE, type SuitLean } from "./control-constants";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
 import {
   SPILL,
@@ -3134,6 +3136,11 @@ function drawRetroWorld(
   const wornId = pilotSuitId(w, save);
   const helm = helmetWornBy(save.equipped, wornId);
   const suit = SUITS.find((u) => u.id === wornId) ?? SUITS[0];
+  paintLiveStarTrail(ctx, w, trailWornBy(save.equippedTrail, wornId), {
+    time: w.time, x: W * PHYS.squirrelX - 25, y: w.squirrel.y + 8,
+    travel: w.distance, scale: 1, power: Math.min(1, Math.max(0, w.flapBoost) / .22),
+    active: !w.ready && w.screen === "play",
+  }, w.screen === "pause" || w.screen === "lvldone");
   drawAstronautOn(ctx, W * PHYS.squirrelX, w.squirrel.y, w.squirrel.rot, 1, helm, suit, {
     flame: w.flapBoost > 0 ? w.flapBoost / 0.22 : 0,
     seed: 0,
@@ -4739,6 +4746,8 @@ function paintIllustrated(
   // dive, already shaped), so its sweep lands on frames exactly, with no
   // smoother between; NaN means "derive it from the motion, as in play"
   poseOverride = NaN,
+  // Live bank playback is input-driven; isolated shelf previews may cycle.
+  tapDriven = false,
 ) {
   // the equipped suit IS the body: its painted render replaces the
   // default flight frames, carried by the pilot's motion
@@ -4933,8 +4942,8 @@ function paintIllustrated(
         // So the climb runs on the TAP CLOCK for every banked suit, exactly
         // the way Cat and Robo's sixteen-frame banks do a few branches
         // below - the whole bank across the whole tap, linearly, whatever
-        // the velocity is doing. The sim rewinds that clock on a repeat tap,
-        // so a second tap replays the gesture instead of truncating it.
+        // the velocity is doing. Accepted repeat taps queue one replay;
+        // they never rewind or truncate the current painted gesture.
         //
         //   tap, pause, tap    robo (16f, shipped)  1345789bcdfg.1245689acde
         //                      a bank on the clock  122344566788.11233455677
@@ -4956,7 +4965,7 @@ function paintIllustrated(
         // window, home over the rest. It ends where the glide and the dive
         // both begin, so the handover costs no frame.
         const n = ascFrames.length;
-        const at = Math.min(1, Math.max(0, tapAnimT / TAP_ANIM_DURATION));
+        const at = Math.pow(Math.min(1, Math.max(0, tapAnimT / TAP_ANIM_DURATION)), PAINTED_TAP_EASE);
         const OUT = 0.625;
         const climb = at <= OUT ? at / OUT : 1 - (at - OUT) / (1 - OUT);
         const k = Math.min(n - 1, Math.round(climb * (n - 1)));
@@ -4975,6 +4984,8 @@ function paintIllustrated(
           v = sv < 0 ? -Math.min(1, -sv / POSE_CLIMB_SPAN) : Math.min(1, sv / 620);
         }
         // shape the attitude: the dive half shallowed, both halves curved
+        // After an input gesture, rising velocity must not restart its climb.
+        if (tapDriven) v = Math.max(0, v);
         if (v > 0) v *= diveDepthFor(suit.id);
       }
       if (!preShaped && !Number.isFinite(poseOverride)) {
@@ -5015,7 +5026,7 @@ function paintIllustrated(
       // the pilot presses and the character does not answer.
       //
       // So the cycle plays across the tap, the same way every other painted
-      // bank now does, and the sim's rewind on a repeat tap replays it. With
+      // bank now does, and the sim queues one replay for repeat taps. With
       // no tap running the character rests on its first frame, which is what
       // a bank with no dive half can honestly show. The world clock stays
       // for the hangar and any caller with no tap of its own, so a shelf
@@ -5023,7 +5034,7 @@ function paintIllustrated(
       const idx = tapAnimT >= 0
         ? Math.min(loopFrames.length - 1,
             Math.floor((tapAnimT / TAP_ANIM_DURATION) * loopFrames.length))
-        : Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
+        : tapDriven ? 0 : Math.floor(Math.max(0, _t) * LOOP_FPS) % loopFrames.length;
       const refL = (loopFrames[0] as Sprite).box ?? ref;
       drawRigLayer(ctx, loopFrames[idx], refL, x, y, size, 0, undefined, halo);
     } else if (fullTap) {
@@ -5123,6 +5134,13 @@ function drawPilot(
   const wornId = pilotSuitId(w, save);
   const suit = SUITS.find((s) => s.id === wornId) ?? SUITS[0];
   const helm = helmetWornBy(save.equipped, wornId);
+  // Paint before the body transform so old stream samples stay in the
+  // world when the pilot banks. Attach the stream at the pilot's rear edge.
+  paintLiveStarTrail(ctx, w, trailWornBy(save.equippedTrail, wornId), {
+    time: w.time, x: x - 25 * localScale, y: y + 8 * localScale,
+    travel: w.distance, scale: localScale, power: Math.min(1, Math.max(0, w.flapBoost) / .22),
+    active: !w.ready && w.screen === "play",
+  }, w.screen === "pause" || w.screen === "lvldone");
   // The repainted flap frames are one coherent character, so the tap
   // cycles them again — plus a soft nose-up kick and scale pop for punch.
   const flapping = w.flapBoost > 0;
@@ -5197,7 +5215,7 @@ function drawPilot(
     // Cryostar and Verdant now share Eclipse's heading mapping by owner
     // request. All three use the same smoother, pose curve and frame index.
     w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed,
-    lean);
+    lean, NaN, true);
   if (flagship && w.shieldCharges > 0) paintVanguardShield(ctx, 0, 0, w.time);
   ctx.restore();
 }
