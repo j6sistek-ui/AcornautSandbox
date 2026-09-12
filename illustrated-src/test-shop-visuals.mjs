@@ -474,7 +474,7 @@ try{
     assert(help.querySelector('[data-help-mode="hyper"]').textContent.includes('Tunnel: drag to steer'));
     assert.equal(help.querySelector('.ac-helpitemsheading')?.textContent,'Game Items');
     const helpRows=[...help.querySelectorAll('.ac-helprow')];
-    assert.deepEqual(helpRows.map(row=>row.querySelector('p')?.textContent),['ACORN','STAR DUST','ACORN COINS','FREEZE ACORN','SHIELD ACORN','GOLDEN ACORN','BLACK HOLE','WORMHOLE'],'all original game item entries remain');
+    assert.deepEqual(helpRows.map(row=>row.querySelector('p')?.textContent),['ACORN','STAR DUST','ACORN COINS','FREEZE ACORN','SHIELD ACORN','GOLDEN ACORN','8-BIT ARCADE ACORN','BLACK HOLE','WORMHOLE'],'all game item entries remain, including the 8-bit arcade acorn PR #279 added to the guide');
     assert(helpRows.every(row=>row.querySelector('canvas')),'all Game Items retain their drawn artwork');
     assert.equal((help.textContent.match(/resets each run/g)??[]).length,1,'Acorn Coins reset information is shown once');
     assert.equal(help.querySelectorAll('[data-help-mode] p.ac-sub').length,0,'mode controls do not regain the removed explanatory paragraphs');

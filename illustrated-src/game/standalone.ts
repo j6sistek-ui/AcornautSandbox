@@ -4604,7 +4604,7 @@ export async function bootStandalone(root: HTMLElement) {
     };
     const spr = (bank: "acorn" | "golden" | "shield") => (ctx: CanvasRenderingContext2D, px: number) =>
       drawSpriteOn(ctx, engine.art?.[bank]?.[0] ?? null, px / 2, px / 2, px * 0.92);
-    const one = (pick: "frozen" | "shieldnut") => (ctx: CanvasRenderingContext2D, px: number) =>
+    const one = (pick: "frozen" | "shieldnut" | "arcadeAcorn") => (ctx: CanvasRenderingContext2D, px: number) =>
       drawSpriteOn(ctx, engine.art?.[pick] ?? null, px / 2, px / 2, px * 0.92);
 
     item(pic(spr("acorn")), "ACORN", "Fly to earn. Spend in the Loadout.");
@@ -4629,6 +4629,7 @@ export async function bootStandalone(root: HTMLElement) {
     item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration}s.`);
     item(pic(one("shieldnut")), "SHIELD ACORN", "Blocks one debris hit.");
     item(pic(spr("golden")), "GOLDEN ACORN", "Debris can't hurt you. Planets still bounce.");
+    item(pic(one("arcadeAcorn")), "8-BIT ARCADE ACORN", "Switches between illustrated and 8-bit flight in Free Flight.");
     item(pic((ctx, px) => {
       const g = ctx.createRadialGradient(px/2, px/2, 1, px/2, px/2, px/2);
       g.addColorStop(0, "#120424"); g.addColorStop(0.6, "#6a3fb8"); g.addColorStop(1, "rgba(0,0,0,0)");
