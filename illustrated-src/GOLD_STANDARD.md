@@ -200,8 +200,13 @@ purpose, not by accident.
    `RIG_PITCH_WITH_BANK` only if the bank carries extension rather than
    attitude, as Cyber's does; `TAIL_SPRING_SUITS` if it has a rig tail.
 7. **A brand-new character loads to beta first** (standing rule).
-8. **Prove it**: run it through `test-gold-standard.mjs`'s harness (copy
-   the `fly()` block with the new id) and compare the timeline in §4. The
+8. **Prove it**: grade the drop first - `node illustrated-src/gold-check.mjs
+   <id> [--dir folder]` measures an unwired folder of frames the way this
+   page measures Cyber (frame count, coverage, box progression, step
+   sizes, the plume's path) and prints a verdict per line of this list,
+   side by side with Cyber's numbers. Then wire it, run it through
+   `test-gold-standard.mjs`'s harness (copy the `fly()` block with the new
+   id) and compare the timeline in §4. The
    deep frame should land by the second tick, hold ~150 ms, be level by
    ~0.33 s, and reach the full dive by ~0.82 s. Then fly it and say how it
    feels — the numbers are the floor, the feel is the ruling.
