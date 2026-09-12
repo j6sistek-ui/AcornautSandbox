@@ -21,7 +21,7 @@ function compile(name){
   });
   writeFileSync(join(out,'game',name+'.mjs'),output);
 }
-for(const name of ['high-orbit','high-orbit-motion','premium-flight','premium-flight-frames','arcflash','arcflash-motion','vanguard-maneuver','helmet-openings'])compile(name);
+for(const name of ['high-orbit','high-orbit-motion','premium-flight','premium-flight-frames','premium-bank-wake','arcflash','arcflash-motion','vanguard-maneuver','helmet-openings'])compile(name);
 // Remove generated modules retired from the current dependency graph.
 for(const name of readdirSync(join(out,'game')))if(name.endsWith('.mjs')&&!visited.has(name.slice(0,-4)))rmSync(join(out,'game',name));
 const {PREMIUM_FLIGHT_FRAMES}=await import(pathToFileURL(join(out,'game/premium-flight-frames.mjs')).href);
@@ -36,7 +36,9 @@ const orbit=['cinderforge','groveguard','cosmic','sunforged','abyssal'];
 const hash=path=>createHash('sha256').update(readFileSync(join(root,'docs/art',path))).digest('hex');
 const models=tables.suits.filter(s=>!s.frame).map(s=>{
   if(s.id==='arcflash')s={...s,file:'suits/arcflash/body.png'};
-  const sheet=PREMIUM_FLIGHT_FRAMES[s.id];
+  // A registered ascent/descent bank supersedes the archived premium atlas.
+  // Percy, Envoy and Patriot now take exactly Cyber's standard bank family.
+  const sheet=banks.asc[s.id]&&banks.desc[s.id]?undefined:PREMIUM_FLIGHT_FRAMES[s.id];
   const family=sheet?'premium-flight':orbit.includes(s.id)?'high-orbit':s.id==='arcflash'?'arcflash':s.id==='vanguard'?'acornut':'bank';
   const lists={};
   for(const [kind,counts] of Object.entries(banks))lists[kind]=Array.from({length:counts[s.id]||0},(_,i)=>`suits/${s.id}-${kind}-${i+1}.png`);

@@ -1,0 +1,14 @@
+[
+  {
+    "n": 4,
+    "prompt": "IMAGE1 has a few inaccurate suit seam details. Match its SUIT TRIM ONLY to IMAGE2 precisely, keeping every body/head/limb/tail pose, outline and pixel location of IMAGE1 unchanged. The pale waist stripe lies across upper back and ENDS at near side; it must NOT become a broad diagonal chest/underbelly sash. Lower belly trim is only thin rose-gold piping with small seam joins like IMAGE2. Preserve the simple V neckline, no extra chest polygon. Shoulder cap is the small IVORY oval patch on upper shoulder with rose edging from IMAGE2, not a hollow pink circular ring. Near hip has the long simple oval rose outline following outer thigh from IMAGE2. Fourpaws, ivorybracers/boots and all other features unchanged. Do not alter head/two tails at all. Exact canvas framing, pose and flatgreen#00ff00 retained. This is local suit-detail correction, no reposing or restyling."
+  },
+  {
+    "n": 6,
+    "prompt": "IMAGE1 has a few inaccurate suit seam details. Match its SUIT TRIM ONLY to IMAGE2 precisely, keeping every body/head/limb/tail pose, outline and pixel location of IMAGE1 unchanged. The pale waist stripe lies across upper back and ENDS at near side; it must NOT become a broad diagonal chest/underbelly sash. Lower belly trim is only thin rose-gold piping with small seam joins like IMAGE2. Preserve the simple V neckline, no extra chest polygon. Shoulder cap is the small IVORY oval patch on upper shoulder with rose edging from IMAGE2, not a hollow pink circular ring. Near hip has the long simple oval rose outline following outer thigh from IMAGE2. Fourpaws, ivorybracers/boots and all other features unchanged. Do not alter head/two tails at all. Exact canvas framing, pose and flatgreen#00ff00 retained. This is local suit-detail correction, no reposing or restyling."
+  },
+  {
+    "n": 7,
+    "prompt": "IMAGE1 has a few inaccurate suit seam details. Match its SUIT TRIM ONLY to IMAGE2 precisely, keeping every body/head/limb/tail pose, outline and pixel location of IMAGE1 unchanged. The pale waist stripe lies across upper back and ENDS at near side; it must NOT become a broad diagonal chest/underbelly sash. Lower belly trim is only thin rose-gold piping with small seam joins like IMAGE2. Preserve the simple V neckline, no extra chest polygon. Shoulder cap is the small IVORY oval patch on upper shoulder with rose edging from IMAGE2, not a hollow pink circular ring. Near hip has the long simple oval rose outline following outer thigh from IMAGE2. Fourpaws, ivorybracers/boots and all other features unchanged. Do not alter head/two tails at all. Exact canvas framing, pose and flatgreen#00ff00 retained. This is local suit-detail correction, no reposing or restyling."
+  }
+]

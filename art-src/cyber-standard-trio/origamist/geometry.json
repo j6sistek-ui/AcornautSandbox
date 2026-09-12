@@ -1,0 +1,385 @@
+{
+  "reviewStatus": "Measurements follow independently reviewed whole-image translations. Source costume/anatomy and tail phases independently cleared; final production-renderer verdict and limits are recorded in illustrated-src/design/premium-pilots/CYBER-REVIEW.md.",
+  "measurementMethod": "Visually measured at 256px on fixed 10px coordinate grid, without per-frame fitting. Head excludes ears; emitters are trailing hind boot tips. Manual landmark estimates have roughly 2-3px precision; they are not pixel-perfect anatomical measurements. Whole-image offsets are applied equally to head, boot emitters and still-tail attachment/mask.",
+  "head": [
+    171,
+    114,
+    25
+  ],
+  "tailPivot": [
+    119,
+    138
+  ],
+  "asc": [
+    {
+      "head": [
+        171,
+        114,
+        25
+      ],
+      "emitters": [
+        [
+          92,
+          170
+        ],
+        [
+          111,
+          176
+        ]
+      ]
+    },
+    {
+      "head": [
+        170,
+        114,
+        25
+      ],
+      "emitters": [
+        [
+          91,
+          172
+        ],
+        [
+          110,
+          178
+        ]
+      ]
+    },
+    {
+      "head": [
+        170,
+        113,
+        25
+      ],
+      "emitters": [
+        [
+          94,
+          176
+        ],
+        [
+          113,
+          181
+        ]
+      ]
+    },
+    {
+      "head": [
+        168,
+        112,
+        25
+      ],
+      "emitters": [
+        [
+          95,
+          180
+        ],
+        [
+          114,
+          185
+        ]
+      ]
+    },
+    {
+      "head": [
+        167,
+        114,
+        25
+      ],
+      "emitters": [
+        [
+          100,
+          183
+        ],
+        [
+          118,
+          188
+        ]
+      ]
+    },
+    {
+      "head": [
+        166,
+        115,
+        25
+      ],
+      "emitters": [
+        [
+          101,
+          187
+        ],
+        [
+          121,
+          191
+        ]
+      ]
+    },
+    {
+      "head": [
+        166,
+        114,
+        25
+      ],
+      "emitters": [
+        [
+          96,
+          193
+        ],
+        [
+          117,
+          193
+        ]
+      ]
+    },
+    {
+      "head": [
+        165,
+        115,
+        25
+      ],
+      "emitters": [
+        [
+          95,
+          189
+        ],
+        [
+          114,
+          194
+        ]
+      ]
+    },
+    {
+      "head": [
+        167,
+        114,
+        25
+      ],
+      "emitters": [
+        [
+          100,
+          196
+        ],
+        [
+          120,
+          199
+        ]
+      ]
+    }
+  ],
+  "desc": [
+    {
+      "head": [
+        173,
+        120,
+        25
+      ],
+      "emitters": [
+        [
+          91,
+          174
+        ],
+        [
+          110,
+          181
+        ]
+      ]
+    },
+    {
+      "head": [
+        172,
+        119,
+        25
+      ],
+      "emitters": [
+        [
+          90,
+          183
+        ],
+        [
+          109,
+          190
+        ]
+      ]
+    },
+    {
+      "head": [
+        172,
+        117,
+        25
+      ],
+      "emitters": [
+        [
+          93,
+          180
+        ],
+        [
+          112,
+          186
+        ]
+      ]
+    },
+    {
+      "head": [
+        172,
+        116,
+        25
+      ],
+      "emitters": [
+        [
+          92,
+          183
+        ],
+        [
+          112,
+          189
+        ]
+      ]
+    },
+    {
+      "head": [
+        169,
+        117,
+        25
+      ],
+      "emitters": [
+        [
+          93,
+          183
+        ],
+        [
+          114,
+          188
+        ]
+      ]
+    },
+    {
+      "head": [
+        169,
+        117,
+        25
+      ],
+      "emitters": [
+        [
+          89,
+          175
+        ],
+        [
+          108,
+          183
+        ]
+      ]
+    },
+    {
+      "head": [
+        170,
+        115,
+        25
+      ],
+      "emitters": [
+        [
+          92,
+          181
+        ],
+        [
+          111,
+          189
+        ]
+      ]
+    },
+    {
+      "head": [
+        169,
+        115,
+        25
+      ],
+      "emitters": [
+        [
+          94,
+          183
+        ],
+        [
+          113,
+          190
+        ]
+      ]
+    },
+    {
+      "head": [
+        170,
+        115,
+        25
+      ],
+      "emitters": [
+        [
+          94,
+          182
+        ],
+        [
+          114,
+          187
+        ]
+      ]
+    }
+  ],
+  "still": {
+    "head": [
+      171,
+      114,
+      25
+    ],
+    "emitters": [
+      [
+        92,
+        170
+      ],
+      [
+        111,
+        176
+      ]
+    ]
+  },
+  "tailMaskPolygons": [
+    [
+      [
+        54,
+        95
+      ],
+      [
+        140,
+        95
+      ],
+      [
+        140,
+        127
+      ],
+      [
+        131,
+        130
+      ],
+      [
+        124,
+        133
+      ],
+      [
+        119,
+        136
+      ],
+      [
+        116,
+        140
+      ],
+      [
+        113,
+        145
+      ],
+      [
+        111,
+        149
+      ],
+      [
+        54,
+        150
+      ]
+    ]
+  ],
+  "registrationEvidence": "registration-review.json"
+}

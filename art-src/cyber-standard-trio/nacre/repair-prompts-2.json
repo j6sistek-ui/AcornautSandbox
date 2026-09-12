@@ -1,0 +1,18 @@
+[
+  {
+    "n": 4,
+    "prompt": "Local costume correction on IMAGE1. Keep EVERY shape and pixel placement exactly. Remove extra angular gold polygon/pentagon chest-panel lines below collar. Chest has plain dark aubergine surface and only simple curved/V neckline piping as on IMAGE2. No grid, central badge, extra armor panels. Also soften spiky tail-edge serrations into smooth silky pearl-lilac curves like IMAGE2 while preserving existing TWO equally substantial tails, their roots, tips and placement. Keep head, open purple eyes, both ivory bracers, both boots, four paws, all body poses EXACTLY. Same green #00ff00 canvas."
+  },
+  {
+    "n": 5,
+    "prompt": "Edit only the tail area of IMAGE1. It must contain TWO equally substantial silky pearl-lilac tails, TWO separate roots at rump and TWO distinct curled tips, with a visible thin green gap separating the two plumes. Split current single merged tail into two equal parallel plumes inside nearly the SAME combined outer envelope, keep current upright S curve and bounds. Tail material is smooth silky pearlescent ribbon surfaces like IMAGE2, no serrated hair or spiky fur. Do not change ANY head/body/limb pixel placement, costume, pose, scale, camera or canvas. Exactly same green #00ff00."
+  },
+  {
+    "n": 6,
+    "prompt": "Local suit correction on IMAGE1; every pose and pixel placement remains unchanged. Match IMAGE2 costume: near hip seam is ONE smooth OVAL thin rose-gold outline, remove jagged angular seam; below collar chest is plain aubergine with simple curved/V neckline piping, REMOVE angular gold pentagon/grid. Both front paws pale lavender as IMAGE2, not bright fuchsia. Suit dark aubergine, softer rose highlights not hot pink. Keep both ivory bracers, boots, head/openeyes and fourpaws. Retain TWO existing equal separate tails and their exact pose/bounds, only smooth fur serrations into silky pearl-lilac ribbon edges. Same flat #00ff00."
+  },
+  {
+    "n": 7,
+    "prompt": "Retexture IMAGE1 Cyber's EXACT pose using Envoy identity and costume from IMAGE2. Pose authority IMAGE1 only: HEAD LEFT, body steeper and BOTH HIND PAWS MUCH LOWER than IMAGE2. On a512canvas head center(340,231), front paws(315,322)and(370,324), hind paws(206,377)and(246,385), rump(245,311). Preserve EXACT these bodypart locations, proportions, blank margins and all silhouette placement. Do not copy horizontal floating body of IMAGE2. Remove Cyber antennae/helmet/neon. Envoy has bare pearl-peach/lilac finhead with open purpleeyes, aubergine fitted suit with thin simple curved rose-gold seams, OVAL near hip seam, TWO ivory bracers, ivory boots, pale lavender paws. TWO equally substantial silky pearl-lilac tailplumes have distinct roots/tips and green gap, their combined mass follows IMAGE1 upright tail envelope, smooth silky edges no spiky fur. No new chest armor/badge. Fullcanvas flat#00ff00."
+  }
+]

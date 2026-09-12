@@ -8,7 +8,7 @@ import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import {makeProject,validateProject,serializeProject,createAnimation,acceptTap,stepAnimation,createSimulation,seekSimulation,transportTime,STEP,clone} from '../tools/flight-studio/core.mjs';
 import {StudioRenderer} from '../tools/flight-studio/renderer.mjs';
-import {paintPremiumFlightFrame,premiumFlightFrame,premiumFlightOrder} from '../tools/flight-studio/game/premium-flight.mjs';
+import {paintPremiumBankWake} from '../tools/flight-studio/game/premium-bank-wake.mjs';
 import {createStudioServer} from '../tools/flight-studio/launch.mjs';
 const require=createRequire(import.meta.url),{createCanvas,loadImage}=require(process.env.ACORNAUT_CANVAS||'@napi-rs/canvas');
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..'),dir=join(root,'tools/flight-studio');
@@ -29,29 +29,31 @@ for(const model of manifest.models){const project=makeProject(manifest,model);as
 }
 assert.equal(manifest.models.length,34);const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
 assert.deepEqual(rigs.map(m=>m.id).sort(),['abyssal','arcflash','cinderforge','cosmic','groveguard','sunforged','vanguard'],'all seven original cut rigs remain available');
-const premium=manifest.models.filter(m=>m.family==='premium-flight');assert.deepEqual(premium.map(m=>m.id).sort(),['nacre','origamist','porcelain']);
+const premium=manifest.models.filter(m=>['porcelain','nacre','origamist'].includes(m.id));assert.equal(premium.length,3);
+const cyber=manifest.models.find(m=>m.id==='cyber'),cyberProfile=makeProject(manifest,cyber).profile;
 for(const model of premium){
-  assert.equal(model.atlas,`suits/${model.id}/flight.png`);assert.equal(model.sheet.frameCount,16);assert.equal(model.sheet.frames.length,16);assert.equal(model.sheet.cellSize,256);assert.equal(model.sheet.fallbackFrame,0);
-  assert.equal(model.banks.loop.length,16);assert(model.banks.loop.every(path=>path===model.atlas));
-  assert(Object.keys(model.hashes).every(path=>!path.endsWith('/parts.png')),'full-body model cannot load the discarded cut-parts atlas');
-  const project=makeProject(manifest,model),s=createAnimation(model),seen=new Set();assert.deepEqual(project.profile.parts,{});
-  assert.equal(project.profile.retrigger,'restart','a repeat tap is frame one again, as the game plays it (owner, 12 Sep 2026)');assert.equal(project.profile.loopContinuous,false);
-  acceptTap(s,project.profile);
-  for(let i=0;i<240;i++){
-    if(i===30)acceptTap(s,project.profile);
-    stepAnimation(s,project.profile,STEP,-300);seen.add(s.frame);
-    assert.equal(s.frame,premiumFlightFrame(model.id,s.native),model.id+' default Studio frame matches shipping tap lifecycle');
+  assert.equal(model.family,'bank');assert.equal(model.atlas,null);assert(!model.sheet);
+  assert.equal(model.banks.asc.length,9);assert.equal(model.banks.desc.length,9);assert.equal(model.banks.tap.length,0);assert.equal(model.banks.loop.length,0);
+  assert(Object.keys(model.hashes).every(path=>!path.endsWith('/parts.png')&&!path.endsWith('/flight.png')),'retired atlases never loaded');
+  const project=makeProject(manifest,model);assert.deepEqual(project.profile,cyberProfile,model.id+' uses Cyber Studio profile exactly');
+  assert.equal(project.profile.poseMode,'velocity');assert.equal(project.profile.retrigger,'rewind');
+  const s=createAnimation(model),reference=createAnimation(cyber);
+  for(let tick=0;tick<960;tick++){
+    if(tick===0||tick%37===0&&tick<480){acceptTap(s,project.profile);acceptTap(reference,cyberProfile);}
+    const vy=tick<240?-450+tick%37*1300*STEP:tick<480?610:tick<720?-300:0;
+    stepAnimation(s,project.profile,STEP,vy);stepAnimation(reference,cyberProfile,STEP,vy);
+    for(const key of ['frame','bank','slot','pitch','filteredVy','fall','tapAge','tapDir','queued'])assert.equal(s[key],reference[key],model.id+' matches Cyber '+key+' tick '+tick);
+    assert.equal(s.native.frames,undefined,'standard bank never starts the retired playback');
   }
-  assert.deepEqual([...seen].sort((a,b)=>a-b),[...premiumFlightOrder(model.id)],model.id+' plays the shipping tap sequence');
-  assert.equal(s.frame,model.sheet.fallbackFrame,model.id+' returns to fallback after queued playback');
-  const pattern=createSimulation(model,project);
-  for(let tick=1;tick<=project.pattern.duration/STEP;tick++){
-    seekSimulation(pattern,tick*STEP);
-    assert.equal(pattern.animation.frame,premiumFlightFrame(model.id,pattern.animation.native),model.id+' matches shipping frame at pattern tick '+tick);
+  for(const family of ['premium-flight','high-orbit']){const obsolete=clone(project);obsolete.model.family=family;assert.throws(()=>validateProject(obsolete,manifest),/different rig family/,'old controller presets cannot silently apply to replacement banks');}
+  const reordered=clone(project);reordered.profile.tapOrder.reverse();
+  const tuned=createAnimation(model),original=createAnimation(model);acceptTap(tuned,reordered.profile);acceptTap(original,project.profile);
+  for(let tick=0;tick<90;tick++){
+    stepAnimation(tuned,reordered.profile,STEP,-300);stepAnimation(original,project.profile,STEP,-300);
+    assert.equal(tuned.slot,original.slot,'reordering art preserves velocity timing');
+    assert.equal(tuned.pitch,original.pitch,'reordering art preserves body motion');
+    assert.equal(tuned.frame,8-original.frame,'each selected climb painting uses the reversed order');
   }
-  const invalid=clone(project);invalid.profile.parts.head={offset:10};assert.throws(()=>validateProject(invalid,manifest),/do not have editable body parts/);
-  const obsolete=clone(project);obsolete.model.family='high-orbit';assert.throws(()=>validateProject(obsolete,manifest),/different rig family/,'obsolete cut-rig presets cannot deform the new paintings');
-  const reordered=clone(project);reordered.profile.tapOrder.reverse();const tuned=createAnimation(model);acceptTap(tuned,reordered.profile);stepAnimation(tuned,reordered.profile,STEP,-300);assert.equal(tuned.frame,15,'sheet frames can be reordered without altering artwork');
 }
 const ion=manifest.models.find(m=>m.id==='iontrim'),p=makeProject(manifest,ion).profile;
 assert.equal(p.tapSource,'asc');
@@ -94,29 +96,30 @@ for(const [i,model] of manifest.models.entries()){
   const tile=createCanvas(320,260),ctx=tile.getContext('2d');renderer.paint(ctx,model,project,sim,160,125,160);
   const pixels=ctx.getImageData(0,0,320,260).data;let ink=0;for(let j=3;j<pixels.length;j+=4)if(pixels[j]>10)ink++;
   assert.ok(ink>1000,model.id+' rendered no usable image');cc.drawImage(tile,i%4*320,Math.floor(i/4)*290);cc.fillStyle='#dae8f2';cc.font='14px sans-serif';cc.fillText(model.name+' · '+model.family,i%4*320+20,Math.floor(i/4)*290+275);
-  if(model.family==='premium-flight'){
-    const sheet=renderer.image(model.atlas);assert.equal(sheet.width,1024);assert.equal(sheet.height,1024);
-    for(let frame=0;frame<16;frame++)for(const effects of [false,true]){
-      const display=clone(sim);display.animation.bank='loop';display.animation.frame=frame;display.animation.slot=frame;
-      const config=clone(project);config.view.effects=effects;config.view.helmet='cosmic';config.profile.tapOffsets[frame]=frame%2?13:0;
+  if(premium.includes(model)){
+    for(const bank of ['asc','desc'])for(let frame=0;frame<9;frame++)for(const effects of [false,true]){
+      const display=clone(sim);display.animation.bank=bank;display.animation.frame=frame;display.animation.slot=frame;
+      const config=clone(project);config.view.effects=effects;config.view.helmet='cosmic';(bank==='asc'?config.profile.tapOffsets:config.profile.descOffsets)[frame]=frame%2?13:0;
       const actual=createCanvas(320,320),expected=createCanvas(320,320),g=actual.getContext('2d'),draws=[],draw=g.drawImage;
       g.drawImage=function(image,...args){draws.push({image,args});return draw.call(this,image,...args);};
       renderer.paint(g,model,config,display,160,160,192);
-      paintPremiumFlightFrame(expected.getContext('2d'),{premiumFlight:{[model.id]:sheet},suits:{[model.id]:renderer.image(model.file)}},model.id,160,160,192,frame,clone(sim.animation.output),{x:160,y:160,travel:sim.time*200},effects,(display.animation.pitch+config.profile.tapOffsets[frame])*Math.PI/180);
-      assert.deepEqual(g.getImageData(0,0,320,320).data,expected.getContext('2d').getImageData(0,0,320,320).data,model.id+' frame '+frame+' matches shared shipping painter, effects='+effects);
-      assert.equal(draws.length,1,'one complete painting, no assembled limbs or extra helmet');assert.equal(draws[0].image,sheet);
-      assert.deepEqual(draws[0].args.slice(0,4),[frame%4*256,Math.floor(frame/4)*256,256,256]);
+      const eg=expected.getContext('2d'),image=renderer.image(model.banks[bank][frame]),offset=(bank==='asc'?config.profile.tapOffsets:config.profile.descOffsets)[frame];
+      eg.translate(160,160);eg.rotate((display.animation.pitch+offset)*Math.PI/180);
+      if(effects)paintPremiumBankWake(eg,model.id,bank,frame,{x:32,y:32,w:192,h:192},0,0,192,{state:clone(sim.animation.output),travel:sim.time*200});
+      eg.drawImage(image,-128,-128,256,256);
+      assert.deepEqual(g.getImageData(0,0,320,320).data,eg.getImageData(0,0,320,320).data,model.id+' '+bank+frame+' complete painting/shared wake, effects='+effects);
+      assert.equal(draws.length,1,'one complete painting, no assembled limbs or extra helmet');assert.equal(draws[0].image,image);assert.deepEqual(draws[0].args,[-128,-128,256,256]);
     }
   }
 }
 if(process.argv.includes('--write-review')){const review=join(root,'illustrated-src/design/flight-studio');mkdirSync(review,{recursive:true});writeFileSync(join(review,'model-review.png'),contact.toBuffer('image/png'));}
 const server=await createStudioServer(0),url='http://127.0.0.1:'+server.address().port;
 try{
-  for(const path of ['/','/?viewer=1','/manifest.json','/core.mjs','/game/high-orbit.mjs','/game/premium-flight.mjs','/art/suits/cosmic/parts.png',...premium.map(m=>'/art/'+m.atlas)]){const res=await fetch(url+path);assert.equal(res.status,200,path);assert.ok((await res.arrayBuffer()).byteLength>0);}
+  for(const path of ['/','/?viewer=1','/manifest.json','/core.mjs','/game/high-orbit.mjs','/game/premium-flight.mjs','/art/suits/cosmic/parts.png',...premium.flatMap(m=>[m.banks.asc[0],m.banks.desc[8]].map(path=>'/art/'+path))]){const res=await fetch(url+path);assert.equal(res.status,200,path);assert.ok((await res.arrayBuffer()).byteLength>0);}
   for(const path of ['/launch.mjs','/../../.git/config','/art/suits/../../../package.json','/art/suits/%5c..%5c..%5cpackage.json'])assert.equal((await fetch(url+path)).status,404,path);
   assert.equal((await fetch(url+'/manifest.json',{method:'POST',body:'blocked'})).status,405);
   assert.equal((await fetch(url+'/')).headers.get('content-security-policy').includes("connect-src 'self'"),true);
   const again=await promisify(execFile)(process.execPath,[join(dir,'launch.mjs'),'--port',String(server.address().port),'--no-open']);
   assert.match(again.stdout,/already running/,'second launch should reopen the existing tool');
 }finally{await new Promise(r=>server.close(r));}
-console.log(`PASS Flight Studio: ${manifest.models.length} models, ${assetCount} asset hashes, ${rigs.length} rigs, ${premium.length} full-body sheet banks, deterministic replay, tap-clock playback, descent gate, retriggers, weighted holds, export/import, invalid presets, all renderers, shared premium frame/wake pixel equality, read-only offline host.`);
+console.log(`PASS Flight Studio: ${manifest.models.length} models, ${assetCount} asset hashes, ${rigs.length} rigs, ${premium.length} Cyber-standard 9/9 banks, deterministic replay, tap-clock playback, descent gate, retriggers, weighted holds, export/import, invalid presets, all renderers, shared premium frame/wake pixel equality, read-only offline host.`);

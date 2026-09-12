@@ -1,12 +1,14 @@
 // Pure, fixed-step studio runtime. No DOM, save storage, random numbers or I/O.
 // This module and the exported preset form the integration contract; game
 // simulation remains the authority when applying a tuned profile later.
-import {createHighOrbitMotion,stepHighOrbit,highOrbitTap,PREMIUM_FLIGHT_DURATION} from './game/high-orbit-motion.mjs';
+import {createHighOrbitMotion,createPremiumWake,stepHighOrbit,highOrbitTap,PREMIUM_FLIGHT_DURATION} from './game/high-orbit-motion.mjs';
+import {isPremiumSuit} from './game/high-orbit-config.mjs';
 import {PREMIUM_FLIGHT_CURVE,premiumFlightOrder} from './game/premium-flight.mjs';
 import {PAINTED_TAP_EASE} from './game/control-constants.mjs';
 import {createArcflashMotion,stepArcflash,arcflashTap,arcflashDive} from './game/arcflash-motion.mjs';
 import {createManeuverMotion,stepManeuver,maneuverTap} from './game/vanguard-maneuver.mjs';
 export const VERSION=1,STEP=1/120;
+const cyberStandard=id=>['cyber','porcelain','nacre','origamist'].includes(id);
 export const PARTS={body:'Torso',head:'Head',heave:'Body float',nearArm:'Near upper arm',nearElbow:'Near forearm',farArm:'Far upper arm',farElbow:'Far forearm',nearThigh:'Near thigh',nearKnee:'Near shin',farThigh:'Far thigh',farKnee:'Far shin',tailRoot:'Tail root',tailMid:'Tail middle',tailTip:'Tail tip'};
 export const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const clone=v=>JSON.parse(JSON.stringify(v));
@@ -23,9 +25,10 @@ export function defaultProfile(model){
   const tapSource=model.banks.asc.length?'asc':model.banks.tap.length?'tap':model.banks.loop.length?'loop':'still';
   const n=tapSource==='still'?1:model.banks[tapSource].length;
   const premium=model.family==='premium-flight';
+  const standard=model.family==='bank'&&cyberStandard(model.id);
   const tapOrder=premium?[...premiumFlightOrder(model.id)]:Array.from({length:n},(_,i)=>i);
-  return {basePitch:model.family==='acornut'?12:0,tapPitch:premium?[0,0,0,0,0]:[0,-8,-3,0,0],risePitch:0,fallPitch:0,pitchResponse:.10,
-    tapSeconds:premium?PREMIUM_FLIGHT_DURATION:1,tapEase:premium?PREMIUM_FLIGHT_CURVE:tapSource==='asc'?PAINTED_TAP_EASE:1,retrigger:model.family==='bank'?'queue':'restart',finishTap:true,tapPath:tapSource==='asc'?'out-back':'forward',returnAt:.625,loopContinuous:false,velocityFilter:.05,descentThreshold:40,
+  return {poseMode:standard?'velocity':'clock',basePitch:model.family==='acornut'?12:0,tapPitch:premium||standard?[0,0,0,0,0]:[0,-8,-3,0,0],risePitch:0,fallPitch:0,pitchResponse:.10,
+    tapSeconds:premium?PREMIUM_FLIGHT_DURATION:1,tapEase:premium?PREMIUM_FLIGHT_CURVE:tapSource==='asc'?PAINTED_TAP_EASE:1,retrigger:standard?'rewind':model.family==='bank'?'queue':'restart',finishTap:!standard,tapPath:tapSource==='asc'?'out-back':'forward',returnAt:.625,loopContinuous:false,velocityFilter:.05,descentThreshold:40,
     descentFull:500,descentDelay:.08,descentSeconds:.55,descentEase:1,rigSpeed:1,
     tapSource,tapOrder,tapWeights:Array(tapOrder.length).fill(1),tapOffsets:Array(tapOrder.length).fill(0),
     descOrder:Array.from({length:model.banks.desc.length},(_,i)=>i),descOffsets:Array(model.banks.desc.length).fill(0),
@@ -47,12 +50,13 @@ export function validateProject(value,manifest){
   if(typeof value.name!=='string'||value.name.length>120)fail('Preset name is too long.');
   const p=value.profile,pat=value.pattern,v=value.view;
   if(!p||!pat||!v)fail('Preset is missing its profile, pattern or view.');
-  p.tapPath??=p.tapSource==='asc'?'out-back':'forward';p.returnAt??=.625;p.loopContinuous??=false;
+  p.tapPath??=p.tapSource==='asc'?'out-back':'forward';p.returnAt??=.625;p.loopContinuous??=false;p.poseMode??='clock';
+  if(!['clock','velocity'].includes(p.poseMode)||p.poseMode==='velocity'&&(!model.banks.asc.length||!model.banks.desc.length))fail('Velocity playback needs ascent and descent banks.');
   for(const [k,a,b] of [['basePitch',-90,90],['risePitch',-90,90],['fallPitch',-90,90],['pitchResponse',0,2],
     ['tapSeconds',.1,5],['tapEase',.2,4],['velocityFilter',0,1],['descentThreshold',0,600],['descentFull',50,1600],
     ['descentDelay',0,2],['descentSeconds',.05,3],['descentEase',.2,4],['rigSpeed',.2,3]])number(p[k],a,b,k);
   if(p.descentFull<=p.descentThreshold)fail('Full descent velocity must exceed descent entry velocity.');
-  if(!['restart','continue','queue'].includes(p.retrigger)||typeof p.finishTap!=='boolean')fail('Invalid tap playback options.');
+  if(!['restart','continue','queue','rewind'].includes(p.retrigger)||typeof p.finishTap!=='boolean')fail('Invalid tap playback options.');
   if(!['forward','out-back'].includes(p.tapPath)||typeof p.loopContinuous!=='boolean')fail('Invalid bank playback path.');number(p.returnAt,.1,.9,'Return point');
   points(p.tapPitch,'Whole-model tap pitch');
   if(!['tap','asc','loop','still'].includes(p.tapSource))fail('Unknown tap source.');
@@ -88,30 +92,33 @@ export function validateProject(value,manifest){
   return {project:clone(value),model,warnings};
 }
 export function serializeProject(project,manifest){validateProject(project,manifest);return JSON.stringify(project,null,2)+'\n';}
-function nativeState(model){return ['high-orbit','premium-flight'].includes(model.family)?createHighOrbitMotion(model.id):model.family==='arcflash'?createArcflashMotion():model.family==='acornut'?createManeuverMotion(false):null;}
+function nativeState(model){return model.family==='bank'&&isPremiumSuit(model.id)?createPremiumWake(model.id):['high-orbit','premium-flight'].includes(model.family)?createHighOrbitMotion(model.id):model.family==='arcflash'?createArcflashMotion():model.family==='acornut'?createManeuverMotion(false):null;}
 function poseOf(model,s){
-  if(!s||model.family==='premium-flight')return {};
+  if(!s||model.family==='premium-flight'||model.family==='bank')return {};
   return {...s.pose,...(model.family==='arcflash'?{tailRoot:s.tailRoot,tailMid:s.tailMid,tailTip:s.tailTip}:
     model.family==='acornut'?{tailRoot:s.tailBase,tailMid:s.tailBend,tailTip:s.tailTip}:{})};
 }
 export function createAnimation(model){
   const native=nativeState(model),output=nativeState(model);
-  return {model,native,output,neutral:poseOf(model,native),time:0,tapAge:10,queued:false,filteredVy:0,downAge:0,fall:0,pitch:0,frame:0,bank:'still',stage:'glide',tapCount:0,diving:false};
+  return {model,native,output,neutral:poseOf(model,native),time:0,tapAge:10,tapDir:1,queued:false,filteredVy:0,downAge:0,fall:0,pitch:0,frame:0,bank:'still',stage:'glide',tapCount:0,diving:false};
 }
 export function acceptTap(s,p){
   const active=s.tapAge<p.tapSeconds;
-  if(p.retrigger==='restart'||!active)s.tapAge=0;
+  if(p.retrigger==='restart'||!active){s.tapAge=0;s.tapDir=1;}
   else if(p.retrigger==='queue')s.queued=true;
+  else if(p.retrigger==='rewind')s.tapDir=-1;
   s.downAge=0;s.diving=false;s.tapCount++;
   if(s.model.family==='arcflash')arcflashTap(s.native,450);
   if(['high-orbit','premium-flight'].includes(s.model.family))highOrbitTap(s.native,450,p.retrigger==='restart'?'restart':'finish');
+  if(s.model.family==='bank'&&isPremiumSuit(s.model.id))highOrbitTap(s.native,450);
   if(s.model.family==='acornut')maneuverTap(s.native,450);
 }
 export function acceptDive(s){s.diving=true;if(s.model.family==='arcflash')arcflashDive(s.native);}
 function follow(a,b,dt,tau){return tau<=0?b:a+(b-a)*(1-Math.exp(-dt/tau));}
 export function stepAnimation(s,p,dt,vy){
   if(!Number.isFinite(dt)||!Number.isFinite(vy)||dt<=0)return s;
-  s.time+=dt;s.tapAge+=dt;
+  s.time+=dt;s.tapAge+=dt*s.tapDir;
+  if(s.tapAge<=0){s.tapAge=0;s.tapDir=1;}
   const premium=s.model.family==='premium-flight',end=p.tapSeconds-(premium?1e-10:0);
   if(s.queued&&s.tapAge>=end){s.tapAge=premium?Math.max(0,s.tapAge-p.tapSeconds):0;s.queued=false;}
   if(premium){
@@ -125,6 +132,23 @@ export function stepAnimation(s,p,dt,vy){
       s.queued=s.native.frames.queued;
     }
   }
+  if(s.model.family==='bank'&&isPremiumSuit(s.model.id)){
+    stepHighOrbit(s.native,s.model.id,dt,vy);Object.assign(s.output,s.native);
+  }
+  if(p.poseMode==='velocity'){
+    // Cyber's live mode-zero mapping: linear 24/s speed smoothing, full
+    // climb at -260, full dive at +620, then the 1.7 pose curve. A tap
+    // clock or pending replay cannot override a physical climb or dive.
+    s.filteredVy+=(vy-s.filteredVy)*Math.min(1,dt*24);
+    const v=s.filteredVy<0?-Math.min(1,-s.filteredVy/260):Math.min(1,s.filteredVy/620);
+    s.fall=Math.max(0,v);s.bank=v>0?'desc':p.tapSource;
+    const order=v>0?p.descOrder:p.tapOrder;
+    s.slot=Math.round(Math.pow(Math.abs(v),1.7)*(order.length-1));s.frame=order[s.slot];
+    s.stage=v>0?'descent':v<0?'rise':'glide';
+    const rot=clamp(vy/700,-.55,.95),lean=rot<0?.8:.3;
+    s.pitch=p.basePitch+rot*.8*lean*180/Math.PI+curve(p.tapPitch,clamp(s.tapAge/p.tapSeconds,0,1))+p.risePitch*Math.max(0,-v)+p.fallPitch*s.fall;
+    return s;
+  }
   s.filteredVy=follow(s.filteredVy,vy,dt,p.velocityFilter);
   const lift=smooth(-s.filteredVy/450);
   s.downAge=s.filteredVy>p.descentThreshold?s.downAge+dt:0;
@@ -137,7 +161,7 @@ export function stepAnimation(s,p,dt,vy){
   const tapT=Math.pow(clamp(s.tapAge/p.tapSeconds,0,1),p.tapEase);
   const targetPitch=p.basePitch+curve(p.tapPitch,tapT)+p.risePitch*lift+p.fallPitch*s.fall;
   s.pitch=follow(s.pitch,targetPitch,dt,p.pitchResponse);
-  if(s.native&&s.model.family!=='premium-flight'){
+  if(s.native&&s.model.family!=='premium-flight'&&s.model.family!=='bank'){
     const effectiveVy=s.filteredVy<0?s.filteredVy:s.fall*p.descentFull;
     const h=dt*p.rigSpeed;
     if(s.model.family==='high-orbit')stepHighOrbit(s.native,s.model.id,h,effectiveVy);

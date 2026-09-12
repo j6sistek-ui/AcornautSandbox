@@ -401,7 +401,7 @@ const RIGGED_SUITS = [
   // overhaul sold it on production in two bundles - and its rig stayed
   // behind this flag, so a pilot who bought it flew a flat sticker while
   // the beta page flew the animation. A suit's art must follow the suit.
-  "cyber",
+  "cyber", "porcelain", "nacre", "origamist",
   // High Orbit uses its own eleven-part atlases below.
 ];
 const TAP_BANKS: Record<string, number> = {
@@ -447,7 +447,7 @@ const BOUNCE_BANKS: Record<string, number> = { volt: 16 };
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
 const ASC_BANKS: Record<string, number> =
-    { eclipse: 8, flight: 3, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+    { eclipse: 8, flight: 3, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, iontrim: 8, copper: 8,
         // THE ALIENS SWAPPED after the owner's A/B: the standard-spec bank
         // won and flies production "alien" at 8/8; the custom-posed bank
         // retired to the beta shelf as "Alien 1" at 7/7 (the owner's two
@@ -460,7 +460,7 @@ const ASC_BANKS: Record<string, number> =
         briellacat: 7,
         };
 const DESC_BANKS: Record<string, number> =
-    { eclipse: 8, flight: 5, cyber: 9, seraph: 8, iontrim: 8, copper: 8,
+    { eclipse: 8, flight: 5, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, iontrim: 8, copper: 8,
         voidsuit: 8, alien: 8,
         ember: 8,
         cryostar: 8, verdant: 8, gemmie: 8,
@@ -492,15 +492,6 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
   const layer = (suffix: string) =>
     loadImg(`${base}/suits/${id}${suffix}.png?v=${ART_VER}`).then(asSprite).catch(() => null);
   const p = (async () => {
-    if (isPremiumSuit(id)) {
-      try {
-        const sheet=await loadImg(`${base}/suits/${id}/flight.png?v=${ART_VER}`);
-        if(sheet.naturalWidth!==1024||sheet.naturalHeight!==1024)throw new Error("Invalid premium flight sheet");
-        // One decoded image publishes all sixteen poses atomically.
-        (bank.premiumFlight??={})[id]=sheet;
-      } catch { suitBankLoads.delete(id); }
-      return;
-    }
     if (isHighOrbitRig(id)) {
       try {
         const atlas=await loadImg(`${base}/suits/${id}/parts.png?v=${ART_VER}`);
@@ -554,8 +545,12 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
     if (loop.length) bank.suitLoop[id] = loop;
     if (tailTap.length) bank.suitTapTail[id] = tailTap;
     if (bounce.length) bank.suitBounce[id] = bounce;
-    if (asc.length) bank.suitAsc[id] = asc;
-    if (desc.length) bank.suitDesc[id] = desc;
+    // The remastered trio must not compress a missing pose out of its ramp.
+    // Publish both complete banks together, retaining the still on failure.
+    const completeMotion = !isPremiumSuit(id) || (asc.length === ASC_BANKS[id] && desc.length === DESC_BANKS[id]
+      && [...asc,...desc].every(frame=>frame.width===256&&frame.height===256));
+    if (asc.length && completeMotion) bank.suitAsc[id] = asc;
+    if (desc.length && completeMotion) bank.suitDesc[id] = desc;
     // many() drops a frame it could not fetch rather than sinking the whole
     // bank, and that is the right instinct - but draw.ts reads the tap,
     // tail-tap and bounce banks by EXACT count (16, 12, 16), so fifteen
@@ -575,7 +570,7 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
       (LOOP_BANKS[id] && !loop.length) ||
       (ASC_BANKS[id] && !asc.length) ||
       (DESC_BANKS[id] && !desc.length);
-    if (shortBank) suitBankLoads.delete(id);
+    if (shortBank || !completeMotion || (isPremiumSuit(id) && (!tail || !body))) suitBankLoads.delete(id);
   })();
   suitBankLoads.set(id, p);
   return p;

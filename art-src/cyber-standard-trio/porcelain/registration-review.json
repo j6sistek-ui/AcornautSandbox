@@ -1,0 +1,204 @@
+{
+  "status": "CANDIDATE - visual overlay review required, no acceptance from score",
+  "method": "Single uniform scale1, integer whole-image translation maximizing weighted silhouette Dice. Body ROI x112..209,y133..209 weight1; head ROI x145..214,y96..144 weight2. Tail and most ears/antennae excluded. Does not measure a skull center/radius.",
+  "records": [
+    {
+      "frame": "asc-1",
+      "offset": [
+        -4,
+        -5
+      ],
+      "before": 0.8923,
+      "after": 0.9678,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-asc-1.png",
+      "sha256": "8eb9c35767ecad301106b7bc42b6164beff5eb6c4fdc5f1f7fdb86f68cf3b59c"
+    },
+    {
+      "frame": "asc-2",
+      "offset": [
+        -5,
+        -6
+      ],
+      "before": 0.868,
+      "after": 0.9589,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-asc-2.png",
+      "sha256": "a481916071dc0506e39994645802c43e56cfb5c71ff656f82021c8eac9320a31"
+    },
+    {
+      "frame": "asc-3",
+      "offset": [
+        -6,
+        -8
+      ],
+      "before": 0.8211,
+      "after": 0.9619,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-asc-3.png",
+      "sha256": "b47b727fdcbef66228a5d10a1ea2e531a71e901cbf5c639cf7dfd40fda2f76fa"
+    },
+    {
+      "frame": "asc-4",
+      "offset": [
+        -5,
+        -9
+      ],
+      "before": 0.8327,
+      "after": 0.9597,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-asc-4.png",
+      "sha256": "abd16ba46147be0542f59bfaef1390f483bc0bb0820429875e80bf3ae0924a82"
+    },
+    {
+      "frame": "asc-5",
+      "offset": [
+        -1,
+        -1
+      ],
+      "before": 0.9746,
+      "after": 0.9827,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-asc-5.png",
+      "sha256": "97f29a3842e23d10543eb172671ef714c38114631cfec0d3bc86005fd0a93bda"
+    },
+    {
+      "frame": "asc-6",
+      "offset": [
+        -2,
+        -8
+      ],
+      "before": 0.8731,
+      "after": 0.9608,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-asc-6.png",
+      "sha256": "cec6cec438e9a2f7c6a9b096eb0665950e09de32d1f144b70c8cfdf37930a786"
+    },
+    {
+      "frame": "asc-7",
+      "offset": [
+        -8,
+        -6
+      ],
+      "before": 0.8317,
+      "after": 0.9381,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-asc-7.png",
+      "sha256": "41367ede5ed18e033fcd877464f286789041a7bbed37dce84c20af1386405edd"
+    },
+    {
+      "frame": "asc-8",
+      "offset": [
+        -5,
+        5
+      ],
+      "before": 0.9168,
+      "after": 0.9688,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-asc-8.png",
+      "sha256": "e80e3f278da25de89af16d61236984d01c67ef68746eebfcad206f5c6e735ea8"
+    },
+    {
+      "frame": "asc-9",
+      "offset": [
+        -1,
+        5
+      ],
+      "before": 0.9286,
+      "after": 0.9818,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-asc-9.png",
+      "sha256": "86418ca3d339b3a74854d396b7fda5422bc2d0a6720544ea4829ea336e4d9e75"
+    },
+    {
+      "frame": "desc-1",
+      "offset": [
+        -4,
+        -9
+      ],
+      "before": 0.8394,
+      "after": 0.9605,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-desc-1.png",
+      "sha256": "48e31778f6191d29fba8e600eefb25daf8b694bd47e4b9f0962027d38e4aa5cc"
+    },
+    {
+      "frame": "desc-2",
+      "offset": [
+        -5,
+        -2
+      ],
+      "before": 0.9046,
+      "after": 0.9599,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-desc-2.png",
+      "sha256": "b9d8e8b948b9a725216ca7e535c212cdbf025cb256cbe90a75f36e70e550f6a3"
+    },
+    {
+      "frame": "desc-3",
+      "offset": [
+        -4,
+        -2
+      ],
+      "before": 0.9118,
+      "after": 0.9645,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-desc-3.png",
+      "sha256": "37da9640beb908e9b80852d28813bfa7bd533eae2b671f8e972c9fc3f9d306fc"
+    },
+    {
+      "frame": "desc-4",
+      "offset": [
+        -5,
+        -2
+      ],
+      "before": 0.906,
+      "after": 0.9597,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-desc-4.png",
+      "sha256": "5d820abcd210761c224a4440afd13c829725bcfd35acc0615ff2af61601a3295"
+    },
+    {
+      "frame": "desc-5",
+      "offset": [
+        -6,
+        -3
+      ],
+      "before": 0.8873,
+      "after": 0.9476,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-desc-5.png",
+      "sha256": "352860cf6e0e644798fafb7b14db8f6d2a9ca329e1bf02e38737c887311a08c4"
+    },
+    {
+      "frame": "desc-6",
+      "offset": [
+        -5,
+        -2
+      ],
+      "before": 0.9245,
+      "after": 0.971,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-desc-6.png",
+      "sha256": "d387779e4a723f0e5665d29c10f3e9620c64ed6110c20c81e37f257b609d9b98"
+    },
+    {
+      "frame": "desc-7",
+      "offset": [
+        -4,
+        -3
+      ],
+      "before": 0.9254,
+      "after": 0.9655,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-desc-7.png",
+      "sha256": "4faf83532a480d2cdd713605da4eab9efece44f0e6a40c437192968cec2a2d43"
+    },
+    {
+      "frame": "desc-8",
+      "offset": [
+        -9,
+        -4
+      ],
+      "before": 0.8565,
+      "after": 0.9491,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-desc-8.png",
+      "sha256": "4c191630e40e89abc084d1ba7a70534855795c6c43d6ec6d651f0b47fd931af4"
+    },
+    {
+      "frame": "desc-9",
+      "offset": [
+        -9,
+        -5
+      ],
+      "before": 0.8352,
+      "after": 0.9567,
+      "source": "outputs/cyber-standard-trio/singles/porcelain-desc-9.png",
+      "sha256": "9909aac90e6117797dbfda369bdf13d8250ed06d7970d4b0e51e9e1e97dabf75"
+    }
+  ]
+}

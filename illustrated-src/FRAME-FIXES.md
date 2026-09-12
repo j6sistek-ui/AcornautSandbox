@@ -1,5 +1,17 @@
 # Frame fixes: the motion banks, frame by frame
 
+## Cyber transfer for Percy, Envoy and Patriot (12 September 2026)
+
+The owner requested new 9/9 banks and Cyber's runtime wiring for these three
+pilots only. Sources and per-frame review evidence belong to
+`art-src/cyber-standard-trio`; its exporter replaces their stills and derives
+complementary body/tail layers from each new ascent-1 painting. Their own
+painted heads retain the existing integrated-shell/helmetless policies.
+Independent review must check costume details, skull registration, limbs,
+tail continuity and real production playback. Structural gates alone do not
+establish visual acceptance. Earlier premium sixteen-frame instructions are
+historical for this trio.
+
 ## High Orbit remaster (9 September 2026)
 
 Cinderforge, Groveguard, Cosmic, Sunforged and Abyssal now animate fixed painted

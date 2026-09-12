@@ -1,0 +1,6 @@
+Local tail repair to IMAGE1 only. Preserve every other pixel location, head, suit, four limbs, canvas framing and green background exactly. Envoy must have TWO equally substantial silky pearl-lilac ribbon tails, each with a distinct root at rump and its own curled tip. This image has merged them into one plume. Split that SAME combined tail mass into two parallel gracefully curved substantial plumes with a thin green gap clearly separating them. Preserve the current tail overall outer bounds, mass, low leftward sweep and exact body pose. Smooth silky edges and broad nacre surface streaks like IMAGE2; no spiky fur, no feathers. Two roots, two tips, neither smaller than the other. Do not change costume or pose. Flat #00ff00.
+
+Input1: rejected/asc-3-fused-tail.png (current generation's original ASC3 canvas).
+Input2: identity-reference-512.png.
+Built-in imagegen result: exec-a4cf1c7e-e2f0-4590-92f1-1e6d2ee9235c.png.
+The other three calls in the same initial batch were interrupted by the host restart and were regenerated with retained repair-prompts-2.json.

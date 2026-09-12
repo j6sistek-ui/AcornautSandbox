@@ -1,0 +1,150 @@
+{
+  "tool": "Built-in imagegen",
+  "selectionStatus": "Source costume/anatomy and tail phases independently cleared; final production-renderer verdict and limits are recorded in illustrated-src/design/premium-pilots/CYBER-REVIEW.md.",
+  "frames": [
+    {
+      "frame": "asc-1",
+      "source": "frames/asc-1.png",
+      "sha256": "f85efa3c3d99f39411ffd0e8a8a1b84272bc3a31c6c475d56a4808d33c6a3209",
+      "promptIndex": 0,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-89550e49-0817-476b-bc1e-f967ee8bea6c.png",
+      "poseReference": "../references/cyber-asc-1-reference.png"
+    },
+    {
+      "frame": "asc-2",
+      "source": "frames/asc-2.png",
+      "sha256": "b283ea31c1fd4bfca0c0dbaf8617775288c11adb78b6c8478bf88e72ba759294",
+      "promptIndex": 50,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-0bc0ab09-de3a-415c-a578-d54f71cc83af.png",
+      "poseReference": "../references/cyber-asc-2-reference.png"
+    },
+    {
+      "frame": "asc-3",
+      "source": "frames/asc-3.png",
+      "sha256": "b03d2af5b1e9a026f061a0ef204ed94daa9f3d4089c041b1ba38b8a64acf4876",
+      "promptIndex": 51,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-83226727-2079-43e8-a521-fb952d0d5695.png",
+      "poseReference": "../references/cyber-asc-3-reference.png"
+    },
+    {
+      "frame": "asc-4",
+      "source": "frames/asc-4.png",
+      "sha256": "093d7bfdec7df82aaf1573854e8d9689363cf0cfdcb85ec7754dc0971d894896",
+      "promptIndex": 11,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-ab2cbbf2-4b8e-42a3-a873-f8ceb7a394db.png",
+      "poseReference": "../references/cyber-asc-4-reference.png"
+    },
+    {
+      "frame": "asc-5",
+      "source": "frames/asc-5.png",
+      "sha256": "ae0b55f33ad1a4c96fe8b1ae1efc1cc908eb2b19a2d60de215fef6d209aeba16",
+      "promptIndex": 8,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-a604d3d7-4dbc-4087-83e1-f75234c5a458.png",
+      "poseReference": "../references/cyber-asc-5-reference.png"
+    },
+    {
+      "frame": "asc-6",
+      "source": "frames/asc-6.png",
+      "sha256": "2c3015360d195e2f36cfe0f49db0a2e2108fb2e1c0e74c4f0dff14d5b71803fa",
+      "promptIndex": 38,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-b3768f8d-05f5-49a0-8c2d-3da61dc5ebf3.png",
+      "poseReference": "../references/cyber-asc-6-reference.png"
+    },
+    {
+      "frame": "asc-7",
+      "source": "frames/asc-7.png",
+      "sha256": "4a516a43afa9001463e2c79763aa619eeea28cd04dd49f5f066a7c9c1980390a",
+      "promptIndex": 39,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-c62ab07e-2269-4e84-9741-df8424bbc2d2.png",
+      "poseReference": "../references/cyber-asc-7-reference.png"
+    },
+    {
+      "frame": "asc-8",
+      "source": "frames/asc-8.png",
+      "sha256": "9dd8416ef5fe51f88d5eaf23d72151192b2b63271594e7388f3b2590756863a4",
+      "promptIndex": 40,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-e27bc8c4-f7cb-45d3-ab8c-c251e0d2811b.png",
+      "poseReference": "../references/cyber-asc-8-reference.png"
+    },
+    {
+      "frame": "asc-9",
+      "source": "frames/asc-9.png",
+      "sha256": "8d8123f57b9a84115cdc238922b55f6fb637dff707dd4fd04f5733d5aadba92a",
+      "promptIndex": 32,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-b07e272e-7521-49bd-8d54-534e44093476.png",
+      "poseReference": "../references/cyber-asc-9-reference.png"
+    },
+    {
+      "frame": "desc-1",
+      "source": "frames/desc-1.png",
+      "sha256": "185bfb9afe0d1c2a6b81cfd4ea21256c40c4c48a357a1fe722ecb9f39866adf6",
+      "promptIndex": 6,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-f8fadaaa-07c4-4205-bf36-23681e40fa0a.png",
+      "poseReference": "../references/cyber-desc-1-reference.png"
+    },
+    {
+      "frame": "desc-2",
+      "source": "frames/desc-2.png",
+      "sha256": "3c27ed67efda5844aaad06b07d2c1686e10df5999a38ae43b2a5d1548e9673e9",
+      "promptIndex": 15,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-69f9a104-92cf-4462-934c-de6c740630aa.png",
+      "poseReference": "../references/cyber-desc-2-reference.png"
+    },
+    {
+      "frame": "desc-3",
+      "source": "frames/desc-3.png",
+      "sha256": "ad1148e051977c2b95bac9e884982ec6168b0ebcc57b4f56e4e5e4939792e7e4",
+      "promptIndex": 16,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-e6d2a50c-bc83-4e79-860e-7d34dc92cc6f.png",
+      "poseReference": "../references/cyber-desc-3-reference.png"
+    },
+    {
+      "frame": "desc-4",
+      "source": "frames/desc-4.png",
+      "sha256": "e36160668488e4531bdaf498fe1663ee4c849a758cb9c5c7a922072d352ac9c1",
+      "promptIndex": 17,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-c565d758-4ef2-4041-8b84-fee80e02d511.png",
+      "poseReference": "../references/cyber-desc-4-reference.png"
+    },
+    {
+      "frame": "desc-5",
+      "source": "frames/desc-5.png",
+      "sha256": "773008b4e1f61b9754e58d244a254d55f64d6d14a74f5b8b91705954fc5d5c1f",
+      "promptIndex": 18,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-1b82c39d-5a21-48eb-b012-5b81f54a6f71.png",
+      "poseReference": "../references/cyber-desc-5-reference.png"
+    },
+    {
+      "frame": "desc-6",
+      "source": "frames/desc-6.png",
+      "sha256": "97daad83fbe7dc31dec6d122960899032d97e94edc8ba5b852cfb301b8232225",
+      "promptIndex": 46,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-aab0dd55-abf7-48ab-9d32-9d325281abe4.png",
+      "poseReference": "../references/cyber-desc-6-reference.png"
+    },
+    {
+      "frame": "desc-7",
+      "source": "frames/desc-7.png",
+      "sha256": "cbcb4a26066e99d801b6cb387257b3df2ea8d0c327b03ad8fa2ab1933a2ef2f3",
+      "promptIndex": 47,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-a5b59019-ceb0-4b6a-a0fa-c264c28d00c7.png",
+      "poseReference": "../references/cyber-desc-7-reference.png"
+    },
+    {
+      "frame": "desc-8",
+      "source": "frames/desc-8.png",
+      "sha256": "6cd8c793a96f743390e545d23025cd693e452042db8afbac5390af64ffbdabe4",
+      "promptIndex": 48,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-9dd21288-dc5b-495a-9f4b-1bda037687fc.png",
+      "poseReference": "../references/cyber-desc-8-reference.png"
+    },
+    {
+      "frame": "desc-9",
+      "source": "frames/desc-9.png",
+      "sha256": "45bdd9c7260b58d6a9b63fa32e6eb27ed1a8619dfe3942f020945e95455d6fb5",
+      "promptIndex": 49,
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-3ae2cd25-768a-42cf-9ca8-eab513d2b2ac.png",
+      "poseReference": "../references/cyber-desc-9-reference.png"
+    }
+  ]
+}

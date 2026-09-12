@@ -1,5 +1,12 @@
 # Premium pilot whole-frame sources
 
+**Historical bank, superseded 12 September 2026.** Percy, Envoy and Patriot
+now follow the owner's Cyber-transfer request in
+[`../cyber-standard-trio/README.md`](../cyber-standard-trio/README.md).
+The sources and receipts below preserve the preceding sixteen-frame work.
+Both premium export entry points now redirect to `export-cyber-trio.mjs`;
+this historical bank must not overwrite the new paintings or registration.
+
 This release uses sixteen complete character poses each for Porcelain
 Paragon, Nacre Envoy and Foldspace Origamist. The supplied sheets replace the
 rejected cut-part rigs. Reusable cut kits remain outside this release.

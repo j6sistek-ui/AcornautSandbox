@@ -1116,6 +1116,46 @@ def verify_dev_instruments(qa: QA) -> None:
 # "these frames are the same pose". See MOTION_SPEC.md.
 MOTION_MIN_PITCH_SPAN = 45.0
 
+
+def verify_nacre_reviewed_motion() -> list[str]:
+    """Pin the independently reviewed twin-tail motion, not a PCA direction.
+
+    Envoy's two tails and Cyber's antennae distribute opaque mass differently.
+    Near-equal covariance eigenvalues make the whole-sprite principal axis
+    unstable. The owner prioritizes the visible tail phases over alignment.
+    This one shape-specific review is locked to all 18 final PNGs; the exporter
+    must never refresh the review fixture. Body/tail movement is also checked
+    separately so a frozen part cannot be mistaken for a full motion bank.
+    """
+    import numpy as np
+
+    path = ROOT / "art-src/cyber-standard-trio/nacre/motion-review.json"
+    try:
+        review = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return [f"nacre: final independent motion review is missing or invalid ({exc})"]
+    expected = {f"nacre-{bank}-{i}.png" for bank in ("asc", "desc") for i in range(1, 10)}
+    hashes = review.get("outputHashes", {})
+    problems = []
+    if review.get("suit") != "nacre" or review.get("reference") != "cyber" or review.get("status") != "PASS" or set(hashes) != expected:
+        return ["nacre: reviewed motion must cover exactly the 18 Cyber-comparison paintings"]
+    for name in sorted(expected):
+        png = DOCS_ART / "suits" / name
+        if not png.exists() or hashlib.sha256(png.read_bytes()).hexdigest() != hashes[name]:
+            problems.append(f"{name}: painting changed after independent motion review; inspect and re-pin deliberately")
+    if problems:
+        return problems
+    for bank in ("asc", "desc"):
+        masks = {suit: [np.array(Image.open(DOCS_ART / "suits" / f"{suit}-{bank}-{i}.png").convert("RGBA"))[..., 3] > 24
+                        for i in range(1, 10)] for suit in ("cyber", "nacre")}
+        for part, region in (("body", (slice(95, 210), slice(125, 215))),
+                             ("tail", (slice(None), slice(0, 112)))):
+            motion = {suit: sum(int(np.count_nonzero(a[region] != b[region])) for a, b in zip(rows, rows[1:]))
+                      for suit, rows in masks.items()}
+            if motion["nacre"] < motion["cyber"] * .5:
+                problems.append(f"nacre/{bank}: {part} silhouette motion {motion['nacre']} is below half Cyber's {motion['cyber']}; frozen-part review required")
+    return problems
+
 # THE CUSTOM FLIGHT TIER IS A GRANT, NOT A MEASUREMENT.
 #
 # Owner rule, 26 Aug 2026: "everything gets the default flight treatment
@@ -1135,6 +1175,8 @@ MOTION_MIN_PITCH_SPAN = 45.0
 # Governs the MOTION-BANK tier (ASC_BANKS / DESC_BANKS) - not the painted
 # tap banks, which are an approved rollout every suit shares.
 CUSTOM_FLIGHT_SUITS = {
+    # Owner grant, 12 Sep 2026: Percy, Envoy and Patriot share Cyber's 9/9 banks.
+    "porcelain", "nacre", "origamist",
     # Owner remaster, 9 Sep 2026: eleven painted cut parts and a separate
     # continuous controller now replace these five historical 8/8 banks.
     "cinderforge", "groveguard", "cosmic", "sunforged", "abyssal",
@@ -1478,7 +1520,9 @@ def verify_motion_banks(qa: QA) -> None:
         # a ramp's clothes. Flight, the standard, spans 99 degrees. Measured
         # across the shipping tap banks, 24 of 28 suits sit at 16-20 and
         # cannot carry this model at all; see MOTION_SPEC.md.
-        if len(pitches) > 1:
+        if suit == "nacre":
+            problems.extend(verify_nacre_reviewed_motion())
+        elif len(pitches) > 1:
             span = max(pitches) - min(pitches)
             if span < MOTION_MIN_PITCH_SPAN and suit not in NATURAL_FLIGHT_SUITS:
                 problems.append(f"{suit}: its pose bank spans only {span:.0f} degrees "

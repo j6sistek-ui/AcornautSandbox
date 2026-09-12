@@ -1,0 +1,5 @@
+Edit only small jagged serrations on tail edges in IMAGE1. Smooth them into broad flowing silky pearl-lilac ribbon curves like IMAGE2. Retain TWO separate rooted tailplumes, their separate tips, green gap and EXACT current curves, positions, outer envelope and total mass. Material broad pearl/lilac streaks instead of spiky hair. Do not change ANY head, face, costume, body, limb, pose, scale, canvas margin or green background pixels. Exact current framing. Flat #00ff00.
+
+Generated images are saved to imagegen:01a09772-65df-7a30-a2dd-1a10870fa506 as imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-44dff91b-248d-45d7-81de-2ff234a3d60d.png by default.
+If you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.
+The generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.

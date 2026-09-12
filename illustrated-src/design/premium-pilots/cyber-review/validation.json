@@ -1,0 +1,330 @@
+{
+  "recordedAt": "2026-09-12T23:16:47.266Z",
+  "referenceBase": "6f85ca0ba3dc2d277f5ed43515b3a968eb71ef05",
+  "artVersion": "287",
+  "fullHarness": {
+    "command": "ACORNAUT_TSC=<existing TypeScript entry> node illustrated-src/run-tests.mjs",
+    "passed": 66,
+    "failed": 0,
+    "skipped": 0,
+    "tests": [
+      {
+        "test": "test-acornut-collect.mjs",
+        "seconds": 0.2
+      },
+      {
+        "test": "test-arcflash-integration.mjs",
+        "seconds": 1.5
+      },
+      {
+        "test": "test-arcflash-motion.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-arcflash-render.mjs",
+        "seconds": 0.7
+      },
+      {
+        "test": "test-beta-campaign.mjs",
+        "seconds": 0.3
+      },
+      {
+        "test": "test-boosts.mjs",
+        "seconds": 0.2
+      },
+      {
+        "test": "test-bounce-impact.mjs",
+        "seconds": 0.5
+      },
+      {
+        "test": "test-bundle-kits.mjs",
+        "seconds": 18
+      },
+      {
+        "test": "test-bundle.mjs",
+        "seconds": 0.8
+      },
+      {
+        "test": "test-drift.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-eclipse-motion-transfer.mjs",
+        "seconds": 3.8
+      },
+      {
+        "test": "test-flight-input.mjs",
+        "seconds": 1.5
+      },
+      {
+        "test": "test-flight-studio.mjs",
+        "seconds": 3.1
+      },
+      {
+        "test": "test-frozen-roster.mjs",
+        "seconds": 0.2
+      },
+      {
+        "test": "test-gold-standard.mjs",
+        "seconds": 2.5
+      },
+      {
+        "test": "test-helmet-animation.mjs",
+        "seconds": 19.4
+      },
+      {
+        "test": "test-helmet-compatibility.mjs",
+        "seconds": 0.2
+      },
+      {
+        "test": "test-helmet-openings.mjs",
+        "seconds": 0.5
+      },
+      {
+        "test": "test-high-orbit-input.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-high-orbit-integration.mjs",
+        "seconds": 1.5
+      },
+      {
+        "test": "test-high-orbit.mjs",
+        "seconds": 5.3
+      },
+      {
+        "test": "test-hyper-run.mjs",
+        "seconds": 5.8
+      },
+      {
+        "test": "test-level-hud.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-mission-pals.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-natural-flight.mjs",
+        "seconds": 16.2
+      },
+      {
+        "test": "test-patriot-input.mjs",
+        "seconds": 0.3
+      },
+      {
+        "test": "test-platform-bridge.mjs",
+        "seconds": 0.2
+      },
+      {
+        "test": "test-premium-pilots.mjs",
+        "seconds": 34.4
+      },
+      {
+        "test": "test-premium-pricing.mjs",
+        "seconds": 2.6
+      },
+      {
+        "test": "test-receipts.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-rig-anatomy.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-shop-cycle.mjs",
+        "seconds": 0.2
+      },
+      {
+        "test": "test-shop-visuals.mjs",
+        "seconds": 20.5
+      },
+      {
+        "test": "test-shop.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-spill-progression.mjs",
+        "seconds": 0.2
+      },
+      {
+        "test": "test-spill-render.mjs",
+        "seconds": 2.5
+      },
+      {
+        "test": "test-spill-ui.mjs",
+        "seconds": 17.3
+      },
+      {
+        "test": "test-spill-welcome.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-spill.mjs",
+        "seconds": 0.5
+      },
+      {
+        "test": "test-star-map-render.mjs",
+        "seconds": 3.8
+      },
+      {
+        "test": "test-star-map-ui.mjs",
+        "seconds": 52.7
+      },
+      {
+        "test": "test-star-map.mjs",
+        "seconds": 0.4
+      },
+      {
+        "test": "test-star-trails.mjs",
+        "seconds": 0.4
+      },
+      {
+        "test": "test-suit-lean.mjs",
+        "seconds": 0
+      },
+      {
+        "test": "test-switchback-render.mjs",
+        "seconds": 0.4
+      },
+      {
+        "test": "test-switchback.mjs",
+        "seconds": 1
+      },
+      {
+        "test": "test-tap-recovery.mjs",
+        "seconds": 0.4
+      },
+      {
+        "test": "test-tap-shape.mjs",
+        "seconds": 1.5
+      },
+      {
+        "test": "test-test-lab-ui.mjs",
+        "seconds": 17.6
+      },
+      {
+        "test": "test-test-lab.mjs",
+        "seconds": 0.2
+      },
+      {
+        "test": "test-tunnel-controls.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-tunnel.mjs",
+        "seconds": 30.5
+      },
+      {
+        "test": "test-tutorial.mjs",
+        "seconds": 0.2
+      },
+      {
+        "test": "test-vanguard-depot.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-vanguard-flight.mjs",
+        "seconds": 40.2
+      },
+      {
+        "test": "test-vanguard-inertia.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-vanguard-maneuver.mjs",
+        "seconds": 1.8
+      },
+      {
+        "test": "test-vanguard-organic.mjs",
+        "seconds": 9.4
+      },
+      {
+        "test": "test-vanguard-render.mjs",
+        "seconds": 53.9
+      },
+      {
+        "test": "test-vanguard-rig.mjs",
+        "seconds": 0.7
+      },
+      {
+        "test": "test-vanguard.mjs",
+        "seconds": 1.4
+      },
+      {
+        "test": "test-visor-continuity.mjs",
+        "seconds": 1.1
+      },
+      {
+        "test": "test-warp.mjs",
+        "seconds": 153.3
+      },
+      {
+        "test": "test-wormhole-trip.mjs",
+        "seconds": 0.8
+      },
+      {
+        "test": "test-zone-art-loading.mjs",
+        "seconds": 0.1
+      },
+      {
+        "test": "test-zone-families.mjs",
+        "seconds": 0.4
+      }
+    ],
+    "logSha256": "04a9c62ae0e31acb4a0bd16071b6830530db7cd5832936b3b63edb3fcad8b064"
+  },
+  "afterFinalTwoPatriotPaintings": {
+    "commands": [
+      "node illustrated-src/export-sandbox.mjs",
+      "node illustrated-src/build-lab.mjs",
+      "node illustrated-src/build-flight-studio.mjs",
+      "node illustrated-src/test-premium-pilots.mjs",
+      "node illustrated-src/test-flight-studio.mjs",
+      "node illustrated-src/verify-cyber-trio-art.mjs",
+      "python illustrated-src/verify-art.py",
+      "python illustrated-src/test-cyber-trio-motion-review.py"
+    ],
+    "status": "PASS",
+    "artGroups": 32,
+    "structuralFaults": 0,
+    "remainingProxyWarnings": "Nacre and Patriot descent fixed-strip proxies; independently adjudicated in CYBER-REVIEW.md",
+    "affectedLogSha256": "b28d29633f6b45c832fecd7673be55c3d218d240021fce81953b31f69546f5a1",
+    "artLogSha256": "8f2acb160cc102424ab54a2b635f0137ebd51ac86aacaa60c28d1abefe16d6d5"
+  },
+  "otherChecks": {
+    "typecheck": "PASS",
+    "platformBridge": "55 files clean",
+    "whitespace": "PASS",
+    "byteIdenticalRepeatExport": {
+      "status": "PASS",
+      "frameCount": 54,
+      "filesCompared": 65,
+      "allByteIdentical": true,
+      "nacreReviewedOutputsMatched": 18,
+      "exporterSha256": "907b8e3d02ab4151d8348d25c989a5d1f10f4d914c0900a511c877c734c9915a",
+      "checkedAt": "2026-09-12T23:11:54.341Z"
+    },
+    "scope": {
+      "status": "PASS",
+      "requestedSuits": [
+        "porcelain",
+        "nacre",
+        "origamist"
+      ],
+      "productionArtChanged": 64,
+      "perSuit": {
+        "porcelain": 21,
+        "nacre": 21,
+        "origamist": 21
+      },
+      "incidentalGeneratedArt": [
+        "docs/art/suits/arcflash/body.png"
+      ],
+      "cyberReferenceArtAndFixtureChanged": false
+    }
+  },
+  "environment": "Docker daemon unavailable; documented workspace-local Node and bundled Python fallback; SciPy only in ignored .agent/check-deps, no host system install.",
+  "limits": "Full harness preceded only the last two Patriot painting replacements. Affected checks and independent capture were repeated afterwards. No runtime code or numeric geometry changed after the full harness. Metadata-only status refresh preserved production PNGs and generated registration."
+}
