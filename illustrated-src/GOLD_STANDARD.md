@@ -72,6 +72,51 @@ What that says, in words:
   lets nine frames read as a climb and a dive without two sheets that
   disagree at the seam.
 
+### The tail is the reason
+
+Owner, on the climb bank: *"do you see how much tail motion is in frame
+asc 3/4/5/6/7, that's why it's so good. fluid, diverse motion that is in a
+natural flow."*
+
+Measured on the plume alone (every pixel left of the neck cut at x = 101,
+angle from the pivot to the plume's centre of mass, positive = raised):
+
+```
+climb   asc-1   asc-2   asc-3   asc-4   asc-5   asc-6   asc-7   asc-8   asc-9
+angle   −4.4°  −16.6°  −21.3°  −19.9°  −16.1°  −11.8°   −7.2°   +7.3°  +27.4°
+travel          −12.2    −4.7    +1.4    +3.8    +4.3    +4.6   +14.5   +20.1
+plume step %       69      75     100      91      79      57      67      62
+highest px y  104     105     102      92      83      80      80      79      72
+
+dive    desc-1  desc-2  desc-3  desc-4  desc-5  desc-6  desc-7  desc-8  desc-9
+angle   −22.0°  −28.5°  −31.0°  −32.5°  −34.6°  −35.1°  −35.2°  −36.2°  −36.4°
+travel           −6.5    −2.5    −1.5    −2.1    −0.5    −0.1    −1.0    −0.2
+```
+
+Read it as a whip, because that is what it is:
+
+- **Anticipation (asc-1 → asc-3).** The plume does not rise first. It
+  drops and curls under, −4° to −21°, while the body has barely moved. That
+  wind-up is what makes the lift that follows read as force.
+- **The sweep (asc-3 → asc-7).** From its lowest point the plume travels
+  up through level in four even beats (+1.4, +3.8, +4.3, +4.6 degrees) while
+  its highest pixel climbs 102 → 80. These are the frames with the largest
+  plume change in the bank (the step from asc-3 to asc-4 is the biggest of
+  all), and no two of them are alike. This is the "fluid, diverse motion":
+  every frame is a different place along one continuous path.
+- **Follow-through (asc-7 → asc-9).** The plume overshoots past level to
+  +27°, the two biggest angular steps in the bank (+14.5, +20.1), arriving
+  raised exactly when the body reaches its deepest climb. Whip, then crack.
+- **The dive is the opposite kind of motion.** The plume settles once,
+  −22° → −36°, in ever-smaller steps, and trails. Nothing whips. It is drag,
+  and that contrast is why the dive reads as momentum and the climb as
+  effort.
+
+`cyber-tail-sweep.png` in the cutter folder draws all nine plume outlines
+over each other, tinted by frame, so this path is visible at a glance.
+`build-gold-tail-sweep.mjs` regenerates it and writes the numbers into
+`measurements.json`.
+
 ## 3. The rules it flies under
 
 | Rule | Value | Where |
@@ -139,6 +184,13 @@ purpose, not by accident.
 3. **Every frame moves**: no neighbour under ~60 % of the bank's largest
    step. If the first frames are near-duplicates, cut them (Patriot) or
    repaint them.
+3a. **The tail travels a whip through the climb**: wind down (frames
+   1–3), sweep up through level in even beats (3–7), overshoot raised at
+   the top (7–9). Every one of frames 3–7 is a different place on that
+   path. Check it with `build-gold-tail-sweep.mjs` against Cyber's angles
+   above; a plume that only rises, or that sits still for three frames,
+   is the thing to send back. The dive plume settles and trails, it never
+   whips.
 4. **Climb gathers, dive relaxes**: the box narrows and grows through the
    climb, stretches through the dive.
 5. **A still, a body layer and a tail layer** for the hover and the cards,
