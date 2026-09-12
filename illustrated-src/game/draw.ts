@@ -20,9 +20,9 @@ import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./co
 import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
-import { suitPitchFor, type SaveData } from "./save";
+import { suitPitchFor, tapShapeFor, type SaveData } from "./save";
 import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS, type Particle, type World } from "./sim";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE, type SuitLean } from "./control-constants";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE, type SuitLean, type TapShape } from "./control-constants";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport";
 import {
   SPILL,
@@ -4748,6 +4748,10 @@ function paintIllustrated(
   poseOverride = NaN,
   // Live bank playback is input-driven; isolated shelf previews may cycle.
   tapDriven = false,
+  // how a tap moves the ascent bank: null = the stock ramp, "velocity" =
+  // the freeze-day path, {fwd, back} = the owner's linear dial (see
+  // TAP_SHAPE in control-constants; tapShapeFor resolves the beta dial)
+  tapShape: TapShape | "velocity" | null = null,
 ) {
   // the equipped suit IS the body: its painted render replaces the
   // default flight frames, carried by the pilot's motion
@@ -4918,9 +4922,14 @@ function paintIllustrated(
       // set when a branch has already produced a frame position and must not
       // be run through the dive depth and pose curve a second time
       let preShaped = false;
+      // VELOCITY (owner, 12 Sep 2026: "only change eclipse. to try it"):
+      // how fast the pilot rises picks the frame, as it did at the freeze.
+      // The three gates on velocityAscent are the whole difference a
+      // freeze-vs-today trace found for Eclipse.
+      const velocityAscent = tapShape === "velocity";
       if (Number.isFinite(poseOverride)) {
         v = Math.max(-1, Math.min(1, poseOverride));
-      } else if (tapAnimT >= 0 && ascFrames.length > 1) {
+      } else if (!velocityAscent && tapAnimT >= 0 && ascFrames.length > 1) {
         // THE TAP PLAYS THE ANIMATION. EVERY SUIT. VELOCITY PLAYS THE DIVE.
         //
         // Owner, 9 Sep 2026: "every single suit, regardless of its custom
@@ -4965,9 +4974,18 @@ function paintIllustrated(
         // window, home over the rest. It ends where the glide and the dive
         // both begin, so the handover costs no frame.
         const n = ascFrames.length;
-        const at = Math.pow(Math.min(1, Math.max(0, tapAnimT / TAP_ANIM_DURATION)), PAINTED_TAP_EASE);
-        const OUT = 0.625;
-        const climb = at <= OUT ? at / OUT : 1 - (at - OUT) / (1 - OUT);
+        let climb: number;
+        if (tapShape) {   // narrowed past "velocity" by the branch above
+          // THE DIAL: linear out over fwd seconds, linear home over back.
+          // tapAnimT is seconds on the 1.0 s tap clock, so past fwd + back
+          // the pilot simply sits home until the clock ends.
+          climb = tapAnimT <= tapShape.fwd ? tapAnimT / tapShape.fwd
+            : Math.max(0, 1 - (tapAnimT - tapShape.fwd) / tapShape.back);
+        } else {
+          const at = Math.pow(Math.min(1, Math.max(0, tapAnimT / TAP_ANIM_DURATION)), PAINTED_TAP_EASE);
+          const OUT = 0.625;
+          climb = at <= OUT ? at / OUT : 1 - (at - OUT) / (1 - OUT);
+        }
         const k = Math.min(n - 1, Math.round(climb * (n - 1)));
         // already a frame position, so the pose curve must not touch it
         v = easeBankPose(_t, -(k / (n - 1)), true);
@@ -4985,13 +5003,13 @@ function paintIllustrated(
         }
         // shape the attitude: the dive half shallowed, both halves curved
         // After an input gesture, rising velocity must not restart its climb.
-        if (tapDriven) v = Math.max(0, v);
+        if (tapDriven && !velocityAscent) v = Math.max(0, v);
         if (v > 0) v *= diveDepthFor(suit.id);
       }
       if (!preShaped && !Number.isFinite(poseOverride)) {
         v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
         // the dive arrives like momentum, not like a cut
-        if (ascFrames.length > 1) v = easeBankPose(_t, v, false);
+        if (ascFrames.length > 1 && !velocityAscent) v = easeBankPose(_t, v, false);
       }
       const diving = v > 0;
       const bank = diving ? descFrames : ascFrames;
@@ -5215,7 +5233,7 @@ function drawPilot(
     // Cryostar and Verdant now share Eclipse's heading mapping by owner
     // request. All three use the same smoother, pose curve and frame index.
     w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed,
-    lean, NaN, true);
+    lean, NaN, true, tapShapeFor(save, suit.id));
   if (flagship && w.shieldCharges > 0) paintVanguardShield(ctx, 0, 0, w.time);
   ctx.restore();
 }
@@ -5560,7 +5578,8 @@ export function paintFlightPreview(
   paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art,
     (flapping ? "flap-" : "idle-") + (idx + 1),
     frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend,
-    "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean, sweptPose);
+    "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean, sweptPose, false,
+    tapShapeFor(null, suit.id));   // the table only: a preview has no save
   ctx.restore();
 }
 

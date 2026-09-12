@@ -25,6 +25,12 @@ export const PAINTED_TAP_SUITS = new Set([
 ]);
 /** Spend less of the tap in its neutral lead-in, preserving the full gesture. */
 export const PAINTED_TAP_EASE = .73;
+export const TAP_SHAPE_MIN = 0.1, TAP_SHAPE_MAX = 1.0;
+export const TAP_SHAPE = { eclipse: "velocity" };
+export const TAIL_SPRING_MIN = 0.25, TAIL_SPRING_MAX = 3;
+export const TAIL_SPRING_ONE = { stiff: 1, damp: 1, kick: 1 };
+export const TAIL_SPRING = {};
+export const TAIL_SPRING_SUITS = ["flight", "robo", "bigbooty", "catsuit", "verdant", "cryostar", "eclipse", "volt", "cyber"];
 /** THE WORMHOLE'S SETTLED FEEL.
  *
  *  These were FOUND BY FLYING, not chosen. The corridor's numbers were

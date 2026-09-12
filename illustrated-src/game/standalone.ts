@@ -1,6 +1,6 @@
 import { selectShopCycle } from "./shop-cycle";
 import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art";
-import { suitPitchFor, type SaveData } from "./save";
+import { suitPitchFor, tapShapeFor, tailSpringFor, type SaveData } from "./save";
 import { platform } from "./platform";
 import { spillAppearance } from "./spill-appearance";
 import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog";
@@ -10,7 +10,8 @@ import { addChartScenery } from "./star-map-view";
 import { mapDebrisIndex } from "./zone-visuals";
 import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress";
 import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog";
-import { suitLean, PAINTED_TAP_SUITS } from "./control-constants";
+import { repeatTapMode } from "./sim";
+import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
 import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, FROZEN_SUITS, type ShipPick } from "./draw";
@@ -433,6 +434,17 @@ export async function bootStandalone(root: HTMLElement) {
       // menu in beta only, so i can decide which ones get the treatment").
       // Frozen suits always rewind and only say so; the queue roster flips.
       if (IS_BETA) sheet.append(repeatTapDial(engine.world.tutSuit ? "vanguard" : engine.save.equippedSuit));
+      // THE TAP SHAPE and TAIL SPRING dials (owner, 12 Sep 2026: "give me the
+      // dial. let's do this once and for all. forward .1-1 and back .1-1" /
+      // "give a tail springiness"). Per suit, beta only, saved; the owner
+      // reports the numbers and they get baked into control-constants.
+      if (IS_BETA && !engine.world.tutSuit) {
+        const worn = engine.save.equippedSuit;
+        const shape = tapShapeDial(worn);
+        if (shape) sheet.append(shape);
+        const spring = tailSpringDial(worn);
+        if (spring) sheet.append(spring);
+      }
       // THE FLIGHT LAB (owner, 7 Sep 2026): free flight only, beta only
       if (IS_BETA && engine.world.flight === "fly" && !engine.world.lvl && !engine.world.tut && !engine.world.race && !engine.world.spill) sheet.append(flightLab());
       sheet.append(
@@ -1068,22 +1080,79 @@ export async function bootStandalone(root: HTMLElement) {
     panel.append(el("p", "ac-fine", "Stopwatch as your pal: every tap toggles the slow, like the frozen acorn."));
     return panel;
   }
-  function repeatTapDial(suitId: string) {
+  /** one labelled range row for the beta dials, in the flight lab's style */
+  function dialRow(label: string, min: number, max: number, step: number, value: number, fmt: (v: number) => string, commit: (v: number) => void) {
+    const row = el("div", "ac-labrow");
+    const name = el("span", "ac-labname", label);
+    const val = el("span", "ac-labval", fmt(value));
+    const input = document.createElement("input");
+    input.type = "range"; input.min = String(min); input.max = String(max); input.step = String(step); input.value = String(value);
+    input.className = "ac-labslider"; input.setAttribute("aria-label", label);
+    input.addEventListener("keydown", e => e.stopPropagation());
+    input.oninput = () => { val.textContent = fmt(Number(input.value)); };
+    input.onchange = () => commit(Number(input.value));
+    row.append(name, input, val);
+    return row;
+  }
+  function tapShapeDial(suitId: string) {
+    if (suitId === "vanguard" || suitId === "arcflash") return null;   // their own controllers
     const panel = el("div", "ac-suit-pitch");
     const name = (SUITS.find((s) => s.id === suitId)?.name ?? suitId).toUpperCase();
-    if (!PAINTED_TAP_SUITS.has(suitId)) {
-      if ((FROZEN_SUITS as readonly string[]).includes(suitId)) panel.append(el("p", "ac-sub", `${name} REPEAT TAP · REWIND · frozen`));
-      return panel;
-    }
-    const rewind = !!engine.save.tapRewind;
-    panel.append(el("p", "ac-sub", `${name} REPEAT TAP · ${rewind ? "REWIND" : "FINISH GESTURE"}`));
+    const cur = tapShapeFor(engine.save, suitId);
+    const dialled = engine.save.tapShape?.[suitId] !== undefined;
+    const mode = cur === "velocity" ? "VELOCITY" : cur ? "DIAL" : "DEFAULT";
+    const detail = cur && cur !== "velocity" ? ` · out ${cur.fwd.toFixed(2)}s · back ${cur.back.toFixed(2)}s` : "";
+    panel.append(el("p", "ac-sub", `${name} TAP SHAPE · ${mode}${detail}${dialled ? "" : " · stock"}`));
     const row = el("div", "ac-modes");
-    (row as HTMLElement).style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
-    for (const [label, on] of [["FINISH GESTURE", false], ["REWIND", true]] as const) {
-      const b = el("button", rewind === on ? "ac-mode on" : "ac-mode", label);
-      b.onclick = () => engine.setTapRewind(on);
+    (row as HTMLElement).style.gridTemplateColumns = "repeat(4, minmax(0,1fr))";
+    const opt = (label: string, on: boolean, hit: () => void) => {
+      const b = el("button", on ? "ac-mode on" : "ac-mode", label); b.onclick = hit; row.append(b);
+    };
+    opt("DEFAULT", mode === "DEFAULT", () => engine.setTapShape(suitId, "default"));
+    opt("VELOCITY", mode === "VELOCITY", () => engine.setTapShape(suitId, "velocity"));
+    opt("DIAL", mode === "DIAL", () => engine.setTapShape(suitId, cur && cur !== "velocity" ? cur : { fwd: 0.3, back: 0.15 }));
+    opt("STOCK", false, () => engine.setTapShape(suitId, null));
+    panel.append(row);
+    if (cur && cur !== "velocity") {
+      const sec = (v: number) => `${v.toFixed(2)}s`;
+      panel.append(dialRow("Forward", TAP_SHAPE_MIN, TAP_SHAPE_MAX, 0.05, cur.fwd, sec, (v) => engine.setTapShape(suitId, { fwd: v, back: cur.back })));
+      panel.append(dialRow("Return", TAP_SHAPE_MIN, TAP_SHAPE_MAX, 0.05, cur.back, sec, (v) => engine.setTapShape(suitId, { fwd: cur.fwd, back: v })));
+    }
+    return panel;
+  }
+  function tailSpringDial(suitId: string) {
+    if (!TAIL_SPRING_SUITS.includes(suitId)) return null;   // the tail is painted into the frames
+    const panel = el("div", "ac-suit-pitch");
+    const name = (SUITS.find((s) => s.id === suitId)?.name ?? suitId).toUpperCase();
+    const cur = tailSpringFor(engine.save, suitId);
+    const dialled = engine.save.tailSpring?.[suitId] !== undefined;
+    panel.append(el("p", "ac-sub", `${name} TAIL SPRING${dialled ? "" : " · stock"}`));
+    const x = (v: number) => `${v.toFixed(2)}×`;
+    const set = (patch: Partial<typeof cur>) => engine.setTailSpring(suitId, { ...cur, ...patch });
+    panel.append(dialRow("Stiffness", TAIL_SPRING_MIN, TAIL_SPRING_MAX, 0.05, cur.stiff, x, (v) => set({ stiff: v })));
+    panel.append(dialRow("Damping", TAIL_SPRING_MIN, TAIL_SPRING_MAX, 0.05, cur.damp, x, (v) => set({ damp: v })));
+    panel.append(dialRow("Tap kick", TAIL_SPRING_MIN, TAIL_SPRING_MAX, 0.05, cur.kick, x, (v) => set({ kick: v })));
+    const row = el("div", "ac-modes");
+    (row as HTMLElement).style.gridTemplateColumns = "repeat(1, minmax(0,1fr))";
+    const reset = el("button", "ac-mode", "STOCK"); reset.onclick = () => engine.setTailSpring(suitId, null); row.append(reset);
+    panel.append(row);
+    return panel;
+  }
+  function repeatTapDial(suitId: string) {
+    if (suitId === "vanguard" || suitId === "arcflash") return el("i");   // their own controllers
+    const panel = el("div", "ac-suit-pitch");
+    const name = (SUITS.find((s) => s.id === suitId)?.name ?? suitId).toUpperCase();
+    const mode = repeatTapMode(suitId, engine.save);
+    const dialled = !!engine.save.tapRepeat?.[suitId];
+    panel.append(el("p", "ac-sub", `${name} REPEAT TAP · ${mode.toUpperCase()}${dialled ? "" : " · stock"}`));
+    const row = el("div", "ac-modes");
+    (row as HTMLElement).style.gridTemplateColumns = "repeat(4, minmax(0,1fr))";
+    for (const [label, m] of [["REWIND", "rewind"], ["FINISH", "finish"], ["RESTART", "restart"]] as const) {
+      const b = el("button", mode === m ? "ac-mode on" : "ac-mode", label);
+      b.onclick = () => engine.setTapRepeat(suitId, m);
       row.append(b);
     }
+    const stock = el("button", "ac-mode", "STOCK"); stock.onclick = () => engine.setTapRepeat(suitId, null); row.append(stock);
     panel.append(row);
     return panel;
   }

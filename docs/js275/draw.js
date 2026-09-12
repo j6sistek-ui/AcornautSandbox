@@ -22,7 +22,7 @@ import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=27
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=275";
 import { suitPitchFor } from "./save.js?v=275";
 import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=275";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=275";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE, CLASSIC_ASCENT_SUITS } from "./control-constants.js?v=275";
 import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=275";
 import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=275";
 import { spillEngineColor } from "./spill-content.js?v=275";
@@ -4791,10 +4791,14 @@ tapDriven = false) {
             // set when a branch has already produced a frame position and must not
             // be run through the dive depth and pose curve a second time
             let preShaped = false;
+            // CLASSIC ASCENT (owner, 12 Sep 2026: "only change eclipse. to try
+            // it"): velocity picks the frame, as it did at the freeze. The three
+            // gates below are the whole difference the trace found.
+            const classicAscent = CLASSIC_ASCENT_SUITS.has(suit.id);
             if (Number.isFinite(poseOverride)) {
                 v = Math.max(-1, Math.min(1, poseOverride));
             }
-            else if (tapAnimT >= 0 && ascFrames.length > 1) {
+            else if (!classicAscent && tapAnimT >= 0 && ascFrames.length > 1) {
                 // THE TAP PLAYS THE ANIMATION. EVERY SUIT. VELOCITY PLAYS THE DIVE.
                 //
                 // Owner, 9 Sep 2026: "every single suit, regardless of its custom
@@ -4862,7 +4866,7 @@ tapDriven = false) {
                 }
                 // shape the attitude: the dive half shallowed, both halves curved
                 // After an input gesture, rising velocity must not restart its climb.
-                if (tapDriven)
+                if (tapDriven && !classicAscent)
                     v = Math.max(0, v);
                 if (v > 0)
                     v *= diveDepthFor(suit.id);
@@ -4870,7 +4874,7 @@ tapDriven = false) {
             if (!preShaped && !Number.isFinite(poseOverride)) {
                 v = Math.sign(v) * Math.pow(Math.abs(v), POSE_CURVE);
                 // the dive arrives like momentum, not like a cut
-                if (ascFrames.length > 1)
+                if (ascFrames.length > 1 && !classicAscent)
                     v = easeBankPose(_t, v, false);
             }
             const diving = v > 0;

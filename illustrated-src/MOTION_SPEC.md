@@ -381,3 +381,24 @@ The active 512px RGBA bank is now 16 MiB decoded and stays equip-only. Original
 32-pose source sheets remain archived. Review, source prompts, registration,
 rebuild steps and actual short-arc phone-field evidence live in
 `design/vanguard/README.md`. Human phone review remains the quality gate.
+
+## The tap-shape and tail-spring dials, 12 Sep 2026
+
+A freeze-vs-today trace of Eclipse (same tap script, every per-tick number)
+found physics, tap clock, tail and body angle identical and one difference:
+which ascent frame is drawn. At the freeze, velocity picked it; PR #277's
+tap-clock ramp picks it now. Owner: "only change eclipse. to try it", then
+"give me the dial. let's do this once and for all. forward .1-1 and back
+.1-1", then "if it's possible to give a tail springiness". So:
+
+- `TAP_SHAPE` (control-constants): per suit, `"velocity"`, a linear
+  `{fwd, back}` in seconds, or absent for the stock ramp. Eclipse is on
+  velocity; everything else is stock.
+- `TAIL_SPRING`: per suit multipliers on TAIL's stiffness, damping and tap
+  kick, for the nine suits with their own tail layer.
+- The beta pause sheet carries both as dials (`save.tapShape`,
+  `save.tailSpring`), read only on the beta page. The owner reports the
+  numbers he lands on and they are baked into the two tables.
+- The repeat-tap dial is per suit too (`save.tapRepeat`): REWIND, FINISH
+  (PR #277's queue) or RESTART (every tap a fresh gesture). Stock is rewind
+  for the frozen roster and finish for the rest.

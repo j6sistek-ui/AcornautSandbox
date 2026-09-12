@@ -27,6 +27,44 @@ export const PAINTED_TAP_SUITS = new Set([
 /** Spend less of the tap in its neutral lead-in, preserving the full gesture. */
 export const PAINTED_TAP_EASE = .73;
 
+/** THE TAP SHAPE. How a tap moves an ascent bank, per suit. Three answers:
+ *    absent      the ramp above: PAINTED_TAP_EASE out over 62.5% of the
+ *                second and back (PR #277, what is live for most suits)
+ *    "velocity"  the freeze-day path: how fast the pilot is rising picks
+ *                the frame; no ramp, no "cannot restart a climb" clamp,
+ *                no added smoothing
+ *    {fwd,back}  LINEAR out to the deep frame over `fwd` seconds, linear
+ *                home over `back` - the owner's "linear forward and a
+ *                faster snap back" (12 Sep 2026)
+ *
+ *  Owner, 12 Sep 2026, after a trace showed the ramp was the last
+ *  difference between Eclipse today and Eclipse the day he froze it:
+ *  "only change eclipse. to try it" - then "give me the dial. let's do
+ *  this once and for all. forward .1-1 and back .1-1." So Eclipse is on
+ *  velocity here, everything else is stock, and the beta pause sheet
+ *  carries a per-suit dial (save.tapShape) that wins over this table on
+ *  the beta page only. He flies, reports the numbers, they get baked here.
+ *  The 1.0 s tap clock still bounds the picture: fwd + back past 1.0 s is
+ *  cut where the clock ends. */
+export type TapShape = { fwd: number; back: number };
+export const TAP_SHAPE_MIN = 0.1, TAP_SHAPE_MAX = 1.0;
+export const TAP_SHAPE: Record<string, TapShape | "velocity"> = { eclipse: "velocity" };
+
+/** THE TAIL SPRING, per suit. The plume on a suit with its own tail layer
+ *  rides a spring in sim.ts (TAIL in catalog.ts: stiffness, damping, and a
+ *  kick per tap). These are MULTIPLIERS on those three, 1 = as shipped.
+ *  Owner, 12 Sep 2026: "if it's possible to give a tail springiness". Nine
+ *  suits draw a separate tail (TAIL_SPRING_SUITS, mirrored from art.ts's
+ *  RIGGED_SUITS and pinned to it by test); the whole-frame banks have the
+ *  tail painted in and nothing here can move it. Same deal as TAP_SHAPE:
+ *  empty until the owner reports numbers; the beta dial (save.tailSpring)
+ *  wins on the beta page. */
+export type TailSpring = { stiff: number; damp: number; kick: number };
+export const TAIL_SPRING_MIN = 0.25, TAIL_SPRING_MAX = 3;
+export const TAIL_SPRING_ONE: TailSpring = { stiff: 1, damp: 1, kick: 1 };
+export const TAIL_SPRING: Record<string, TailSpring> = {};
+export const TAIL_SPRING_SUITS = ["flight", "robo", "bigbooty", "catsuit", "verdant", "cryostar", "eclipse", "volt", "cyber"];
+
 /** THE WORMHOLE'S SETTLED FEEL.
  *
  *  These were FOUND BY FLYING, not chosen. The corridor's numbers were

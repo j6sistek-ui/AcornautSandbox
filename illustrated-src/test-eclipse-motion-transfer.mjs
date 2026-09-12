@@ -86,11 +86,21 @@ for(const interval of [6,11,18]){
   }
   histories.push(history);
  }
+ // Physics parity always. Frame parity only between suits on the same
+ // ascent rule: while Eclipse alone is on the classic (velocity-driven)
+ // ascent trial - owner, 12 Sep 2026, "only change eclipse. to try it" -
+ // its frames are expected to differ from cryostar's and verdant's, and
+ // those two are still held to each other.
+ const classic=id=>JSON.stringify(Control.TAP_SHAPE[id]??null);
  for(let s=1;s<3;s++)for(let tick=0;tick<150;tick++){
   const a=histories[0][tick],b=histories[s][tick];
-  assert.deepEqual(b.physics,a.physics,`${suits[s]}: physics parity`);assert.deepEqual(b.pose,a.pose,`${suits[s]}: Eclipse live frame parity`);
-  assert(Math.abs(a.angle-b.angle)<1e-10);assert(Math.abs(a.stretch-b.stretch)<1e-10);
+  assert.deepEqual(b.physics,a.physics,`${suits[s]}: physics parity`);
+  if(classic(suits[s])===classic(suits[0])){assert.deepEqual(b.pose,a.pose,`${suits[s]}: Eclipse live frame parity`);assert(Math.abs(a.angle-b.angle)<1e-10);assert(Math.abs(a.stretch-b.stretch)<1e-10);}
   report.gameplayComparisons++;
+ }
+ for(let tick=0;tick<150;tick++){
+  const a=histories[1][tick],b=histories[2][tick];
+  if(classic(suits[1])===classic(suits[2])){assert.deepEqual(b.pose,a.pose,`${suits[2]}: frame parity with ${suits[1]}`);assert(Math.abs(a.angle-b.angle)<1e-10);}
  }
  report.traces[interval]=histories[0].map(x=>x.pose);
 }
@@ -103,7 +113,13 @@ for(const id of suits){
  }
  previews.push(trace);
 }
-assert.deepEqual(previews[1],previews[0]);assert.deepEqual(previews[2],previews[0]);report.previewComparisons=480;
+// Preview parity only between suits on the same tap shape (TAP_SHAPE): while
+// Eclipse alone is on the velocity trial its previews differ by design.
+{const rule=id=>JSON.stringify(Control.TAP_SHAPE[id]??null);
+ if(rule(suits[1])===rule(suits[0]))assert.deepEqual(previews[1],previews[0]);
+ if(rule(suits[2])===rule(suits[0]))assert.deepEqual(previews[2],previews[0]);
+ if(rule(suits[2])===rule(suits[1]))assert.deepEqual(previews[2],previews[1]);}
+report.previewComparisons=480;
 // Matched contact states exercise the outer Eclipse squash/rotation path.
 for(const t of [0,.04,.12,.28,.5])for(const direction of [-1,1]){
  const matrices=[];
