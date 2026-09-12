@@ -200,6 +200,8 @@ export type Engine = {
   /** the beta flight lab: merge dials into the save and the live free flight */
   setLab: (patch: Record<string, number | boolean | undefined>) => void;
   resetLab: () => void;
+  /** the beta repeat-tap dial: rewind instead of queue on the queue-roster suits */
+  setTapRewind: (on: boolean) => void;
   dismissDead: () => void;
   replayTutorial: () => void;
   pause: () => void;
@@ -583,6 +585,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     resetLab() {
       save.lab = {};
       if (!world.lvl) world.lab = {};
+      writeSave(save);
+      notify();
+    },
+    setTapRewind(on) {
+      save.tapRewind = on;
+      world.tapAnimQueued = false;   // a queued replay from the other rule is not owed
       writeSave(save);
       notify();
     },

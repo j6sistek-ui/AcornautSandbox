@@ -203,9 +203,11 @@ for(const interval of [.1,.18,.3]) {
  assert(state.heading<-.1,'climb recovers promptly through velocity, not a queued clip');
 }
 // Painted banks queue repeat gestures without touching AcorNut's controller.
-const legacy=Sim.makeWorld(390,760), flight={...e.save,equippedSuit:'flight'};
-Sim.resetRun(legacy,flight,'fly',false);Sim.flap(legacy,flight);legacy.tapAnimT=.3;
-Sim.flap(legacy,flight);assert.equal(legacy.tapAnimDir,1);assert.equal(legacy.tapAnimQueued,true);
+// Ember stands for the queue roster; Flight used to, until the owner froze it
+// back to rewind (12 Sep 2026 - see test-frozen-roster).
+const legacy=Sim.makeWorld(390,760), ember={...e.save,equippedSuit:'ember'};
+Sim.resetRun(legacy,ember,'fly',false);Sim.flap(legacy,ember);legacy.tapAnimT=.3;
+Sim.flap(legacy,ember);assert.equal(legacy.tapAnimDir,1);assert.equal(legacy.tapAnimQueued,true);
 assert.deepEqual(legacy.vanguard,VG.createVanguardMotion());
 // EARNED, THEN LISTED (owner, 6 Sep 2026: "immediately after the tutorial
 // is done, he is locked"; 8 Sep 2026: "i still have to collect acornut

@@ -10,10 +10,10 @@ import { addChartScenery } from "./star-map-view";
 import { mapDebrisIndex } from "./zone-visuals";
 import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress";
 import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog";
-import { suitLean } from "./control-constants";
+import { suitLean, PAINTED_TAP_SUITS } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
 import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, type BoostId} from "./catalog";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, type ShipPick } from "./draw";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, FROZEN_SUITS, type ShipPick } from "./draw";
 import { bundleQuote, type BundleItem } from "./catalog";
 import { drawSprite as drawSpriteOn } from "./art";
 import { createEngine, type DustPurchaseState } from "./engine";
@@ -429,6 +429,10 @@ export async function bootStandalone(root: HTMLElement) {
       // THE PITCH DIAL (owner: "keep the tool in for all suits, only in
       // beta"): the worn suit's forward lean, tuned mid-flight.
       if (IS_BETA) sheet.append(suitPitchDial(engine.world.tutSuit ? "vanguard" : engine.save.equippedSuit));
+      // THE REPEAT-TAP DIAL (owner, 12 Sep 2026: "give me a toggle in pause
+      // menu in beta only, so i can decide which ones get the treatment").
+      // Frozen suits always rewind and only say so; the queue roster flips.
+      if (IS_BETA) sheet.append(repeatTapDial(engine.world.tutSuit ? "vanguard" : engine.save.equippedSuit));
       // THE FLIGHT LAB (owner, 7 Sep 2026): free flight only, beta only
       if (IS_BETA && engine.world.flight === "fly" && !engine.world.lvl && !engine.world.tut && !engine.world.race && !engine.world.spill) sheet.append(flightLab());
       sheet.append(
@@ -1062,6 +1066,25 @@ export async function bootStandalone(root: HTMLElement) {
     toggles.append(reset);
     panel.append(toggles);
     panel.append(el("p", "ac-fine", "Stopwatch as your pal: every tap toggles the slow, like the frozen acorn."));
+    return panel;
+  }
+  function repeatTapDial(suitId: string) {
+    const panel = el("div", "ac-suit-pitch");
+    const name = (SUITS.find((s) => s.id === suitId)?.name ?? suitId).toUpperCase();
+    if (!PAINTED_TAP_SUITS.has(suitId)) {
+      if ((FROZEN_SUITS as readonly string[]).includes(suitId)) panel.append(el("p", "ac-sub", `${name} REPEAT TAP · REWIND · frozen`));
+      return panel;
+    }
+    const rewind = !!engine.save.tapRewind;
+    panel.append(el("p", "ac-sub", `${name} REPEAT TAP · ${rewind ? "REWIND" : "FINISH GESTURE"}`));
+    const row = el("div", "ac-modes");
+    (row as HTMLElement).style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
+    for (const [label, on] of [["FINISH GESTURE", false], ["REWIND", true]] as const) {
+      const b = el("button", rewind === on ? "ac-mode on" : "ac-mode", label);
+      b.onclick = () => engine.setTapRewind(on);
+      row.append(b);
+    }
+    panel.append(row);
     return panel;
   }
   function suitPitchDial(suitId: string) {

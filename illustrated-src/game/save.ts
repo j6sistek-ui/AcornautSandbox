@@ -136,6 +136,10 @@ export type SaveData = {
   roughAir: boolean;
   /** comfort switch: the equipped pal is cosmetic only */
   noPalFx: boolean;
+  /** BETA ONLY: a repeat tap rewinds the picture on the queue-roster suits
+   *  (PAINTED_TAP_SUITS) instead of finishing the gesture. Owner's dial for
+   *  deciding which suits keep the queue; inert on live builds. */
+  tapRewind: boolean;
   thrillSeeker: boolean;
   tutorialDone: boolean;
   unlocked: string[];
@@ -231,6 +235,7 @@ export function defaultSave(): SaveData {
     steadyGates: false,
     roughAir: false,
     noPalFx: false,
+    tapRewind: false,
     thrillSeeker: false,
     tutorialDone: false,
     unlocked: ["clear"],
@@ -435,7 +440,7 @@ export function loadSave(): SaveData {
   if (typeof s.streakPackClaimed !== "boolean") s.streakPackClaimed = false;
   if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;
   // saves written before the flight mods existed
-  for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx"] as const) {
+  for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx", "tapRewind"] as const) {
     if (typeof s[k] !== "boolean") s[k] = false;
   }
   // Steady Gates and Rough Air are opposites; a save carrying both is

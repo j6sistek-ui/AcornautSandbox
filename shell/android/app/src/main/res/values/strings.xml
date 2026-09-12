@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Acornaut</string>
     <string name="title_activity_main">Acornaut</string>
-    <string name="package_name">com.placeholder.acornaut</string>
-    <string name="custom_url_scheme">com.placeholder.acornaut</string>
+    <string name="package_name">com.quarterdropgames.acornaut</string>
+    <string name="custom_url_scheme">com.quarterdropgames.acornaut</string>
     <string name="game_services_project_id">0</string>
 </resources>

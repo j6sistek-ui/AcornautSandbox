@@ -165,7 +165,7 @@ function assertCompactStructure(){
   assert.deepEqual(accessories.filter(n=>n.dataset.shopItemKind==='helm').map(n=>n.dataset.shopItemId),cycle.helms,'the live helmet rail follows the date/ownership roster');
   assert.deepEqual(accessories.filter(n=>n.dataset.shopItemKind==='pal').map(n=>n.dataset.shopItemId),cycle.pals,'the optional live PAL follows the date/ownership roster');
   assert.equal([...app.querySelectorAll('.ac-shopvisual > .ac-sheet-scroll .ac-shoptile')].length,suits.length+accessories.length,'no individual product is stranded outside the mixed row');
-  assert(suits.length+accessories.length<=4,'the daily row contains no more than four choices');
+  assert(suits.length+accessories.length<=5,'the daily row contains no more than five choices');
   for(const tile of [...suits,...accessories])assert.equal(tile.dataset.focus,`shop:${tile.dataset.shopItemKind}:${tile.dataset.shopItemId}`,'each rail item has a stable keyboard identity');
   const children=[...scroll.children],features=[...scroll.querySelectorAll('.ac-featurecard')],boosts=[...scroll.querySelectorAll('.ac-boostcard')],dust=[...scroll.querySelectorAll('.ac-dustrow')];
   const at=n=>children.indexOf(n);
@@ -474,7 +474,7 @@ try{
     assert(help.querySelector('[data-help-mode="hyper"]').textContent.includes('Tunnel: drag to steer'));
     assert.equal(help.querySelector('.ac-helpitemsheading')?.textContent,'Game Items');
     const helpRows=[...help.querySelectorAll('.ac-helprow')];
-    assert.deepEqual(helpRows.map(row=>row.querySelector('p')?.textContent),['ACORN','STAR DUST','ACORN COINS','FREEZE ACORN','SHIELD ACORN','GOLDEN ACORN','BLACK HOLE','WORMHOLE'],'all original game item entries remain');
+    assert.deepEqual(helpRows.map(row=>row.querySelector('p')?.textContent),['ACORN','STAR DUST','ACORN COINS','FREEZE ACORN','SHIELD ACORN','GOLDEN ACORN','8-BIT ARCADE ACORN','BLACK HOLE','WORMHOLE'],'all game item entries remain, including the 8-bit arcade acorn PR #279 added to the guide');
     assert(helpRows.every(row=>row.querySelector('canvas')),'all Game Items retain their drawn artwork');
     assert.equal((help.textContent.match(/resets each run/g)??[]).length,1,'Acorn Coins reset information is shown once');
     assert.equal(help.querySelectorAll('[data-help-mode] p.ac-sub').length,0,'mode controls do not regain the removed explanatory paragraphs');
@@ -498,7 +498,7 @@ try{
     reset();const dustBefore=e.save.starDust,pack=C.DUST_PACKS[0];
     const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(row);assert.equal(row.querySelector('.ac-cashprice').textContent,pack.price);row.click();
     assert.equal(e.save.starDust,dustBefore+(mode==='beta'?pack.dust+pack.bonus:0),'web and beta retain their existing dust purchase behavior');
-    console.log(`PASS Shop visuals ${mode}: one four-item mixed row with independent preview/cart, zero/nonzero scroll and focus preservation, zero-PAL rollover; ${C.BUNDLES.length} distinct kit banners, actual product art, ${rotation.length+1} offers, ${reviews} animated item/wake reviews, accurate summaries/discount/ownership credit, paid and zero-price two-step checkout, keyboard/date rollover and Shop-only scope.`);
+    console.log(`PASS Shop visuals ${mode}: one five-item mixed row with independent preview/cart, zero/nonzero scroll and focus preservation, zero-PAL rollover; ${C.BUNDLES.length} distinct kit banners, actual product art, ${rotation.length+1} offers, ${reviews} animated item/wake reviews, accurate summaries/discount/ownership credit, paid and zero-price two-step checkout, keyboard/date rollover and Shop-only scope.`);
   }else{
     // Exercise the actual native bridge, not hardcoded cash labels or a
     // replaced buy handler. Every scenario uses a deferred fake store.

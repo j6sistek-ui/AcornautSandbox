@@ -47,6 +47,7 @@ export function defaultSave() {
         steadyGates: false,
         roughAir: false,
         noPalFx: false,
+        tapRewind: false,
         thrillSeeker: false,
         tutorialDone: false,
         unlocked: ["clear"],
@@ -303,7 +304,7 @@ export function loadSave() {
     if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak))
         s.dailyStreak = 0;
     // saves written before the flight mods existed
-    for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx"]) {
+    for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx", "tapRewind"]) {
         if (typeof s[k] !== "boolean")
             s[k] = false;
     }

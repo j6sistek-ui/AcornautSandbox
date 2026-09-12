@@ -1,5 +1,17 @@
 import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=274";
 import { PAINTED_TAP_SUITS } from "./control-constants.js?v=274";
+/** DOES A REPEAT TAP QUEUE OR REWIND? Two behaviours exist for a tap that
+ *  lands while the tap animation is still playing:
+ *    REWIND - the picture reverses from where it is, bounces off the start
+ *             and plays out again. Every tap moves the body that frame.
+ *    QUEUE  - the gesture finishes untouched, then replays once; taps in
+ *             between collapse into that one replay.
+ *  The frozen roster always rewinds (it is not in PAINTED_TAP_SUITS). The
+ *  rest queue, unless the owner has flipped the beta pause toggle to try
+ *  rewind on them - live builds never see the toggle, so there it is inert. */
+export function repeatTapQueues(id, save) {
+    return PAINTED_TAP_SUITS.has(id) && !(IS_BETA && save.tapRewind);
+}
 import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=274";
 import { createHighOrbitMotion, stepHighOrbit, highOrbitTap } from "./high-orbit-motion.js?v=274";
 import { isHighOrbit, highOrbitTrailSuit } from "./high-orbit-config.js?v=274";
@@ -2577,7 +2589,7 @@ export function flap(w, save) {
         w.tapAnimDir = 1;
         w.tapAnimFromRot = w.squirrel.rot;
     }
-    else if (PAINTED_TAP_SUITS.has(pilotSuitId(w, save))) {
+    else if (repeatTapQueues(pilotSuitId(w, save), save)) {
         // Rewinding on every short tap traps painted banks in their first poses.
         // Finish the gesture, then replay once for input accepted during it.
         w.tapAnimQueued = true;
@@ -3509,7 +3521,7 @@ export function updateWorld(w, save, dt) {
             w.tapAnimDir = 1;
         }
         else if (w.tapAnimT >= TAP_ANIM_DURATION) {
-            const replay = PAINTED_TAP_SUITS.has(pilotSuitId(w, save)) && w.tapAnimQueued;
+            const replay = repeatTapQueues(pilotSuitId(w, save), save) && w.tapAnimQueued;
             w.tapAnimT = replay ? w.tapAnimT - TAP_ANIM_DURATION : -1;
             w.tapAnimQueued = false;
             w.tapAnimDir = 1;

@@ -10,10 +10,10 @@ import { addChartScenery } from "./star-map-view.js?v=274";
 import { mapDebrisIndex } from "./zone-visuals.js?v=274";
 import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=274";
 import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=274";
-import { suitLean } from "./control-constants.js?v=274";
+import { suitLean, PAINTED_TAP_SUITS } from "./control-constants.js?v=274";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=274";
 import { ART_VER, BUILD, ENVS, HUB_PLANET, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS } from "./catalog.js?v=274";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=274";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, FROZEN_SUITS } from "./draw.js?v=274";
 import { bundleQuote } from "./catalog.js?v=274";
 import { drawSprite as drawSpriteOn } from "./art.js?v=274";
 import { createEngine } from "./engine.js?v=274";
@@ -473,6 +473,11 @@ export async function bootStandalone(root) {
             // beta"): the worn suit's forward lean, tuned mid-flight.
             if (IS_BETA)
                 sheet.append(suitPitchDial(engine.world.tutSuit ? "vanguard" : engine.save.equippedSuit));
+            // THE REPEAT-TAP DIAL (owner, 12 Sep 2026: "give me a toggle in pause
+            // menu in beta only, so i can decide which ones get the treatment").
+            // Frozen suits always rewind and only say so; the queue roster flips.
+            if (IS_BETA)
+                sheet.append(repeatTapDial(engine.world.tutSuit ? "vanguard" : engine.save.equippedSuit));
             // THE FLIGHT LAB (owner, 7 Sep 2026): free flight only, beta only
             if (IS_BETA && engine.world.flight === "fly" && !engine.world.lvl && !engine.world.tut && !engine.world.race && !engine.world.spill)
                 sheet.append(flightLab());
@@ -1118,6 +1123,26 @@ export async function bootStandalone(root) {
         toggles.append(reset);
         panel.append(toggles);
         panel.append(el("p", "ac-fine", "Stopwatch as your pal: every tap toggles the slow, like the frozen acorn."));
+        return panel;
+    }
+    function repeatTapDial(suitId) {
+        const panel = el("div", "ac-suit-pitch");
+        const name = (SUITS.find((s) => s.id === suitId)?.name ?? suitId).toUpperCase();
+        if (!PAINTED_TAP_SUITS.has(suitId)) {
+            if (FROZEN_SUITS.includes(suitId))
+                panel.append(el("p", "ac-sub", `${name} REPEAT TAP · REWIND · frozen`));
+            return panel;
+        }
+        const rewind = !!engine.save.tapRewind;
+        panel.append(el("p", "ac-sub", `${name} REPEAT TAP · ${rewind ? "REWIND" : "FINISH GESTURE"}`));
+        const row = el("div", "ac-modes");
+        row.style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
+        for (const [label, on] of [["FINISH GESTURE", false], ["REWIND", true]]) {
+            const b = el("button", rewind === on ? "ac-mode on" : "ac-mode", label);
+            b.onclick = () => engine.setTapRewind(on);
+            row.append(b);
+        }
+        panel.append(row);
         return panel;
     }
     function suitPitchDial(suitId) {
@@ -4817,7 +4842,6 @@ export async function bootStandalone(root) {
         item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration}s.`);
         item(pic(one("shieldnut")), "SHIELD ACORN", "Blocks one debris hit.");
         item(pic(spr("golden")), "GOLDEN ACORN", "Debris can't hurt you. Planets still bounce.");
-        item(pic(one("arcadeAcorn")), "8-BIT ARCADE ACORN", "Switches between illustrated and 8-bit flight in Free Flight.");
         item(pic((ctx, px) => {
             const g = ctx.createRadialGradient(px / 2, px / 2, 1, px / 2, px / 2, px / 2);
             g.addColorStop(0, "#120424");

@@ -2219,10 +2219,17 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
   box-shadow: inset 0 1px 0 rgba(255,233,181,.08);
 }
 .ac-shopcompact .ac-shopitemrail {
-  display: flex; align-items: flex-start; gap: 6px; height: 96px; padding: 1px 5px 0;
+  display: flex; align-items: center; gap: 6px; height: 96px; padding: 0 5px;
   overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: thin;
   scrollbar-color: #9d75c3 transparent; -webkit-overflow-scrolling: touch;
 }
+/* CENTRED IN THE CASE (owner, 12 Sep 2026: "center the group cards in the
+   window so one side doesn't have a big gap"). Not justify-content: center -
+   on a scrolling flex row that pushes the first cards past the left edge
+   where no scroll can reach them. Auto margins on the two ends centre the
+   row when it fits and collapse to nothing when it overflows. */
+.ac-shopcompact .ac-shopitemrail > :first-child { margin-left: auto; }
+.ac-shopcompact .ac-shopitemrail > :last-child { margin-right: auto; }
 .ac-shopcompact .ac-shopitemrail::-webkit-scrollbar { display: block; height: 3px; }
 .ac-shopcompact .ac-shopitemrail::-webkit-scrollbar-thumb { background: #9d75c3; border-radius: 4px; }
 .ac-shopcompact .ac-shopviewer .ac-card.ac-shoptile {
@@ -2288,7 +2295,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js274/standalone.js")
+    import("./js275/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

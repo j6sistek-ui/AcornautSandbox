@@ -450,6 +450,12 @@ export async function createEngine(canvas) {
             writeSave(save);
             notify();
         },
+        setTapRewind(on) {
+            save.tapRewind = on;
+            world.tapAnimQueued = false; // a queued replay from the other rule is not owed
+            writeSave(save);
+            notify();
+        },
         setSuitPitch(suitId, deg) {
             if (!save.suitPitch)
                 save.suitPitch = {};

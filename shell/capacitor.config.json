@@ -1,6 +1,6 @@
 {
   "_readme": "Generated from app.config.json by `npm run configure`. Do not edit by hand.",
-  "appId": "com.placeholder.acornaut",
+  "appId": "com.quarterdropgames.acornaut",
   "appName": "Acornaut",
   "webDir": "www",
   "ios": {

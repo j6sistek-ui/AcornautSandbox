@@ -83,7 +83,13 @@ const retired=snapshot.bundles.filter(b=>!retained.includes(b.id)).map(b=>b.id);
 assert.equal(retired.length,15,'thirteen singleton offers and two duos are retired');
 assert.deepEqual(C.BUNDLES.map(b=>b.id),[...retained,...Object.keys(collections)],'only the five retained kits and three actual collections remain');
 assert.deepEqual(C.FIXED_SHOP_SUIT_IDS,['arcflash','porcelain','nacre','origamist']);
-assert.deepEqual(C.DUST_PACKS,snapshot.stardustOffers.map(({totalGrant,...pack})=>pack),'cash offers and grants remain unchanged');
+// The DUST in each pack is unchanged from the baseline; the DOLLAR sticker is
+// half of it (owner, 12 Sep 2026: "cut the stardust cost in half globally in
+// the store ... i meant the actual dollar values in half"). The web string is
+// pinned here; the store tier is set by hand in App Store Connect / Play.
+assert.deepEqual(C.DUST_PACKS.map(({price,...pack})=>pack),snapshot.stardustOffers.map(({totalGrant,price,...pack})=>pack),'cash offers keep their dust and bonus grants');
+assert.deepEqual(C.DUST_PACKS.map(pack=>pack.price),['$0.49','$2.49','$4.99','$9.99'],'pack stickers are half the baseline dollars');
+assert.deepEqual(snapshot.stardustOffers.map(pack=>pack.price),['$0.99','$4.99','$9.99','$19.99'],'the baseline still records the pre-sale dollars');
 // The owner replaced the old pinned shelf with a smaller daily roster.
 // Its selection rules are tested independently by test-shop-cycle.mjs;
 // this pricing regression still forbids separately sold bonus wakes.
