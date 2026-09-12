@@ -1,0 +1,20 @@
+[
+  {
+    "id": "star-chart-holo",
+    "mode": "built-in image_gen",
+    "reference": "references/star-chart-holo.jpg",
+    "prompt": "Use case: precise-object-edit. Asset type: premium game menu icon.\nThe input is the owner's icon edit target. Preserve its illustrated object, shape, perspective, materials and colored lights. The single tilted metallic holographic star-system disc: preserve the segmented gunmetal rim, purple/cyan/amber light strips, and luminous spiral star system inside. Preserve the original perspective and disc shape.\nReplace every white/gray checkerboard background pixel with an uninterrupted pure solid black (#000000) backdrop. Paint the glow naturally against pure black. No checkerboard, transparency visualization, grey squares, white squares, ground, horizon, cast shadow, scenery or extra objects. The outer corners and all outermost edges must be pure black. This is intentionally a black-background icon for screen-blending onto a dark game UI; do NOT simulate a transparency checkerboard.\nSquare canvas. Center the complete object with about 6% margin around its entire silhouette and glow, fitting the original into the square without distortion or clipped tips. Maintain the premium painted/3D detail and legible silhouette at 58 pixels. No text, labels, button frame, watermark or extra pedestal. Change only backdrop and framing."
+  },
+  {
+    "id": "modes-orbit",
+    "mode": "built-in image_gen",
+    "reference": "references/modes-orbit.jpg",
+    "prompt": "Use case: precise-object-edit. Asset type: premium game menu icon.\nThe input is the owner's icon edit target. Preserve its illustrated object, shape, perspective, materials and colored lights. The blue planet with a polished silver rocket orbiting diagonally toward the upper right and the curved warm golden flight trail. Preserve the original planet, rocket silhouette, cyan window, colors and orbit orientation.\nReplace every white/gray checkerboard background pixel with an uninterrupted pure solid black (#000000) backdrop. Paint the glow naturally against pure black. No checkerboard, transparency visualization, grey squares, white squares, ground, horizon, cast shadow, scenery or extra objects. The outer corners and all outermost edges must be pure black. This is intentionally a black-background icon for screen-blending onto a dark game UI; do NOT simulate a transparency checkerboard.\nSquare canvas. Center the complete object with about 6% margin around its entire silhouette and glow, fitting the original into the square without distortion or clipped tips. Maintain the premium painted/3D detail and legible silhouette at 58 pixels. No text, labels, button frame, watermark or extra pedestal. Change only backdrop and framing."
+  },
+  {
+    "id": "launch-holo",
+    "mode": "built-in image_gen",
+    "reference": "references/launch-holo.jpg",
+    "prompt": "Use case: precise-object-edit. Asset type: premium game menu icon.\nThe input is the owner's icon edit target. Preserve its illustrated object, shape, perspective, materials and colored lights. The upright silver rocket rising from a round metallic holographic launch disc on its blue beam. Preserve the original rocket shape, blue window, fins, disc geometry, bright cyan beam and original perspective.\nReplace every white/gray checkerboard background pixel with an uninterrupted pure solid black (#000000) backdrop. Paint the glow naturally against pure black. No checkerboard, transparency visualization, grey squares, white squares, ground, horizon, cast shadow, scenery or extra objects. The outer corners and all outermost edges must be pure black. This is intentionally a black-background icon for screen-blending onto a dark game UI; do NOT simulate a transparency checkerboard.\nSquare canvas. Center the complete object with about 6% margin around its entire silhouette and glow, fitting the original into the square without distortion or clipped tips. Maintain the premium painted/3D detail and legible silhouette at 58 pixels. No text, labels, button frame, watermark or extra pedestal. Change only backdrop and framing."
+  }
+]

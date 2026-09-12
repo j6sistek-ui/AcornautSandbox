@@ -1023,7 +1023,7 @@
       text-transform: uppercase; text-wrap: balance;
       color: #c9b1ff; text-shadow: 0 1px 8px rgba(10,5,30,.9); }
     .ac-hub-space { flex: 1 1 auto; min-height: 60px; }
-    .ac-hub-tiles { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .ac-hub-tiles { flex: none; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 11px; }
     .ac-hubtile { position: relative; border-radius: 20px; padding: 12px 8px 10px; display: flex; flex-direction: column;
       align-items: center; gap: 5px; color: #fff;
       background: radial-gradient(ellipse at 50% 0, rgba(255,234,190,.25), transparent 64%),
@@ -1057,8 +1057,12 @@
     .ac-hub-launchtxt .ac-hubsub { letter-spacing: .16em; text-transform: uppercase; color: #d4ecff; margin-top: 0; font-size: 12px; }
     .t-launch .ac-hub-active { justify-content: center; font-size: 9.5px; }
     .t-loadout { --t1: #8a5ae4; --t2: #44249a; --tb: #c4a0ff; }
-    .t-chart { --t1: #1db388; --t2: #0a5a44; --tb: #6ce8bc; }
+    .t-chart { --t1: #25c58c; --t2: #0a6248; --tb: #7af2bd; }
     .t-modes { --t1: #eda03c; --t2: #8f4d0e; --tb: #ffd88f; }
+    .ac-hubtile:is(.t-loadout, .t-chart, .t-modes) { min-width: 0; padding-inline: 5px; }
+    .ac-hubtile:is(.t-loadout, .t-chart, .t-modes) b { font-size: clamp(12px, 3.65vw, 19px); white-space: nowrap; letter-spacing: .025em; }
+    .ac-hubtile:is(.t-loadout, .t-chart, .t-modes) .ac-hubsub { font-size: 11px; text-align: center; overflow-wrap: anywhere; }
+    .t-chart .ac-hub-track { width: 100%; margin-top: 0; flex: none; }
     .t-profile { --t1: #5b64e0; --t2: #282f92; --tb: #a2aaff; }
     /* the mode tab on the launch tile: GOLD on the blue, so the selected
        mode reads before anything else (owner, 7 Sep 2026: "should be a
@@ -1067,45 +1071,33 @@
       background: linear-gradient(180deg,#ffe08a,#e9a62a); color: #2a1604; font-size: 10.5px; font-weight: 900; letter-spacing: .14em;
       padding: 4.5px 16px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,.55), 0 0 0 1.5px rgba(255,236,170,.55);
       clip-path: polygon(0 0,100% 0,94% 50%,100% 100%,0 100%,6% 50%); }
-    /* THE STAR CHART BAR (owner, 7 Sep 2026): a major feature that read as
-       one more strip. A gold rim on a violet plate, lit from behind. */
-    .ac-hub-bar { margin-top: 12px; flex: none; display: flex; align-items: center; gap: 12px; text-align: left; width: 100%;
-      background: linear-gradient(135deg, #4a279c 0%, #1e1140 48%, #5a2fb8 100%); border: 2px solid rgba(255,214,106,.8); border-radius: 18px; padding: 12px 14px;
-      color: #fff3cf; box-shadow: 0 0 0 3px rgba(255,214,106,.14), 0 10px 28px rgba(0,0,0,.5), 0 0 26px rgba(184,118,255,.5), inset 0 1px 0 rgba(255,255,255,.2); }
-    .ac-hub-bar .ac-hub-bartxt b { font-size: 13px; color: #ffe9a8; text-shadow: 0 1px 0 rgba(0,0,0,.5); }
-    .ac-hub-starbadge { width: 34px; height: 34px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 20px; color: #7a4a08; background: radial-gradient(circle at 50% 35%, #ffe9a8, #e8a44a);
-      box-shadow: 0 0 18px rgba(255,206,92,.85); }
-    .ac-hub-bartxt { flex: 1; min-width: 0; }
-    .ac-hub-bartxt b { display: block; font-size: 11.5px; font-weight: 900; letter-spacing: .07em; }
     .ac-hub-track { position: relative; display: block; height: 14px; border-radius: 999px; background: #0b0618;
       border: 1px solid rgba(255,206,92,.35); overflow: hidden; margin-top: 4px; }
     .ac-hub-track i { display: block; height: 100%; background: linear-gradient(90deg, #c07f1f, #ffd76a); border-radius: 999px; }
     .ac-hub-track em { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-style: normal;
       font-size: 9.5px; font-weight: 900; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8); letter-spacing: .05em; }
-    .ac-hubtile, .ac-hub-bar, .ac-hub-sq { transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
-    .ac-hub-sq:active, .ac-hub-bar:active { transform: translateY(1px);
+    .ac-hubtile, .ac-hub-sq { transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease; }
+    .ac-hub-sq:active { transform: translateY(1px);
       box-shadow: inset 0 2px 8px rgba(8,3,22,.6), 0 2px 7px rgba(0,0,0,.35); }
     .ac-hub button:focus-visible, .ac-hub-sq:focus-visible { outline: 2px solid #fff0ba; outline-offset: 3px; }
     @media (hover: hover) {
-      .ac-hubtile:hover:not(:active), .ac-hub-bar:hover:not(:active), .ac-hub-sq:hover:not(:active) { border-color: #ffe5a5;
+      .ac-hubtile:hover:not(:active), .ac-hub-sq:hover:not(:active) { border-color: #ffe5a5;
         box-shadow: inset 0 1px 1px rgba(255,238,197,.5), 0 0 0 1px rgba(230,184,103,.25), 0 0 20px rgba(177,113,230,.35), 0 8px 22px rgba(0,0,0,.4); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .ac-hubtile, .ac-hub-bar, .ac-hub-sq { transition: none; }
-      .ac-hubtile:active, .ac-hub-bar:active, .ac-hub-sq:active { transform: none; }
+      .ac-hubtile, .ac-hub-sq { transition: none; }
+      .ac-hubtile:active, .ac-hub-sq:active { transform: none; }
     }
-    /* landscape: five tiles in one row, launch back to a column */
+    /* landscape: Launch, Loadout, Star Chart and Modes share one row */
     @media (orientation: landscape) {
       .ac-hub { padding: 12px 22px 14px; }
       .ac-hub-art { background-position: 50% 18%; }
       .ac-hub-wordmark { text-align: left; margin: 2px 0 0 4px; }
-      .ac-hub-tiles { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; max-width: 860px; width: 100%; align-self: center; }
+      .ac-hub-tiles { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; max-width: 860px; width: 100%; align-self: center; }
       .t-launch { grid-column: auto; flex-direction: column; gap: 5px; padding: 14px 8px 10px; }
       .t-launch b { font-size: 24px; }
       .ac-hub-launchtxt { align-items: center; text-align: center; }
       .ac-hub-active { justify-content: center; }
-      .ac-hub-bar { max-width: 720px; align-self: center; }
     }
     /* ---- MODES: one saturated row per way to fly ---- */
     .ac-modecard { gap: 9px; max-height: 92vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -1224,7 +1216,8 @@
       border: 1px solid rgba(255,206,92,.4); border-radius: 999px; padding: 2.5px 7px; letter-spacing: .06em; }
     /* the STANDARD shelf's stand-in for the two retired suits */
     /* the fused pilot + acorns capsule, left side of the rail */
-    .ac-hub-id { display: flex; align-items: center; gap: 5px; }
+    .ac-hub-id { display: grid; grid-template-columns: 38px repeat(2,minmax(0,1fr)); align-items: center; gap: 5px;
+      flex: 0 1 240px; min-width: 0; }
     .ac-hub-idport { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
       background: rgba(8,10,24,.55); border: 1px solid rgba(170,140,240,.18); box-shadow: inset 0 2px 4px rgba(0,0,0,.35); }
     .ac-hub-idport canvas { width: 34px; height: 34px; }
@@ -1234,6 +1227,18 @@
     .ac-hub-rail :is(.ac-hub-idport, .ac-hub-idnut, .ac-hub-iddust) {
       border-color: rgba(229,189,114,.65);
       box-shadow: inset 0 1px 1px rgba(255,232,183,.25), inset 0 -2px 3px rgba(5,2,13,.6), 0 3px 8px rgba(5,2,13,.35); }
+    .ac-hub-rail .ac-hub-sq { flex: 0 1 44px; min-width: 36px; }
+    .ac-hub-id :is(.ac-hub-idnut, .ac-hub-iddust) { display: grid; min-width: 0; width: 100%; height: 34px; min-height: 34px;
+      gap: 5px; padding: 0 8px; font-size: var(--ac-hub-amount-size,15px); }
+    .ac-hub-idnut { grid-template-columns: 16px minmax(0,1fr); }
+    .ac-hub-iddust { grid-template-columns: 14px minmax(0,1fr) 9px; }
+    .ac-hub-id svg { flex-shrink: 0; }
+    .ac-hub-amount { min-width: 0; white-space: nowrap; text-align: center; font-variant-numeric: tabular-nums; }
+    @media (max-width: 380px) {
+      .ac-hub-rail { gap: 3px; padding-inline: 4px; }
+      .ac-hub-id { gap: 3px; }
+      .ac-hub-id :is(.ac-hub-idnut, .ac-hub-iddust) { padding-inline: 5px; gap: 3px; }
+    }
     /* Profile shares the Shop's violet surfaces and gold edges without
        changing the pilot's controls, inventory or destructive-action state. */
     body .ac-menu.ac-profile { color: #f6efff;
@@ -2296,7 +2301,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js278/standalone.js")
+    import("../js280/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>
