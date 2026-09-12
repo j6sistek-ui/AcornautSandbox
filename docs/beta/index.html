@@ -1171,7 +1171,7 @@
     .ac-testlab-reset.on { border-color: #ff8a6a; color: #ffd6c9; }
     .ac-ftdock { position: absolute; left: 8px; right: 8px; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); z-index: 12;
       display: flex; flex-direction: column; gap: 5px; padding: 8px 8px 6px; border-radius: 16px;
-      max-height: 52vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      max-height: 62vh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y;
       background: linear-gradient(180deg, rgba(19,12,40,.94), rgba(10,7,24,.96)); border: 1px solid #4f3f7c;
       box-shadow: 0 10px 30px -12px rgba(0,0,0,.9); }
     .ac-ftdock > * { flex: none; }
@@ -2323,7 +2323,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js284/standalone.js")
+    import("../js285/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

@@ -118,6 +118,10 @@ button('ION DIALS').click();tick();
 const dials=app.querySelector('.ac-ftdock .ac-testlab-dials');
 assert(dials,'beta: the worn suit\'s dials fold out in the dock');
 assert(dials.textContent.includes('TAP ACCENT')&&dials.textContent.includes('REPEAT TAP')&&dials.textContent.includes('TAP SHAPE')&&dials.textContent.includes('PITCH'),'beta: every dial is in the dock');
+assert(app.querySelector('.ac-ftdock .ac-lab input[aria-label="Fog"]'),'beta: the Flight Lab sliders are in the dock too');
+// a rebuild mid-scroll keeps the dock where it was
+const dockEl=app.querySelector('.ac-ftdock');dockEl.scrollTop=140;e.setTapAccent(false);tick();
+assert.equal(app.querySelector('.ac-ftdock').scrollTop,140,'beta: the dock keeps its scroll across a rebuild');
 e.setTapAccent(true);tick();
 assert(app.querySelector('.ac-ftdock input[aria-label="Strength"]'),'beta: the accent strength slider is in the dock with the accent on');
 // the transport row has its own 1x; the strength buttons are inside the dials

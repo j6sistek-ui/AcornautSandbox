@@ -348,6 +348,9 @@ export async function bootStandalone(root: HTMLElement) {
     keepShopRails();
     const oldGuide = !!overlay.querySelector(".ac-depotguidecard");
     const depotScroll = overlay.querySelector(".ac-depotcard")?.scrollTop ?? 0;
+    // the Flight Test dock scrolls; a rebuild mid-scroll must not snap it
+    // back to the readouts, or its lower dials are unreachable in practice
+    const dockScroll = overlay.querySelector(".ac-ftdock")?.scrollTop ?? 0;
     const setupScroll = overlay.querySelector(".ac-setup-body")?.scrollTop ?? 0;
     const setupActive = document.activeElement as HTMLElement;
     const setupFocus = setupActive?.dataset.shipStarter ? `[data-ship-starter="${setupActive.dataset.shipStarter}"]`
@@ -403,7 +406,11 @@ export async function bootStandalone(root: HTMLElement) {
       overlay.append(bar);
       // the Flight Test's dock: transport, autopilot, readouts and the dials,
       // riding the bottom of the run without pausing it
-      if (engine.world.flightTest) overlay.append(flightTestDock());
+      if (engine.world.flightTest) {
+        const dock = flightTestDock();
+        overlay.append(dock);
+        if (dockScroll) dock.scrollTop = dockScroll;
+      }
       // THE SPILL's LUNGE button rides the bottom-right corner for anyone
       // who misses the swipe. When the Depot is open it takes the screen.
       const sp = engine.world.spill;
@@ -1884,7 +1891,14 @@ export async function bootStandalone(root: HTMLElement) {
       ["LOADOUT", false, () => engine.open("hangar")],
       ["TEST LAB", false, () => { testLabOpen = true; engine.open("title"); }],
     ]));
-    if (flightDockDials) dock.append(wornSuitDials(worn));
+    if (flightDockDials) {
+      // every dial the beta has, read against a moving pilot (owner, 12 Sep
+      // 2026: "should be able to test things, just didn't want it on the
+      // test list"): the worn suit's five, then the Flight Lab sliders
+      dock.append(wornSuitDials(worn));
+      dock.append(el("p", "ac-ftlabel", "FLIGHT LAB"));
+      dock.append(flightLab());
+    }
     const tick = () => {
       if (!dock.isConnected) return;
       const cur = engine.world;
