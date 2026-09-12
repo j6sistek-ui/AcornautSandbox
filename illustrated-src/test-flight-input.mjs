@@ -34,7 +34,7 @@ const baseline=process.env.ACORNAUT_INPUT_BASELINE==='1';
 // suits are traced here - a rewinding suit visits fewer poses at 150 ms taps
 // by design, which is the feel the owner froze.
 const art=A.emptyArt(),banked=[...new Set([...Object.keys(A.ASC_BANKS),...Object.keys(A.TAP_BANKS),...Object.keys(A.LOOP_BANKS)])].sort();
-const ids=banked.filter(id=>!D.FROZEN_SUITS.includes(id));
+const ids=banked.filter(id=>Sim.repeatTapMode(id,S.defaultSave())==='finish');   // live FINISH suits: none since 12 Sep 2026
 if(!baseline)assert.deepEqual([...Control.PAINTED_TAP_SUITS].sort(),ids,'playback roster must match shipping bank manifests minus the frozen roster');
 async function sprite(file){const im=await loadImage(join(root,'docs/art',file));Object.defineProperty(im,'src',{get:()=>file});labels.set(im,file);return A.asSprite(im);}
 for(const id of ids){

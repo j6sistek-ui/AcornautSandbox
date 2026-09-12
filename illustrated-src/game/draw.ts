@@ -14,7 +14,7 @@ import { runPals, fxOf, worldFlipped } from "./sim";
 import { spillAppearance } from "./spill-appearance";
 import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals";
 import { samplePlanetBackdrop, type PlanetHalo } from "./planet-contrast";
-import {SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, HELMETS, PHYS, SUITS, TAIL, TRAILS, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
+import {SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, HELMETS, IS_BETA, PHYS, SUITS, TAIL, TRAILS, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog";
 import { goalHud } from "./campaign";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics";
 import { proceduralSky, hueShifted } from "./sky-gen";
@@ -4427,14 +4427,14 @@ export const POSE_DIVE_DEPTH = 1;
 // complaints, in one word each: the over-divers come back, and the suits
 // whose dive frames "barely do work" are held to the shallow end until
 // their art is regenerated.
-export const FROZEN_SUITS = ["vanguard", "flight", "robo", "alien", "bigbooty", "volt",
-  "cyber", "eclipse", "seraph", "arcflash", "catsuit", "briellacat",
-  // ADDED 9 Sep 2026: "verdant and cryostar now exactly match eclipse and
-  // can be locked". They were the two the same review wanted held against
-  // Eclipse - "I want them to match Eclipse ... the deep tail movement of
-  // eclipse drives its power and feel" - and they now do, so they inherit
-  // Eclipse's dial rather than the shallow holding value they were parked at.
-  "cryostar", "verdant"] as const;
+// SHRUNK 12 Sep 2026 (owner: "Robo must remain, Volt remain. Cat, remain.
+// Those are truely frozen. the rest are all open for evaluation right
+// now", then "robot cat big booty volt all stay default rewind"). AcorNut
+// and Arcflash keep their own controllers and were frozen on the 10th
+// ("yes arcflash and acornut are good"). Everything else - flight, alien,
+// cyber, eclipse, seraph, briellacat, cryostar, verdant - is open, and
+// flies the owner's ruling from the TAP_SHAPE / TAP_REPEAT tables.
+export const FROZEN_SUITS = ["vanguard", "arcflash", "robo", "bigbooty", "catsuit", "volt"] as const;
 
 // FLIGHT METHOD IS DELIBERATELY NOT STANDARDISED.
 // This block used to hold FLIGHT_FAMILIES and FLIES_APART, which grouped
@@ -5137,6 +5137,16 @@ function paintIllustrated(
   }
 }
 
+/** "#rrggbb" (or "#rgb") to an rgba() string at the given alpha; anything
+ *  else passes through (a colour the canvas already understands) */
+function glowRgba(hex: string, a: number) {
+  const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return hex;
+  let h = m[1]; if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+  const n = parseInt(h, 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
+}
+
 function drawPilot(
   ctx: CanvasRenderingContext2D,
   w: World,
@@ -5192,6 +5202,32 @@ function drawPilot(
     ctx.translate(0, contactY);
     ctx.scale(shape.x, shape.y);
     ctx.translate(0, -contactY);
+  }
+  // THE TAP ACCENT (beta switch; tap retrofit study, 12 Sep 2026, item 4):
+  // a 167 ms ignition behind the boots in the suit's glow colour, and a
+  // second-order body reaction - about 3% wider, 5% shorter, 6 degrees
+  // nose-up at the peak, ~70 ms after the tap, settled by ~250 ms. Both
+  // read the ACCEPTED tap (flapBoost, tapReact), never the tap clock, so
+  // every tap shows at every cadence. Off unless the owner switches it on.
+  if (IS_BETA && save.tapAccent && !independentRig) {
+    const age = 0.22 - Math.max(0, w.flapBoost);   // seconds since the last tap
+    if (w.flapBoost > 0 && age < 0.167) {
+      const stage = age < 0.017 ? 1 : age < 0.05 ? 2 : age < 0.1 ? 3 : 4;
+      const amp = [0, 0.5, 1, 0.6, 0.3][stage];
+      const col = (suit as { glow?: string | null }).glow ?? helm.glow ?? "#4ad8ff";
+      const radius = 9 * amp + 2;
+      ctx.save();
+      ctx.translate(-9, 5);
+      const g = ctx.createRadialGradient(0, 0, 1, 0, 0, radius);
+      g.addColorStop(0, glowRgba(col, 0.85 * amp));
+      g.addColorStop(1, glowRgba(col, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(0, 0, radius, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+    const r = Math.max(0, Math.min(1, w.tapReact));
+    ctx.rotate(-r * (6 * Math.PI) / 180);
+    ctx.scale(1 + 0.03 * r, 1 - 0.05 * r);
   }
   // the sim's real pitch — dives nose down, bounces kick the body over;
   // the old ±6° bank made every impact read as nothing happening

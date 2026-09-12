@@ -203,6 +203,8 @@ export type SaveData = {
   tailSpring?: Record<string, TailSpring>;
   /** BETA dial, per suit: what a repeat tap does (see repeatTapMode in sim.ts) */
   tapRepeat?: Record<string, "rewind" | "finish" | "restart">;
+  /** BETA switch: the 167 ms tap accent and body reaction (drawPilot) */
+  tapAccent: boolean;
   // Retired dials, left in old saves and ignored: diveDepth / poseMode (the
   // dive is shallow and every frame flies, see POSE_DIVE_DEPTH in draw.ts)
   // and eclipseMotionMode (Eclipse flies heading; every other suit flies
@@ -245,6 +247,7 @@ export function defaultSave(): SaveData {
     roughAir: false,
     noPalFx: false,
     tapRewind: false,
+    tapAccent: false,
     thrillSeeker: false,
     tutorialDone: false,
     unlocked: ["clear"],
@@ -471,7 +474,7 @@ export function loadSave(): SaveData {
   if (typeof s.streakPackClaimed !== "boolean") s.streakPackClaimed = false;
   if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;
   // saves written before the flight mods existed
-  for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx", "tapRewind"] as const) {
+  for (const k of ["steadyGates", "roughAir", "thrillSeeker", "noPalFx", "tapRewind", "tapAccent"] as const) {
     if (typeof s[k] !== "boolean") s[k] = false;
   }
   // Steady Gates and Rough Air are opposites; a save carrying both is

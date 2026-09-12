@@ -21,7 +21,7 @@ import { createEngine, type DustPurchaseState } from "./engine";
 import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium} from "./save";
 import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, type LevelDef, type StarReward, RACE_GATES} from "./campaign";
 import { formatRaceTicks } from "./race";
-import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery, type SpillSpecialty } from "./spill-content";
+import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery, type SpillSpecialty , spillEngineColor } from "./spill-content";
 import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation";
 import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop";
 import { SPILL_SHOP, restoreSpill, type SpillState } from "./spill";
@@ -444,6 +444,7 @@ export async function bootStandalone(root: HTMLElement) {
         if (shape) sheet.append(shape);
         const spring = tailSpringDial(worn);
         if (spring) sheet.append(spring);
+        sheet.append(tapAccentDial());
       }
       // THE FLIGHT LAB (owner, 7 Sep 2026): free flight only, beta only
       if (IS_BETA && engine.world.flight === "fly" && !engine.world.lvl && !engine.world.tut && !engine.world.race && !engine.world.spill) sheet.append(flightLab());
@@ -1118,6 +1119,20 @@ export async function bootStandalone(root: HTMLElement) {
       panel.append(dialRow("Forward", TAP_SHAPE_MIN, TAP_SHAPE_MAX, 0.05, cur.fwd, sec, (v) => engine.setTapShape(suitId, { fwd: v, back: cur.back })));
       panel.append(dialRow("Return", TAP_SHAPE_MIN, TAP_SHAPE_MAX, 0.05, cur.back, sec, (v) => engine.setTapShape(suitId, { fwd: cur.fwd, back: v })));
     }
+    return panel;
+  }
+  function tapAccentDial() {
+    const panel = el("div", "ac-suit-pitch");
+    const on = !!engine.save.tapAccent;
+    panel.append(el("p", "ac-sub", `TAP ACCENT · ${on ? "ON" : "OFF"} · ignition + body reaction, every suit`));
+    const row = el("div", "ac-modes");
+    (row as HTMLElement).style.gridTemplateColumns = "repeat(2, minmax(0,1fr))";
+    for (const [label, v] of [["OFF", false], ["ON", true]] as const) {
+      const b = el("button", on === v ? "ac-mode on" : "ac-mode", label);
+      b.onclick = () => engine.setTapAccent(v);
+      row.append(b);
+    }
+    panel.append(row);
     return panel;
   }
   function tailSpringDial(suitId: string) {
@@ -2082,10 +2097,9 @@ export async function bootStandalone(root: HTMLElement) {
       fold.onclick = (e) => { e.stopPropagation(); engine.setHeroExpanded(!engine.save.heroExpanded); };
       stage.append(fold);
       if (engine.shopTab === "ship") {
-        plate.append(el("span", "ac-caseeyebrow", shipPlan ? "DEPOT BUILD PREVIEW" : "NEXT ENDLESS RUN"));
-        plate.append(el("b", "", `Health ${previewShip.maxHull} · Shields ${previewShip.shield}`));
-        plate.append(el("span", "ac-casesub",
-          `${shipPlan ? previewShip.utilities.map(id => SPILL_UTILITIES[id].name).join(" + ") || "No utilities" : s.spillStarter ? SPILL_UTILITIES[s.spillStarter].name : "No starting utility"} · ${wornSuit.name} aboard`));
+        plate.append(el("span", "ac-caseeyebrow", "NEXT ENDLESS RUN"));
+        plate.append(el("b", "", `Engine color · ${spillEngineColor(s).name}`));
+        plate.append(el("span", "ac-casesub", `${wornSuit.name} aboard`));
       } else {
         plate.append(el("b", "", wornSuit.name + (ownHead ? "" : ` \u00b7 ${wornHelm.name}`)));
         plate.append(el("span", "ac-casesub", `${trail.name} \u00b7 ${palsWorn.length ? palsWorn.map((p) => p.name).join(" + ") : "No pal"}`));
@@ -2408,83 +2422,18 @@ export async function bootStandalone(root: HTMLElement) {
         : `SECOND SEAT AT \u2605 ${STAR_UNLOCKS.dualPal} \u00b7 fly two pals at once, effects stacked`));
       for (const p of PALS.filter((x) => !isIap(x.id) || ownsPremium(s, x.id))) grid.append(palCardOf(p));
     } else if (engine.shopTab === "ship") {
+      // ENGINE COLOUR ONLY (owner, 12 Sep 2026: "Remove everything from the
+      // ship loadout page except the engine color"). The starting-utility
+      // picker, the Depot build planner, the four tier shelves with their
+      // specialties, the Depot services note and the beta appearance sample
+      // all left with that sentence. The engine still equips a starter
+      // (spillStarter) and an appearance (setSpillAppearance) if a picker
+      // for either comes back somewhere.
       box.classList.add("ac-shipmenu");
       grid.classList.add("ac-shelfcol", "ac-shipworkshop");
-      if (STAR_MAP_PREVIEW) {
-        const look = el("section", "ac-shiplaunch");
-        look.append(el("p", "ac-kicker", "STAR MAP · APPEARANCE SAMPLE"),
-          el("h3", "", "Rust Belt salvage kit"), el("p", "ac-sub", "Ship appearance only. Your upgrades and utilities stay fitted."));
-        const appearance = spillAppearance(s);
-        for (const [kind, id, label] of [["finish","rust-runner","Rust Runner ship finish"],["trail","rust-wake","Rust Wake exhaust"]] as const) {
-          const b = el("button", "ac-ghost", `${appearance[kind] === id ? "✓ " : ""}${label}`);
-          b.setAttribute("aria-pressed", String(appearance[kind] === id));
-          b.onclick = () => engine.setSpillAppearance(kind, appearance[kind] === id ? "stock" : id); look.append(b);
-        }
-        const concept = el("div", "ac-sub");
-        const pal = miniCanvas(64, 64);
-        if (pal.ctx) paintPalPreview(pal.ctx, engine.art, "tinbot", 32, 32, 52);
-        concept.append(pal.c, el("b", "", "Rivet · placeholder concept"),
-          el("p", "", "Tinbot artwork stands in for a future Debris Field-only cosmetic companion. No companion ability or equip option is added by this sample."));
-        look.append(concept); grid.append(look);
-      }
       const launch = el("section", "ac-shiplaunch");
-      launch.append(el("p", "ac-kicker", "YOUR NEXT SHIP"), el("h3", "", "Ready for a new run"),
-        el("p", "ac-sub", "Start with 3 health and one free upgrade. Choose one earned utility below; later upgrades are bought during the run."),
-        drawSpillStarters(engine, () => { shipPlan = null; }), drawSpillEnginePicker(engine));
+      launch.append(el("p", "ac-kicker", "YOUR SHIP"), drawSpillEnginePicker(engine));
       grid.append(launch);
-      const plan = el("div", "ac-shipplanhead");
-      plan.append(el("p", "ac-kicker", "DEPOT BUILD PREVIEW"), el("h3", "", "Plan your ship"),
-        el("p", "ac-sub", "Inspect ship upgrades below. Upgrade tiers are purchased during a run; previewing spends nothing."));
-      const actions = el("div", "ac-shipactions");
-      const reset = el("button", "ac-ghost", "SHOW LAUNCH SHIP"); reset.onclick = () => { shipPlan = null; render(); }; actions.append(reset);
-      const docked = restoreSpill(s.spillSuspended, 390, 760);
-      if (docked) {
-        const inspect = el("button", "ac-ghost", `VIEW SAVED BUILD · WAVE ${docked.wave}`);
-        inspect.onclick = () => { shipPlan = spillBuildFromState(docked); render(); }; actions.append(inspect);
-      }
-      plan.append(actions, el("p", "ac-shipreadout", `${previewShip.maxHull} HEALTH · ${previewShip.up.thrusters >= 2 ? 2 : 1} DASH CHARGE${previewShip.up.thrusters >= 2 ? "S" : ""} · ${previewShip.utilities.length}/2 UTILITIES`),
-        el("p", "ac-sub", `Build from stock: ${spillBuildOre(shipPick, s.spillStarter)} Acorn Coins · tier costs include preceding upgrades`));
-      grid.append(plan);
-      for (const axis of ["plating", "thrusters", "pulse", "shield"] as const) {
-        const shop = SPILL_SHOP[axis], isShield = axis === "shield";
-        grid.append(el("p", "ac-shelfhead", `${shop.name.toUpperCase()} · ${isShield ? "PROTECTION & CANOPY" : axis === "plating" ? "MAX HEALTH" : axis === "thrusters" ? "ENGINE" : "PULSE CONE"}`));
-        const row = el("div", "ac-shelfrow");
-        for (let tier = 0; tier <= (isShield ? 2 : 3); tier++) {
-          const pick: ShipPick = { ...shipPick, [axis]: tier, specialties: { ...shipPick.specialties } };
-          if (!isShield && tier < 2) pick.specialties[axis] = null;
-          const selected = shipPick[axis] === tier;
-          const b = el("button", `ac-card ac-modcard ac-shipcard${selected ? " on" : ""}`);
-          b.dataset.shipTier = `${axis}-${tier}`; b.setAttribute("aria-pressed", String(selected));
-          const pic = miniCanvas(150, 82); pic.c.setAttribute("aria-hidden", "true");
-          if (pic.ctx) paintShipPreview(pic.ctx, engine.art, s, 93, 44, 1.5, 0, pick);
-          b.append(pic.c);
-          const txt = el("div", "ac-modtxt");
-          const name = tier === 0 ? "Stock" : isShield ? `${tier} shield charge${tier > 1 ? "s" : ""}` : `${shop.name} ${"I".repeat(tier)}`;
-          const effect = !tier ? isShield ? "Open cockpit · no charges." : axis === "plating" ? "3 health." : axis === "thrusters" ? "One dash charge." : "Gold charges the ship; add Pulse I to fire it."
-            : isShield ? "A charge absorbs a hit. The fitted canopy remains after use." : shop.levels[tier - 1];
-          txt.append(el("p", "ac-shiptier", tier ? `TIER ${tier}` : "BASELINE"), el("p", "ac-modname", name), el("p", "ac-sub", effect));
-          const price = !tier ? 0 : isShield ? shop.prices[0] * tier : shop.prices[tier - 1];
-          b.append(txt, el("span", "ac-modprice", !tier ? "STOCK" : isShield ? `${price} ACORN COINS FOR ${tier}` : `${price} ACORN COINS · STEP ${tier}`));
-          b.onclick = () => { shipPlan = pick; render(); }; row.append(b);
-        }
-        grid.append(row);
-        if (!isShield) {
-          const specs = el("div", "ac-spilloptions ac-shipspecs");
-          for (const [id, spec] of Object.entries(SPILL_SPECIALTIES).filter(([, spec]) => spec.axis === axis)) {
-            const selected = previewShip.specialties[axis] === id;
-            const b = el("button", `ac-spilloption${selected ? " on" : ""}`); b.disabled = shipPick[axis] < 2;
-            b.dataset.shipSpec = id;
-            b.setAttribute("aria-pressed", String(selected));
-            b.append(el("b", "", spec.name), el("span", "", spec.desc), el("strong", "", shipPick[axis] < 2 ? "REQUIRES TIER II" : selected ? "PREVIEW FITTED · FREE AT DEPOT" : "PREVIEW · FREE AT DEPOT"));
-            b.onclick = () => { shipPlan = { ...shipPick, specialties: { ...shipPick.specialties, [axis]: id as SpillSpecialty } }; render(); }; specs.append(b);
-          }
-          grid.append(specs);
-        }
-      }
-      // The utility shelf that sat here duplicated the Starting utility picker
-      // above (owner, 7 Sep 2026); the plan previews the starter you chose.
-      grid.append(el("p", "ac-shipnote", "DEPOT SERVICES · Restore all health: 30 Acorn Coins · Extra life: 150 Acorn Coins, once per run."));
-
     }
     scroll.append(grid);
     // Premium left these shelves, so something has to say where it went -

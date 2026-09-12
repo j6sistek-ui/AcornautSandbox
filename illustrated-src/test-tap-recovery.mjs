@@ -30,6 +30,9 @@ const save = defaultSave();
 // rewind the gesture. It used to be Robo, until the owner froze Robo and the
 // rest of his roster back to rewind (12 Sep 2026) - see test-frozen-roster.
 save.equippedSuit = "ember";
+// Since the 12 Sep 2026 ruling no suit finishes/queues LIVE; the contract
+// below is the FINISH rule itself, reached through the beta dial.
+save.tapRepeat = { ember: "finish" };
 const world = makeWorld(390, 844);
 world.screen = "play";
 world.ready = false;

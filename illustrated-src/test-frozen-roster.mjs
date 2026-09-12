@@ -95,11 +95,11 @@ assert.deepEqual(orphans,[],
 // hand, not from the owner's - a deliberate retune updates the line below
 // and says so.
 for(const id of D.FROZEN_SUITS) assert(ids.has(id),`frozen roster names a real suit: ${id}`);
-assert.equal(D.FROZEN_SUITS.length,14,'the owner froze fourteen suits');
+// SHRUNK 12 Sep 2026: "Robo must remain, Volt remain. Cat, remain" (+ Big
+// Booty in the same breath), plus AcorNut and Arcflash with their own controllers.
+assert.equal(D.FROZEN_SUITS.length,6,'the owner froze six suits');
 
-const PINNED={flight:1,alien:1,cyber:1,eclipse:1,seraph:1,briellacat:1,
-  // "verdant and cryostar now exactly match eclipse and can be locked"
-  cryostar:1,verdant:1};
+const PINNED={robo:1,bigbooty:1,catsuit:1,volt:1};
 for(const [id,want] of Object.entries(PINNED)){
   assert(D.FROZEN_SUITS.includes(id),`${id} is on the frozen roster`);
   assert.equal(D.diveDepthFor(id),want,
@@ -144,7 +144,7 @@ function secondTap(id){
   assert.equal(Sim.flap(w,save),'flap',`${id}: first tap`);
   for(let i=0;i<10;i++)Sim.updateWorld(w,save,1/60);
   assert.equal(Sim.flap(w,save),'flap',`${id}: second tap`);
-  return {dir:w.tapAnimDir,queued:w.tapAnimQueued};
+  return {dir:w.tapAnimDir,queued:w.tapAnimQueued,t:w.tapAnimT};
 }
 for(const id of D.FROZEN_SUITS){
   if(id==='vanguard'||id==='arcflash')continue;   // their own controllers, no bank clock
@@ -152,11 +152,14 @@ for(const id of D.FROZEN_SUITS){
   assert.equal(r.dir,-1,`FROZEN: ${id} rewinds on a repeat tap (got dir ${r.dir})`);
   assert.equal(r.queued,false,`FROZEN: ${id} never queues a replay`);
 }
-// and the rule is really per-suit: a queue-roster suit still queues on the live page
-{
-  const id=[...Control.PAINTED_TAP_SUITS][0],r=secondTap(id);
-  assert.equal(r.queued,true,`${id} is on the queue roster and queues (live page, no toggle)`);
-  assert.equal(r.dir,1,`${id} keeps playing forward while queued`);
+// and the rule is really per-suit: live, nobody queues any more and the
+// critters RESTART (owner, 12 Sep 2026); the FINISH rule survives as a beta dial
+assert.equal(Control.PAINTED_TAP_SUITS.size,0,'the live queue roster is empty');
+for(const id of ['raccoon','ferret','hedgehog']){
+  const r=secondTap(id);
+  assert.equal(r.dir,1,`${id}: a repeat tap restarts forward`);
+  assert.equal(r.queued,false,`${id}: never queued`);
+  assert.equal(r.t,0,`${id}: the gesture starts over from zero`);
 }
 
 // --- an unlisted id falls through to the default ------------------------
