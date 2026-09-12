@@ -214,3 +214,14 @@ was, and what it is now. Find which of the rules in §3 moved. Do not
 re-freeze the fixture to make it pass; re-freeze (`ACORNAUT_GOLD_WRITE=1`)
 only when the owner has flown the new Cyber and called it the standard
 again.
+
+### Re-freeze log
+
+- **Stamp 286, 12 Sep 2026.** The tap accent went live on both pages
+  (owner: "enable it in game ... by default 1x is good"; Cyber is unlisted,
+  so 1x). The alarm rang on body angle only: every frame, vy, y and tail
+  angle in all four scenarios matched the stamp-282 trace to the tick, and
+  the angle moved by at most the reaction's nose-up (about 1.7 degrees at
+  the peak, inside the first 250 ms after a tap). Re-frozen with the
+  accent on, because it is now part of what the player sees. To compare
+  against the pure stamp-282 motion, fly with Character glow off.
