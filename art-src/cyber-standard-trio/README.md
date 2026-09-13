@@ -5,6 +5,14 @@ sprites with paintings that follow Cyber's gold standard as closely as their
 existing designs allow, and wire each through the same controller and painter.
 The scope is `porcelain` (Percy), `nacre` (Envoy) and `origamist` (Patriot).
 
+The owner reopened visual acceptance after reporting degraded Loadout quality.
+The 13 September repair addresses export aliasing, enlarged-display resolution
+and four Envoy material corrections. Its current independent findings and
+validation are in
+[QUALITY-REVIEW.md](../../illustrated-src/design/premium-pilots/QUALITY-REVIEW.md)
+and [QUALITY-VALIDATION.md](../../illustrated-src/design/premium-pilots/QUALITY-VALIDATION.md).
+Earlier motion checks do not by themselves approve the displayed art quality.
+
 ## Character identity
 
 The retained references in `../premium-flight` establish the costumes:
@@ -40,6 +48,12 @@ bounding-box fit, rotation, limb deformation or detail repainting in code.
 The still is byte-identical to ascent frame 1. A reviewed binary mask divides
 that same painting into complementary still body/tail layers.
 
+Both 256px canonical sprites and 512px display-detail companions are sampled
+directly from the keyed source using premultiplied-alpha Lanczos. The `hd/`
+companions double raster coordinates, including the mask, while preserving the
+same full-canvas pose and 256px logical geometry. They are never enlarged from
+the smaller PNGs. The manifest binds both resolutions to their source inputs.
+
 `geometry.json` records measured head and boot positions in the final 256px
 cells. The exporter generates `game/cyber-trio-registration.ts` and a shipping
 manifest binding all outputs to source hashes, transforms and masks.
@@ -53,6 +67,14 @@ still tail spring as Cyber. Both banks are published only after all 18
 256px images load. Flight, preview and portrait calls use the ordinary
 full-motion painter; the retired 16-cell premium controller does not intercept
 them. The existing material wakes follow the selected painting's boot points.
+
+The shared display-detail helper requests 512px samples only when the physical
+canvas density needs them. The still loads as one optional file, the fallback
+layers as a pair, and the motion bank as a complete set of eighteen. Failed or
+wrong-sized detail leaves the 256px sprite usable and waits before retrying.
+The helper changes source pixels only: measured bounds, collision geometry,
+destination coordinates, pivots, wake anchors and pose selection stay unchanged.
+Flight Studio uses the same helper and optional detail tiers.
 
 With complete banks, flight/ready poses are whole painted frames and portraits
 draw the neutral still. The split body's tail spring is a loading fallback

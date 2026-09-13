@@ -5,6 +5,7 @@ import {paintPremiumBankWake} from './game/premium-bank-wake.mjs';
 import {paintArcflash} from './game/arcflash.mjs';
 import {paintManeuver} from './game/vanguard-maneuver.mjs';
 import {clipHelmetGlass} from './game/helmet-openings.mjs';
+import {bindSpriteDetails,spriteImageFor} from './game/sprite-detail.mjs';
 const DEG=Math.PI/180;
 export class StudioRenderer{
   constructor(manifest,makeImage=()=>new Image(),makeCanvas=()=>document.createElement('canvas')){
@@ -22,6 +23,19 @@ export class StudioRenderer{
     const h=this.manifest.helmets.find(h=>h.id===helmet);
     if(h&&!model.ownHead&&model.family!=='arcflash'&&model.family!=='acornut')files.push(h.file);
     await Promise.all(files.map(p=>this.load(p)));
+    if(model.family==='bank'&&isPremiumSuit(model.id)){
+      for(const paths of [[model.file],Object.values(model.banks).flat()]){
+        const entries=paths.map(path=>({sprite:this.image(path),path:path.replace('suits/','suits/hd/')}));
+        if(entries.length&&entries.every(({sprite})=>!sprite.requestDetail))
+          bindSpriteDetails(entries,async path=>{
+            const image=await this.load(path);
+            // The shared binder rejects invalid detail; discard that decoded
+            // cache entry so its later retry can load a corrected local file.
+            if(image.width!==512||image.height!==512)this.images.delete(path);
+            return image;
+          });
+      }
+    }
   }
   helmet(ctx,id,x,y,r,angle){
     const h=this.manifest.helmets.find(h=>h.id===id);if(!h)return;
@@ -70,7 +84,7 @@ export class StudioRenderer{
         paintPremiumBankWake(ctx,model.id,s.bank,s.frame,{x:32,y:32,w:192,h:192},0,0,size,{state:s.output,travel:simulation.time*200});
       ctx.scale(size/192,size/192);
       // Fixed 256px registration; never fit each frame to its moving bounds.
-      ctx.drawImage(img,-128,-128,256,256);
+      ctx.drawImage(spriteImageFor(ctx,img,256,256),-128,-128,256,256);
       const key=path.slice(6,-4),anchor=this.manifest.anchors[key]||model.dome;
       if(!model.ownHead&&!model.bakedDome&&view.helmet!=='none')this.helmet(ctx,helm,anchor[0]-128,anchor[1]-128,anchor[2],anchor[3]||0);
       if(view.guides){ctx.strokeStyle='#74f3cf';ctx.lineWidth=1;ctx.strokeRect(-128,-128,256,256);if(!model.ownHead){ctx.beginPath();ctx.arc(anchor[0]-128,anchor[1]-128,anchor[2],0,Math.PI*2);ctx.stroke();}}

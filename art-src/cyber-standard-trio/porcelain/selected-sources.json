@@ -39,11 +39,13 @@
     {
       "frame": "asc-5",
       "source": "frames/asc-5.png",
-      "sha256": "5afd2bc1d7635311a2675f7bd4b902bdb10433d738b66dcb6be69a2d62b28846",
+      "sha256": "ce24896a7daa39326ce202d32b82a6e3d202f6c56f8f7383a99c8894edec1745",
       "retainedPromptFiles": [
         "frames/asc-5-prompt.txt",
-        "frames/asc-5-repair-prompt.txt"
-      ]
+        "frames/asc-5-repair-prompt.txt",
+        "frames/asc-5-material-repair-prompt.txt"
+      ],
+      "materialReview": "material-review-20260913.json"
     },
     {
       "frame": "asc-6",
@@ -73,11 +75,13 @@
     {
       "frame": "asc-9",
       "source": "frames/asc-9.png",
-      "sha256": "85778a37760421d235e430b2f99e74c662afaae6f71bdbc85a5ead759e50fee1",
+      "sha256": "b5dd4ca835caf4edf38e1d014844abb5a0e6f06d8321fa11e280b3f14224b4ba",
       "retainedPromptFiles": [
         "frames/asc-9-prompt.txt",
-        "frames/asc-9-repair-prompt.txt"
-      ]
+        "frames/asc-9-repair-prompt.txt",
+        "frames/asc-9-material-repair-prompt.txt"
+      ],
+      "materialReview": "material-review-20260913.json"
     },
     {
       "frame": "desc-1",

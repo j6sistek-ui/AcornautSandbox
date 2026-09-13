@@ -1,4 +1,4 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, IAP_LIVE, AD_RULES } from "./catalog.js?v=289";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, IAP_LIVE } from "./catalog.js?v=289";
 import { platform } from "./platform.js?v=289";
 import { beginFlightTest } from "./sim.js?v=289";
 import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=289";
@@ -14,7 +14,7 @@ import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=289";
 import { setVanguardPitchTrim } from "./vanguard.js?v=289";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=289";
 import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=289";
-import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, canRevive, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, updateWorld, } from "./sim.js?v=289";
+import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, updateWorld, } from "./sim.js?v=289";
 import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=289";
 import { raceViewport } from "./race-viewport.js?v=289";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=289";
@@ -620,72 +620,6 @@ export async function createEngine(canvas) {
                 notify();
             return ok;
         },
-        adOffer() {
-            if (!canRevive(world) || !platform.adsReady)
-                return null;
-            if (adBusy)
-                return "busy";
-            return platform.rewardedAdReady() ? "ad" : null;
-        },
-        async continueWithAd() {
-            if (!canRevive(world) || adBusy || !platform.rewardedAdReady())
-                return "unavailable";
-            adBusy = true;
-            notify();
-            const out = await platform.showRewardedAd("continue");
-            adBusy = false;
-            // the run may have been left while the ad played (a back button, a
-            // resize pause): only a crash still on screen is revived
-            if (out === "earned" && canRevive(world))
-                reviveRun(world, save, true);
-            notify();
-            return out;
-        },
-        adDustState() {
-            const t = today();
-            const used = save.adDustDay === t ? save.adDustCount : 0;
-            return { left: Math.max(0, AD_RULES.rewardedDustPerDay - used), pays: AD_RULES.rewardedDust, busy: adBusy };
-        },
-        async watchAdForDust() {
-            if (engine.adDustState().left <= 0)
-                return "spent";
-            if (adBusy || !platform.rewardedAdReady())
-                return "unavailable";
-            adBusy = true;
-            notify();
-            const out = await platform.showRewardedAd("dust");
-            adBusy = false;
-            if (out === "earned") {
-                const t = today();
-                if (save.adDustDay !== t) {
-                    save.adDustDay = t;
-                    save.adDustCount = 0;
-                }
-                save.adDustCount += 1;
-                save.starDust += AD_RULES.rewardedDust;
-                writeSave(save);
-            }
-            notify();
-            return out;
-        },
-        afterCrash(next) {
-            // THE INTERSTITIAL, at the crash sheet's exit and nowhere else: never
-            // over the receipt, never before the pilot has chosen to leave.
-            const due = platform.adsReady && platform.interstitialAdReady()
-                && save.runs >= AD_RULES.interstitialGraceRuns
-                && save.crashesSinceAd >= AD_RULES.interstitialEveryCrashes
-                && Date.now() - save.lastAdAt >= AD_RULES.interstitialMinGapSec * 1000;
-            if (!due || adBusy) {
-                next();
-                return;
-            }
-            adBusy = true;
-            notify();
-            save.crashesSinceAd = 0;
-            save.lastAdAt = Date.now();
-            writeSave(save);
-            void platform.showInterstitialAd("crash").then(() => { adBusy = false; next(); notify(); });
-        },
         spillThrust() {
             if (!world.spill || world.screen !== "play" || save.spillButtonsOff)
                 return;
@@ -1179,8 +1113,6 @@ export async function createEngine(canvas) {
      *  a daily. A second tap while one is in flight is ignored rather than
      *  opening a second sheet. */
     let dustPurchase = null;
-    /** an ad is on screen (rewarded or interstitial): the sheets show it and refuse a second */
-    let adBusy = false;
     function buyDust(id) {
         const pack = DUST_PACKS.find((p) => p.id === id);
         if (!pack)
@@ -1742,9 +1674,6 @@ export async function createEngine(canvas) {
         if (ev === "debris")
             sfx.bounce();
         if (ev === "die") {
-            // the interstitial cadence counts every crash; afterCrash spends it
-            if (!world.lvl && !world.race && !world.spill)
-                save.crashesSinceAd = (save.crashesSinceAd ?? 0) + 1;
             writeSave(save);
             sfx.die();
             notify();

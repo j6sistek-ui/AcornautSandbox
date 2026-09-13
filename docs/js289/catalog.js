@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-13 05:36 UTC";
+export const BUILD_TIME = "2026-09-13 05:12 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -824,20 +824,6 @@ export const BOOSTS = {
 };
 export const BOOST_IDS = Object.keys(BOOSTS);
 /** claimed once per day; the seventh straight day pays the streak bonus */
-/** THE AD RULES (owner, 13 Sep 2026: "just ad revenue for now ... tying in
- *  ads"). Three placements, every number here so the owner can dial them:
- *  a rewarded ad continues a crashed free flight for free (the acorn
- *  continue stays as the other option); a rewarded ad in the Shop pays
- *  Star Dust, a few times a day; a full-screen ad plays at the crash
- *  sheet's exit every few crashes, never in a pilot's first runs and never
- *  twice within the gap. The web page has no ads; the beta page pretends. */
-export const AD_RULES = {
-    rewardedDust: 25, // Star Dust for one rewarded ad in the Shop
-    rewardedDustPerDay: 3, // how many of those a day
-    interstitialEveryCrashes: 3, // a full-screen ad after every third crash...
-    interstitialMinGapSec: 120, // ...and never within two minutes of the last
-    interstitialGraceRuns: 5, // no full-screen ads in a pilot's first five runs
-};
 export const DAILY_DUST = 5;
 export const DAILY_STREAK_BONUS = 25;
 export const DAILY_STREAK_LEN = 7;

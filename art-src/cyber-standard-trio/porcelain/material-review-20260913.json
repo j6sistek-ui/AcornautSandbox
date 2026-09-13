@@ -1,0 +1,117 @@
+{
+  "recordedAt": "2026-09-13 04:21:50 UTC",
+  "scope": "Source material/lighting correction only for Percy ASC5 and ASC9.",
+  "status": "PASS: exact source corrections and final production SD/HD rendering independently reviewed.",
+  "method": "Built-in image_gen single-frame material edit. Exact targets retain pose and framing; neighboring frames are finish references only.",
+  "previousSourceRevision": "e0ae1211",
+  "pathsRelativeTo": "repository root unless source/frame path is explicitly this directory",
+  "sourceReview": {
+    "reviewer": "independent_cyber_review",
+    "observations": "Full1254 before/after retains botanical branches and sparse dots, chest sash/stars, collar buckle, blue joint/ring counts, all four paws and tail silhouette. Porcelain grain is smoother/cleaner ivory and visor/rings recover clear highlights; no new plate or missing detail visible.",
+    "limitation": "Source/material and geometry clearance only; final integrated 158 CSS pixel DPR2 review remains required.",
+    "stage": "Historical source-only clearance; final integrated acceptance is recorded below."
+  },
+  "geometry": {
+    "method": "Actual exporter in isolated fixture; identical green-key, Lanczos512 and existing scale1/whole-image offsets. Binary registered alpha>24 silhouette is diagnostic, not a costume proof.",
+    "results": [
+      {
+        "frame": "asc-5",
+        "silhouetteIoU": 0.9968548112886774,
+        "originalBounds512": [
+          140,
+          157,
+          387,
+          385
+        ],
+        "candidateBounds512": [
+          140,
+          157,
+          387,
+          385
+        ],
+        "centroidDelta512": [
+          -0.011565166429591045,
+          0.0075885293876467586
+        ]
+      },
+      {
+        "frame": "asc-9",
+        "silhouetteIoU": 0.9922141520853968,
+        "originalBounds512": [
+          151,
+          144,
+          385,
+          396
+        ],
+        "candidateBounds512": [
+          150,
+          144,
+          384,
+          396
+        ],
+        "centroidDelta512": [
+          -0.10043416413810746,
+          0.050417105795872885
+        ]
+      }
+    ],
+    "decision": "Retain existing registration, geometry, mask and pivot values; independently confirmed source geometry unchanged."
+  },
+  "frames": [
+    {
+      "frame": "asc-5",
+      "source": "frames/asc-5.png",
+      "sha256": "ce24896a7daa39326ce202d32b82a6e3d202f6c56f8f7383a99c8894edec1745",
+      "previousSourceSha256": "5afd2bc1d7635311a2675f7bd4b902bdb10433d738b66dcb6be69a2d62b28846",
+      "tool": "image_gen.imagegen",
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-9063976c-8b37-49af-8eaf-3e37371f836c.png",
+      "promptFile": "frames/asc-5-material-repair-prompt.txt",
+      "references": [
+        {
+          "path": "art-src/cyber-standard-trio/porcelain/frames/asc-5.png",
+          "sha256": "5afd2bc1d7635311a2675f7bd4b902bdb10433d738b66dcb6be69a2d62b28846"
+        },
+        {
+          "path": "art-src/cyber-standard-trio/porcelain/frames/asc-4.png",
+          "sha256": "7b0f78185abb12c03159fad8563d413ea4a57f5895999f69533525e15efdfba1"
+        },
+        {
+          "path": "art-src/cyber-standard-trio/porcelain/frames/asc-6.png",
+          "sha256": "7a75251ebd44fb16af2497130622a2eab7416921fbbd267050ff32ff6b6e914e"
+        }
+      ]
+    },
+    {
+      "frame": "asc-9",
+      "source": "frames/asc-9.png",
+      "sha256": "b5dd4ca835caf4edf38e1d014844abb5a0e6f06d8321fa11e280b3f14224b4ba",
+      "previousSourceSha256": "85778a37760421d235e430b2f99e74c662afaae6f71bdbc85a5ead759e50fee1",
+      "tool": "image_gen.imagegen",
+      "generatedSource": "generated_images/01a09772-39e1-7342-89d4-94a6642d5602/exec-bc48888e-9de8-4d4a-9c7a-29accf434074.png",
+      "promptFile": "frames/asc-9-material-repair-prompt.txt",
+      "references": [
+        {
+          "path": "art-src/cyber-standard-trio/porcelain/frames/asc-9.png",
+          "sha256": "85778a37760421d235e430b2f99e74c662afaae6f71bdbc85a5ead759e50fee1"
+        },
+        {
+          "path": "art-src/cyber-standard-trio/porcelain/frames/asc-8.png",
+          "sha256": "58eb44f8473afcb4eff6d116d308fef87c787feaa5f8202cf3e74b10dc26c2be"
+        },
+        {
+          "path": "art-src/cyber-standard-trio/porcelain/frames/asc-1.png",
+          "sha256": "dcfc894c371082b7b6dab9fa13cb980c22aacb5f216ded1a59fd5673f4004e0d"
+        }
+      ]
+    }
+  ],
+  "sourceStageStatus": "Independent source appearance, feature topology and registered silhouette review cleared these exact candidates; final exported/DPR2 runtime review pending.",
+  "integratedReview": {
+    "status": "PASS",
+    "reviewedAt": "2026-09-13T04:38:11.764162+00:00",
+    "reviewer": "independent_cyber_review",
+    "report": "illustrated-src/design/premium-pilots/QUALITY-REVIEW.md",
+    "evidence": "illustrated-src/design/premium-pilots/quality-review/final-capture.json",
+    "observations": "Actual 158 CSS pixel DPR2 all-frame inspection, 52/158/192 display checks and sampled Loadout/Sim phases preserve character details without the rejected isolated material flashes."
+  }
+}

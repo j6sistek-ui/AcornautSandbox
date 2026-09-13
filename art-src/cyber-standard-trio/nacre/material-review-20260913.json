@@ -1,0 +1,404 @@
+{
+  "recordedAt": "2026-09-13T03:56:38.010Z",
+  "scope": "Source material/lighting correction only for Envoy ASC3, ASC4, ASC5, ASC6, ASC7 and ASC9.",
+  "status": "PASS: exact source corrections and final production SD/HD rendering independently reviewed.",
+  "method": "Built-in image_gen single-frame edit with exact current geometry; ASC1 and original Nacre sheet used only as material/color references.",
+  "previousSourceRevision": "e0ae1211",
+  "pathsRelativeTo": "this directory",
+  "sourceReview": {
+    "reviewer": "independent_cyber_review",
+    "observations": "Softer pearl, dark aubergine and ivory materials closer to ASC1; ASC3 eye/muzzle/collar edges recover clean definition. Paired-tail curves and free tips, head/fin/eye counts, four paws, circular bracer hardware, waist/hip seams and ASC7 thin V neckline retained.",
+    "limitation": "Source visual clearance and silhouette diagnostics do not constitute final exported/DPR2 runtime acceptance.",
+    "additionalSources": "Independent direct full1254 comparison cleared ASC5/ASC9 candidate-1: smoother pearl face/armor and reduced magenta mottling/hot peach glare. ASC5 loose crossing, separate free tips, bracers, waist and neckline retained; ASC9 separated paired follow-through and suit feature count retained. Final integrated158px DPR2 review pending.",
+    "stage": "Historical source-only clearance; final integrated acceptance is recorded below."
+  },
+  "geometry": {
+    "method": "Diagnostic full-resolution binary non-green silhouette; exact full-canvas registration, no fitting. Not an anatomy/costume proof.",
+    "results": [
+      {
+        "frame": "asc-3",
+        "sourceDimensions": [
+          1254,
+          1254
+        ],
+        "candidateDimensions": [
+          1254,
+          1254
+        ],
+        "silhouetteIoU": 0.9880142262517169,
+        "sourceBounds": [
+          250,
+          417,
+          1002,
+          897
+        ],
+        "candidateBounds": [
+          250,
+          415,
+          1002,
+          898
+        ],
+        "centroidDeltaAt256": [
+          -0.009391071141518851,
+          -0.19260543028745492
+        ]
+      },
+      {
+        "frame": "asc-4",
+        "sourceDimensions": [
+          1254,
+          1254
+        ],
+        "candidateDimensions": [
+          1254,
+          1254
+        ],
+        "silhouetteIoU": 0.9907652634513521,
+        "sourceBounds": [
+          233,
+          402,
+          968,
+          931
+        ],
+        "candidateBounds": [
+          233,
+          402,
+          968,
+          933
+        ],
+        "centroidDeltaAt256": [
+          0.047868355638107124,
+          -0.06530194191229262
+        ]
+      },
+      {
+        "frame": "asc-5",
+        "sourceDimensions": [
+          1254,
+          1254
+        ],
+        "candidateDimensions": [
+          1254,
+          1254
+        ],
+        "silhouetteIoU": 0.9958943348185869,
+        "sourceBounds": [
+          316,
+          402,
+          960,
+          941
+        ],
+        "candidateBounds": [
+          316,
+          402,
+          960,
+          940
+        ],
+        "centroidDeltaAt256": [
+          -0.055002232787410614,
+          0.015259113242315719
+        ]
+      },
+      {
+        "frame": "asc-6",
+        "sourceDimensions": [
+          1254,
+          1254
+        ],
+        "candidateDimensions": [
+          1254,
+          1254
+        ],
+        "silhouetteIoU": 0.9930823887499877,
+        "sourceBounds": [
+          366,
+          385,
+          977,
+          949
+        ],
+        "candidateBounds": [
+          367,
+          384,
+          977,
+          949
+        ],
+        "centroidDeltaAt256": [
+          0.07225825161086132,
+          -0.06039839832470444
+        ]
+      },
+      {
+        "frame": "asc-7",
+        "sourceDimensions": [
+          1254,
+          1254
+        ],
+        "candidateDimensions": [
+          1254,
+          1254
+        ],
+        "silhouetteIoU": 0.9850615971361965,
+        "sourceBounds": [
+          364,
+          361,
+          957,
+          958
+        ],
+        "candidateBounds": [
+          365,
+          362,
+          956,
+          959
+        ],
+        "centroidDeltaAt256": [
+          0.05853195657677528,
+          0.22210372257530722
+        ]
+      },
+      {
+        "frame": "asc-9",
+        "sourceDimensions": [
+          1254,
+          1254
+        ],
+        "candidateDimensions": [
+          1254,
+          1254
+        ],
+        "silhouetteIoU": 0.994854619170355,
+        "sourceBounds": [
+          377,
+          361,
+          978,
+          971
+        ],
+        "candidateBounds": [
+          377,
+          360,
+          978,
+          971
+        ],
+        "centroidDeltaAt256": [
+          0.031736320924899315,
+          -0.07051330592536291
+        ]
+      }
+    ],
+    "unchanged": "Existing numeric geometry, poseOffsets, whole-image scale/offset and masks remain unchanged."
+  },
+  "sources": [
+    {
+      "source": "frames/asc-3.png",
+      "previousSourceSHA256": "185285b67afd21e628f57c5bb42eb4ba6316a47e2edd7ac0e7e4f712be2d8d9d",
+      "selectedSourceSHA256": "785a0177beb4f224ca907e9813ca24bed4e41683f17d1ac8127fced63ec40294",
+      "candidateSHA256": "785a0177beb4f224ca907e9813ca24bed4e41683f17d1ac8127fced63ec40294",
+      "artifact": "imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-97c5a2ff-2b72-4d9e-baf0-8fea2eaa7582.png",
+      "prompt": {
+        "file": "frames/asc-3-material-repair-prompt.txt"
+      },
+      "previousPrompt": {
+        "file": "tail-phase-prompts.json",
+        "selector": {
+          "n": 3
+        }
+      },
+      "references": [
+        {
+          "role": "edit target before correction",
+          "path": "frames/asc-3.png",
+          "sha256": "185285b67afd21e628f57c5bb42eb4ba6316a47e2edd7ac0e7e4f712be2d8d9d"
+        },
+        {
+          "role": "material/color only",
+          "path": "frames/asc-1.png",
+          "sha256": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db"
+        },
+        {
+          "role": "material/color only",
+          "path": "../../premium-flight/nacre-clean.png",
+          "sha256": "94fe02913c52cfd4f589cab064e83986bdd924f752c05619f494b6b0d403fe9f"
+        }
+      ]
+    },
+    {
+      "source": "frames/asc-4.png",
+      "previousSourceSHA256": "fb6a5a986c69e3e94a6c923d13a094627922ac0c49071e59f05aa35033a81cce",
+      "selectedSourceSHA256": "5709b4086cc71399210e9833cecbc3908969ad7b36a05024bde91808762da7f6",
+      "candidateSHA256": "5709b4086cc71399210e9833cecbc3908969ad7b36a05024bde91808762da7f6",
+      "artifact": "imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-b40f2f91-2876-4680-a705-2294952eedb8.png",
+      "prompt": {
+        "file": "frames/asc-4-material-repair-prompt.txt"
+      },
+      "previousPrompt": {
+        "file": "tail-phase-prompts.json",
+        "selector": {
+          "n": 4
+        }
+      },
+      "references": [
+        {
+          "role": "edit target before correction",
+          "path": "frames/asc-4.png",
+          "sha256": "fb6a5a986c69e3e94a6c923d13a094627922ac0c49071e59f05aa35033a81cce"
+        },
+        {
+          "role": "material/color only",
+          "path": "frames/asc-1.png",
+          "sha256": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db"
+        },
+        {
+          "role": "material/color only",
+          "path": "../../premium-flight/nacre-clean.png",
+          "sha256": "94fe02913c52cfd4f589cab064e83986bdd924f752c05619f494b6b0d403fe9f"
+        }
+      ]
+    },
+    {
+      "source": "frames/asc-5.png",
+      "previousSourceSHA256": "b92b188614bc5dc79f17dc30e5ebc8ffd0bbde403fa786320636385552fd0219",
+      "selectedSourceSHA256": "26717235d8d9b81a745f3fa518d307ce9e0854de7acad886871e1b97b8f01693",
+      "candidateSHA256": "26717235d8d9b81a745f3fa518d307ce9e0854de7acad886871e1b97b8f01693",
+      "artifact": "imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-4ec59776-ffd0-4dde-b855-1ad511818703.png",
+      "prompt": {
+        "file": "frames/asc-5-material-repair-prompt.txt"
+      },
+      "previousPrompt": {
+        "file": "paired-tail-prompts.json",
+        "selector": {
+          "bank": "asc",
+          "n": 5
+        }
+      },
+      "references": [
+        {
+          "role": "edit target before correction",
+          "path": "frames/asc-5.png",
+          "sha256": "b92b188614bc5dc79f17dc30e5ebc8ffd0bbde403fa786320636385552fd0219"
+        },
+        {
+          "role": "material/color only",
+          "path": "frames/asc-1.png",
+          "sha256": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db"
+        },
+        {
+          "role": "material/color only",
+          "path": "frames/asc-6.png",
+          "sha256": "68312b138214264cda8d3f185c39eae33858bc5df470365a3c91c5a0beae91aa"
+        },
+        {
+          "role": "material/color only",
+          "path": "../../premium-flight/nacre-clean.png",
+          "sha256": "94fe02913c52cfd4f589cab064e83986bdd924f752c05619f494b6b0d403fe9f"
+        }
+      ]
+    },
+    {
+      "source": "frames/asc-6.png",
+      "previousSourceSHA256": "b7830761252cc2b3881a06df2b398f0a50083fbe9da2c5a4c2bfd492c41fdd47",
+      "selectedSourceSHA256": "68312b138214264cda8d3f185c39eae33858bc5df470365a3c91c5a0beae91aa",
+      "candidateSHA256": "68312b138214264cda8d3f185c39eae33858bc5df470365a3c91c5a0beae91aa",
+      "artifact": "imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-19f8d2f2-0818-4d8b-981a-47b935f5d441.png",
+      "prompt": {
+        "file": "frames/asc-6-material-repair-prompt.txt"
+      },
+      "previousPrompt": {
+        "file": "repair-prompts-4.json",
+        "selector": {
+          "n": 6
+        }
+      },
+      "references": [
+        {
+          "role": "edit target before correction",
+          "path": "frames/asc-6.png",
+          "sha256": "b7830761252cc2b3881a06df2b398f0a50083fbe9da2c5a4c2bfd492c41fdd47"
+        },
+        {
+          "role": "material/color only",
+          "path": "frames/asc-1.png",
+          "sha256": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db"
+        },
+        {
+          "role": "material/color only",
+          "path": "../../premium-flight/nacre-clean.png",
+          "sha256": "94fe02913c52cfd4f589cab064e83986bdd924f752c05619f494b6b0d403fe9f"
+        }
+      ]
+    },
+    {
+      "source": "frames/asc-7.png",
+      "previousSourceSHA256": "f0b4a58dcfa7dd887055768698a4394333906dc1a5261f6c562881f70f223c3a",
+      "selectedSourceSHA256": "0d3b90dbd6f2d965b49298189e6ea6baed8c5e407c67573ed6cd40deb72d3070",
+      "candidateSHA256": "0d3b90dbd6f2d965b49298189e6ea6baed8c5e407c67573ed6cd40deb72d3070",
+      "artifact": "imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-e93d5f39-0bb9-4f38-9df3-17f2ae1e7aad.png",
+      "prompt": {
+        "file": "frames/asc-7-material-repair-prompt.txt"
+      },
+      "previousPrompt": {
+        "file": "frames/asc-7-neckline-repair-prompt.txt"
+      },
+      "references": [
+        {
+          "role": "edit target before correction",
+          "path": "frames/asc-7.png",
+          "sha256": "f0b4a58dcfa7dd887055768698a4394333906dc1a5261f6c562881f70f223c3a"
+        },
+        {
+          "role": "material/color only",
+          "path": "frames/asc-1.png",
+          "sha256": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db"
+        },
+        {
+          "role": "material/color only",
+          "path": "../../premium-flight/nacre-clean.png",
+          "sha256": "94fe02913c52cfd4f589cab064e83986bdd924f752c05619f494b6b0d403fe9f"
+        }
+      ]
+    },
+    {
+      "source": "frames/asc-9.png",
+      "previousSourceSHA256": "f64f769e8a4315e315451c8b890e1bf3383f00191979ce38d3ff0655003bbd69",
+      "selectedSourceSHA256": "ab59d068c468cb416426b48ab0f0519345bdd659b29bcdacfb351102234abfe5",
+      "candidateSHA256": "ab59d068c468cb416426b48ab0f0519345bdd659b29bcdacfb351102234abfe5",
+      "artifact": "imagegen:01a09772-65df-7a30-a2dd-1a10870fa506/exec-8e6d7f9d-31bb-42a5-9c57-7818d42cfeba.png",
+      "prompt": {
+        "file": "frames/asc-9-material-repair-prompt.txt"
+      },
+      "previousPrompt": {
+        "file": "repair-asc-9.txt"
+      },
+      "references": [
+        {
+          "role": "edit target before correction",
+          "path": "frames/asc-9.png",
+          "sha256": "f64f769e8a4315e315451c8b890e1bf3383f00191979ce38d3ff0655003bbd69"
+        },
+        {
+          "role": "material/color only",
+          "path": "frames/asc-1.png",
+          "sha256": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db"
+        },
+        {
+          "role": "material/color only",
+          "path": "frames/asc-8.png",
+          "sha256": "c82eddd5c0b0bd962071675cc033694202c25f509114eed8abce8cc0a8bd49b1"
+        },
+        {
+          "role": "material/color only",
+          "path": "../../premium-flight/nacre-clean.png",
+          "sha256": "94fe02913c52cfd4f589cab064e83986bdd924f752c05619f494b6b0d403fe9f"
+        }
+      ]
+    }
+  ],
+  "updatedAt": "2026-09-13T04:18:51.485Z",
+  "sourceStageStatus": "Independent source appearance and feature-topology review cleared these exact candidates; final exported/runtime review pending.",
+  "integratedReview": {
+    "status": "PASS",
+    "reviewedAt": "2026-09-13T04:38:11.764162+00:00",
+    "reviewer": "independent_cyber_review",
+    "report": "illustrated-src/design/premium-pilots/QUALITY-REVIEW.md",
+    "evidence": "illustrated-src/design/premium-pilots/quality-review/final-capture.json",
+    "observations": "Actual 158 CSS pixel DPR2 all-frame inspection, 52/158/192 display checks and sampled Loadout/Sim phases preserve character details without the rejected isolated material flashes."
+  }
+}
