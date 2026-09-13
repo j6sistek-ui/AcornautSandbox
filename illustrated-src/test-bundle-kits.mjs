@@ -56,7 +56,7 @@ if(betaGrantMode){
   }
   const oldSticker=C.DUST_STICKER.arcflash;
   try{
-    C.DUST_STICKER.arcflash=oldSticker+5000;
+    C.DUST_STICKER.arcflash=oldSticker+20000;   // well past the 12,360 floor now that prices are a tenth (13 Sep 2026)
     const target=S.betaDustGrantTarget();assert(target>12360,'future funding accounts for fixed singles outside bundles');
     const raw=S.defaultSave();Object.assign(raw,{starDust:37,betaDustGrant:true,betaDustGrantTotal:12360});
     S.writeSave(raw);const loaded=S.loadSave();assert.equal(loaded.starDust,37+target-12360);S.writeSave(loaded);
@@ -87,7 +87,9 @@ assert.deepEqual(C.FIXED_SHOP_SUIT_IDS,['arcflash','porcelain','nacre','origamis
 // half of it (owner, 12 Sep 2026: "cut the stardust cost in half globally in
 // the store ... i meant the actual dollar values in half"). The web string is
 // pinned here; the store tier is set by hand in App Store Connect / Play.
-assert.deepEqual(C.DUST_PACKS.map(({price,...pack})=>pack),snapshot.stardustOffers.map(({totalGrant,price,...pack})=>pack),'cash offers keep their dust and bonus grants');
+assert.deepEqual(C.DUST_PACKS.map(({price,acorns,...pack})=>pack),snapshot.stardustOffers.map(({totalGrant,price,...pack})=>pack),'cash offers keep their dust and bonus grants');
+// the packs are bought with acorns while the store is off (owner, 13 Sep 2026: "1000 acorn = 500 star dust")
+assert.equal(C.ACORNS_PER_DUST,2);for(const pack of C.DUST_PACKS)assert.equal(pack.acorns,pack.dust*C.ACORNS_PER_DUST,pack.id+' costs two acorns per base dust, bonus free');
 assert.deepEqual(C.DUST_PACKS.map(pack=>pack.price),['$0.49','$2.49','$4.99','$9.99'],'pack stickers are half the baseline dollars');
 assert.deepEqual(snapshot.stardustOffers.map(pack=>pack.price),['$0.99','$4.99','$9.99','$19.99'],'the baseline still records the pre-sale dollars');
 // The owner replaced the old pinned shelf with a smaller daily roster.
@@ -96,7 +98,9 @@ assert.deepEqual(snapshot.stardustOffers.map(pack=>pack.price),['$0.99','$4.99',
 assert.equal(C.SHOP_CYCLE.trails,0,'daily stock never sells free set or signature wakes');
 assert.deepEqual([...C.IAP_ITEMS].sort(),snapshot.individualItems.map(item=>item.id).sort(),'all ownership atoms remain available after the bundle regrouping');
 for(const item of snapshot.individualItems){
-  assert.equal(C.idDust(item.id),item.dust,item.id+' single price remains unchanged');
+  // the baseline was re-priced on 13 Sep 2026 (owner: "lower the pack prices
+  // a lot"): see provenance.repriced in baseline.json
+  assert.equal(C.idDust(item.id),item.dust,item.id+' single price matches the re-priced baseline');
   assert.deepEqual(C.idGrants(item.id),item.grants,item.id+' keeps its set grants');
 }
 
@@ -104,9 +108,9 @@ let quoteCases=0;
 const expected=new Map();
 for(const b of C.BUNDLES){
   const collection=collections[b.id];
-  const prior=snapshot.bundles.find(x=>x.id===b.id)??{fullAlaCarteTotal:270,fullFeaturePrice:200};
+  const prior=snapshot.bundles.find(x=>x.id===b.id)??{fullAlaCarteTotal:30,fullFeaturePrice:20};
   if(collection){
-    assert.equal(b.name,collection.name);assert.equal(b.dust,200);
+    assert.equal(b.name,collection.name);assert.equal(b.dust,20);
     assert.deepEqual(b.items,collection.ids.map(id=>({kind:collection.kind,id})),b.id+' groups exactly three former individual offers');
   }else for(const key of ['name','blurb','dust','items','fixed','featuredAtSticker','alwaysAvailable','keepSingles'])
     assert.deepEqual(b[key],prior[key],b.id+' preserves '+key);
@@ -124,7 +128,7 @@ for(const b of C.BUNDLES){
   }
   const fixture=snapshot.ownershipPricing.find(x=>x.id===b.id)??{
     ownershipBitOrder:collection.ids,
-    rows:Array.from({length:8},(_,mask)=>[mask,null,null,90*collection.ids.filter((_,bit)=>!(mask&(1<<bit))).length]),
+    rows:Array.from({length:8},(_,mask)=>[mask,null,null,10*collection.ids.filter((_,bit)=>!(mask&(1<<bit))).length]),
   };
   const prices=new Map();
   for(const [mask,,,remainingRetail] of fixture.rows){
@@ -169,8 +173,8 @@ for(const items of [
 }
 assert.throws(()=>C.bundleQuote({...trio,items:[...trio.items,{kind:'trail',id:'porcelainwake'}]},none),
   /built-in wakes must not be listed as products/,'a valid bundle cannot charge separately for an inseparable signature wake');
-for(const [ids,due] of [[[],2500],[['porcelain'],1500],[['porcelain','nacre'],500],[['porcelain','nacre','origamist'],0]])
-  assert.equal(C.bundleQuote(trio,id=>ids.includes(id)).due,due,'each trio pilot credits its complete 1000 retail value');
+for(const [ids,due] of [[[],250],[['porcelain'],150],[['porcelain','nacre'],50],[['porcelain','nacre','origamist'],0]])
+  assert.equal(C.bundleQuote(trio,id=>ids.includes(id)).due,due,'each trio pilot credits its complete 100 retail value');
 
 const initial=S.defaultSave();
 Object.assign(initial,{tutorialDone:true,guide:'done',introOff:true,musicOff:true,sfxOff:true,motionOff:true});
