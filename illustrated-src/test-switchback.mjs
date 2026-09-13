@@ -43,7 +43,7 @@ const tick=()=>{now+=1000/60;const batch=[...frames.values()];frames.clear();bat
 const button=text=>[...app.querySelectorAll('button')].find(b=>b.textContent.includes(text));
 function chart(){e.open('log');tick();tick();return app.querySelector('.ac-chartmap');}
 assert(Cat.PALS.some(p=>p.id==='switchback'));assert(Cat.isIap('switchback'));
-assert.equal(Cat.PAL_ANIM.switchback,16);assert.equal(Cat.idDust('switchback'),90);
+assert.equal(Cat.PAL_ANIM.switchback,16);assert.equal(Cat.idDust('switchback'),10);
 assert(!S.palUnlocked(e.save,'switchback'));assert.equal(e.equipPal('switchback'),'locked');
 // Existing featured rotation includes the new companion pack. No new store
 // or grant path: this is the same ownership/Star Dust transaction as peers.
@@ -73,8 +73,8 @@ assert(swDay>=0,`the ${swPack.name} pack never reaches the shop across ${Cat.BUN
 // is the pack's place among the packs the rotation cycles - a fixed-price
 // pack keeps its own shelf slot and sits out of that cycle.
 assert.equal(swDay,Cat.BUNDLES.filter(b=>!b.fixed&&!b.alwaysAvailable&&!Cat.SHOP_CYCLE.excludedBundleIds.includes(b.id)).findIndex(b=>b.id===swPack.id));
-e.save.starDust=89;assert.equal(e.buyShopItem('switchback'),'poor');
-e.save.starDust=90;assert.equal(e.buyShopItem('switchback'),'ok');
+e.save.starDust=9;assert.equal(e.buyShopItem('switchback'),'poor');
+e.save.starDust=10;assert.equal(e.buyShopItem('switchback'),'ok');
 assert.equal(e.save.starDust,0);assert(S.palUnlocked(e.save,'switchback'));
 assert.equal(e.buyShopItem('switchback'),'owned');assert.equal(e.equipPal('switchback'),'equip');
 S.writeSave(e.save);assert.equal(S.loadSave().equippedPal,'switchback');

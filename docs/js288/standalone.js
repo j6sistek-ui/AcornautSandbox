@@ -12,7 +12,7 @@ import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=288";
 import { repeatTapMode, FLIGHT_TEST_PATTERNS } from "./sim.js?v=288";
 import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=288";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=288";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP } from "./catalog.js?v=288";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, IAP_LIVE, ACORNS_PER_DUST } from "./catalog.js?v=288";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=288";
 import { bundleQuote } from "./catalog.js?v=288";
 import { drawSprite as drawSpriteOn } from "./art.js?v=288";
@@ -4258,6 +4258,17 @@ export async function bootStandalone(root) {
             // sticker is only the web page's placeholder. A shell that has not
             // answered yet shows no price and cannot be tapped: a USD sticker in
             // front of a non-US reviewer is a rejection, not a fallback.
+            if (!IAP_LIVE) {
+                // ACORNS BUY STAR DUST (owner, 13 Sep 2026: "leave the packs in,
+                // they just cost acorns ... 1000 acorn = 500 star dust")
+                const pr = el("span", "ac-modprice ac-acornprice");
+                pr.append(acornImg(14), el("span", "", dp.acorns.toLocaleString()));
+                row.append(t, pr);
+                row.setAttribute("aria-label", `${(dp.dust + dp.bonus).toLocaleString()} Star Dust for ${dp.acorns.toLocaleString()} acorns`);
+                row.onclick = () => { tx(row, () => engine.buyDust(dp.id), dp.acorns, "acorns"); render(); };
+                scroll.append(row);
+                continue;
+            }
             const price = platform.priceOf(dp.id);
             const priced = !!price || !platform.native;
             const waiting = inFlight === dp.id;
@@ -4287,7 +4298,7 @@ export async function bootStandalone(root) {
             else
                 clearDeny();
         }
-        if (platform.storeReady) {
+        if (IAP_LIVE && platform.storeReady) {
             // Apple asks for this button on every storefront, consumables or not
             const restore = el("button", "ac-ghost ac-restore", "RESTORE PURCHASES");
             restore.onclick = () => { void engine.restorePurchases(); };
@@ -4299,7 +4310,9 @@ export async function bootStandalone(root) {
         // Say where the money goes. A shell with a store says nothing; the
         // beta says dust is granted; the live web page says the store is
         // the app's.
-        if (!platform.storeReady)
+        if (!IAP_LIVE)
+            scroll.append(el("p", "ac-fine", `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500.`));
+        else if (!platform.storeReady)
             scroll.append(el("p", "ac-fine", IS_BETA
                 ? "The payment rail is not connected yet, so dust is granted during the beta."
                 : "Star Dust packs are sold in the app. Everything else on this page works."));
@@ -5080,7 +5093,7 @@ export async function bootStandalone(root) {
             ctx.closePath();
             ctx.fill();
             ctx.restore();
-        }), "STAR DUST", "Premium currency. 5 free every day, +25 on day 7.");
+        }), "STAR DUST", `Shop currency. 5 free every day, +25 on day 7, more on the Star Chart, or ${ACORNS_PER_DUST} acorns each in the Shop.`);
         item(pic((ctx, px) => drawSpriteOn(ctx, engine.art?.ore ?? null, px / 2, px / 2, px * 0.92)), "ACORN COINS", "Debris Field's run-only currency. Spend it at the Depot; it resets each run.");
         item(pic(one("frozen")), "FREEZE ACORN", `Slows everything for ${PHYS.powerDuration}s.`);
         item(pic(one("shieldnut")), "SHIELD ACORN", "Blocks one debris hit.");

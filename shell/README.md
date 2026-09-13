@@ -33,6 +33,18 @@ Waiting on you, in this order:
 
 `npm run check` prints exactly what is still missing.
 
+## The store is off for v1
+
+Owner, 13 Sep 2026: *"eliminate IAP, just ad revenue for now ... leave the
+packs in, they just cost acorns ... 1000 acorn = 500 star dust."* The Star
+Dust packs are bought with acorns in the game; nothing is sold for money.
+`app.config.json` carries `"iap": false`, so `npm run check` does not ask for
+the RevenueCat keys or the product ids, and App Store Connect needs no
+in-app purchases for this build. To bring the store back: set `"iap": true`,
+fill those values, and have the shell set `window.__ACORNAUT_IAP__ = true`
+before the bundle loads (see `IAP_LIVE` in `game/catalog.ts`). There is no
+ad SDK yet; that is its own project.
+
 ## The values, and where each one comes from
 
 Everything goes in `app.config.json`. Replace the `PLACEHOLDER_…` text,

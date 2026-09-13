@@ -21,7 +21,6 @@ import { goalHud } from "./campaign.js?v=288";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=288";
 import { proceduralSky, hueShifted } from "./sky-gen.js?v=288";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=288";
-import { spriteImageFor } from "./sprite-detail.js?v=288";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=288";
 import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=288";
 import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=288";
@@ -4022,7 +4021,7 @@ function drawRigLayer(ctx, layer, ref, x, y, size, rot = 0, pivot, halo) {
             ctx.drawImage(h, ox - pad, oy - pad, h.width * scale, h.height * scale);
         }
     }
-    ctx.drawImage(spriteImageFor(ctx, layer, layer.width * scale, layer.height * scale), ox, oy, layer.width * scale, layer.height * scale);
+    ctx.drawImage(layer, ox, oy, layer.width * scale, layer.height * scale);
     ctx.restore();
 }
 function rigPlacement(ref, x, y, size, pivot) {

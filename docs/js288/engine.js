@@ -1,4 +1,4 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash } from "./catalog.js?v=288";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, IAP_LIVE } from "./catalog.js?v=288";
 import { platform } from "./platform.js?v=288";
 import { beginFlightTest } from "./sim.js?v=288";
 import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=288";
@@ -1117,6 +1117,16 @@ export async function createEngine(canvas) {
         const pack = DUST_PACKS.find((p) => p.id === id);
         if (!pack)
             return "missing";
+        // ACORNS BUY STAR DUST while the real-money store is off (owner, 13 Sep
+        // 2026: "leave the packs in, they just cost acorns ... 1000 acorn = 500
+        // star dust"). No receipt: nothing outside the save was charged.
+        if (!IAP_LIVE) {
+            if (save.acorns < pack.acorns)
+                return "poor";
+            save.acorns -= pack.acorns;
+            grantDust(pack);
+            return "ok";
+        }
         if (platform.storeReady) {
             if (dustPurchase?.state === "pending")
                 return "pending";

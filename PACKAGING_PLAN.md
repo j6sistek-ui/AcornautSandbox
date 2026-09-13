@@ -35,15 +35,14 @@ In order, because each one hands the next its value.
    Purchase. Team ID `7DH55F49XW` is already in the config.
 3. **Create the app record** in App Store Connect → copy the Apple ID
    number into `ios.appStoreConnectAppId`.
-4. **Four consumables** in App Store Connect → In-App Purchases, tiers
-   $0.49 / $2.49 / $4.99 / $9.99, ids e.g. `acornaut.dust.100` … `2600` →
-   `products.*`.
+4. ~~Four consumables~~ — **not for v1.** Owner, 13 Sep: "eliminate IAP,
+   just ad revenue for now." The packs are bought with acorns in the game;
+   `"iap": false` in the shell config drops these values from the check.
 5. **Three leaderboards** in Game Center: `acornaut.normal` (high to low),
    `acornaut.hyper` (**low to high, elapsed time** — it is posted finish
    ticks), `acornaut.spill` (high to low) → `leaderboards.*`.
-6. **RevenueCat**: add the iOS app to the project you created, paste the
-   `.p8` / Key ID / Issuer ID it asks for, copy the public SDK key →
-   `revenuecat.iosApiKey`.
+6. ~~RevenueCat~~ — not for v1, same reason. The project you created can
+   sit idle until the store comes back.
 7. `npm run configure`, then **a Mac with Xcode**: build, run on a phone,
    upload to TestFlight.
 
@@ -72,9 +71,10 @@ relaunch with the save intact, airplane-mode boot.
   from the current hub, Star Chart, a flight, the shop.
 - Description, keywords, support URL, privacy URL
   (`https://acornaut.app/privacy.html` is packaged and live).
-- App Privacy answers: no accounts; RevenueCat sees purchase history and a
-  device identifier, so declare Purchases + Identifiers "used for app
-  functionality, not linked to you"; no tracking.
+- App Privacy answers: no accounts, no purchases, no tracking. (If an ad
+  SDK is added for the "ad revenue" model it brings its own answers and an
+  App Tracking Transparency prompt; that is a separate project and is not
+  in this build.)
 - Age rating questionnaire (no ads, no user content, cartoon violence none).
 - Cloud saves stay out of v1 by decision ("simple version first"). Say so
   nowhere in the listing; the iCloud key-value adapter is a shell-only

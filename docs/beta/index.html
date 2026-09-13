@@ -631,6 +631,8 @@
     .ac-modprice.ac-dustprice { display: inline-flex; align-items: center; gap: 4px;
       color: #cbb4ff; text-shadow: 0 0 8px rgba(150,110,255,.75); }
     .ac-modprice.ac-dustprice svg { filter: drop-shadow(0 0 5px rgba(150,110,255,.9)); }
+    /* a Star Dust pack priced in acorns (13 Sep 2026): the acorn glyph and the number, like a mod card */
+    .ac-modprice.ac-acornprice { display: inline-flex; align-items: center; gap: 4px; }
     .ac-dustface { display: flex; align-items: center; justify-content: center;
       width: 54px; height: 54px; flex: none; border-radius: 14px; color: #cbb4ff;
       background: radial-gradient(70% 70% at 50% 30%, rgba(120,86,220,.45), rgba(8,6,22,.7));
@@ -2323,7 +2325,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js288/standalone.js")
+    import("../js289/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

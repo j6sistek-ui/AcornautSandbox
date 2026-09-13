@@ -3,7 +3,6 @@ import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_C
 import { prepareDepotBear } from "./spill-depot-bear.js?v=288";
 import { SPILL_UTILITY_IDS } from "./spill-content.js?v=288";
 import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumSuit, isHighOrbitRig } from "./high-orbit-config.js?v=288";
-import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=288";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -132,9 +131,6 @@ function asSprite(img) {
     s.core = m.core;
     s.coreX = m.coreX;
     s.coreY = m.coreY;
-    const still = typeof img.src === "string" ? img.src.match(/\/suits\/([^/]+)\.png(?:\?|$)/)?.[1] : undefined;
-    if (still && isPremiumSuit(still))
-        bindSpriteDetails([{ sprite: s, path: `suits/hd/${still}.png` }], path => loadImg(artUrl(path)));
     return s;
 }
 // One missing file must never sink the bank: a 404 among sixty-odd
@@ -283,9 +279,7 @@ export function drawSprite(ctx, spr, x, y, size, fit = "box", halo, haloOpacity 
             ctx.restore();
         }
     }
-    const image = spriteImageFor(ctx, spr, spr.width * scale, spr.height * scale);
-    const ratio = image.width / spr.width;
-    ctx.drawImage(image, box.x * ratio, box.y * ratio, box.w * ratio, box.h * ratio, dx, dy, dw, dh);
+    ctx.drawImage(spr, box.x, box.y, box.w, box.h, dx, dy, dw, dh);
 }
 // ------------------------------------------------------------- lazy suits
 // The per-suit FLIGHT banks — hinged tail/body layers and the animation
@@ -478,19 +472,6 @@ export function loadSuitBank(bank, id) {
         // Publish both complete banks together, retaining the still on failure.
         const completeMotion = !isPremiumSuit(id) || (asc.length === ASC_BANKS[id] && desc.length === DESC_BANKS[id]
             && [...asc, ...desc].every(frame => frame.width === 256 && frame.height === 256));
-        if (isPremiumSuit(id)) {
-            const detail = (path) => loadImg(artUrl(path));
-            if (tail && body)
-                bindSpriteDetails([
-                    { sprite: tail, path: `suits/hd/${id}-tail.png` },
-                    { sprite: body, path: `suits/hd/${id}-body.png` },
-                ], detail);
-            if (completeMotion)
-                bindSpriteDetails([
-                    ...asc.map((sprite, i) => ({ sprite, path: `suits/hd/${id}-asc-${i + 1}.png` })),
-                    ...desc.map((sprite, i) => ({ sprite, path: `suits/hd/${id}-desc-${i + 1}.png` })),
-                ], detail);
-        }
         if (asc.length && completeMotion)
             bank.suitAsc[id] = asc;
         if (desc.length && completeMotion)

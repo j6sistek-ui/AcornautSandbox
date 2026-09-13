@@ -18,7 +18,8 @@
     "pricingFixtureMethod": "All ownership subsets for every bundle; ownedMask uses ownershipBitOrder. Ownership is an abstract predicate, including any purchased or earned entitlement.",
     "transactionFixtureMethod": "Exact baseline function declarations run against synthetic in-memory saves with writeSave/notify counters; no persistence or equipment operations.",
     "rotationFixtureMethod": "Exact standalone shopDayIndex/dealFrom/shopCycle/cartOf declarations evaluated with fixed UTC time and synthetic ownership. catalog.shopBundles is a different helper, not the displayed Shop cycle.",
-    "byteHashMethod": "SHA-256 over immutable Git blob bytes, plus Git object ID and byte count. Working-tree CRLF normalization is not a content change; compare committed blobs or normalize text through Git."
+    "byteHashMethod": "SHA-256 over immutable Git blob bytes, plus Git object ID and byte count. Working-tree CRLF normalization is not a content change; compare committed blobs or normalize text through Git.",
+    "repriced": "13 Sep 2026: every Star Dust price a tenth of this baseline (owner: \"lower the pack prices a lot\"); the packs cost acorns at 2 per dust; kit discounts keep their original ratios. Retained bundles re-read from the catalog; retired bundles scaled arithmetically."
   },
   "versions": {
     "art": "254",
@@ -36,12 +37,12 @@
       "trail": 1,
       "pal": 1
     },
-    "DUST_PER_WEIGHT": 90,
+    "DUST_PER_WEIGHT": 10,
     "DUST_STICKER": {
-      "arcflash": 1850,
-      "porcelain": 1000,
-      "nacre": 1000,
-      "origamist": 1000
+      "arcflash": 185,
+      "porcelain": 100,
+      "nacre": 100,
+      "origamist": 100
     },
     "FEATURE_DISCOUNT": 0.5,
     "SET_TRAIL": {
@@ -62,14 +63,15 @@
     "SHOP_SLOTS": 3,
     "DAILY_DUST": 5,
     "DAILY_STREAK_BONUS": 25,
-    "DAILY_STREAK_LEN": 7
+    "DAILY_STREAK_LEN": 7,
+    "ACORNS_PER_DUST": 2
   },
   "bundles": [
     {
       "id": "bundle-arcflash",
       "name": "Arcflash",
       "blurb": "The arc-lit articulated flight suit, blue electrical wake built in.",
-      "dust": 1850,
+      "dust": 185,
       "fixed": true,
       "items": [
         {
@@ -84,15 +86,15 @@
         "arcflash"
       ],
       "weight": 3,
-      "fullBundlePrice": 1850,
-      "fullFeaturePrice": 1850,
-      "fullAlaCarteTotal": 1850
+      "fullBundlePrice": 185,
+      "fullFeaturePrice": 185,
+      "fullAlaCarteTotal": 185
     },
     {
       "id": "bundle-porcelain",
       "name": "Porcelain Paragon",
       "blurb": "Ivory ceramic, cobalt inlay and the permanent Sovereign Shell. Cobalt Filigree wake included.",
-      "dust": 1000,
+      "dust": 100,
       "fixed": true,
       "items": [
         {
@@ -107,15 +109,15 @@
         "porcelain"
       ],
       "weight": 3,
-      "fullBundlePrice": 1000,
-      "fullFeaturePrice": 1000,
-      "fullAlaCarteTotal": 1000
+      "fullBundlePrice": 100,
+      "fullFeaturePrice": 100,
+      "fullAlaCarteTotal": 100
     },
     {
       "id": "bundle-nacre",
       "name": "Nacre Envoy",
       "blurb": "A lilac alien in nacre armor, helmetless by design. Pearl Tide wake included.",
-      "dust": 1000,
+      "dust": 100,
       "fixed": true,
       "items": [
         {
@@ -130,15 +132,15 @@
         "nacre"
       ],
       "weight": 3,
-      "fullBundlePrice": 1000,
-      "fullFeaturePrice": 1000,
-      "fullAlaCarteTotal": 1000
+      "fullBundlePrice": 100,
+      "fullFeaturePrice": 100,
+      "fullAlaCarteTotal": 100
     },
     {
       "id": "bundle-origamist",
       "name": "Foldspace Origamist",
       "blurb": "Folded composite and the permanent Facet Shell. Foldspace Ribbon wake included.",
-      "dust": 1000,
+      "dust": 100,
       "fixed": true,
       "items": [
         {
@@ -153,15 +155,15 @@
         "origamist"
       ],
       "weight": 3,
-      "fullBundlePrice": 1000,
-      "fullFeaturePrice": 1000,
-      "fullAlaCarteTotal": 1000
+      "fullBundlePrice": 100,
+      "fullFeaturePrice": 100,
+      "fullAlaCarteTotal": 100
     },
     {
       "id": "bundle-premium-trio",
       "name": "Premium Pilot Trio",
       "blurb": "Percy, Envoy and Patriot, with all three signature wakes. Also available individually.",
-      "dust": 2500,
+      "dust": 250,
       "featuredAtSticker": true,
       "alwaysAvailable": true,
       "keepSingles": true,
@@ -190,15 +192,15 @@
         "origamist"
       ],
       "weight": 9,
-      "fullBundlePrice": 2500,
-      "fullFeaturePrice": 2500,
-      "fullAlaCarteTotal": 3000
+      "fullBundlePrice": 250,
+      "fullFeaturePrice": 250,
+      "fullAlaCarteTotal": 300
     },
     {
       "id": "bundle-magnetar",
       "name": "Magnetar Companion",
       "blurb": "A knot of blue lightning that turns the whole world over.",
-      "dust": 90,
+      "dust": 9,
       "items": [
         {
           "kind": "pal",
@@ -212,15 +214,15 @@
         "magnetar"
       ],
       "weight": 1,
-      "fullBundlePrice": 90,
-      "fullFeaturePrice": 50,
-      "fullAlaCarteTotal": 90
+      "fullBundlePrice": 9,
+      "fullFeaturePrice": 5,
+      "fullAlaCarteTotal": 10
     },
     {
       "id": "bundle-babyalien",
       "name": "Baby Alien Companion",
       "blurb": "Small, green and curious. The gates shrink to match.",
-      "dust": 90,
+      "dust": 9,
       "items": [
         {
           "kind": "pal",
@@ -234,15 +236,15 @@
         "babyalien"
       ],
       "weight": 1,
-      "fullBundlePrice": 90,
-      "fullFeaturePrice": 50,
-      "fullAlaCarteTotal": 90
+      "fullBundlePrice": 9,
+      "fullFeaturePrice": 5,
+      "fullAlaCarteTotal": 10
     },
     {
       "id": "bundle-satellite",
       "name": "Satellite Companion",
       "blurb": "A tin moon on a wobbling orbit. The sky closes in to a sight circle.",
-      "dust": 90,
+      "dust": 9,
       "items": [
         {
           "kind": "pal",
@@ -256,15 +258,15 @@
         "satellite"
       ],
       "weight": 1,
-      "fullBundlePrice": 90,
-      "fullFeaturePrice": 50,
-      "fullAlaCarteTotal": 90
+      "fullBundlePrice": 9,
+      "fullFeaturePrice": 5,
+      "fullAlaCarteTotal": 10
     },
     {
       "id": "bundle-spacepuppy",
       "name": "Space Puppy Companion",
       "blurb": "A pink axolotl in a harness. The run becomes a bounce house: giant planets, no debris, no score, just bounces.",
-      "dust": 90,
+      "dust": 9,
       "items": [
         {
           "kind": "pal",
@@ -278,15 +280,15 @@
         "spacepuppy"
       ],
       "weight": 1,
-      "fullBundlePrice": 90,
-      "fullFeaturePrice": 50,
-      "fullAlaCarteTotal": 90
+      "fullBundlePrice": 9,
+      "fullFeaturePrice": 5,
+      "fullAlaCarteTotal": 10
     },
     {
       "id": "bundle-astrafox",
       "name": "AstraFox Companion",
       "blurb": "A starlit fox that runs the sky faster: the gates swing wide and the world scrolls at 1.2x.",
-      "dust": 90,
+      "dust": 9,
       "items": [
         {
           "kind": "pal",
@@ -300,15 +302,15 @@
         "astrafox"
       ],
       "weight": 1,
-      "fullBundlePrice": 90,
-      "fullFeaturePrice": 50,
-      "fullAlaCarteTotal": 90
+      "fullBundlePrice": 9,
+      "fullFeaturePrice": 5,
+      "fullAlaCarteTotal": 10
     },
     {
       "id": "bundle-switchback",
       "name": "Stopwatch Companion",
       "blurb": "Golden clockwork, teal fins, and the clock on a leash: every tap toggles the slow.",
-      "dust": 90,
+      "dust": 9,
       "items": [
         {
           "kind": "pal",
@@ -322,15 +324,15 @@
         "switchback"
       ],
       "weight": 1,
-      "fullBundlePrice": 90,
-      "fullFeaturePrice": 50,
-      "fullAlaCarteTotal": 90
+      "fullBundlePrice": 9,
+      "fullFeaturePrice": 5,
+      "fullAlaCarteTotal": 10
     },
     {
       "id": "bundle-amethyst",
       "name": "Amethyst Visor",
       "blurb": "Violet glass under a gold rim.",
-      "dust": 90,
+      "dust": 9,
       "items": [
         {
           "kind": "helm",
@@ -344,15 +346,15 @@
         "amethyst"
       ],
       "weight": 1,
-      "fullBundlePrice": 90,
-      "fullFeaturePrice": 50,
-      "fullAlaCarteTotal": 90
+      "fullBundlePrice": 9,
+      "fullFeaturePrice": 5,
+      "fullAlaCarteTotal": 10
     },
     {
       "id": "bundle-ivoryguard",
       "name": "Ivoryguard Visor",
       "blurb": "Pale ice, steel trim, a cold blue light.",
-      "dust": 90,
+      "dust": 9,
       "items": [
         {
           "kind": "helm",
@@ -366,15 +368,15 @@
         "ivoryguard"
       ],
       "weight": 1,
-      "fullBundlePrice": 90,
-      "fullFeaturePrice": 50,
-      "fullAlaCarteTotal": 90
+      "fullBundlePrice": 9,
+      "fullFeaturePrice": 5,
+      "fullAlaCarteTotal": 10
     },
     {
       "id": "bundle-reactor",
       "name": "Reactor Visor",
       "blurb": "Acid green, and it glows in the dark of the run.",
-      "dust": 90,
+      "dust": 9,
       "items": [
         {
           "kind": "helm",
@@ -388,15 +390,15 @@
         "reactor"
       ],
       "weight": 1,
-      "fullBundlePrice": 90,
-      "fullFeaturePrice": 50,
-      "fullAlaCarteTotal": 90
+      "fullBundlePrice": 9,
+      "fullFeaturePrice": 5,
+      "fullAlaCarteTotal": 10
     },
     {
       "id": "bundle-aurora",
       "name": "Aurora Pack",
       "blurb": "Ice, growth and eclipse — three skies, worn.",
-      "dust": 900,
+      "dust": 90,
       "items": [
         {
           "kind": "suit",
@@ -458,15 +460,15 @@
         "prismwing"
       ],
       "weight": 16,
-      "fullBundlePrice": 900,
-      "fullFeaturePrice": 720,
-      "fullAlaCarteTotal": 1170
+      "fullBundlePrice": 80,
+      "fullFeaturePrice": 80,
+      "fullAlaCarteTotal": 130
     },
     {
       "id": "bundle-regalia",
       "name": "Regalia Pack",
       "blurb": "Gemcut, seraphim and the deep — the ceremonial set.",
-      "dust": 1200,
+      "dust": 120,
       "items": [
         {
           "kind": "suit",
@@ -538,15 +540,15 @@
         "clockling"
       ],
       "weight": 20,
-      "fullBundlePrice": 1200,
-      "fullFeaturePrice": 900,
-      "fullAlaCarteTotal": 1620
+      "fullBundlePrice": 100,
+      "fullFeaturePrice": 100,
+      "fullAlaCarteTotal": 180
     },
     {
       "id": "bundle-circuit",
       "name": "Circuit Pack",
       "blurb": "Chrome, current and code. All three come with custom helmets.",
-      "dust": 750,
+      "dust": 75,
       "items": [
         {
           "kind": "suit",
@@ -579,15 +581,15 @@
         "nightglider"
       ],
       "weight": 10,
-      "fullBundlePrice": 750,
-      "fullFeaturePrice": 450,
-      "fullAlaCarteTotal": 900
+      "fullBundlePrice": 50,
+      "fullFeaturePrice": 50,
+      "fullAlaCarteTotal": 100
     },
     {
       "id": "bundle-critters",
       "name": "Critter Pack",
       "blurb": "Bandit, Noodle and Quill. Three more who eat no acorns.",
-      "dust": 750,
+      "dust": 75,
       "items": [
         {
           "kind": "suit",
@@ -613,15 +615,15 @@
         "hedgehog"
       ],
       "weight": 9,
-      "fullBundlePrice": 750,
-      "fullFeaturePrice": 410,
-      "fullAlaCarteTotal": 810
+      "fullBundlePrice": 45,
+      "fullFeaturePrice": 45,
+      "fullAlaCarteTotal": 90
     },
     {
       "id": "bundle-robo",
       "name": "Robo & Glider",
       "blurb": "One machine, one wing. A short pack for a long night.",
-      "dust": 300,
+      "dust": 30,
       "items": [
         {
           "kind": "suit",
@@ -641,15 +643,15 @@
         "nightglider"
       ],
       "weight": 4,
-      "fullBundlePrice": 300,
-      "fullFeaturePrice": 180,
-      "fullAlaCarteTotal": 360
+      "fullBundlePrice": 30,
+      "fullFeaturePrice": 18,
+      "fullAlaCarteTotal": 40
     },
     {
       "id": "bundle-cyber",
       "name": "Cyber & Clockwork",
       "blurb": "Circuit chrome, trailing gearlight.",
-      "dust": 300,
+      "dust": 30,
       "items": [
         {
           "kind": "suit",
@@ -669,9 +671,9 @@
         "clockwork"
       ],
       "weight": 4,
-      "fullBundlePrice": 300,
-      "fullFeaturePrice": 180,
-      "fullAlaCarteTotal": 270
+      "fullBundlePrice": 30,
+      "fullFeaturePrice": 18,
+      "fullAlaCarteTotal": 40
     }
   ],
   "individualItems": [
@@ -681,7 +683,7 @@
         "suit"
       ],
       "weight": 3,
-      "dust": 1850,
+      "dust": 185,
       "grants": [
         "arcflash"
       ]
@@ -692,7 +694,7 @@
         "suit"
       ],
       "weight": 3,
-      "dust": 1000,
+      "dust": 100,
       "grants": [
         "porcelain"
       ]
@@ -703,7 +705,7 @@
         "suit"
       ],
       "weight": 3,
-      "dust": 1000,
+      "dust": 100,
       "grants": [
         "nacre"
       ]
@@ -714,7 +716,7 @@
         "suit"
       ],
       "weight": 3,
-      "dust": 1000,
+      "dust": 100,
       "grants": [
         "origamist"
       ]
@@ -725,7 +727,7 @@
         "pal"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "magnetar"
       ]
@@ -736,7 +738,7 @@
         "pal"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "babyalien"
       ]
@@ -747,7 +749,7 @@
         "pal"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "satellite"
       ]
@@ -758,7 +760,7 @@
         "pal"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "spacepuppy"
       ]
@@ -769,7 +771,7 @@
         "pal"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "astrafox"
       ]
@@ -780,7 +782,7 @@
         "pal"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "switchback"
       ]
@@ -791,7 +793,7 @@
         "helm"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "amethyst"
       ]
@@ -802,7 +804,7 @@
         "helm"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "ivoryguard"
       ]
@@ -813,7 +815,7 @@
         "helm"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "reactor"
       ]
@@ -825,7 +827,7 @@
         "helm"
       ],
       "weight": 4,
-      "dust": 360,
+      "dust": 40,
       "grants": [
         "cryostar",
         "celestialtide"
@@ -838,7 +840,7 @@
         "helm"
       ],
       "weight": 4,
-      "dust": 360,
+      "dust": 40,
       "grants": [
         "verdant",
         "verdantflourish"
@@ -851,7 +853,7 @@
         "helm"
       ],
       "weight": 4,
-      "dust": 360,
+      "dust": 40,
       "grants": [
         "eclipse",
         "eclipseglyph"
@@ -863,7 +865,7 @@
         "trail"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "celestialtide"
       ]
@@ -874,7 +876,7 @@
         "trail"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "verdantflourish"
       ]
@@ -885,7 +887,7 @@
         "trail"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "eclipseglyph"
       ]
@@ -896,7 +898,7 @@
         "pal"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "prismwing"
       ]
@@ -908,7 +910,7 @@
         "helm"
       ],
       "weight": 4,
-      "dust": 360,
+      "dust": 40,
       "grants": [
         "gemmie",
         "opalfeather"
@@ -921,7 +923,7 @@
         "helm"
       ],
       "weight": 4,
-      "dust": 360,
+      "dust": 40,
       "grants": [
         "sammie"
       ]
@@ -933,7 +935,7 @@
         "helm"
       ],
       "weight": 4,
-      "dust": 360,
+      "dust": 40,
       "grants": [
         "seraph",
         "phoenixplume"
@@ -946,7 +948,7 @@
         "helm"
       ],
       "weight": 4,
-      "dust": 360,
+      "dust": 40,
       "grants": [
         "leviathan"
       ]
@@ -957,7 +959,7 @@
         "trail"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "opalfeather"
       ]
@@ -968,7 +970,7 @@
         "trail"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "clockwork"
       ]
@@ -979,7 +981,7 @@
         "trail"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "phoenixplume"
       ]
@@ -990,7 +992,7 @@
         "pal"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "clockling"
       ]
@@ -1001,7 +1003,7 @@
         "suit"
       ],
       "weight": 3,
-      "dust": 270,
+      "dust": 30,
       "grants": [
         "cyber",
         "clockwork"
@@ -1013,7 +1015,7 @@
         "suit"
       ],
       "weight": 3,
-      "dust": 270,
+      "dust": 30,
       "grants": [
         "volt"
       ]
@@ -1024,7 +1026,7 @@
         "suit"
       ],
       "weight": 3,
-      "dust": 270,
+      "dust": 30,
       "grants": [
         "robo"
       ]
@@ -1035,7 +1037,7 @@
         "pal"
       ],
       "weight": 1,
-      "dust": 90,
+      "dust": 10,
       "grants": [
         "nightglider"
       ]
@@ -1046,7 +1048,7 @@
         "suit"
       ],
       "weight": 3,
-      "dust": 270,
+      "dust": 30,
       "grants": [
         "raccoon"
       ]
@@ -1057,7 +1059,7 @@
         "suit"
       ],
       "weight": 3,
-      "dust": 270,
+      "dust": 30,
       "grants": [
         "ferret"
       ]
@@ -1068,7 +1070,7 @@
         "suit"
       ],
       "weight": 3,
-      "dust": 270,
+      "dust": 30,
       "grants": [
         "hedgehog"
       ]
@@ -1107,13 +1109,13 @@
   "boosts": {
     "levelskip": {
       "name": "Level Skip",
-      "dust": 100,
+      "dust": 10,
       "art": "ui/boost-skip.png",
       "blurb": "Three stars on any Star Chart mission, right now. Not for Hyper Run."
     },
     "starunlock": {
       "name": "Star Unlock",
-      "dust": 500,
+      "dust": 50,
       "art": "ui/boost-star.png",
       "blurb": "Any Star Chart reward item, yours ahead of its stars."
     }
@@ -1133,9 +1135,9 @@
       "rows": [
         [
           0,
-          1850,
-          1850,
-          1850
+          185,
+          185,
+          185
         ],
         [
           1,
@@ -1159,9 +1161,9 @@
       "rows": [
         [
           0,
-          1000,
-          1000,
-          1000
+          100,
+          100,
+          100
         ],
         [
           1,
@@ -1185,9 +1187,9 @@
       "rows": [
         [
           0,
-          1000,
-          1000,
-          1000
+          100,
+          100,
+          100
         ],
         [
           1,
@@ -1211,9 +1213,9 @@
       "rows": [
         [
           0,
-          1000,
-          1000,
-          1000
+          100,
+          100,
+          100
         ],
         [
           1,
@@ -1239,45 +1241,45 @@
       "rows": [
         [
           0,
-          2500,
-          2500,
-          3000
+          250,
+          250,
+          300
         ],
         [
           1,
-          1670,
-          1670,
-          2000
+          150,
+          150,
+          200
         ],
         [
           2,
-          1670,
-          1670,
-          2000
+          150,
+          150,
+          200
         ],
         [
           3,
-          830,
-          830,
-          1000
+          50,
+          50,
+          100
         ],
         [
           4,
-          1670,
-          1670,
-          2000
+          150,
+          150,
+          200
         ],
         [
           5,
-          830,
-          830,
-          1000
+          50,
+          50,
+          100
         ],
         [
           6,
-          830,
-          830,
-          1000
+          50,
+          50,
+          100
         ],
         [
           7,
@@ -1301,9 +1303,9 @@
       "rows": [
         [
           0,
-          90,
-          50,
-          90
+          9,
+          5,
+          9
         ],
         [
           1,
@@ -1327,9 +1329,9 @@
       "rows": [
         [
           0,
-          90,
-          50,
-          90
+          9,
+          5,
+          9
         ],
         [
           1,
@@ -1353,9 +1355,9 @@
       "rows": [
         [
           0,
-          90,
-          50,
-          90
+          9,
+          5,
+          9
         ],
         [
           1,
@@ -1379,9 +1381,9 @@
       "rows": [
         [
           0,
-          90,
-          50,
-          90
+          9,
+          5,
+          9
         ],
         [
           1,
@@ -1405,9 +1407,9 @@
       "rows": [
         [
           0,
-          90,
-          50,
-          90
+          9,
+          5,
+          9
         ],
         [
           1,
@@ -1431,9 +1433,9 @@
       "rows": [
         [
           0,
-          90,
-          50,
-          90
+          9,
+          5,
+          9
         ],
         [
           1,
@@ -1457,9 +1459,9 @@
       "rows": [
         [
           0,
-          90,
-          50,
-          90
+          9,
+          5,
+          9
         ],
         [
           1,
@@ -1483,9 +1485,9 @@
       "rows": [
         [
           0,
-          90,
-          50,
-          90
+          9,
+          5,
+          9
         ],
         [
           1,
@@ -1509,9 +1511,9 @@
       "rows": [
         [
           0,
-          90,
-          50,
-          90
+          9,
+          5,
+          9
         ],
         [
           1,
@@ -1541,765 +1543,765 @@
       "rows": [
         [
           0,
-          900,
-          720,
-          1170
+          80,
+          80,
+          130
         ],
         [
           1,
-          680,
-          540,
-          900
+          50,
+          50,
+          100
         ],
         [
           2,
-          680,
-          540,
-          900
+          50,
+          50,
+          100
         ],
         [
           3,
-          450,
-          360,
-          630
+          20,
+          20,
+          70
         ],
         [
           4,
-          680,
-          540,
-          900
+          50,
+          50,
+          100
         ],
         [
           5,
-          450,
-          360,
-          630
+          20,
+          20,
+          70
         ],
         [
           6,
-          450,
-          360,
-          630
+          20,
+          20,
+          70
         ],
         [
           7,
-          230,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           8,
-          840,
-          680,
-          1170
+          80,
+          80,
+          130
         ],
         [
           9,
-          620,
-          500,
-          810
+          40,
+          40,
+          90
         ],
         [
           10,
-          620,
-          500,
-          900
+          50,
+          50,
+          100
         ],
         [
           11,
-          390,
-          320,
-          540
+          10,
+          10,
+          60
         ],
         [
           12,
-          620,
-          500,
-          900
+          50,
+          50,
+          100
         ],
         [
           13,
-          390,
-          320,
-          540
+          10,
+          10,
+          60
         ],
         [
           14,
-          390,
-          320,
-          630
+          20,
+          20,
+          70
         ],
         [
           15,
-          170,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           16,
-          840,
-          680,
-          1170
+          80,
+          80,
+          130
         ],
         [
           17,
-          620,
-          500,
-          900
+          50,
+          50,
+          100
         ],
         [
           18,
-          620,
-          500,
-          810
+          40,
+          40,
+          90
         ],
         [
           19,
-          390,
-          320,
-          540
+          10,
+          10,
+          60
         ],
         [
           20,
-          620,
-          500,
-          900
+          50,
+          50,
+          100
         ],
         [
           21,
-          390,
-          320,
-          630
+          20,
+          20,
+          70
         ],
         [
           22,
-          390,
-          320,
-          540
+          10,
+          10,
+          60
         ],
         [
           23,
-          170,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           24,
-          790,
-          630,
-          1170
+          80,
+          80,
+          130
         ],
         [
           25,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           26,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           27,
-          340,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           28,
-          560,
-          450,
-          900
+          50,
+          50,
+          100
         ],
         [
           29,
-          340,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           30,
-          340,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           31,
-          110,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           32,
-          840,
-          680,
-          1170
+          80,
+          80,
+          130
         ],
         [
           33,
-          620,
-          500,
-          900
+          50,
+          50,
+          100
         ],
         [
           34,
-          620,
-          500,
-          900
+          50,
+          50,
+          100
         ],
         [
           35,
-          390,
-          320,
-          630
+          20,
+          20,
+          70
         ],
         [
           36,
-          620,
-          500,
-          810
+          40,
+          40,
+          90
         ],
         [
           37,
-          390,
-          320,
-          540
+          10,
+          10,
+          60
         ],
         [
           38,
-          390,
-          320,
-          540
+          10,
+          10,
+          60
         ],
         [
           39,
-          170,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           40,
-          790,
-          630,
-          1170
+          80,
+          80,
+          130
         ],
         [
           41,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           42,
-          560,
-          450,
-          900
+          50,
+          50,
+          100
         ],
         [
           43,
-          340,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           44,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           45,
-          340,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           46,
-          340,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           47,
-          110,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           48,
-          790,
-          630,
-          1170
+          80,
+          80,
+          130
         ],
         [
           49,
-          560,
-          450,
-          900
+          50,
+          50,
+          100
         ],
         [
           50,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           51,
-          340,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           52,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           53,
-          340,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           54,
-          340,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           55,
-          110,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           56,
-          730,
-          590,
-          1170
+          80,
+          80,
+          130
         ],
         [
           57,
-          510,
-          410,
-          810
+          40,
+          40,
+          90
         ],
         [
           58,
-          510,
-          410,
-          810
+          40,
+          40,
+          90
         ],
         [
           59,
-          280,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           60,
-          510,
-          410,
-          810
+          40,
+          40,
+          90
         ],
         [
           61,
-          280,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           62,
-          280,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           63,
-          60,
-          50,
-          90
+          0,
+          0,
+          10
         ],
         [
           64,
-          840,
-          680,
-          1080
+          70,
+          70,
+          120
         ],
         [
           65,
-          620,
-          500,
-          810
+          40,
+          40,
+          90
         ],
         [
           66,
-          620,
-          500,
-          810
+          40,
+          40,
+          90
         ],
         [
           67,
-          390,
-          320,
-          540
+          10,
+          10,
+          60
         ],
         [
           68,
-          620,
-          500,
-          810
+          40,
+          40,
+          90
         ],
         [
           69,
-          390,
-          320,
-          540
+          10,
+          10,
+          60
         ],
         [
           70,
-          390,
-          320,
-          540
+          10,
+          10,
+          60
         ],
         [
           71,
-          170,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           72,
-          790,
-          630,
-          1080
+          70,
+          70,
+          120
         ],
         [
           73,
-          560,
-          450,
-          720
+          30,
+          30,
+          80
         ],
         [
           74,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           75,
-          340,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           76,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           77,
-          340,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           78,
-          340,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           79,
-          110,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           80,
-          790,
-          630,
-          1080
+          70,
+          70,
+          120
         ],
         [
           81,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           82,
-          560,
-          450,
-          720
+          30,
+          30,
+          80
         ],
         [
           83,
-          340,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           84,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           85,
-          340,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           86,
-          340,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           87,
-          110,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           88,
-          730,
-          590,
-          1080
+          70,
+          70,
+          120
         ],
         [
           89,
-          510,
-          410,
-          720
+          30,
+          30,
+          80
         ],
         [
           90,
-          510,
-          410,
-          720
+          30,
+          30,
+          80
         ],
         [
           91,
-          280,
-          230,
-          360
+          0,
+          0,
+          40
         ],
         [
           92,
-          510,
-          410,
-          810
+          40,
+          40,
+          90
         ],
         [
           93,
-          280,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           94,
-          280,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           95,
-          60,
-          50,
-          90
+          0,
+          0,
+          10
         ],
         [
           96,
-          790,
-          630,
-          1080
+          70,
+          70,
+          120
         ],
         [
           97,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           98,
-          560,
-          450,
-          810
+          40,
+          40,
+          90
         ],
         [
           99,
-          340,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           100,
-          560,
-          450,
-          720
+          30,
+          30,
+          80
         ],
         [
           101,
-          340,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           102,
-          340,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           103,
-          110,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           104,
-          730,
-          590,
-          1080
+          70,
+          70,
+          120
         ],
         [
           105,
-          510,
-          410,
-          720
+          30,
+          30,
+          80
         ],
         [
           106,
-          510,
-          410,
-          810
+          40,
+          40,
+          90
         ],
         [
           107,
-          280,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           108,
-          510,
-          410,
-          720
+          30,
+          30,
+          80
         ],
         [
           109,
-          280,
-          230,
-          360
+          0,
+          0,
+          40
         ],
         [
           110,
-          280,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           111,
-          60,
-          50,
-          90
+          0,
+          0,
+          10
         ],
         [
           112,
-          730,
-          590,
-          1080
+          70,
+          70,
+          120
         ],
         [
           113,
-          510,
-          410,
-          810
-        ],
-        [
-          114,
-          510,
-          410,
-          720
-        ],
-        [
-          115,
-          280,
-          230,
-          450
-        ],
-        [
-          116,
-          510,
-          410,
-          720
-        ],
-        [
-          117,
-          280,
-          230,
-          450
-        ],
-        [
-          118,
-          280,
-          230,
-          360
-        ],
-        [
-          119,
-          60,
-          50,
+          40,
+          40,
           90
         ],
         [
+          114,
+          30,
+          30,
+          80
+        ],
+        [
+          115,
+          0,
+          0,
+          50
+        ],
+        [
+          116,
+          30,
+          30,
+          80
+        ],
+        [
+          117,
+          0,
+          0,
+          50
+        ],
+        [
+          118,
+          0,
+          0,
+          40
+        ],
+        [
+          119,
+          0,
+          0,
+          10
+        ],
+        [
           120,
-          680,
-          540,
-          1080
+          70,
+          70,
+          120
         ],
         [
           121,
-          450,
-          360,
-          720
+          30,
+          30,
+          80
         ],
         [
           122,
-          450,
-          360,
-          720
+          30,
+          30,
+          80
         ],
         [
           123,
-          230,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           124,
-          450,
-          360,
-          720
+          30,
+          30,
+          80
         ],
         [
           125,
-          230,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           126,
-          230,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           127,
@@ -2330,1533 +2332,1533 @@
       "rows": [
         [
           0,
-          1200,
-          900,
-          1620
+          100,
+          100,
+          180
         ],
         [
           1,
-          960,
-          720,
-          1350
+          70,
+          70,
+          150
         ],
         [
           2,
-          960,
-          720,
-          1260
+          60,
+          60,
+          140
         ],
         [
           3,
-          720,
-          540,
-          990
+          30,
+          30,
+          110
         ],
         [
           4,
-          960,
-          720,
-          1350
+          70,
+          70,
+          150
         ],
         [
           5,
-          720,
-          540,
-          1080
+          40,
+          40,
+          120
         ],
         [
           6,
-          720,
-          540,
-          990
+          30,
+          30,
+          110
         ],
         [
           7,
-          480,
-          360,
-          720
+          0,
+          0,
+          80
         ],
         [
           8,
-          960,
-          720,
-          1260
+          60,
+          60,
+          140
         ],
         [
           9,
-          720,
-          540,
-          990
+          30,
+          30,
+          110
         ],
         [
           10,
-          720,
-          540,
-          900
+          20,
+          20,
+          100
         ],
         [
           11,
-          480,
-          360,
-          630
+          0,
+          0,
+          70
         ],
         [
           12,
-          720,
-          540,
-          990
+          30,
+          30,
+          110
         ],
         [
           13,
-          480,
-          360,
-          720
+          0,
+          0,
+          80
         ],
         [
           14,
-          480,
-          360,
-          630
+          0,
+          0,
+          70
         ],
         [
           15,
-          240,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           16,
-          1140,
-          860,
-          1620
+          100,
+          100,
+          180
         ],
         [
           17,
-          900,
-          680,
-          1260
+          60,
+          60,
+          140
         ],
         [
           18,
-          900,
-          680,
-          1260
+          60,
+          60,
+          140
         ],
         [
           19,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           20,
-          900,
-          680,
-          1350
+          70,
+          70,
+          150
         ],
         [
           21,
-          660,
-          500,
-          990
+          30,
+          30,
+          110
         ],
         [
           22,
-          660,
-          500,
-          990
+          30,
+          30,
+          110
         ],
         [
           23,
-          420,
-          320,
-          630
+          0,
+          0,
+          70
         ],
         [
           24,
-          900,
-          680,
-          1260
+          60,
+          60,
+          140
         ],
         [
           25,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           26,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           27,
-          420,
-          320,
-          540
+          0,
+          0,
+          60
         ],
         [
           28,
-          660,
-          500,
-          990
+          30,
+          30,
+          110
         ],
         [
           29,
-          420,
-          320,
-          630
+          0,
+          0,
+          70
         ],
         [
           30,
-          420,
-          320,
-          630
+          0,
+          0,
+          70
         ],
         [
           31,
-          180,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           32,
-          1140,
-          860,
-          1530
+          90,
+          90,
+          170
         ],
         [
           33,
-          900,
-          680,
-          1260
+          60,
+          60,
+          140
         ],
         [
           34,
-          900,
-          680,
-          1170
+          50,
+          50,
+          130
         ],
         [
           35,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           36,
-          900,
-          680,
-          1260
+          60,
+          60,
+          140
         ],
         [
           37,
-          660,
-          500,
-          990
+          30,
+          30,
+          110
         ],
         [
           38,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           39,
-          420,
-          320,
-          630
+          0,
+          0,
+          70
         ],
         [
           40,
-          900,
-          680,
-          1170
+          50,
+          50,
+          130
         ],
         [
           41,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           42,
-          660,
-          500,
-          810
+          10,
+          10,
+          90
         ],
         [
           43,
-          420,
-          320,
-          540
+          0,
+          0,
+          60
         ],
         [
           44,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           45,
-          420,
-          320,
-          630
+          0,
+          0,
+          70
         ],
         [
           46,
-          420,
-          320,
-          540
+          0,
+          0,
+          60
         ],
         [
           47,
-          180,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           48,
-          1080,
-          810,
-          1530
+          90,
+          90,
+          170
         ],
         [
           49,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           50,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           51,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           52,
-          840,
-          630,
-          1260
+          60,
+          60,
+          140
         ],
         [
           53,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           54,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           55,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           56,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           57,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           58,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           59,
-          360,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           60,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           61,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           62,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           63,
-          120,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           64,
-          1140,
-          860,
-          1620
+          100,
+          100,
+          180
         ],
         [
           65,
-          900,
-          680,
-          1350
+          70,
+          70,
+          150
         ],
         [
           66,
-          900,
-          680,
-          1260
+          60,
+          60,
+          140
         ],
         [
           67,
-          660,
-          500,
-          990
+          30,
+          30,
+          110
         ],
         [
           68,
-          900,
-          680,
-          1260
+          60,
+          60,
+          140
         ],
         [
           69,
-          660,
-          500,
-          990
+          30,
+          30,
+          110
         ],
         [
           70,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           71,
-          420,
-          320,
-          630
+          0,
+          0,
+          70
         ],
         [
           72,
-          900,
-          680,
-          1260
+          60,
+          60,
+          140
         ],
         [
           73,
-          660,
-          500,
-          990
+          30,
+          30,
+          110
         ],
         [
           74,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           75,
-          420,
-          320,
-          630
+          0,
+          0,
+          70
         ],
         [
           76,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           77,
-          420,
-          320,
-          630
+          0,
+          0,
+          70
         ],
         [
           78,
-          420,
-          320,
-          540
+          0,
+          0,
+          60
         ],
         [
           79,
-          180,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           80,
-          1080,
-          810,
-          1620
+          100,
+          100,
+          180
         ],
         [
           81,
-          840,
-          630,
-          1260
+          60,
+          60,
+          140
         ],
         [
           82,
-          840,
-          630,
-          1260
+          60,
+          60,
+          140
         ],
         [
           83,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           84,
-          840,
-          630,
-          1260
+          60,
+          60,
+          140
         ],
         [
           85,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           86,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           87,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           88,
-          840,
-          630,
-          1260
+          60,
+          60,
+          140
         ],
         [
           89,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           90,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           91,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           92,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           93,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           94,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           95,
-          120,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           96,
-          1080,
-          810,
-          1530
+          90,
+          90,
+          170
         ],
         [
           97,
-          840,
-          630,
-          1260
+          60,
+          60,
+          140
         ],
         [
           98,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           99,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           100,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           101,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           102,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           103,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           104,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           105,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           106,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           107,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           108,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           109,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           110,
-          360,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           111,
-          120,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           112,
-          1020,
-          770,
-          1530
+          90,
+          90,
+          170
         ],
         [
           113,
-          780,
-          590,
-          1170
+          50,
+          50,
+          130
         ],
         [
           114,
-          780,
-          590,
-          1170
+          50,
+          50,
+          130
         ],
         [
           115,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           116,
-          780,
-          590,
-          1170
+          50,
+          50,
+          130
         ],
         [
           117,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           118,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           119,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           120,
-          780,
-          590,
-          1170
+          50,
+          50,
+          130
         ],
         [
           121,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           122,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           123,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           124,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           125,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           126,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           127,
-          60,
-          50,
-          90
+          0,
+          0,
+          10
         ],
         [
           128,
-          1140,
-          860,
-          1530
+          90,
+          90,
+          170
         ],
         [
           129,
-          900,
-          680,
-          1260
+          60,
+          60,
+          140
         ],
         [
           130,
-          900,
-          680,
-          1170
+          50,
+          50,
+          130
         ],
         [
           131,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           132,
-          900,
-          680,
-          1260
+          60,
+          60,
+          140
         ],
         [
           133,
-          660,
-          500,
-          990
+          30,
+          30,
+          110
         ],
         [
           134,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           135,
-          420,
-          320,
-          630
+          0,
+          0,
+          70
         ],
         [
           136,
-          900,
-          680,
-          1170
+          50,
+          50,
+          130
         ],
         [
           137,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           138,
-          660,
-          500,
-          810
+          10,
+          10,
+          90
         ],
         [
           139,
-          420,
-          320,
-          540
+          0,
+          0,
+          60
         ],
         [
           140,
-          660,
-          500,
-          900
+          20,
+          20,
+          100
         ],
         [
           141,
-          420,
-          320,
-          630
+          0,
+          0,
+          70
         ],
         [
           142,
-          420,
-          320,
-          540
+          0,
+          0,
+          60
         ],
         [
           143,
-          180,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           144,
-          1080,
-          810,
-          1530
+          90,
+          90,
+          170
         ],
         [
           145,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           146,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           147,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           148,
-          840,
-          630,
-          1260
+          60,
+          60,
+          140
         ],
         [
           149,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           150,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           151,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           152,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           153,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           154,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           155,
-          360,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           156,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           157,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           158,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           159,
-          120,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           160,
-          1080,
-          810,
-          1440
+          80,
+          80,
+          160
         ],
         [
           161,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           162,
-          840,
-          630,
-          1080
+          40,
+          40,
+          120
         ],
         [
           163,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           164,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           165,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           166,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           167,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           168,
-          840,
-          630,
-          1080
+          40,
+          40,
+          120
         ],
         [
           169,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           170,
-          600,
-          450,
-          720
+          0,
+          0,
+          80
         ],
         [
           171,
-          360,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           172,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           173,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           174,
-          360,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           175,
-          120,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           176,
-          1020,
-          770,
-          1440
+          80,
+          80,
+          160
         ],
         [
           177,
-          780,
-          590,
-          1080
+          40,
+          40,
+          120
         ],
         [
           178,
-          780,
-          590,
-          1080
+          40,
+          40,
+          120
         ],
         [
           179,
-          540,
-          410,
-          720
+          0,
+          0,
+          80
         ],
         [
           180,
-          780,
-          590,
-          1170
+          50,
+          50,
+          130
         ],
         [
           181,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           182,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           183,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           184,
-          780,
-          590,
-          1080
+          40,
+          40,
+          120
         ],
         [
           185,
-          540,
-          410,
-          720
+          0,
+          0,
+          80
         ],
         [
           186,
-          540,
-          410,
-          720
+          0,
+          0,
+          80
         ],
         [
           187,
-          300,
-          230,
-          360
+          0,
+          0,
+          40
         ],
         [
           188,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           189,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           190,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           191,
-          60,
-          50,
-          90
+          0,
+          0,
+          10
         ],
         [
           192,
-          1080,
-          810,
-          1530
+          90,
+          90,
+          170
         ],
         [
           193,
-          840,
-          630,
-          1260
+          60,
+          60,
+          140
         ],
         [
           194,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           195,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           196,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           197,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           198,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           199,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           200,
-          840,
-          630,
-          1170
+          50,
+          50,
+          130
         ],
         [
           201,
-          600,
-          450,
-          900
+          20,
+          20,
+          100
         ],
         [
           202,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           203,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           204,
-          600,
-          450,
-          810
+          10,
+          10,
+          90
         ],
         [
           205,
-          360,
-          270,
-          540
+          0,
+          0,
+          60
         ],
         [
           206,
-          360,
-          270,
-          450
+          0,
+          0,
+          50
         ],
         [
           207,
-          120,
-          90,
-          180
+          0,
+          0,
+          20
         ],
         [
           208,
-          1020,
-          770,
-          1530
+          90,
+          90,
+          170
         ],
         [
           209,
-          780,
-          590,
-          1170
+          50,
+          50,
+          130
         ],
         [
           210,
-          780,
-          590,
-          1170
+          50,
+          50,
+          130
         ],
         [
           211,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           212,
-          780,
-          590,
-          1170
+          50,
+          50,
+          130
         ],
         [
           213,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           214,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           215,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           216,
-          780,
-          590,
-          1170
+          50,
+          50,
+          130
         ],
         [
           217,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           218,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           219,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           220,
-          540,
-          410,
-          810
+          10,
+          10,
+          90
         ],
         [
           221,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           222,
-          300,
-          230,
-          450
+          0,
+          0,
+          50
         ],
         [
           223,
-          60,
-          50,
-          90
+          0,
+          0,
+          10
         ],
         [
           224,
-          1020,
-          770,
-          1440
+          80,
+          80,
+          160
         ],
         [
           225,
-          780,
-          590,
-          1170
+          50,
+          50,
+          130
         ],
         [
           226,
-          780,
-          590,
-          1080
+          40,
+          40,
+          120
         ],
         [
           227,
-          540,
-          410,
-          810
-        ],
-        [
-          228,
-          780,
-          590,
-          1080
-        ],
-        [
-          229,
-          540,
-          410,
-          810
-        ],
-        [
-          230,
-          540,
-          410,
-          720
-        ],
-        [
-          231,
-          300,
-          230,
-          450
-        ],
-        [
-          232,
-          780,
-          590,
-          1080
-        ],
-        [
-          233,
-          540,
-          410,
-          810
-        ],
-        [
-          234,
-          540,
-          410,
-          720
-        ],
-        [
-          235,
-          300,
-          230,
-          450
-        ],
-        [
-          236,
-          540,
-          410,
-          720
-        ],
-        [
-          237,
-          300,
-          230,
-          450
-        ],
-        [
-          238,
-          300,
-          230,
-          360
-        ],
-        [
-          239,
-          60,
-          50,
+          10,
+          10,
           90
         ],
         [
+          228,
+          40,
+          40,
+          120
+        ],
+        [
+          229,
+          10,
+          10,
+          90
+        ],
+        [
+          230,
+          0,
+          0,
+          80
+        ],
+        [
+          231,
+          0,
+          0,
+          50
+        ],
+        [
+          232,
+          40,
+          40,
+          120
+        ],
+        [
+          233,
+          10,
+          10,
+          90
+        ],
+        [
+          234,
+          0,
+          0,
+          80
+        ],
+        [
+          235,
+          0,
+          0,
+          50
+        ],
+        [
+          236,
+          0,
+          0,
+          80
+        ],
+        [
+          237,
+          0,
+          0,
+          50
+        ],
+        [
+          238,
+          0,
+          0,
+          40
+        ],
+        [
+          239,
+          0,
+          0,
+          10
+        ],
+        [
           240,
-          960,
-          720,
-          1440
+          80,
+          80,
+          160
         ],
         [
           241,
-          720,
-          540,
-          1080
+          40,
+          40,
+          120
         ],
         [
           242,
-          720,
-          540,
-          1080
+          40,
+          40,
+          120
         ],
         [
           243,
-          480,
-          360,
-          720
+          0,
+          0,
+          80
         ],
         [
           244,
-          720,
-          540,
-          1080
+          40,
+          40,
+          120
         ],
         [
           245,
-          480,
-          360,
-          720
+          0,
+          0,
+          80
         ],
         [
           246,
-          480,
-          360,
-          720
+          0,
+          0,
+          80
         ],
         [
           247,
-          240,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           248,
-          720,
-          540,
-          1080
+          40,
+          40,
+          120
         ],
         [
           249,
-          480,
-          360,
-          720
+          0,
+          0,
+          80
         ],
         [
           250,
-          480,
-          360,
-          720
+          0,
+          0,
+          80
         ],
         [
           251,
-          240,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           252,
-          480,
-          360,
-          720
+          0,
+          0,
+          80
         ],
         [
           253,
-          240,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           254,
-          240,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           255,
@@ -3883,93 +3885,93 @@
       "rows": [
         [
           0,
-          750,
-          450,
-          900
+          50,
+          50,
+          100
         ],
         [
           1,
-          530,
-          320,
-          630
+          20,
+          20,
+          70
         ],
         [
           2,
-          530,
-          320,
-          630
+          20,
+          20,
+          70
         ],
         [
           3,
-          300,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           4,
-          530,
-          320,
-          630
+          20,
+          20,
+          70
         ],
         [
           5,
-          300,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           6,
-          300,
-          180,
-          360
+          0,
+          0,
+          40
         ],
         [
           7,
-          80,
-          50,
-          90
+          0,
+          0,
+          10
         ],
         [
           8,
-          680,
-          410,
-          810
+          40,
+          40,
+          90
         ],
         [
           9,
-          450,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           10,
-          450,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           11,
-          230,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           12,
-          450,
-          270,
-          540
+          10,
+          10,
+          60
         ],
         [
           13,
-          230,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           14,
-          230,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           15,
@@ -3995,45 +3997,45 @@
       "rows": [
         [
           0,
-          750,
-          410,
-          810
+          45,
+          45,
+          90
         ],
         [
           1,
-          500,
-          270,
-          540
+          15,
+          15,
+          60
         ],
         [
           2,
-          500,
-          270,
-          540
+          15,
+          15,
+          60
         ],
         [
           3,
-          250,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           4,
-          500,
-          270,
-          540
+          15,
+          15,
+          60
         ],
         [
           5,
-          250,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           6,
-          250,
-          140,
-          270
+          0,
+          0,
+          30
         ],
         [
           7,
@@ -4058,21 +4060,21 @@
       "rows": [
         [
           0,
-          300,
-          180,
-          360
+          30,
+          18,
+          36
         ],
         [
           1,
-          80,
-          50,
-          90
+          8,
+          5,
+          9
         ],
         [
           2,
-          230,
-          140,
-          270
+          23,
+          14,
+          27
         ],
         [
           3,
@@ -4097,21 +4099,21 @@
       "rows": [
         [
           0,
-          300,
-          180,
-          270
+          30,
+          18,
+          27
         ],
         [
           1,
-          80,
-          50,
-          90
+          8,
+          5,
+          9
         ],
         [
           2,
-          230,
-          140,
-          270
+          23,
+          14,
+          27
         ],
         [
           3,

@@ -1,4 +1,4 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId } from "./catalog";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId, IAP_LIVE } from "./catalog";
 import { platform } from "./platform";
 import { beginFlightTest, type FlightTestPattern } from "./sim";
 import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX, type TapShape, type TailSpring } from "./control-constants";
@@ -129,7 +129,7 @@ export type Engine = {
   takeDailyClaim: () => { amount: number; streak: number; bonus: boolean; pack: boolean } | null;
   /** "pending": the store took over and will grant on success; "ok": granted
    *  outright (beta only); "unavailable": no store on this platform */
-  buyDust: (id: string) => "ok" | "missing" | "pending" | "unavailable";
+  buyDust: (id: string) => "ok" | "missing" | "pending" | "unavailable" | "poor";
   /** the pack id whose store purchase is in flight, or null */
   dustPending: () => string | null;
   /** the finished purchase the shop has not shown yet, ONCE; reading clears it */
@@ -1144,6 +1144,15 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function buyDust(id: string) {
     const pack = DUST_PACKS.find((p) => p.id === id);
     if (!pack) return "missing";
+    // ACORNS BUY STAR DUST while the real-money store is off (owner, 13 Sep
+    // 2026: "leave the packs in, they just cost acorns ... 1000 acorn = 500
+    // star dust"). No receipt: nothing outside the save was charged.
+    if (!IAP_LIVE) {
+      if (save.acorns < pack.acorns) return "poor";
+      save.acorns -= pack.acorns;
+      grantDust(pack);
+      return "ok";
+    }
     if (platform.storeReady) {
       if (dustPurchase?.state === "pending") return "pending";
       dustPurchase = { id, state: "pending" };

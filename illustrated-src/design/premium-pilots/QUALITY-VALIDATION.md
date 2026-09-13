@@ -44,7 +44,7 @@ display-detail companions while retaining the existing 256px logical geometry.
 
 ## Implementation and preserved contracts
 
-The stamp288 export regenerates 63 canonical 256px sprites and adds 63 direct-source
+The stamp289 export regenerates 63 canonical 256px sprites and adds 63 direct-source
 512px companions. Eight source paintings receive the material corrections above.
 Pose offsets, anatomical geometry, pivots, bank counts, controller state,
 ownership, prices, head policies and wake registration retain their existing
@@ -63,10 +63,11 @@ bank readiness. Only enlarged display demand loads that tier.
 
 ## Validation
 
-- Source export, lab build and Flight Studio build passed at stamp288. Normal
-  bundle retention adds `js288` and retires `js284`; generated modules come from
+- Source export, lab build and Flight Studio build passed at stamp289. Normal
+  bundle retention adds `js289` and retires `js285`; generated modules come from
   source. Unrelated helmet and High Orbit diagnostic regeneration was restored.
-- The complete harness passed **68 tests, zero failures, zero skips**. After the
+- At the pre-integration checkpoint, the complete harness passed **68 tests,
+  zero failures, zero skips**. After the
   final four material paintings were installed, premium-pilot/full-gold, Studio
   and detail-rendering checks passed again; all three also passed after Envoy's
   fallback correction. The Studio invalid-detail cache retry fix passed its
@@ -106,8 +107,38 @@ The standard art gate passed all **32 QA groups** against the final independent
 approval fixture. Its informational frame-spread report retains 19 flags across
 the repository, including Envoy ASC3/4, Patriot ASC6 and Percy ASC2/3. Those five
 paintings were included in the independent 54-frame visual inspection. The
-unrelated suits were not edited. The negative SD/HD/frozen-motion probes passed
+unrelated painted masters were not edited. The negative SD/HD/frozen-motion probes passed
 again against the final art.
+
+## Main integration
+
+The initial complete repair and review were checkpointed as `78ff7e1` on the
+`e0ae1211` base. Before publishing, main advanced to `9660e5c2` through PR294 and
+claimed build288. The quality branch incorporates that commit and regenerates
+build289. It preserves main's new economy, including the trio's 100-per-pilot
+and 250-bundle prices, the acorn exchange and disabled-by-default IAP. Catalog
+changes relative to current main are limited to the asset stamp.
+
+Only generated bundles conflicted. They were regenerated from combined sources;
+main's published `js288` remains intact. Main's small wake-context guard remains
+in place. Independent integration capture reproduced all 35 review PNGs
+byte-for-byte, all 150 loaded images remained identical and all 1,800 pilot ticks
+still matched Cyber. TypeScript, bridge and all 32 art groups passed again.
+The integrated full harness completed with 66 passes, two failures and no skips.
+Both failures were the Arcflash derived-image/Studio mismatch described below;
+both passed focused reruns after the correction. All 68 checks therefore have
+passing results on the final combined content. The other 66 checks were not
+repeated after this bounded asset/manifest correction. Final capture and source
+bindings are recorded in `quality-review/reviewed-hashes.json`.
+
+One incidental derived asset is required by the existing exact-pixel gate:
+Arcflash's fallback is regenerated from its unchanged rig. Compared with main,
+20 pixels each change one channel by at most 3/255 (19 RGB values and one alpha
+value from 142 to 143). Dimensions, bounds and silhouettes at four alpha
+thresholds are identical; all 25 Arcflash source/rig/test files match main.
+Keeping main's differently rounded image failed the strict fallback test and
+the Studio manifest check. The regenerated fallback and matching Studio manifest
+pass both focused reruns. No Arcflash painting or rig was redesigned.
 
 Docker is unavailable on this host. Checks use the repository's documented
 fallback with existing Node dependencies and Python/Pillow/NumPy/SciPy; no host

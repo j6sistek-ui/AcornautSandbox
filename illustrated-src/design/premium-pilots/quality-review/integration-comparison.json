@@ -1,0 +1,18 @@
+{
+  "verifiedAt": "2026-09-13T05:18:40.022755+00:00",
+  "baselineCommit": "78ff7e1846f60cda4ae9b65383eb65cfc7e4a85e",
+  "integratedMainCommit": "9660e5c28649f74fc2c03b09f46bd12ce7f36fde",
+  "currentArtVersion": 289,
+  "baselineCaptureGitObject": "78ff7e1846f60cda4ae9b65383eb65cfc7e4a85e:illustrated-src/design/premium-pilots/quality-review/final-capture.json",
+  "baselineCaptureSha256": "030944e9a03b722fa3af52661847ed641e77f8bf260821d11f68b91323ffe279",
+  "currentCapture": {
+    "path": "illustrated-src/design/premium-pilots/quality-review/final-capture.json",
+    "sha256": "d8a6379bfff0bc64a949163a33e6f5c67a5c766c338cd7974448746e92c2056c"
+  },
+  "renderedPngsCompared": 35,
+  "renderedPngsByteIdentical": 35,
+  "loadedImageFilesCompared": 150,
+  "loadedImagesByteIdentical": 150,
+  "matchedPilotTicks": 1800,
+  "method": "Fresh actual-production capture after main integration; exact PNG SHA comparison to independently viewed baseline. No repeated subjective approval inferred from code alone; unchanged rendered pixels retain the prior visual verdict."
+}

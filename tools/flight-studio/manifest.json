@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "288",
-  "sourceCommit": "e0ae1211eeb243b647c5c7a3e30a9c395b40c892",
+  "artVer": "289",
+  "sourceCommit": "78ff7e1846f60cda4ae9b65383eb65cfc7e4a85e",
   "models": [
     {
       "id": "flight",
@@ -5344,7 +5344,7 @@
     "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
     "high-orbit-motion": "08e7ec309a2bb197950773b427d01b1fe181f0c8503ed4886d9eb96f1e6064e2",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",
-    "premium-bank-wake": "2a087b58fda4320454346b09f5ff485f2de98020d21f123f7f33019f4d190901",
+    "premium-bank-wake": "effa86c508ea91c93abc180926b8f5b3fdee3ce3cc5ee2b1eab31ba900310c4b",
     "premium-flight": "3407656d559b99a152da02554a04e81827109e2dc5c6bd679a201f44cdb646d3",
     "premium-flight-frames": "d130d90ee5ea9c28a2425fe67f269d84c0619b91db5207250fc253675d355e0c",
     "rig-limb-fit": "3a4f500e7f35bdfa2f8a97e21f9457e3bdb846ab8da9ff3d540fb909d1e035f3",

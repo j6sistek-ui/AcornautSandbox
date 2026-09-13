@@ -109,6 +109,19 @@ reviewed 60Hz scenarios and sampled filmstrips do not cover every possible input
 or display rate. Loading the HD group atomically avoids mixed-resolution banks,
 but a pending group can retain the softer 256-pixel fallback until it is ready.
 
-The six complete-frame grids, three display-size boards, three Loadout cycles and eight fallback boards are retained in [quality-review](quality-review/). [final-capture.json](quality-review/final-capture.json) binds 150 loaded assets, 54 source paintings, 56 compiled runtime modules, the export manifest, capture harness and all 35 rendered outputs. Capture PNG names in that receipt resolve under `outputs/cyber-standard-trio/quality-production-final/`; 20 selected boards are also retained beside the receipt without changing their bytes. The other sampled scenario filmstrips are reproducible from the retained harness.
+The six complete-frame grids, three display-size boards, three Loadout cycles and eight fallback boards are retained in [quality-review](quality-review/). [final-capture.json](quality-review/final-capture.json) binds 150 loaded assets, 54 source paintings, 56 compiled runtime modules, the export manifest, capture harness and all 35 rendered outputs. Capture PNG names in that receipt resolve under `outputs/cyber-standard-trio/quality-production-289/`; 20 selected boards are also retained beside the receipt without changing their bytes. The other sampled scenario filmstrips are reproducible from the retained harness.
 
 [reviewed-hashes.json](quality-review/reviewed-hashes.json) binds the retained evidence and current source/export metadata. All source, runtime and loaded-image hashes were checked before and after rendering. The post-mask recapture left the twelve previously reviewed complete-bank/display boards byte-identical. Envoy's motion fixture now pins both 18 SD and 18 HD frames to this independent approval, with the existing separate body/tail movement checks. It is not a general exemption for unreviewed art. The old 12 September evidence remains historical and unchanged.
+
+
+## Main integration verification
+
+After the visual verdict, main advanced to `9660e5c2` with unrelated product
+changes. The approved evidence is immutable in checkpoint `78ff7e1`. The combined
+build was regenerated at art version 289 and captured again with the same
+production harness. All 35 rendered PNGs and all 150 loaded image files are
+byte-identical to that approved checkpoint, and all 1,800 pilot ticks still match
+Cyber. The current receipt binds the version-289 compiled modules. This carries
+forward the exact pixel review without presenting a code check as new visual
+inspection. [integration-comparison.json](quality-review/integration-comparison.json)
+records both commits and the baseline/current receipt hashes.

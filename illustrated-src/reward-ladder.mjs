@@ -144,6 +144,16 @@ for (const g of gates) {
   if (i >= 0) out.splice(i, 1);
   out.push({ ...g, stars, desc: clean(g.desc) });
 }
+// EARLY STAR DUST (owner, 13 Sep 2026: "add some star packs earlier in the
+// star chart"). The pattern deals its first dust at 90; three more rungs on
+// free fives before that, paid at their block's rate. Extra rows, not extra
+// slots, so nothing else on the ladder moves.
+const EARLY_DUST = [35, 55, 75];
+for (const stars of EARLY_DUST) {
+  if (out.some((r) => r.stars === stars)) continue;
+  const b = Math.floor(slots.filter((s) => s < stars).length / ORDER.length);
+  out.push({ ...currency("dust", b), stars });
+}
 out.sort((a, b) => a.stars - b.stars || ORDER.indexOf(a.kind) - ORDER.indexOf(b.kind));
 
 // ---- report ----------------------------------------------------------------

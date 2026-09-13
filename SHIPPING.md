@@ -203,7 +203,7 @@ What a store build changes, and where:
 | Concern | Where it lives | Web | App |
 |---|---|---|---|
 | Save storage | `platform.storage` | localStorage | shell's durable store, preloaded |
-| Dust packs | `platform.store` | beta grants, live refuses | StoreKit, prices from the store, Restore Purchases shown |
+| Dust packs | `platform.store` (off: `IAP_LIVE`) | bought with acorns, 2 per dust (13 Sep 2026) | the same; StoreKit only when a shell sets `window.__ACORNAUT_IAP__` |
 | Boards | `platform.boards` | local bests only | Game Center: all-time, monthly, friends |
 | Prototype doors | `platform.devDoors` | Help sheet | hidden |
 | Build line | `BUILD` | "Alpha V1.0.x" | "V1.0.x" |

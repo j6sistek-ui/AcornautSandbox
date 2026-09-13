@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-13 04:13 UTC";
+export const BUILD_TIME = "2026-09-13 04:42 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -478,13 +478,13 @@ export const WARP_GATES = 15;
 /** Single pilots remain premium without pretending to be bundles. */
 export const FIXED_SHOP_SUIT_IDS = ["arcflash", "porcelain", "nacre", "origamist"];
 export const BUNDLES = [
-    { id: "bundle-premium-trio", kit: { banner: "shop/bundle-premium-trio.png", discountDust: 500 }, name: "Premium Pilot Trio", blurb: "Percy, Envoy and Patriot, with all three signature wakes. Also available individually.", dust: 2500, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
+    { id: "bundle-premium-trio", kit: { banner: "shop/bundle-premium-trio.png", discountDust: 50 }, name: "Premium Pilot Trio", blurb: "Percy, Envoy and Patriot, with all three signature wakes. Also available individually.", dust: 250, featuredAtSticker: true, alwaysAvailable: true, keepSingles: true, items: [{ kind: "suit", id: "porcelain" }, { kind: "suit", id: "nacre" }, { kind: "suit", id: "origamist" }] },
     {
         id: "bundle-aurora",
-        kit: { banner: "shop/bundle-aurora.png", discountDust: 450 },
+        kit: { banner: "shop/bundle-aurora.png", discountDust: 50 },
         name: "Aurora Pack",
         blurb: "Ice, growth and eclipse \u2014 three skies, worn.",
-        dust: 900,
+        dust: 90,
         items: [
             { kind: "suit", id: "cryostar" }, { kind: "suit", id: "verdant" }, { kind: "suit", id: "eclipse" },
             { kind: "helm", id: "cryostar" }, { kind: "helm", id: "verdant" }, { kind: "helm", id: "eclipse" },
@@ -494,10 +494,10 @@ export const BUNDLES = [
     },
     {
         id: "bundle-regalia",
-        kit: { banner: "shop/bundle-regalia.png", discountDust: 720 },
+        kit: { banner: "shop/bundle-regalia.png", discountDust: 80 },
         name: "Regalia Pack",
         blurb: "Gemcut, seraphim and the deep \u2014 the ceremonial set.",
-        dust: 1200,
+        dust: 120,
         items: [
             { kind: "suit", id: "gemmie" }, { kind: "suit", id: "sammie" },
             { kind: "suit", id: "seraph" }, { kind: "suit", id: "leviathan" },
@@ -509,10 +509,10 @@ export const BUNDLES = [
     },
     {
         id: "bundle-circuit",
-        kit: { banner: "shop/bundle-circuit.png", discountDust: 450 },
+        kit: { banner: "shop/bundle-circuit.png", discountDust: 50 },
         name: "Circuit Pack",
         blurb: "Chrome, current and code. All three come with custom helmets.",
-        dust: 750,
+        dust: 75,
         items: [
             { kind: "suit", id: "cyber" }, { kind: "suit", id: "volt" }, { kind: "suit", id: "robo" },
             { kind: "pal", id: "nightglider" },
@@ -520,36 +520,36 @@ export const BUNDLES = [
     },
     {
         id: "bundle-critters",
-        kit: { banner: "shop/bundle-critters.png", discountDust: 400 },
+        kit: { banner: "shop/bundle-critters.png", discountDust: 45 },
         name: "Critter Pack",
         blurb: "Bandit, Noodle and Quill. Three more who eat no acorns.",
-        dust: 750,
+        dust: 75,
         items: [
             { kind: "suit", id: "raccoon" }, { kind: "suit", id: "ferret" }, { kind: "suit", id: "hedgehog" },
         ],
     },
     {
         id: "bundle-cosmic-companions",
-        kit: { banner: "shop/bundle-cosmic-companions.png", discountDust: 70 },
+        kit: { banner: "shop/bundle-cosmic-companions.png", discountDust: 10 },
         name: "Cosmic Companions",
         blurb: "Magnetar, Baby Alien and Satellite: three companions with their own flight effects.",
-        dust: 200,
+        dust: 20,
         items: [{ kind: "pal", id: "magnetar" }, { kind: "pal", id: "babyalien" }, { kind: "pal", id: "satellite" }],
     },
     {
         id: "bundle-starlight-companions",
-        kit: { banner: "shop/bundle-starlight-companions.png", discountDust: 70 },
+        kit: { banner: "shop/bundle-starlight-companions.png", discountDust: 10 },
         name: "Starlight Companions",
         blurb: "Space Puppy, AstraFox and Stopwatch: three companions with their own flight effects.",
-        dust: 200,
+        dust: 20,
         items: [{ kind: "pal", id: "spacepuppy" }, { kind: "pal", id: "astrafox" }, { kind: "pal", id: "switchback" }],
     },
     {
         id: "bundle-visor-collection",
-        kit: { banner: "shop/bundle-visor-collection.png", discountDust: 70 },
+        kit: { banner: "shop/bundle-visor-collection.png", discountDust: 10 },
         name: "Visor Collection",
         blurb: "Amethyst, Ivoryguard and Reactor: three distinct visors for the wardrobe.",
-        dust: 200,
+        dust: 20,
         items: [{ kind: "helm", id: "amethyst" }, { kind: "helm", id: "ivoryguard" }, { kind: "helm", id: "reactor" }],
     },
 ];
@@ -665,7 +665,18 @@ export const IAP_ITEMS = [...new Set([...FIXED_SHOP_SUIT_IDS, ...BUNDLES.flatMap
 // so the a la carte price is that rate, set ABOVE the dearest pack. That
 // ordering is the whole point: if a single cost what a pack charges per
 // slot, the small packs would offer nothing and nobody would ever buy one.
-export const DUST_PER_WEIGHT = 90;
+// THE ECONOMY, 13 Sep 2026. Owner: "I actually think I want to eliminate
+// IAP, just ad revenue for now ... keep the star dust, just lower the pack
+// prices a lot so that daily rewards unlock it fast, and add some star packs
+// earlier in the star chart ... leave the packs in, they just cost acorns
+// ... 1000 acorn = 500 star dust." So: every Star Dust price is a tenth of
+// what it was; the Star Dust packs stay on the shelf and are bought with
+// ACORNS at ACORNS_PER_DUST; the real-money store is off unless a shell
+// sets window.__ACORNAUT_IAP__ before the bundle loads (IAP_LIVE).
+export const IAP_LIVE = typeof window !== "undefined"
+    && window.__ACORNAUT_IAP__ === true;
+export const ACORNS_PER_DUST = 2;
+export const DUST_PER_WEIGHT = 10;
 // A suit and its matching helmet SHARE an ownership id - buying "cryostar"
 // hands over both - so a price is asked of the id, not of the render. This
 // walks the catalogue rather than hard-coding, so a new set is priced the
@@ -683,11 +694,11 @@ export function idWeight(id) {
     return w;
 }
 /** Explicit premium sticker prices replace the catalog's generic weight rate. */
-export const DUST_STICKER = { arcflash: 1850, porcelain: 1000, nacre: 1000, origamist: 1000 };
+export const DUST_STICKER = { arcflash: 185, porcelain: 100, nacre: 100, origamist: 100 };
 export function idDust(id) {
     if (DUST_STICKER[id] !== undefined)
         return DUST_STICKER[id];
-    return Math.max(10, Math.round((idWeight(id) * DUST_PER_WEIGHT) / 10) * 10);
+    return Math.max(10, Math.round((idWeight(id) * DUST_PER_WEIGHT) / 5) * 5);
 }
 // THE FREE TRAIL. Buying a set hands over its trail as well: the trail is
 // the part of a look nobody would pick on its own, and giving it away with
@@ -789,11 +800,14 @@ export const SHOP_CYCLE = {
 // These strings are the WEB sticker only - a native shell shows the store's
 // own localized price, so the same halving has to be set as the price
 // tier on each product in App Store Connect and Play Console.
+/** `acorns` is what a pack costs while IAP_LIVE is off (owner, 13 Sep 2026:
+ *  "1000 acorn = 500 star dust" - the bonus dust rides free); `price` is the
+ *  web sticker for the real-money store, unused until a shell turns it on. */
 export const DUST_PACKS = [
-    { id: "dust-100", dust: 100, bonus: 0, price: "$0.49" },
-    { id: "dust-550", dust: 500, bonus: 50, price: "$2.49" },
-    { id: "dust-1200", dust: 1000, bonus: 200, price: "$4.99" },
-    { id: "dust-2600", dust: 2000, bonus: 600, price: "$9.99" },
+    { id: "dust-100", dust: 100, bonus: 0, acorns: 100 * ACORNS_PER_DUST, price: "$0.49" },
+    { id: "dust-550", dust: 500, bonus: 50, acorns: 500 * ACORNS_PER_DUST, price: "$2.49" },
+    { id: "dust-1200", dust: 1000, bonus: 200, acorns: 1000 * ACORNS_PER_DUST, price: "$4.99" },
+    { id: "dust-2600", dust: 2000, bonus: 600, acorns: 2000 * ACORNS_PER_DUST, price: "$9.99" },
 ];
 /** STAR CHART BOOSTS (owner, 8 Sep 2026: "a level skip item... instant 3
  *  star any level (make it 100 star dust). And instant unlock any star
@@ -803,9 +817,9 @@ export const DUST_PACKS = [
  *  in save.boosts - handed out by a season or a code, never sold - pays
  *  first, and only then does the Profile show an inventory. */
 export const BOOSTS = {
-    levelskip: { name: "Level Skip", dust: 100, art: "ui/boost-skip.png",
+    levelskip: { name: "Level Skip", dust: 10, art: "ui/boost-skip.png",
         blurb: "Three stars on any Star Chart mission, right now. Not for Hyper Run." },
-    starunlock: { name: "Star Unlock", dust: 500, art: "ui/boost-star.png",
+    starunlock: { name: "Star Unlock", dust: 50, art: "ui/boost-star.png",
         blurb: "Any Star Chart reward item, yours ahead of its stars." },
 };
 export const BOOST_IDS = Object.keys(BOOSTS);

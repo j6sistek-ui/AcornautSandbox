@@ -7,7 +7,7 @@
   "scope": "All 18 current sources and delivered SD/HD paintings, stable costume/two-tail anatomy, Cyber phase rhythm, actual production-renderer sampled transitions and corrected loading fallback.",
   "reason": "Opaque-wholemass PCA is shape-dependent and ill-conditioned near equal covariance eigenvalues. This approval pins the exact visually reviewed twin-tail bank and is supplemented by separate body/tail motion checks; it is not a general PCA waiver.",
   "method": "All 18 actual portrait frame probes at158 CSS pixels/DPR2, source1254 and native512 inspection; actual Loadout/portrait52/158/192 CSS pixels atDPR2. Production Sim+drawPilot single tap,150ms repeat,100ms burst,dive,reset at60Hz:600/600 Nacre ticks match Cyber frame/vy/tailA. Real paintIllustrated fallback52/158 CSS pixels atangles -.75,-.35,0,.35,.75. ArtBank.detailImage populated directly; no raster interception.",
-  "phaseFindings": "Ascent1→3 gives two droop steps;3→7 gathers/lifts while two tails briefly cross and then unwind;7→9 follows through. Separate roots/tips remain traceable. Descent paired curls settle with modest relative plume motion. DESC2→3 local upper-plume opening changes a fixed-ROI angle but does not create a fresh whip in production captures.",
+  "phaseFindings": "Ascent1â†’3 gives two droop steps;3â†’7 gathers/lifts while two tails briefly cross and then unwind;7â†’9 follows through. Separate roots/tips remain traceable. Descent paired curls settle with modest relative plume motion. DESC2â†’3 local upper-plume opening changes a fixed-ROI angle but does not create a fresh whip in production captures.",
   "costumeFindings": "Six bounded ASC3/4/5/6/7/9 material corrections remove hot/mottled lighting while preserving pearl face/eyes/fins, aubergine suit, ivory bracers/boots, four paws, thin neckline/piping and both tails. Actual HD frame/phase inspection found no significant costume/material flash.",
   "limitations": "No independent interactive browser claim. Native-canvas production-renderer filmstrips sample fixed60Hz scenarios, not every input/display rate. ArtBank images are loaded directly; network/lazy-loader tested separately. Softer SD remains visible while HD group is pending. Anatomical anchors are approximate.",
   "outputHashes": {
@@ -73,7 +73,7 @@
   "runtimeAtCapture": [
     {
       "path": "docs/js/arcflash-motion.js",
-      "sha256": "35789544cbecabe60835073a879470596447dedb8634e4c1fb020956d5372fa0"
+      "sha256": "a017ac490172ad457eda2c11db18925afdd89d7d3e62e2082f0eea216e677395"
     },
     {
       "path": "docs/js/arcflash-parts.js",
@@ -81,11 +81,11 @@
     },
     {
       "path": "docs/js/arcflash.js",
-      "sha256": "9ff2318d8b4f6d7c428ba8bd2c5c05d3ca15631d9dd220e4725589b2d8f80a26"
+      "sha256": "d542fb6770eef3b5331aaa49dd2de87859f02fad2b50811cbf82b311b2099413"
     },
     {
       "path": "docs/js/art.js",
-      "sha256": "a21a7c8d438e15152af39af84460f086f94f6c0de5ed248b14b75b89337cf1b4"
+      "sha256": "cd44a7a654badc0f43fa9a0c6e189bc988a5929a4d616c51c883f0a173f2b6ec"
     },
     {
       "path": "docs/js/audio.js",
@@ -101,15 +101,15 @@
     },
     {
       "path": "docs/js/campaign-progress.js",
-      "sha256": "dddb3b72333a94724de6568d8819388984396657abdd96dbeb4c8e692bcfe083"
+      "sha256": "8b2bb6e5145f468b65a4881986fa7d4799484734565b44871020d2c28d3fd90a"
     },
     {
       "path": "docs/js/campaign.js",
-      "sha256": "c5ba7b31a80ad28359444c022b9821a5a6cdc37abe67baeb429018cb121dc19c"
+      "sha256": "df375c533f6b4c3995cdf6e30bee17fd96085adcbf5dc8e6e1a21c7cd546e92e"
     },
     {
       "path": "docs/js/catalog.js",
-      "sha256": "6ae5af11377ae72eae9197a49f6140b173c2d69ddfb2143b1cda7af5e16f6d21"
+      "sha256": "c377bc1457634bdd218ee47fff43613e7538a1e6cd9d8d58edc7493def12839d"
     },
     {
       "path": "docs/js/control-constants.js",
@@ -117,7 +117,7 @@
     },
     {
       "path": "docs/js/cosmetics.js",
-      "sha256": "fe8ea07c8162b9d72fba13132f8f643b26af2e320df73a4e30038f63f39d88f8"
+      "sha256": "0045a382d924342493a32f3720afad3225934e4392968eaa42cc05c24cb6f741"
     },
     {
       "path": "docs/js/cyber-trio-registration.js",
@@ -125,11 +125,11 @@
     },
     {
       "path": "docs/js/draw.js",
-      "sha256": "cb6dcc098c055ffa97ebec328d1b9a12562118ea44707b79ade187ab909308a9"
+      "sha256": "0099dbec4c40865712bd56a4edec26404891f312fd89252e4e4d2a0a83f65007"
     },
     {
       "path": "docs/js/engine.js",
-      "sha256": "e4e077335fef42f65e243308bf155cca7482c07354bd9cd9fb899d1b2d27347c"
+      "sha256": "212a1829e7c7ad390bb9dba0e9ee05e6352030b12d51865ce1f3bd54f3fe66df"
     },
     {
       "path": "docs/js/helmet-openings.js",
@@ -141,11 +141,11 @@
     },
     {
       "path": "docs/js/high-orbit-effects.js",
-      "sha256": "3418888be8f6291c662e85ecf14c098d0491b186c16b7c24d9aebca33713d95a"
+      "sha256": "f0ee7c92e67c681adf369e5649fbec8bfb888b3fe01566d7f7925b0e5d157904"
     },
     {
       "path": "docs/js/high-orbit-motion.js",
-      "sha256": "4b70018253af058eb6d79a0d003f4acff977cdf13d9f6cdb8de3c7c3bee1fc58"
+      "sha256": "210427aeb2da84f629156c4fb4422e43eef107b313ff79665d2b8882672d9896"
     },
     {
       "path": "docs/js/high-orbit-parts.js",
@@ -153,7 +153,7 @@
     },
     {
       "path": "docs/js/high-orbit.js",
-      "sha256": "af1916b61729a6f93de4dc848a0673e7a2b2f9c5777cdd87e8f75e97811cbfb8"
+      "sha256": "e6bffe50e2e9a317e1dba1024bf690c1da0f9f50da97587ef35e117c368ca30d"
     },
     {
       "path": "docs/js/mission-rng.js",
@@ -161,11 +161,11 @@
     },
     {
       "path": "docs/js/planet-contrast.js",
-      "sha256": "b6a0e367218e211110d6461c2d7a986ffcf38b3821b67ea5e698739cf9a32735"
+      "sha256": "280090efc23a3f690aa703312879802e321f94610b28044f3c2a4a167110bfa5"
     },
     {
       "path": "docs/js/planet-family.js",
-      "sha256": "d4b8900b55251efca121b1c5b1d95685debb026ecc957a1a119a1100971e3ce5"
+      "sha256": "5dac333445c4f22e884651fcc448c38280cab54704a4c3ceaf61327a29acffd5"
     },
     {
       "path": "docs/js/platform.js",
@@ -173,7 +173,7 @@
     },
     {
       "path": "docs/js/premium-bank-wake.js",
-      "sha256": "957e4dc34c5f6e1eb7706a61368d96aec2edea108432e2f7ae4a5a0e2f8e37f4"
+      "sha256": "7fb8b9bf6ffa050f1c0fcb87ab7583b0a5b81234d704043a9443671402fb7a0e"
     },
     {
       "path": "docs/js/premium-flight-frames.js",
@@ -181,7 +181,7 @@
     },
     {
       "path": "docs/js/premium-flight.js",
-      "sha256": "3dce8c4f0d058756231c5f8ddf190cf7b37efacab6bdcc2d888a0ab3f92f65be"
+      "sha256": "10618591c3b913e0128fc8f4bd26f2e78482cebba7e7614936773afa5b1468aa"
     },
     {
       "path": "docs/js/race-gesture.js",
@@ -189,11 +189,11 @@
     },
     {
       "path": "docs/js/race-viewport.js",
-      "sha256": "de2c3b82863fe15cbc67b03b30ac430f5a88fec1cdd040ad2fa0793b9c8cbfdc"
+      "sha256": "4e54297ca8b073215ac809a37639a070258b109dc5e14ec56cd83c6de6c44c2a"
     },
     {
       "path": "docs/js/race.js",
-      "sha256": "b22ca66de4c7cc1cdb3b1e3a30bd703c3615692ee2825639e68cab710fed30e6"
+      "sha256": "f2a322e991d688ed4fa1dbc7fdd1059bdad5b198772b628dae56d526b67f15a6"
     },
     {
       "path": "docs/js/retro.js",
@@ -205,15 +205,15 @@
     },
     {
       "path": "docs/js/save.js",
-      "sha256": "d18f299aa0a6a85481e19fdbf0d674aa9a26e02b9adc3fedeac7bfae8a611bb2"
+      "sha256": "860e10c32780fc2e9afeb057a6ac567368ef63adae5fef82ec28c038ce0aab61"
     },
     {
       "path": "docs/js/shop-cycle.js",
-      "sha256": "f24b54ac82ebcf130ef6c2e03d4174b01d74b5c159123b2f19f153194cff4f7c"
+      "sha256": "27c64f0707493c657b2d3dcfabb84dce9195bd7529afd13896f5f67776018019"
     },
     {
       "path": "docs/js/sim.js",
-      "sha256": "dd673969a32009d5af1253cb68509b2dee7daf03bd20154d228e82cf88eba708"
+      "sha256": "a02b0f583f40e39bc0a0f09fe60f99d613b8fe4e1c6bf0b516cd0b95f66d104d"
     },
     {
       "path": "docs/js/sky-gen.js",
@@ -221,7 +221,7 @@
     },
     {
       "path": "docs/js/spill-appearance.js",
-      "sha256": "5f76b47016a75691b4ec0ad5b814ae5470e02b5e23afdcc2098cfbcf97e573aa"
+      "sha256": "0a45805dad5272dedd0a3907d05041d97075e56d9afdf66f8c62538f853daf00"
     },
     {
       "path": "docs/js/spill-content.js",
@@ -241,15 +241,15 @@
     },
     {
       "path": "docs/js/spill-presentation.js",
-      "sha256": "433177e58e6a6bbea0af7f26a768e1131f99c03b1a42049739225973d1ec625f"
+      "sha256": "0c67be876288fb1aef13552eacbeaee6f8ffdde92423775f356bc3e75ea3ff15"
     },
     {
       "path": "docs/js/spill-workshop.js",
-      "sha256": "b4ef7935d0effc23166998191d794bfdfc922fd5a65128d7e9e9ec12c893828b"
+      "sha256": "604aca6a46795f32b908e8a852c1c29a15c648b743c05fd35e328dd500ac7b09"
     },
     {
       "path": "docs/js/spill.js",
-      "sha256": "925e3ff601e30af991a903f2705267afdba633101b8b0d61dff4e8286e86ef8f"
+      "sha256": "57be59bb0b82e859e7cf027fea44833c57fe0222a65e7477652e64bb68b20e4b"
     },
     {
       "path": "docs/js/sprite-detail.js",
@@ -257,7 +257,7 @@
     },
     {
       "path": "docs/js/standalone.js",
-      "sha256": "ace6039c46bbdc0103f1187832d791f418f85009f9a2f479818fa22d83d5a269"
+      "sha256": "b85e7fbb410a4adf50e121d70b9e5c807a845d425a2f61b0fd02997ce95ae4c0"
     },
     {
       "path": "docs/js/star-map-rewards.js",
@@ -265,15 +265,15 @@
     },
     {
       "path": "docs/js/star-map-view.js",
-      "sha256": "3fd189960fa1822bf3dd2a2fccd83e503818d424c70eaeb361f307121aa5df2b"
+      "sha256": "efbb2043741c23bfc2b8133e6bb18308c815f15a8727a0b15b29c45fc5ebd2a0"
     },
     {
       "path": "docs/js/star-trails.js",
-      "sha256": "2369a399ec196398e2bc9080720fd3083c3abd3532cec98e8822a09fdc15d174"
+      "sha256": "f33807d0fe417854db0595dd50acca67ad9f1d22916112f3ac6083b7f90fa77f"
     },
     {
       "path": "docs/js/vanguard-maneuver.js",
-      "sha256": "e5a8eeb49f57c256aea3c443ffcde1f1e855630c2fd2b3c294a9c9e2ca96f1d8"
+      "sha256": "ee158088f2a31083e9d9b1c614da6fcca5d9a06d7c83ee1eb917c9d69f75b193"
     },
     {
       "path": "docs/js/vanguard-parts.js",
@@ -285,7 +285,7 @@
     },
     {
       "path": "docs/js/vanguard.js",
-      "sha256": "2a06af8693a06de6f7b3e67ed22abad8c92e215460f3615611a87f9f55bb8bb0"
+      "sha256": "2defeafa4f363df511c5f6c3f4b66019f150402137ab919a9158cbb01f68a03b"
     },
     {
       "path": "docs/js/zone-planet-colors.js",
@@ -293,11 +293,11 @@
     },
     {
       "path": "docs/js/zone-visuals.js",
-      "sha256": "2c11585b209d04e2f3a990bad7227811e603028592e08259abad0491b9badcd6"
+      "sha256": "a5f26b587e16f03fe3a66bf265c44609588bbca89ae1398462b258937fdf1e2c"
     }
   ],
   "retainedEvidence": "illustrated-src/design/premium-pilots/quality-review/final-capture.json",
-  "captureReceiptSha256": "030944e9a03b722fa3af52661847ed641e77f8bf260821d11f68b91323ffe279",
+  "captureReceiptSha256": "d8a6379bfff0bc64a949163a33e6f5c67a5c766c338cd7974448746e92c2056c",
   "fallbackHashes": {
     "nacre.png": "cf39e38abf4528161639ec39891a71b214c98375964d07acf045a28c2c96042b",
     "nacre-body.png": "dc151f97487db336867e67231c095c3eaf815339428bc427e3afc34567999c9e",
@@ -329,5 +329,13 @@
     "nacre-body.png": "e9b4efc6211a800852fc33a14f7cbc84ae29c5bcf9473bda62e4856cd1dca10a",
     "nacre-tail.png": "6c2a9932777df215e752edea86f29ccbcccffc55007560223776339e4e8af86d"
   },
-  "fallbackFindings": "Corrected mask moves the thin lower-tail pink contour with the plumes; final actual52/158DPR2 fallback across legal±.75rad preserves leg trim and dorsal armor, with no stationary tail fragment."
+  "fallbackFindings": "Corrected mask moves the thin lower-tail pink contour with the plumes; final actual52/158DPR2 fallback across legalÂ±.75rad preserves leg trim and dorsal armor, with no stationary tail fragment.",
+  "integrationVerification": {
+    "verifiedAt": "2026-09-13T05:18:40.022755+00:00",
+    "artVersion": 289,
+    "baselineCommit": "78ff7e1846f60cda4ae9b65383eb65cfc7e4a85e",
+    "integratedMainCommit": "9660e5c28649f74fc2c03b09f46bd12ce7f36fde",
+    "renderedComparison": "All35 capture PNGs byte-identical; all150 loaded images byte-identical;1800/1800 pilot ticks matchCyber.",
+    "record": "illustrated-src/design/premium-pilots/quality-review/integration-comparison.json"
+  }
 }

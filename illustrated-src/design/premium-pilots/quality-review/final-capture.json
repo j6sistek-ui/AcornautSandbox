@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-13T04:35:01.697Z",
+  "date": "2026-09-13T05:14:46.622Z",
   "method": "Actual production Sprite.detailImage, paintPortrait, paintFlightPreview, Sim+drawPilot and paintIllustrated. DPR2; native surfaces; no bitmap interception or repaint. SD/HD assets loaded directly into the documented ArtBank contract; network/lazy loader is tested separately. Named-frame portrait grids isolate quality; Sim traces establish tested phase timing. No interactive browser claim.",
   "captureHarness": {
     "path": "illustrated-src/design/premium-pilots/quality-review/capture.mjs",
@@ -24,6 +24,14 @@
       "sha256": "044080b2520ec2a85b034cc3d3cb1016125e4a107fedc940219244df6630f5a3"
     },
     {
+      "path": "docs/art/suits/cyber-asc-3.png",
+      "sha256": "53335c6942917020f954a4997bb543ddb5175a4f79ce90e6f5ced7e9e86bdb86"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-5.png",
+      "sha256": "d9cfcfc7806bc132243599063159d960d4ca14a13dbda806d137ddda081e4648"
+    },
+    {
       "path": "docs/art/suits/cyber-asc-1.png",
       "sha256": "d2334ad1ab53ee8386ac6dc3969df3ef5cf002fdcfad282d691ef2a71928ae49"
     },
@@ -32,36 +40,32 @@
       "sha256": "6915a700b185ad4390e9155d1b7e7e648c1a1d3a0e9ae5e11a522626d54a6788"
     },
     {
-      "path": "docs/art/suits/cyber-asc-2.png",
-      "sha256": "558d599a81d3cfac5f703506d1189194aaf0c099ce3acb0a1cb281d7d4dec523"
-    },
-    {
-      "path": "docs/art/suits/cyber-asc-3.png",
-      "sha256": "53335c6942917020f954a4997bb543ddb5175a4f79ce90e6f5ced7e9e86bdb86"
-    },
-    {
-      "path": "docs/art/suits/cyber-asc-8.png",
-      "sha256": "e088c15ae84bcdb7fb651ae95833ad41e837cc834046233fcc54c54073cb936e"
-    },
-    {
       "path": "docs/art/suits/cyber-asc-6.png",
       "sha256": "8deb01ec09918775f7ffd050ad2acf60bc2f8f974f0517edda367c92b7a50dd0"
-    },
-    {
-      "path": "docs/art/suits/cyber-asc-5.png",
-      "sha256": "d9cfcfc7806bc132243599063159d960d4ca14a13dbda806d137ddda081e4648"
-    },
-    {
-      "path": "docs/art/suits/cyber-asc-9.png",
-      "sha256": "bc11e107cce1a863ed0fa929dd6ee3c5b5e10788b647e4302aa93ea566343808"
     },
     {
       "path": "docs/art/suits/cyber-asc-7.png",
       "sha256": "80121ec684399e9453770d077f82863957f36a99d2ed8d2d2a4919d800c10986"
     },
     {
-      "path": "docs/art/suits/cyber-desc-3.png",
-      "sha256": "3eba8644a1489fe0d6411cd634bfb77881e396ae3ba42a1eb818020898cf40c1"
+      "path": "docs/art/suits/cyber-asc-2.png",
+      "sha256": "558d599a81d3cfac5f703506d1189194aaf0c099ce3acb0a1cb281d7d4dec523"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-9.png",
+      "sha256": "bc11e107cce1a863ed0fa929dd6ee3c5b5e10788b647e4302aa93ea566343808"
+    },
+    {
+      "path": "docs/art/suits/cyber-asc-8.png",
+      "sha256": "e088c15ae84bcdb7fb651ae95833ad41e837cc834046233fcc54c54073cb936e"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-1.png",
+      "sha256": "8aa0186902f64333c0caf74a8af414b6543a64e03a5a18411e64fa312b90541e"
+    },
+    {
+      "path": "docs/art/suits/cyber-desc-7.png",
+      "sha256": "b2f1c7a87f452b09dc1a548d09e9e617d0aa2ea965725de0aaf4a523dc3cc0b9"
     },
     {
       "path": "docs/art/suits/cyber-desc-2.png",
@@ -72,24 +76,20 @@
       "sha256": "592881e3a0ec1920602d0be52fefd09edc5e99ad777cd7cc77a7525691b36fc6"
     },
     {
-      "path": "docs/art/suits/cyber-desc-1.png",
-      "sha256": "8aa0186902f64333c0caf74a8af414b6543a64e03a5a18411e64fa312b90541e"
-    },
-    {
       "path": "docs/art/suits/cyber-desc-5.png",
       "sha256": "046387f314b590571a9f3e7b5136740fb71332a7c52ce5ed781045aaddc38a7b"
     },
     {
-      "path": "docs/art/suits/cyber-desc-8.png",
-      "sha256": "e995063ebfa65d8685f968dfe04ef65578f7de6a83c9a8922c46030cad113b7c"
+      "path": "docs/art/suits/cyber-desc-3.png",
+      "sha256": "3eba8644a1489fe0d6411cd634bfb77881e396ae3ba42a1eb818020898cf40c1"
     },
     {
       "path": "docs/art/suits/cyber-desc-6.png",
       "sha256": "54ffb725ef6ac16ce07a967d74eb7c2cee0bfd5ea25fe27594e327daa6387656"
     },
     {
-      "path": "docs/art/suits/cyber-desc-7.png",
-      "sha256": "b2f1c7a87f452b09dc1a548d09e9e617d0aa2ea965725de0aaf4a523dc3cc0b9"
+      "path": "docs/art/suits/cyber-desc-8.png",
+      "sha256": "e995063ebfa65d8685f968dfe04ef65578f7de6a83c9a8922c46030cad113b7c"
     },
     {
       "path": "docs/art/suits/cyber-desc-9.png",
@@ -132,16 +132,8 @@
       "sha256": "65d3de5c3f43c3882e6c643d41f009446e7504ce79a52698778166bb2c0d9910"
     },
     {
-      "path": "docs/art/suits/porcelain-asc-5.png",
-      "sha256": "e0eed660b132a609c90649dfe434d4f894eafbd1ebfd4e2b87e8238c24b3915c"
-    },
-    {
       "path": "docs/art/suits/porcelain-asc-4.png",
       "sha256": "fe9ae5a1b3fa061059652d8e64c2ce814e042531b64dcd325d09bf92ac0307de"
-    },
-    {
-      "path": "docs/art/suits/porcelain-asc-8.png",
-      "sha256": "03544bf7e3a7a80cb2a24944ec316e4eb9c01e8b8c9e564fe932b5c935719a65"
     },
     {
       "path": "docs/art/suits/porcelain-asc-6.png",
@@ -150,6 +142,14 @@
     {
       "path": "docs/art/suits/porcelain-asc-7.png",
       "sha256": "b2dfc5dcf8ae198a5da0cc277dd30b2839d408e29222235565e9fe5de5d2060a"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-5.png",
+      "sha256": "e0eed660b132a609c90649dfe434d4f894eafbd1ebfd4e2b87e8238c24b3915c"
+    },
+    {
+      "path": "docs/art/suits/porcelain-asc-8.png",
+      "sha256": "03544bf7e3a7a80cb2a24944ec316e4eb9c01e8b8c9e564fe932b5c935719a65"
     },
     {
       "path": "docs/art/suits/porcelain-asc-9.png",
@@ -164,28 +164,28 @@
       "sha256": "da6b0c9d0f0fad701996c65a5acd6a4ea46eddfa683bb8cbee90a2df50e2c3a6"
     },
     {
-      "path": "docs/art/suits/hd/porcelain-asc-3.png",
-      "sha256": "abe5f18b2726fbf517d6758fe0027444555640e6ab3b8e06c94ecee422c4f22b"
-    },
-    {
-      "path": "docs/art/suits/hd/porcelain-asc-5.png",
-      "sha256": "407007805754a536aba90d4c746df7b769f5309d765c8adbcfedf396b5523219"
-    },
-    {
       "path": "docs/art/suits/hd/porcelain-asc-4.png",
       "sha256": "7d294ae2df4b41a3a9a00f1aa1b4bc5047f4924a1825f36b8f9bb182a050cb09"
+    },
+    {
+      "path": "docs/art/suits/hd/porcelain-asc-3.png",
+      "sha256": "abe5f18b2726fbf517d6758fe0027444555640e6ab3b8e06c94ecee422c4f22b"
     },
     {
       "path": "docs/art/suits/hd/porcelain-asc-6.png",
       "sha256": "a7c332e7dc152d736ce2f6fd8c8b6e647fbf6128baa068851df659ef01c5b997"
     },
     {
-      "path": "docs/art/suits/hd/porcelain-asc-8.png",
-      "sha256": "0527db701e317ccef984df93de0eb8471fb72d790503195eb6e11e4b46abbb44"
-    },
-    {
       "path": "docs/art/suits/hd/porcelain-asc-7.png",
       "sha256": "55a1ee125fe1d8f34830a5f66c5eaa97524cb90e87b9b9585ac35989360ca78b"
+    },
+    {
+      "path": "docs/art/suits/hd/porcelain-asc-5.png",
+      "sha256": "407007805754a536aba90d4c746df7b769f5309d765c8adbcfedf396b5523219"
+    },
+    {
+      "path": "docs/art/suits/hd/porcelain-asc-8.png",
+      "sha256": "0527db701e317ccef984df93de0eb8471fb72d790503195eb6e11e4b46abbb44"
     },
     {
       "path": "docs/art/suits/hd/porcelain-asc-9.png",
@@ -196,72 +196,72 @@
       "sha256": "4877cb9427ef65fa6fab7b45d294c4bf8fff2e608680c7caebfbed927c18be9d"
     },
     {
-      "path": "docs/art/suits/porcelain-desc-6.png",
-      "sha256": "6631b5ab7d8c28ff58c1bbb0c91f4b023d51b9b950e8220d61c51081c8effd74"
-    },
-    {
-      "path": "docs/art/suits/porcelain-desc-3.png",
-      "sha256": "a107f3e8ff925c6d47b210bc3bd2dc3305cb79e5e99c3128a232290705808c2f"
-    },
-    {
       "path": "docs/art/suits/porcelain-desc-2.png",
       "sha256": "2dba1d554a268694ebe555a9abfd710d2c16e006586b08c0d15b0e1c9bdaf70f"
-    },
-    {
-      "path": "docs/art/suits/porcelain-desc-5.png",
-      "sha256": "23d82b8fc597942339d67cfa31c5cfeb10b65a6019dc8be20b3eafeb9ceed0fd"
     },
     {
       "path": "docs/art/suits/porcelain-desc-4.png",
       "sha256": "190c77e1258bda5df0c5bfa76c0e221ad21082f348374143fbc61af77205e3c2"
     },
     {
-      "path": "docs/art/suits/porcelain-desc-8.png",
-      "sha256": "7872c5906488b9e706adbdfe108e60379694bed2bccdeacb124b823048dc6647"
+      "path": "docs/art/suits/porcelain-desc-5.png",
+      "sha256": "23d82b8fc597942339d67cfa31c5cfeb10b65a6019dc8be20b3eafeb9ceed0fd"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-3.png",
+      "sha256": "a107f3e8ff925c6d47b210bc3bd2dc3305cb79e5e99c3128a232290705808c2f"
     },
     {
       "path": "docs/art/suits/porcelain-desc-7.png",
       "sha256": "79b36f4c1bfc6745c914ca0d54e40a9ed216e26289365d94d772027b3ae83058"
     },
     {
+      "path": "docs/art/suits/porcelain-desc-6.png",
+      "sha256": "6631b5ab7d8c28ff58c1bbb0c91f4b023d51b9b950e8220d61c51081c8effd74"
+    },
+    {
       "path": "docs/art/suits/porcelain-desc-9.png",
       "sha256": "52db8b05248e0d487fe0a5c082698a55dffc15c48e1ff6de59c73034629f00f2"
+    },
+    {
+      "path": "docs/art/suits/porcelain-desc-8.png",
+      "sha256": "7872c5906488b9e706adbdfe108e60379694bed2bccdeacb124b823048dc6647"
     },
     {
       "path": "docs/art/suits/hd/porcelain-desc-1.png",
       "sha256": "c20a00eba86d3edb06c78b4050a8fac61215adca325a63750ebfaac85413a287"
     },
     {
-      "path": "docs/art/suits/hd/porcelain-desc-3.png",
-      "sha256": "dca09128e3394e276effcdb5e0d66859953a14f1db1f35aa81b9cacdc67ec1d2"
+      "path": "docs/art/suits/hd/porcelain-desc-4.png",
+      "sha256": "fa97e54bbf27b47e967cf63b622ee32880badc22596be1a7987de20de19869b2"
     },
     {
       "path": "docs/art/suits/hd/porcelain-desc-2.png",
       "sha256": "4f7b3e8a84fb61d236fabb1f741271284ae452e2e7b344e60bf9c72b185cb0fa"
     },
     {
-      "path": "docs/art/suits/hd/porcelain-desc-6.png",
-      "sha256": "afe82b24964294b960f62cd35d1f6850b8500732bf02a3630b1baa13eac17dea"
-    },
-    {
       "path": "docs/art/suits/hd/porcelain-desc-5.png",
       "sha256": "243f8a2ba1c43615bed7f14842a3e9e1b0c45e9f912b7b66e93b44486b113159"
     },
     {
-      "path": "docs/art/suits/hd/porcelain-desc-4.png",
-      "sha256": "fa97e54bbf27b47e967cf63b622ee32880badc22596be1a7987de20de19869b2"
+      "path": "docs/art/suits/hd/porcelain-desc-3.png",
+      "sha256": "dca09128e3394e276effcdb5e0d66859953a14f1db1f35aa81b9cacdc67ec1d2"
     },
     {
       "path": "docs/art/suits/hd/porcelain-desc-7.png",
       "sha256": "cf32ba7e3df776a342c192b3c93aad17ac3e485dad07103e27fd8986fb965276"
     },
     {
-      "path": "docs/art/suits/hd/porcelain-desc-8.png",
-      "sha256": "7167ce1d348a8d78fc2184cf81edfd05fbb4e0cbb6387288af565d914f3ded7c"
-    },
-    {
       "path": "docs/art/suits/hd/porcelain-desc-9.png",
       "sha256": "e536fa0e147c9bd3e9c63cdad12ef20cba2aecdc3af18e91431cc23c744eda37"
+    },
+    {
+      "path": "docs/art/suits/hd/porcelain-desc-6.png",
+      "sha256": "afe82b24964294b960f62cd35d1f6850b8500732bf02a3630b1baa13eac17dea"
+    },
+    {
+      "path": "docs/art/suits/hd/porcelain-desc-8.png",
+      "sha256": "7167ce1d348a8d78fc2184cf81edfd05fbb4e0cbb6387288af565d914f3ded7c"
     },
     {
       "path": "docs/art/suits/nacre.png",
@@ -292,8 +292,8 @@
       "sha256": "cf39e38abf4528161639ec39891a71b214c98375964d07acf045a28c2c96042b"
     },
     {
-      "path": "docs/art/suits/nacre-asc-4.png",
-      "sha256": "26a7da75415034b34df52fbb4200170a769b6a8bf0d559558621cd190ca6af53"
+      "path": "docs/art/suits/nacre-asc-5.png",
+      "sha256": "94ad5a837b8772326499591b5ed77d30cb9b37526d6be887ae13dc44a4adcc16"
     },
     {
       "path": "docs/art/suits/nacre-asc-2.png",
@@ -312,28 +312,28 @@
       "sha256": "48c1c702c7c2f8ec30818c4bfacee5641dc51d5259f29b3c365e657cc30502f0"
     },
     {
-      "path": "docs/art/suits/nacre-asc-5.png",
-      "sha256": "94ad5a837b8772326499591b5ed77d30cb9b37526d6be887ae13dc44a4adcc16"
+      "path": "docs/art/suits/nacre-asc-8.png",
+      "sha256": "fbe3bb66b516d3affed3b6ba3e24b235a8981c4d58811ccd6ca772d07a41e83e"
+    },
+    {
+      "path": "docs/art/suits/nacre-asc-4.png",
+      "sha256": "26a7da75415034b34df52fbb4200170a769b6a8bf0d559558621cd190ca6af53"
     },
     {
       "path": "docs/art/suits/nacre-asc-9.png",
       "sha256": "6081df9f2aff0ed1da4a48ed780918ee1bc35b99e167460a335ebb0a0ea8b88b"
     },
     {
-      "path": "docs/art/suits/nacre-asc-8.png",
-      "sha256": "fbe3bb66b516d3affed3b6ba3e24b235a8981c4d58811ccd6ca772d07a41e83e"
-    },
-    {
       "path": "docs/art/suits/hd/nacre-asc-2.png",
       "sha256": "f02ca9cc1d4bf3087c1d47959aa5137c66a246eeb419a03b6ece23695f2c78f9"
     },
     {
-      "path": "docs/art/suits/hd/nacre-asc-4.png",
-      "sha256": "e9a93c70a055e8a20ab22869c872d543941861c3bf7ccfa2583402d49c0f17c4"
-    },
-    {
       "path": "docs/art/suits/hd/nacre-asc-1.png",
       "sha256": "d6cb22ecbe239d5adce4bc2455d17a0d6bafba15acceaf7dbe0c72c794441117"
+    },
+    {
+      "path": "docs/art/suits/hd/nacre-asc-5.png",
+      "sha256": "55d457b186f7dc39c4f757a7ff1244e1e0677febd4333206bb15180bfeb50578"
     },
     {
       "path": "docs/art/suits/hd/nacre-asc-3.png",
@@ -344,36 +344,36 @@
       "sha256": "e4c3a04c2e112d57f656164176575aadfa51b66d98961f9caf3d0de2f3997ae8"
     },
     {
-      "path": "docs/art/suits/hd/nacre-asc-5.png",
-      "sha256": "55d457b186f7dc39c4f757a7ff1244e1e0677febd4333206bb15180bfeb50578"
-    },
-    {
-      "path": "docs/art/suits/hd/nacre-asc-9.png",
-      "sha256": "e7f3db033c7a1ede560fdecc103aab385cfeb6bbd85d862488a63196159b6b5f"
-    },
-    {
-      "path": "docs/art/suits/hd/nacre-asc-7.png",
-      "sha256": "1b4e5aa28bec457d679cd70136105f06ed4c40f7a33ad329c0a92370c31ffbde"
+      "path": "docs/art/suits/hd/nacre-asc-4.png",
+      "sha256": "e9a93c70a055e8a20ab22869c872d543941861c3bf7ccfa2583402d49c0f17c4"
     },
     {
       "path": "docs/art/suits/hd/nacre-asc-8.png",
       "sha256": "f2c9fd977b52cb4027f5db5097fa1615fc784e5f06e8b0653be924aebac4abaf"
     },
     {
-      "path": "docs/art/suits/nacre-desc-2.png",
-      "sha256": "f7d194b06584ab3aa278a1efe0fb7d1576748e0615f3ff80ece6d45620e8d85d"
+      "path": "docs/art/suits/hd/nacre-asc-7.png",
+      "sha256": "1b4e5aa28bec457d679cd70136105f06ed4c40f7a33ad329c0a92370c31ffbde"
     },
     {
-      "path": "docs/art/suits/nacre-desc-5.png",
-      "sha256": "f6eb3bdb73208fbc75d6bfb7f01e5598be0d861e31d09c19785b6ba8985cf3bb"
+      "path": "docs/art/suits/hd/nacre-asc-9.png",
+      "sha256": "e7f3db033c7a1ede560fdecc103aab385cfeb6bbd85d862488a63196159b6b5f"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-1.png",
+      "sha256": "13af366b5a81e70fb0b44a70f1d1d9d0d83cbe22ea6c3be0602272478ba12663"
     },
     {
       "path": "docs/art/suits/nacre-desc-3.png",
       "sha256": "f7dbe3bbef3c71a7c09f2715ab29fdfbd46f5159006781d8695173a0a96cb1bc"
     },
     {
-      "path": "docs/art/suits/nacre-desc-1.png",
-      "sha256": "13af366b5a81e70fb0b44a70f1d1d9d0d83cbe22ea6c3be0602272478ba12663"
+      "path": "docs/art/suits/nacre-desc-5.png",
+      "sha256": "f6eb3bdb73208fbc75d6bfb7f01e5598be0d861e31d09c19785b6ba8985cf3bb"
+    },
+    {
+      "path": "docs/art/suits/nacre-desc-2.png",
+      "sha256": "f7d194b06584ab3aa278a1efe0fb7d1576748e0615f3ff80ece6d45620e8d85d"
     },
     {
       "path": "docs/art/suits/nacre-desc-4.png",
@@ -384,10 +384,6 @@
       "sha256": "4c785b83d35f1bdd144104293a5c75949f6ff3d6fa21cf9e6236b93cad9b4dac"
     },
     {
-      "path": "docs/art/suits/nacre-desc-7.png",
-      "sha256": "fffa04782f02e81a7e4563fd6b0f0bae4316f75907617426d334cd33ec7463d0"
-    },
-    {
       "path": "docs/art/suits/nacre-desc-9.png",
       "sha256": "537d2b0811fdbec17c061c200c8d76285068c3401172608c6a1772731bb47d52"
     },
@@ -396,28 +392,28 @@
       "sha256": "09df8245b046649412134b9e2a5bb3993b1190a00a63ad46a0f5467815cd618c"
     },
     {
+      "path": "docs/art/suits/nacre-desc-7.png",
+      "sha256": "fffa04782f02e81a7e4563fd6b0f0bae4316f75907617426d334cd33ec7463d0"
+    },
+    {
       "path": "docs/art/suits/hd/nacre-desc-5.png",
       "sha256": "71c43070af6dcb9c67e8070419fa8a98433ad064f333b141f495a4b4c874b2bb"
-    },
-    {
-      "path": "docs/art/suits/hd/nacre-desc-2.png",
-      "sha256": "ea514abf46a8a1bc1eca0f7e2a5ab9a067c0349de98e4101e124e785a31c2418"
-    },
-    {
-      "path": "docs/art/suits/hd/nacre-desc-3.png",
-      "sha256": "7846e14c605cedf3d1fcd6651902bdbb5b0928209d4355df007c7619dee6f89e"
     },
     {
       "path": "docs/art/suits/hd/nacre-desc-1.png",
       "sha256": "f87bad3d114bfcfc631e95eedcf2a502322277e1cf6918bc009ceedeb164eb30"
     },
     {
-      "path": "docs/art/suits/hd/nacre-desc-4.png",
-      "sha256": "d34e4790e0145aa221bdc3ebe1cf0d2d6ae13b4208e7f65d1b466a685aab19af"
+      "path": "docs/art/suits/hd/nacre-desc-3.png",
+      "sha256": "7846e14c605cedf3d1fcd6651902bdbb5b0928209d4355df007c7619dee6f89e"
     },
     {
-      "path": "docs/art/suits/hd/nacre-desc-7.png",
-      "sha256": "d72b237c5b4834d6f50bfb1bbe34ff2e0c81d6ae4367318f18ae3f7f3375a91e"
+      "path": "docs/art/suits/hd/nacre-desc-2.png",
+      "sha256": "ea514abf46a8a1bc1eca0f7e2a5ab9a067c0349de98e4101e124e785a31c2418"
+    },
+    {
+      "path": "docs/art/suits/hd/nacre-desc-4.png",
+      "sha256": "d34e4790e0145aa221bdc3ebe1cf0d2d6ae13b4208e7f65d1b466a685aab19af"
     },
     {
       "path": "docs/art/suits/hd/nacre-desc-6.png",
@@ -430,6 +426,10 @@
     {
       "path": "docs/art/suits/hd/nacre-desc-8.png",
       "sha256": "5c128ff8e903624d325acc1d063778ac039d7b30a3bb94a7120ad2863d73ec6a"
+    },
+    {
+      "path": "docs/art/suits/hd/nacre-desc-7.png",
+      "sha256": "d72b237c5b4834d6f50bfb1bbe34ff2e0c81d6ae4367318f18ae3f7f3375a91e"
     },
     {
       "path": "docs/art/suits/origamist.png",
@@ -460,56 +460,64 @@
       "sha256": "bc13b96bdfbfd528ee67ce9dde62f3ff6f48f04167a5a079c7f06987492e8ae9"
     },
     {
-      "path": "docs/art/suits/origamist-asc-3.png",
-      "sha256": "a011d22fca4264a6fe8b3204234beb0793d3c6b02d7e7d0f8b28a868846c2d7a"
-    },
-    {
       "path": "docs/art/suits/origamist-asc-2.png",
       "sha256": "0666b405c5cde0fba17c78cb4b49a8b943c591498e85961077cde589292602ba"
     },
     {
-      "path": "docs/art/suits/origamist-asc-4.png",
-      "sha256": "0ec4f8d3c3d7941dc38525ed14c82196085eda9bb6dc8cbb83d5292e58c8010d"
+      "path": "docs/art/suits/origamist-asc-3.png",
+      "sha256": "a011d22fca4264a6fe8b3204234beb0793d3c6b02d7e7d0f8b28a868846c2d7a"
     },
     {
       "path": "docs/art/suits/origamist-asc-5.png",
       "sha256": "f37f8a439ac5bb0886fd9a7d0753932773806a8070e3ed327d7ab6f90374ca7a"
     },
     {
+      "path": "docs/art/suits/origamist-asc-4.png",
+      "sha256": "0ec4f8d3c3d7941dc38525ed14c82196085eda9bb6dc8cbb83d5292e58c8010d"
+    },
+    {
       "path": "docs/art/suits/origamist-asc-6.png",
       "sha256": "8f2db069ef481b7f51a679b01758e7bec3c8fee9d5f91dd7a6071dfdd5ba54c5"
-    },
-    {
-      "path": "docs/art/suits/origamist-asc-8.png",
-      "sha256": "62be2df29859e8f515c39f4370cfc9ef8eb59564a13cf78c681790adb63796ae"
-    },
-    {
-      "path": "docs/art/suits/origamist-asc-9.png",
-      "sha256": "9b7f7c828351488e39477f90eb5cf57d4de6cea660be6b470fc552ea8dfe2d2b"
     },
     {
       "path": "docs/art/suits/origamist-asc-7.png",
       "sha256": "0a2cdc1e44e0b5f8c5cdbd6253427188863e16413caa95e86d7736475cca60a2"
     },
     {
-      "path": "docs/art/suits/hd/origamist-asc-3.png",
-      "sha256": "9b51f56f5d2c1ddfc2abb1c93dc37e6f4add1eac1b084bbf46be9178261216bf"
+      "path": "docs/art/suits/origamist-asc-9.png",
+      "sha256": "9b7f7c828351488e39477f90eb5cf57d4de6cea660be6b470fc552ea8dfe2d2b"
     },
     {
-      "path": "docs/art/suits/hd/origamist-asc-2.png",
-      "sha256": "39a02d824adf76f5373e336f602904082e4068e1c8c1740eb1a9519a444aa293"
+      "path": "docs/art/suits/origamist-asc-8.png",
+      "sha256": "62be2df29859e8f515c39f4370cfc9ef8eb59564a13cf78c681790adb63796ae"
     },
     {
       "path": "docs/art/suits/hd/origamist-asc-1.png",
       "sha256": "4bcb1dea363f02644dc14448aacff557e0d400ee8397f0bf7dcc3fd022a28ba8"
     },
     {
-      "path": "docs/art/suits/hd/origamist-asc-4.png",
-      "sha256": "09337c21fa2d6373d83262c40b562e81148ac7b5976e19a6527248654afb8a34"
+      "path": "docs/art/suits/hd/origamist-asc-2.png",
+      "sha256": "39a02d824adf76f5373e336f602904082e4068e1c8c1740eb1a9519a444aa293"
+    },
+    {
+      "path": "docs/art/suits/hd/origamist-asc-3.png",
+      "sha256": "9b51f56f5d2c1ddfc2abb1c93dc37e6f4add1eac1b084bbf46be9178261216bf"
     },
     {
       "path": "docs/art/suits/hd/origamist-asc-5.png",
       "sha256": "7e24aa04aba761ef628093db79507f109538a9ef095593212697ff94add8bf52"
+    },
+    {
+      "path": "docs/art/suits/hd/origamist-asc-4.png",
+      "sha256": "09337c21fa2d6373d83262c40b562e81148ac7b5976e19a6527248654afb8a34"
+    },
+    {
+      "path": "docs/art/suits/hd/origamist-asc-7.png",
+      "sha256": "d11d3035e1b37a726908e7e30723fe55b2527f4c774aaea3a39180470aa7c053"
+    },
+    {
+      "path": "docs/art/suits/hd/origamist-asc-9.png",
+      "sha256": "6112e81bb6ed80f97eb705bd59a8966a170957d0f9e00f9a3c7e128119cb70df"
     },
     {
       "path": "docs/art/suits/hd/origamist-asc-6.png",
@@ -520,20 +528,16 @@
       "sha256": "fc072b66787fa9b2266ca51a984eadaf9de480f0e863b660d3f655f22bf442a2"
     },
     {
-      "path": "docs/art/suits/hd/origamist-asc-9.png",
-      "sha256": "6112e81bb6ed80f97eb705bd59a8966a170957d0f9e00f9a3c7e128119cb70df"
-    },
-    {
-      "path": "docs/art/suits/hd/origamist-asc-7.png",
-      "sha256": "d11d3035e1b37a726908e7e30723fe55b2527f4c774aaea3a39180470aa7c053"
-    },
-    {
-      "path": "docs/art/suits/origamist-desc-1.png",
-      "sha256": "5060df5cea22b6c4d46c69b6cc1bd7b275946a71f14b9481ad05ddbbca5867f9"
+      "path": "docs/art/suits/origamist-desc-6.png",
+      "sha256": "b5797281270310733c31adff0bd54f818fd325767d4ca2f18a0143d1f938e4b3"
     },
     {
       "path": "docs/art/suits/origamist-desc-2.png",
       "sha256": "c1a160e76819fac52645d41e30c698180421dff8eb7c32f4c7de5da31225e305"
+    },
+    {
+      "path": "docs/art/suits/origamist-desc-1.png",
+      "sha256": "5060df5cea22b6c4d46c69b6cc1bd7b275946a71f14b9481ad05ddbbca5867f9"
     },
     {
       "path": "docs/art/suits/origamist-desc-4.png",
@@ -544,60 +548,56 @@
       "sha256": "3b7dfcfbfade1d4eb13253f8ed1e949c07dab96de59e88e456b3b264704b11db"
     },
     {
-      "path": "docs/art/suits/origamist-desc-6.png",
-      "sha256": "b5797281270310733c31adff0bd54f818fd325767d4ca2f18a0143d1f938e4b3"
+      "path": "docs/art/suits/origamist-desc-7.png",
+      "sha256": "6698d9b9d208150e5b9f19d5e9d5e1485dc3da9074ae42713934e9305164dacd"
     },
     {
       "path": "docs/art/suits/origamist-desc-5.png",
       "sha256": "d4d5e8f30b8cf26d03f682a3ae02e93fc2fa3457a4df46c4562256a571258da8"
     },
     {
-      "path": "docs/art/suits/origamist-desc-9.png",
-      "sha256": "ff6b759a8e6c32f7798ea9fd51e38ff1cb7137cac89dbd9af3591c5732d05eab"
-    },
-    {
       "path": "docs/art/suits/origamist-desc-8.png",
       "sha256": "a38d7cd2287fce1ee00d506f3eb1d0937853e050836de5ff55e29092c89ea1cf"
     },
     {
-      "path": "docs/art/suits/origamist-desc-7.png",
-      "sha256": "6698d9b9d208150e5b9f19d5e9d5e1485dc3da9074ae42713934e9305164dacd"
-    },
-    {
-      "path": "docs/art/suits/hd/origamist-desc-1.png",
-      "sha256": "cc55f795772163fa508ac2b1cc8790e7573573da6fea56131efdaa492b39edc7"
-    },
-    {
-      "path": "docs/art/suits/hd/origamist-desc-2.png",
-      "sha256": "9df36fc47352df57ca17461c493c767aea9a83ca8e633e57a0c34f211da3bfbc"
-    },
-    {
-      "path": "docs/art/suits/hd/origamist-desc-4.png",
-      "sha256": "0d95e93cbb4d14f1ee44e0ba4a92a2860d7ee19d4b052e8cc05e052bebcb1152"
-    },
-    {
-      "path": "docs/art/suits/hd/origamist-desc-3.png",
-      "sha256": "a1d266c73be346bab1ae8d9132a11b6510b5b21a5820bc2623b69be7c9f99537"
+      "path": "docs/art/suits/origamist-desc-9.png",
+      "sha256": "ff6b759a8e6c32f7798ea9fd51e38ff1cb7137cac89dbd9af3591c5732d05eab"
     },
     {
       "path": "docs/art/suits/hd/origamist-desc-6.png",
       "sha256": "cf49e8d963572cc3c3b307f5707f771c349872fb11bc909986941d2b3a9f3561"
     },
     {
-      "path": "docs/art/suits/hd/origamist-desc-9.png",
-      "sha256": "4442ae9aae4c15030c3bbd9500fbebc30283bdc4fad30f0ca962203cd1240040"
+      "path": "docs/art/suits/hd/origamist-desc-1.png",
+      "sha256": "cc55f795772163fa508ac2b1cc8790e7573573da6fea56131efdaa492b39edc7"
     },
     {
-      "path": "docs/art/suits/hd/origamist-desc-5.png",
-      "sha256": "8baf59ce9946301f4afe8979c4fb9968de15832cd5684af913c558e796edc7fe"
+      "path": "docs/art/suits/hd/origamist-desc-4.png",
+      "sha256": "0d95e93cbb4d14f1ee44e0ba4a92a2860d7ee19d4b052e8cc05e052bebcb1152"
+    },
+    {
+      "path": "docs/art/suits/hd/origamist-desc-2.png",
+      "sha256": "9df36fc47352df57ca17461c493c767aea9a83ca8e633e57a0c34f211da3bfbc"
+    },
+    {
+      "path": "docs/art/suits/hd/origamist-desc-7.png",
+      "sha256": "4ee118f5e2303dd54fb5db06fb57ba9a47630a2fdfe1a50294d3fa83e06107bc"
+    },
+    {
+      "path": "docs/art/suits/hd/origamist-desc-3.png",
+      "sha256": "a1d266c73be346bab1ae8d9132a11b6510b5b21a5820bc2623b69be7c9f99537"
     },
     {
       "path": "docs/art/suits/hd/origamist-desc-8.png",
       "sha256": "343f20aaae72aabe2074c42b8e28e94d9872e120b5317b78e9c19df12b5e1a1b"
     },
     {
-      "path": "docs/art/suits/hd/origamist-desc-7.png",
-      "sha256": "4ee118f5e2303dd54fb5db06fb57ba9a47630a2fdfe1a50294d3fa83e06107bc"
+      "path": "docs/art/suits/hd/origamist-desc-5.png",
+      "sha256": "8baf59ce9946301f4afe8979c4fb9968de15832cd5684af913c558e796edc7fe"
+    },
+    {
+      "path": "docs/art/suits/hd/origamist-desc-9.png",
+      "sha256": "4442ae9aae4c15030c3bbd9500fbebc30283bdc4fad30f0ca962203cd1240040"
     },
     {
       "path": "docs/art/helms/clear.png",
@@ -833,7 +833,7 @@
   "runtime": [
     {
       "path": "docs/js/arcflash-motion.js",
-      "sha256": "35789544cbecabe60835073a879470596447dedb8634e4c1fb020956d5372fa0"
+      "sha256": "a017ac490172ad457eda2c11db18925afdd89d7d3e62e2082f0eea216e677395"
     },
     {
       "path": "docs/js/arcflash-parts.js",
@@ -841,11 +841,11 @@
     },
     {
       "path": "docs/js/arcflash.js",
-      "sha256": "9ff2318d8b4f6d7c428ba8bd2c5c05d3ca15631d9dd220e4725589b2d8f80a26"
+      "sha256": "d542fb6770eef3b5331aaa49dd2de87859f02fad2b50811cbf82b311b2099413"
     },
     {
       "path": "docs/js/art.js",
-      "sha256": "a21a7c8d438e15152af39af84460f086f94f6c0de5ed248b14b75b89337cf1b4"
+      "sha256": "cd44a7a654badc0f43fa9a0c6e189bc988a5929a4d616c51c883f0a173f2b6ec"
     },
     {
       "path": "docs/js/audio.js",
@@ -861,15 +861,15 @@
     },
     {
       "path": "docs/js/campaign-progress.js",
-      "sha256": "dddb3b72333a94724de6568d8819388984396657abdd96dbeb4c8e692bcfe083"
+      "sha256": "8b2bb6e5145f468b65a4881986fa7d4799484734565b44871020d2c28d3fd90a"
     },
     {
       "path": "docs/js/campaign.js",
-      "sha256": "c5ba7b31a80ad28359444c022b9821a5a6cdc37abe67baeb429018cb121dc19c"
+      "sha256": "df375c533f6b4c3995cdf6e30bee17fd96085adcbf5dc8e6e1a21c7cd546e92e"
     },
     {
       "path": "docs/js/catalog.js",
-      "sha256": "6ae5af11377ae72eae9197a49f6140b173c2d69ddfb2143b1cda7af5e16f6d21"
+      "sha256": "c377bc1457634bdd218ee47fff43613e7538a1e6cd9d8d58edc7493def12839d"
     },
     {
       "path": "docs/js/control-constants.js",
@@ -877,7 +877,7 @@
     },
     {
       "path": "docs/js/cosmetics.js",
-      "sha256": "fe8ea07c8162b9d72fba13132f8f643b26af2e320df73a4e30038f63f39d88f8"
+      "sha256": "0045a382d924342493a32f3720afad3225934e4392968eaa42cc05c24cb6f741"
     },
     {
       "path": "docs/js/cyber-trio-registration.js",
@@ -885,11 +885,11 @@
     },
     {
       "path": "docs/js/draw.js",
-      "sha256": "cb6dcc098c055ffa97ebec328d1b9a12562118ea44707b79ade187ab909308a9"
+      "sha256": "0099dbec4c40865712bd56a4edec26404891f312fd89252e4e4d2a0a83f65007"
     },
     {
       "path": "docs/js/engine.js",
-      "sha256": "e4e077335fef42f65e243308bf155cca7482c07354bd9cd9fb899d1b2d27347c"
+      "sha256": "212a1829e7c7ad390bb9dba0e9ee05e6352030b12d51865ce1f3bd54f3fe66df"
     },
     {
       "path": "docs/js/helmet-openings.js",
@@ -901,11 +901,11 @@
     },
     {
       "path": "docs/js/high-orbit-effects.js",
-      "sha256": "3418888be8f6291c662e85ecf14c098d0491b186c16b7c24d9aebca33713d95a"
+      "sha256": "f0ee7c92e67c681adf369e5649fbec8bfb888b3fe01566d7f7925b0e5d157904"
     },
     {
       "path": "docs/js/high-orbit-motion.js",
-      "sha256": "4b70018253af058eb6d79a0d003f4acff977cdf13d9f6cdb8de3c7c3bee1fc58"
+      "sha256": "210427aeb2da84f629156c4fb4422e43eef107b313ff79665d2b8882672d9896"
     },
     {
       "path": "docs/js/high-orbit-parts.js",
@@ -913,7 +913,7 @@
     },
     {
       "path": "docs/js/high-orbit.js",
-      "sha256": "af1916b61729a6f93de4dc848a0673e7a2b2f9c5777cdd87e8f75e97811cbfb8"
+      "sha256": "e6bffe50e2e9a317e1dba1024bf690c1da0f9f50da97587ef35e117c368ca30d"
     },
     {
       "path": "docs/js/mission-rng.js",
@@ -921,11 +921,11 @@
     },
     {
       "path": "docs/js/planet-contrast.js",
-      "sha256": "b6a0e367218e211110d6461c2d7a986ffcf38b3821b67ea5e698739cf9a32735"
+      "sha256": "280090efc23a3f690aa703312879802e321f94610b28044f3c2a4a167110bfa5"
     },
     {
       "path": "docs/js/planet-family.js",
-      "sha256": "d4b8900b55251efca121b1c5b1d95685debb026ecc957a1a119a1100971e3ce5"
+      "sha256": "5dac333445c4f22e884651fcc448c38280cab54704a4c3ceaf61327a29acffd5"
     },
     {
       "path": "docs/js/platform.js",
@@ -933,7 +933,7 @@
     },
     {
       "path": "docs/js/premium-bank-wake.js",
-      "sha256": "957e4dc34c5f6e1eb7706a61368d96aec2edea108432e2f7ae4a5a0e2f8e37f4"
+      "sha256": "7fb8b9bf6ffa050f1c0fcb87ab7583b0a5b81234d704043a9443671402fb7a0e"
     },
     {
       "path": "docs/js/premium-flight-frames.js",
@@ -941,7 +941,7 @@
     },
     {
       "path": "docs/js/premium-flight.js",
-      "sha256": "3dce8c4f0d058756231c5f8ddf190cf7b37efacab6bdcc2d888a0ab3f92f65be"
+      "sha256": "10618591c3b913e0128fc8f4bd26f2e78482cebba7e7614936773afa5b1468aa"
     },
     {
       "path": "docs/js/race-gesture.js",
@@ -949,11 +949,11 @@
     },
     {
       "path": "docs/js/race-viewport.js",
-      "sha256": "de2c3b82863fe15cbc67b03b30ac430f5a88fec1cdd040ad2fa0793b9c8cbfdc"
+      "sha256": "4e54297ca8b073215ac809a37639a070258b109dc5e14ec56cd83c6de6c44c2a"
     },
     {
       "path": "docs/js/race.js",
-      "sha256": "b22ca66de4c7cc1cdb3b1e3a30bd703c3615692ee2825639e68cab710fed30e6"
+      "sha256": "f2a322e991d688ed4fa1dbc7fdd1059bdad5b198772b628dae56d526b67f15a6"
     },
     {
       "path": "docs/js/retro.js",
@@ -965,15 +965,15 @@
     },
     {
       "path": "docs/js/save.js",
-      "sha256": "d18f299aa0a6a85481e19fdbf0d674aa9a26e02b9adc3fedeac7bfae8a611bb2"
+      "sha256": "860e10c32780fc2e9afeb057a6ac567368ef63adae5fef82ec28c038ce0aab61"
     },
     {
       "path": "docs/js/shop-cycle.js",
-      "sha256": "f24b54ac82ebcf130ef6c2e03d4174b01d74b5c159123b2f19f153194cff4f7c"
+      "sha256": "27c64f0707493c657b2d3dcfabb84dce9195bd7529afd13896f5f67776018019"
     },
     {
       "path": "docs/js/sim.js",
-      "sha256": "dd673969a32009d5af1253cb68509b2dee7daf03bd20154d228e82cf88eba708"
+      "sha256": "a02b0f583f40e39bc0a0f09fe60f99d613b8fe4e1c6bf0b516cd0b95f66d104d"
     },
     {
       "path": "docs/js/sky-gen.js",
@@ -981,7 +981,7 @@
     },
     {
       "path": "docs/js/spill-appearance.js",
-      "sha256": "5f76b47016a75691b4ec0ad5b814ae5470e02b5e23afdcc2098cfbcf97e573aa"
+      "sha256": "0a45805dad5272dedd0a3907d05041d97075e56d9afdf66f8c62538f853daf00"
     },
     {
       "path": "docs/js/spill-content.js",
@@ -1001,15 +1001,15 @@
     },
     {
       "path": "docs/js/spill-presentation.js",
-      "sha256": "433177e58e6a6bbea0af7f26a768e1131f99c03b1a42049739225973d1ec625f"
+      "sha256": "0c67be876288fb1aef13552eacbeaee6f8ffdde92423775f356bc3e75ea3ff15"
     },
     {
       "path": "docs/js/spill-workshop.js",
-      "sha256": "b4ef7935d0effc23166998191d794bfdfc922fd5a65128d7e9e9ec12c893828b"
+      "sha256": "604aca6a46795f32b908e8a852c1c29a15c648b743c05fd35e328dd500ac7b09"
     },
     {
       "path": "docs/js/spill.js",
-      "sha256": "925e3ff601e30af991a903f2705267afdba633101b8b0d61dff4e8286e86ef8f"
+      "sha256": "57be59bb0b82e859e7cf027fea44833c57fe0222a65e7477652e64bb68b20e4b"
     },
     {
       "path": "docs/js/sprite-detail.js",
@@ -1017,7 +1017,7 @@
     },
     {
       "path": "docs/js/standalone.js",
-      "sha256": "ace6039c46bbdc0103f1187832d791f418f85009f9a2f479818fa22d83d5a269"
+      "sha256": "b85e7fbb410a4adf50e121d70b9e5c807a845d425a2f61b0fd02997ce95ae4c0"
     },
     {
       "path": "docs/js/star-map-rewards.js",
@@ -1025,15 +1025,15 @@
     },
     {
       "path": "docs/js/star-map-view.js",
-      "sha256": "3fd189960fa1822bf3dd2a2fccd83e503818d424c70eaeb361f307121aa5df2b"
+      "sha256": "efbb2043741c23bfc2b8133e6bb18308c815f15a8727a0b15b29c45fc5ebd2a0"
     },
     {
       "path": "docs/js/star-trails.js",
-      "sha256": "2369a399ec196398e2bc9080720fd3083c3abd3532cec98e8822a09fdc15d174"
+      "sha256": "f33807d0fe417854db0595dd50acca67ad9f1d22916112f3ac6083b7f90fa77f"
     },
     {
       "path": "docs/js/vanguard-maneuver.js",
-      "sha256": "e5a8eeb49f57c256aea3c443ffcde1f1e855630c2fd2b3c294a9c9e2ca96f1d8"
+      "sha256": "ee158088f2a31083e9d9b1c614da6fcca5d9a06d7c83ee1eb917c9d69f75b193"
     },
     {
       "path": "docs/js/vanguard-parts.js",
@@ -1045,7 +1045,7 @@
     },
     {
       "path": "docs/js/vanguard.js",
-      "sha256": "2a06af8693a06de6f7b3e67ed22abad8c92e215460f3615611a87f9f55bb8bb0"
+      "sha256": "2defeafa4f363df511c5f6c3f4b66019f150402137ab919a9158cbb01f68a03b"
     },
     {
       "path": "docs/js/zone-planet-colors.js",
@@ -1053,7 +1053,7 @@
     },
     {
       "path": "docs/js/zone-visuals.js",
-      "sha256": "2c11585b209d04e2f3a990bad7227811e603028592e08259abad0491b9badcd6"
+      "sha256": "a5f26b587e16f03fe3a66bf265c44609588bbca89ae1398462b258937fdf1e2c"
     }
   ],
   "shippingManifest": {
