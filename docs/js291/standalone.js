@@ -230,11 +230,7 @@ export async function bootStandalone(root) {
         }
         engine.fly(m.id);
     }
-    // THE OPENING MODE. The game's own default is the first row (NORMAL);
-    // a shell may name another by id (13 Sep 2026, owner: "lead with debris
-    // field mode as the default on open" - staged on the portal build first,
-    // see DEBRIS_FIELD_DIRECTION.md). An unknown or locked id is ignored.
-    let selectedMode = Math.max(0, MODES.findIndex((m) => m.id === platform.defaultMode && m.id !== "deep" && m.id !== "lost"));
+    let selectedMode = 0;
     // BUG: every re-render rebuilt the overlay from scratch, so buying or
     // equipping something near the bottom of the hangar threw you back to
     // the top. Remember where the list was and put it back after the swap.

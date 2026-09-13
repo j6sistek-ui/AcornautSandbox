@@ -80,8 +80,8 @@ the data module for the save (with a one-time copy of an acornaut.app
 localStorage save), SDK ads for the same three placements as AdMob (mute
 on `adStarted`, nothing paid on `adError`, nothing offered to an ad
 blocker), `gameplayStart/Stop`, `happytime`, `loadingStart/Stop`, the
-portal's mute switch, no external links, and Debris Field as the opening
-mode. `npm run crazygames` builds `crazygames-dist/` from `../docs`,
+portal's mute switch and no external links. The portal gets the current
+game as it is: same modes, same default. `npm run crazygames` builds `crazygames-dist/` from `../docs`,
 prints the budget against the portal's limits (250 MB, 1,500 files, 50 MB
 initial download, 10 s load) and zips `acornaut-crazygames.zip` for
 developer.crazygames.com. The audit, the work list and the upload steps

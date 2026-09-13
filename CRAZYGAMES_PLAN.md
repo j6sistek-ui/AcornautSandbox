@@ -33,7 +33,7 @@ copy of `docs/`, 390 x 760, cold cache).
 | Requests before the title | none stated | 289 requests | risk (cold CDN) |
 | Load time | under 10 s | 15 s on the single-threaded local server; unmeasured on the portal | verify |
 | External requests | none except the SDK | none: fonts self-hosted, one same-origin fetch (`spill-ship/transforms.json`) | pass |
-| Land in gameplay | at most 1 click | title → LAUNCH is 1 click; Debris Field then shows its instructions card and the opening Depot before wave 1 | decision, see below |
+| Land in gameplay | at most 1 click | title → LAUNCH is 1 click into NORMAL free flight; a first-timer's tutorial runs inside that flight | pass (see the note below) |
 | Custom fullscreen button | forbidden | none | pass |
 | External links / cross-promotion | forbidden | Discord, X and mail rows on the Pilot screen | fixed: hidden when the bridge says `links: false` |
 | Ads | SDK only; mute game audio during an ad; no reward on `adError`; ad-blocker users play normally; rewarded button never on an active gameplay screen; skip and watch buttons equal in size | AdMob adapter exists for the app only; the portal build gets the SDK adapter (this PR); the crash sheet and the shop are not gameplay screens | pass with the adapter |
@@ -53,39 +53,30 @@ copy of `docs/`, 390 x 760, cold cache).
 | Preview video | 15 to 20 s, no audio, landscape 1080p and portrait 2:3 both mandatory, static cover as first frame | none produced | **to do** |
 | Metadata | description and controls text | draft below | to do |
 
-### The one design decision: what the first click lands in
+### The first click
 
-CrazyGames' reviewers want the first tap to be gameplay. Today the LAUNCH
-tile is that one click, but Debris Field then opens its instructions card,
-and START RUN docks at the opening Depot for one free upgrade before wave 1.
-That is three taps before the first piece of debris moves. Options, for the
-owner to pick (none applied):
-
-1. **Portal-only shortcut.** When the bridge names a default mode, LAUNCH
-   goes straight to the countdown; the instructions card stays one tap away
-   on `?` and the free upgrade is offered at the wave-5 Depot instead. One
-   `if (platform.defaultMode)` in `spillTap` / the ready phase.
-2. **In-flight lessons.** Replace the card with wave-1-to-3 prompts for
-   everyone (the 3D scope's own tutorial rule, see
-   `DEBRIS_FIELD_DIRECTION.md`, idea R). Bigger, benefits the app too.
-3. Leave it. Risk a "gameplay first" note from QA.
-
-Recommendation: 1 for the portal launch, 2 as the first realignment PR.
+The portal gets the current game as it is (owner, 13 Sep 2026: "crazy
+games will be the current game ... current version needs to be cleaned up
+for crazy games before any overhauls"). The title's LAUNCH tile is the one
+click and it lands in NORMAL free flight, with the first-timer's tutorial
+flown inside that run, which is what the "gameplay first" rule asks for.
+The one thing in front of it is the boot overlay's first tap, which
+unlocks audio and plays the launch film; see P1 item 6. Debris Field and
+its instructions card are untouched here and come up in the mode sheet
+exactly as on acornaut.app.
 
 ## What the shell PR added (13 Sep 2026)
 
 - `illustrated-src/game/platform.ts`: adapter members `gameplay`
-  (`start`, `stop`, `happy`), `links`, `defaultMode`, `listen(hooks)`; the
-  ads calls take a `started` callback so the game mutes on `adStarted`, not
-  on request. Platform gains `gameplayStart/Stop`, `celebrate`, `links`,
-  `defaultMode`, `attach`.
+  (`start`, `stop`, `happy`), `links`, `listen(hooks)`; the ads calls take
+  a `started` callback so the game mutes on `adStarted`, not on request.
+  Platform gains `gameplayStart/Stop`, `celebrate`, `links`, `attach`.
 - `engine.ts`: gameplay start on `fly`, `flyLevel`, `spillResume`,
   `resume`, `continueRun`, an earned ad continue; stop on `pause`, a crash,
   `spillSuspend` and every `open()` that leaves a run. `muteAll` wraps each
   ad. `sim.ts` celebrates a finished mission and a new personal best.
-- `standalone.ts`: the title opens on `platform.defaultMode` when a shell
-  names one; the Community rows (Discord, X, mail) render only when
-  `platform.links` is true.
+- `standalone.ts`: the Community rows (Discord, X, mail) render only
+  when `platform.links` is true. Nothing else on the title changes.
 - `shell/crazygames/adapter.js`: the SDK adapter (storage, ads, gameplay,
   mute, loading, migration, common fixes). Plain ES module, no bundler.
 - `shell/build-crazygames.mjs` (`npm run crazygames` in `shell/`): builds
@@ -117,7 +108,11 @@ Recommendation: 1 for the portal launch, 2 as the first realignment PR.
    game in the portal's preview at 16:9 desktop, DPR 1, and in the mobile
    frame: load time, legibility, touch, keyboard, the ad demo (local mode
    shows demo ads), save round-trip, adblock on.
-4. **The first-click decision** above.
+4. **The boot overlay.** The first tap on the page unlocks audio and, in
+   a landscape window, starts the 13.8 MB launch film. Confirm in the
+   preview tool that the overlay reads as "tap to start" and that the
+   film is skippable at once; if the reviewer counts it as a click, see
+   P1 item 6.
 
 **P1, before Full Launch**
 
@@ -129,11 +124,13 @@ Recommendation: 1 for the portal launch, 2 as the first realignment PR.
    landscape, many players on Chromebooks) default `introOff` on via the
    bridge, or stream a 3 MB cut.
 7. **Leaderboards.** CrazyGames has a leaderboard SDK; map it onto the
-   bridge's `boards` member so Debris Field's best wave posts.
-8. **Metadata text.** Description: "Fly a squirrel through a broken acorn
-   mining rig. Survive waves of debris, salvage Ore, and build your ship at
-   the Depot every five waves." Controls: "Tap, click or Space to thrust.
-   Swipe or Down to dive. Swipe right or D to lunge."
+   bridge's `boards` member so each mode's best posts.
+8. **Metadata text.** Description: "Fly a squirrel through the gaps,
+   grab the acorns, and earn your way across a 260-mission Star Chart. Six
+   ways to fly: Normal, Debris Field wave survival, Hyper Run, Deep Space,
+   Lost in Space and Arcade. Suits, helmets and pals to collect." Controls:
+   "Tap, click or Space to flap. Debris Field: swipe or Down to dive, swipe
+   right or D to lunge. Hyper Run: hold to rise."
 
 **P2, later**
 
@@ -151,8 +148,9 @@ cd shell && npm install && npm run crazygames
 1. developer.crazygames.com → Games → Add game → upload the zip.
 2. Fill the description, controls, category (arcade / survival), covers
    and video.
-3. Preview tool: play a full Debris Field block to the wave-5 Depot on
-   desktop and on the mobile frame; watch the console for 404s.
+3. Preview tool: on desktop and on the mobile frame, fly a NORMAL run to
+   a crash and through the continue, one Star Chart mission, and a Debris
+   Field block to the wave-5 Depot; watch the console for 404s.
 4. Submit for Basic Launch. Watch the three metrics for a week.
 5. Full Launch: ads go live through the SDK (no code change: the adapter
    already asks for them; Basic Launch answers `adsDisabledBasicLaunch`

@@ -12,7 +12,10 @@
 //   listen   -> SDK.game.settings.muteAudio (the portal's own mute switch)
 //   links    -> false (no doors out of a portal game)
 //   devDoors -> false
-//   defaultMode -> "spill": the portal build leads with Debris Field
+//
+// The portal gets the CURRENT game (owner, 13 Sep 2026: "crazy games will
+// be the current game ... current version needs to be cleaned up for
+// crazy games before any overhauls"): same modes, same NORMAL default.
 //
 // Rules this adapter keeps for the reviewer (docs.crazygames.com):
 //   - only SDK ads; the game mutes itself on adStarted and unmutes on
@@ -30,8 +33,7 @@ const LIMIT_WARN = 1024 * 1024 * 0.9; // the data module keeps 1 MB per player
 
 /** build the adapter against an SDK object (window.CrazyGames.SDK, or a
  *  test double); `env` is what SDK.init resolved to */
-export function install(win, SDK, opts = {}) {
-  const defaultMode = opts.defaultMode ?? "spill";
+export function install(win, SDK) {
   let ready = false;
   let showing = false;
   let adblock = false;
@@ -124,7 +126,6 @@ export function install(win, SDK, opts = {}) {
     },
     links: false,
     devDoors: false,
-    defaultMode,
     /** portal state the page (and the test) can read */
     __cg: { get ready() { return ready; }, get adblock() { return adblock; }, get showing() { return showing; }, migrate },
   };

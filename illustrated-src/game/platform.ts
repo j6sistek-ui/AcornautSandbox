@@ -81,11 +81,6 @@ export type PlatformAdapter = {
    *  forbids them (CrazyGames: no external links, no cross-promotion).
    *  Default: yes. */
   links?: boolean;
-  /** the mode the title selects on open, by mode id ("spill" is Debris
-   *  Field). Default: the game's own choice. A portal build that leads
-   *  with Debris Field says so here; the web page and the app are not
-   *  touched by it. */
-  defaultMode?: string;
   /** the shell's line back INTO the game. The bridge calls this once at
    *  boot with the hooks the game exposes; a shell keeps them and calls
    *  them when the world outside changes (a portal's mute switch). */
@@ -132,8 +127,6 @@ export type Platform = {
   celebrate(): void;
   /** external links may be shown */
   links: boolean;
-  /** the title's opening mode id, or null for the game's own default */
-  defaultMode: string | null;
   /** hand the shell the game's hooks (once, at boot) */
   attach(hooks: PlatformHooks): void;
   devDoors: boolean;
@@ -206,7 +199,6 @@ function build(a: PlatformAdapter | null): Platform {
     gameplayStop: () => { try { a?.gameplay?.stop(); } catch { /* ditto */ } },
     celebrate: () => { try { a?.gameplay?.happy?.(); } catch { /* ditto */ } },
     links: a?.links ?? true,
-    defaultMode: typeof a?.defaultMode === "string" ? a.defaultMode : null,
     attach: (hooks) => { try { a?.listen?.(hooks); } catch { /* a shell that cannot listen is a shell without a mute switch */ } },
     devDoors: a?.devDoors ?? !native,
   };

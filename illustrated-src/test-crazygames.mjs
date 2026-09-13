@@ -7,7 +7,7 @@
  *  portal's switch and forwards gameplay events. Then the engine's
  *  gameplay events through the real screens (happy-dom): start on launch,
  *  resume and revive; stop on pause, crash and leaving a run; the title
- *  opens on the mode the shell names; the Community rows stay home. */
+ *  keeps the game's own default; the Community rows stay home. */
 import { readFileSync } from "node:fs";
 const fail = [];
 const ok = (c, m) => { if (!c) fail.push(m); };
@@ -49,8 +49,8 @@ const ok = (c, m) => { if (!c) fail.push(m); };
   const win = { localStorage: fakeLocal, addEventListener() {}, document: { addEventListener() {} } };
   const { adapter, init } = install(win, SDK);
   ok(win.__acornautPlatform === adapter, "install hands the bridge its adapter");
-  ok(adapter.kind === "web" && adapter.links === false && adapter.devDoors === false && adapter.defaultMode === "spill",
-    "a portal build: web kind, no doors out, no dev doors, Debris Field first");
+  ok(adapter.kind === "web" && adapter.links === false && adapter.devDoors === false && !("defaultMode" in adapter),
+    "a portal build: web kind, no doors out, no dev doors, the game's own modes and default");
   ok(!adapter.ads.rewardedReady() && adapter.storage.get("acornaut_illust_v1") === '{"old":1}',
     "before init: no ads, and reads come from localStorage");
   await init();
@@ -118,7 +118,7 @@ globalThis.window = {
   location: { href: "http://local/" }, devicePixelRatio: 1,
   addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }),
   __acornautPlatform: {
-    kind: "web", devDoors: false, links: false, defaultMode: "spill",
+    kind: "web", devDoors: false, links: false,
     storage: (() => { const m = new Map(); return { get: (k) => m.get(k) ?? null, set: (k, v) => m.set(k, v), remove: (k) => m.delete(k) }; })(),
     gameplay: { start: () => events.push("start"), stop: () => events.push("stop"), happy: () => events.push("happy") },
     listen: (h) => { mute = h.mute; },
@@ -127,7 +127,7 @@ globalThis.window = {
 globalThis.document = { createElement: () => ({ getContext: () => null, style: {} }), documentElement: { style: {} }, addEventListener() {} };
 globalThis.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
 const P = await import("../docs/js/platform.js");
-ok(P.platform.defaultMode === "spill" && P.platform.links === false && !P.platform.adsReady, "the bridge reads the shell's default mode and link rule; no ads adapter, no ads");
+ok(P.platform.links === false && !P.platform.adsReady, "the bridge reads the shell's link rule; no ads adapter, no ads");
 P.platform.gameplayStart(); P.platform.celebrate();
 ok(events.join() === "start,happy", "gameplay events pass through the bridge");
 events.length = 0;
@@ -151,7 +151,7 @@ if (engine) {
   Object.assign(engine.save, { tutorialDone: true, guide: "done" });
   engine.open("title"); tick(2);
   const text = () => app.textContent;
-  ok(/DEBRIS FIELD SELECTED/.test(text()), "the title opens with Debris Field selected when the shell says so");
+  ok(/NORMAL SELECTED/.test(text()), "the title opens on NORMAL, the current game's own default");
   ok(!/Discord|@AcornautGame/.test(text()), "no Community links on the hub");
   engine.open("profile"); tick(2);
   ok(!/Discord|@AcornautGame|acornaut@outlook/.test(text()), "and none on the Pilot screen either");
@@ -177,4 +177,4 @@ if (engine) {
 }
 
 if (fail.length) { console.log("FAIL\n  " + fail.join("\n  ")); process.exit(1); }
-console.log("crazygames: SDK adapter (init, migration, rewarded earned/dismissed/unavailable, midgame, adblock, mute, gameplay), portal fixes, bridge flags, engine gameplay start/stop through the real screens, Debris Field default, no links - passed");
+console.log("crazygames: SDK adapter (init, migration, rewarded earned/dismissed/unavailable, midgame, adblock, mute, gameplay), portal fixes, bridge flags, engine gameplay start/stop through the real screens, NORMAL default kept, no links - passed");

@@ -22,11 +22,11 @@ The package (`npm run web`) is 145 MB: 140 MB art of which `suits` 35,
 pal idle banks (`solo`) 28, `zone-scenes` 16, `planets` 14, `shop` 10,
 `skies` 8. All of it is reached by production. Under the 200 MB cellular line.
 
-> 13 Sep 2026: the owner's order is now **CrazyGames first, then the App
-> Store**, with Debris Field becoming the game's lead mode after the portal
-> launch. The portal work is in `CRAZYGAMES_PLAN.md`; the mode realignment
-> in `DEBRIS_FIELD_DIRECTION.md`. Everything below still applies to the
-> store build, in the same order, after the portal ships.
+> 13 Sep 2026: the owner's order is now **CrazyGames first, with the
+> current game as it is**, then more testing and feedback before the App
+> Store. The Debris Field overhaul comes after the portal launch and is
+> scoped separately. The portal work is in `CRAZYGAMES_PLAN.md`. Everything
+> below still applies to the store build, in the same order, later.
 
 ## P0 — the critical path (owner, no code)
 

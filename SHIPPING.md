@@ -44,7 +44,6 @@ window.__acornautPlatform = {
   gameplay: { start, stop, happy },     // the portal's gameplayStart/Stop/happytime (CrazyGames, 13 Sep 2026)
   listen:  (hooks) => {},               // the shell keeps hooks.mute(m) for its own mute switch
   links:   false,                       // no Discord / X / mail rows (a portal forbids doors out)
-  defaultMode: "spill",                 // the title opens on Debris Field (portal build only)
   devDoors: false,
 };
 ```

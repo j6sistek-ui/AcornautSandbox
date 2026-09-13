@@ -117,7 +117,6 @@ function build(a) {
         }
         catch { /* ditto */ } },
         links: a?.links ?? true,
-        defaultMode: typeof a?.defaultMode === "string" ? a.defaultMode : null,
         attach: (hooks) => { try {
             a?.listen?.(hooks);
         }
