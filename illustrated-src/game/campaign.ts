@@ -689,7 +689,7 @@ export const STAR_REWARDS: StarReward[] = [
   { stars: 60, kind: "acorns", name: "170 Acorns", desc: "Spending acorns for the hangar.", amount: 170 },
   { stars: 70, kind: "acorns", name: "170 Acorns", desc: "Spending acorns for the hangar.", amount: 170 },
   { stars: 75, kind: "dust", name: "19 Star Dust", desc: "Premium dust for the shop.", amount: 19 },
-  { stars: 80, kind: "suit", id: "ghost", name: "Ghost Suit", desc: "Spectral tail, cyan-burning eyes." },
+  { stars: 80, kind: "acorns", name: "170 Acorns", desc: "Spending acorns for the hangar.", amount: 170 },
   { stars: 90, kind: "dust", name: "19 Star Dust", desc: "Premium dust for the shop.", amount: 19 },
   { stars: 100, kind: "trail", id: "bloom", name: "Nebula Bloom", desc: "Petals of nebula light." },
   { stars: 110, kind: "pal", id: "voidjelly", name: "Jelly", desc: "Bounce Softer" },

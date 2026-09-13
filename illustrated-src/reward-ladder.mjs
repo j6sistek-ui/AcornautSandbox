@@ -49,15 +49,19 @@ const clean = (d) => d.replace(/\s*Earned at \d+ stars\.?/g, "").replace(/\s*Ear
 // to 15 stars. Nothing else may move, so nothing else does. test-star-map
 // holds the rule for whatever is dropped onto these rungs later.
 const PRICED = new Set(["void", "comet", "cherry", "phoenix", "royal", "aurora", "princess", "meteor", "chrono"]);
-// ACORNUT IS SOLD, NOT EARNED (owner, 13 Sep 2026: "unlock acornaut with
-// 1,000 acorns, remove from star chart"). Same trick as the priced helmets:
-// he keeps the suit slot he always held, so no other suit moves and his
-// wake still rides his block, and the rung pays acorns instead.
-const SOLD_SUITS = new Set(["vanguard"]);
-// his entry as the list carried it, at the stars that fixed his place in
-// the pool - the list itself no longer names him
-if (!rows.some((r) => r.kind === "suit" && r.id === "vanguard"))
-  rows.push({ stars: 570, kind: "suit", id: "vanguard", name: "AcorNut", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake." });
+// SOLD, NOT EARNED (owner, 13 Sep 2026: "unlock acornaut with 1,000
+// acorns, remove from star chart"; "make ghost unlock by 200 acorns").
+// Same trick as the priced helmets: each keeps the suit slot it always
+// held, so no other suit moves (and AcorNut's wake still rides his block),
+// and the rung pays acorns instead.
+const SOLD_SUITS = new Set(["vanguard", "ghost"]);
+// their entries as the list carried them, at the stars that fixed their
+// place in the pool - the list itself no longer names them
+for (const [stars, id, name, desc] of [
+  [80, "ghost", "Ghost Suit", "Spectral tail, cyan-burning eyes."],
+  [570, "vanguard", "AcorNut", "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake."],
+]) if (!rows.some((r) => r.kind === "suit" && r.id === id)) rows.push({ stars, kind: "suit", id, name, desc });
+rows.sort((a, b) => a.stars - b.stars);
 // their entries as the list carried them, at the stars that fixed their
 // order in the pool - the list itself no longer names them
 for (const [stars, id, name, desc] of [

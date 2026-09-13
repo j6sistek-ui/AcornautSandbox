@@ -279,7 +279,9 @@ export const SUITS: Suit[] = [
   // The A/B is DECIDED: the standard bank won and flies "alien" above.
   // This is the retired custom-posed character, kept on the beta shelf as
   // Alien 1 by the owner's call ("alien 1 retires to unreleased").
-  { id: "ghost", name: "Ghost", cost: 0, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
+  // SOLD, NOT EARNED (owner, 13 Sep 2026: "make ghost unlock by 200
+  // acorns"). Left the 80-star rung for the shelf at this price.
+  { id: "ghost", name: "Ghost", cost: 200, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
   { id: "bigbooty", name: "Big Booty", cost: 0, booty: true, fur: "#e09a45", furDark: "#a86a1f", belly: "#ffe9c4", suit: "#8a3fd4", suitLite: "#b876ff", suitDark: "#54258c", trim: "#ffd23f", glow: "#ffb84d", dust: "#ffe08a" },
   { id: "catsuit", name: "Cat", cost: 0, cat: true, fur: "#e0863a", furDark: "#a85a1f", belly: "#f3d5a8", suit: "#d1712a", suitLite: "#f0a256", suitDark: "#8a4413", trim: "#cfd8e0", glow: null, dust: null },
   // THE CRITTERS (owner, 7 Sep 2026): three more acorn-intolerant characters,

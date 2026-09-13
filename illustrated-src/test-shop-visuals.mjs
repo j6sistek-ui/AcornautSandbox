@@ -463,7 +463,8 @@ try{
     if(mode==='production')assert(Object.values(unlockCounts).every(n=>n>0),'locked examples cover suits, helmets, trails and PALs');
     assert.equal(STAR_UNLOCKS.suits.vanguard,undefined,'AcorNut is sold for 1,000 acorns, not earned on the chart');
     assert.equal(C.SUITS.find(u=>u.id==='vanguard').cost,1000,'AcorNut costs 1,000 acorns');
-    assert.equal(STAR_UNLOCKS.suits.ghost,80,'Ghost still requires its real campaign threshold');
+    assert.equal(STAR_UNLOCKS.suits.ghost,undefined,'Ghost is sold for 200 acorns, not earned on the chart');
+    assert.equal(C.SUITS.find(u=>u.id==='ghost').cost,200,'Ghost costs 200 acorns');
     e.open('hangar');
     const loadoutHelp=[...app.querySelectorAll('.ac-loadout button')].find(b=>b.querySelector('img')?.src.includes('/ui/help.png'));
     assert(loadoutHelp?.classList.contains('ac-hub-sq'),'Loadout Help uses the same painted square button as the menu');
