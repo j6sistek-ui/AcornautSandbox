@@ -580,7 +580,7 @@ export const STAR_REWARDS = [
     { stars: 540, kind: "acorns", name: "730 Acorns", desc: "Spending acorns for the hangar.", amount: 730 },
     { stars: 550, kind: "trail", id: "frost", name: "Frostbite", desc: "A wake of hoarfrost." },
     { stars: 560, kind: "acorns", name: "730 Acorns", desc: "Spending acorns for the hangar.", amount: 730 },
-    { stars: 570, kind: "suit", id: "vanguard", name: "AcorNut", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake." },
+    { stars: 570, kind: "acorns", name: "730 Acorns", desc: "Spending acorns for the hangar.", amount: 730 },
     { stars: 580, kind: "trail", id: "voidsmoke", name: "Void Smoke", desc: "What the dark exhales." },
     { stars: 590, kind: "pal", id: "magnetar", name: "Magnetar PAL", desc: "Upside Down World." },
     { stars: 600, kind: "helmet", id: "chronarch", name: "Chronarch Helmet", desc: "Time under glass. Was premium; now earned." },

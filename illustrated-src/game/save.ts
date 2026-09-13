@@ -631,7 +631,7 @@ export function loadSave(): SaveData {
   // so it asks that question now - and it cannot ask suitRevealed, which
   // says yes BECAUSE of the entry being judged.
   if (!tutorialSuitEarned(s)) s.unlockedSuits = s.unlockedSuits.filter((id) => id !== TUTORIAL_SUIT);
-  if (s.equippedSuit === TUTORIAL_SUIT && !suitRevealed(s, TUTORIAL_SUIT)) s.equippedSuit = "flight";
+  if (s.equippedSuit === TUTORIAL_SUIT && !tutorialSuitEarned(s)) s.equippedSuit = "flight";  // priced, so revealed is not owned
   if (IS_BETA && !s.betaSampleCreditImported) {
     try {
       const raw = platform.storage.get("acornaut_star_map_sample_v1");
@@ -681,7 +681,7 @@ export function grantTutorialKit(s: SaveData) {
   // ...unless the 570 stars are already in, in which case he is the
   // pilot's outright and graduation has nothing to take back.
   if (!tutorialSuitEarned(s)) s.unlockedSuits = s.unlockedSuits.filter(id => id !== TUTORIAL_SUIT);
-  if (s.equippedSuit === TUTORIAL_SUIT && !suitRevealed(s, TUTORIAL_SUIT)) s.equippedSuit = "flight";
+  if (s.equippedSuit === TUTORIAL_SUIT && !tutorialSuitEarned(s)) s.equippedSuit = "flight";  // priced, so revealed is not owned
 }
 
 export function writeSave(s: SaveData) {
@@ -747,8 +747,10 @@ export function trailUnlocked(s: SaveData, id: string) {
  *  answers "does the pilot have him", and one of the ways it says yes is
  *  that his id is sitting in unlockedSuits - so it can never be asked
  *  whether that entry deserves to be there. This asks the question the
- *  entry cannot answer about itself: bought, or 570 stars on the road, or
- *  the beta, which opens every gate. */
+ *  entry cannot answer about itself: bought (1,000 acorns in the Loadout
+ *  since 13 Sep 2026; the receipt lands in `purchased`), or the beta,
+ *  which opens every gate. He has no rung on the road any more; the star
+ *  clause below is kept for a ladder that puts one back. */
 export function tutorialSuitEarned(s: SaveData) {
   if ((s.purchased || []).includes(TUTORIAL_SUIT)) return true;
   if (BETA_UNLOCK_GATES) return true;

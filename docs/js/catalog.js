@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-09-13 17:18 UTC";
+export const BUILD_TIME = "2026-09-13 19:54 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -192,7 +192,10 @@ export function helmetWornBy(equippedHelmet, equippedSuit) {
 }
 export const SUITS = [
     { id: "flight", name: "Flight", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#c8762c", suitLite: "#eda85a", suitDark: "#8a4c14", trim: "#f6cf8a", glow: null, dust: null },
-    { id: "vanguard", name: "AcorNut", cost: 0, ownHead: true, fur: "#c4783e", furDark: "#593b28", belly: "#f6e7d1", suit: "#dcdedb", suitLite: "#fff8e8", suitDark: "#28303b", trim: "#d6ae63", glow: "#85edff", dust: null },
+    // SOLD, NOT EARNED (owner, 13 Sep 2026: "unlock acornaut with 1,000
+    // acorns, remove from star chart"). The flagship left the 570-star rung
+    // for the Loadout shelf at this price; the tutorial still borrows him.
+    { id: "vanguard", name: "AcorNut", cost: 1000, ownHead: true, fur: "#c4783e", furDark: "#593b28", belly: "#f6e7d1", suit: "#dcdedb", suitLite: "#fff8e8", suitDark: "#28303b", trim: "#d6ae63", glow: "#85edff", dust: null },
     // Carbon armour, blue eyes and a blue electrical wake; its articulated
     // bare-headed pilot is one integrated look with independent flight motion.
     // ARCFLASH IS SOLD (owner, 7 Sep 2026): production, 1,850 star dust,

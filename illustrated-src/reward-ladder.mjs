@@ -49,6 +49,15 @@ const clean = (d) => d.replace(/\s*Earned at \d+ stars\.?/g, "").replace(/\s*Ear
 // to 15 stars. Nothing else may move, so nothing else does. test-star-map
 // holds the rule for whatever is dropped onto these rungs later.
 const PRICED = new Set(["void", "comet", "cherry", "phoenix", "royal", "aurora", "princess", "meteor", "chrono"]);
+// ACORNUT IS SOLD, NOT EARNED (owner, 13 Sep 2026: "unlock acornaut with
+// 1,000 acorns, remove from star chart"). Same trick as the priced helmets:
+// he keeps the suit slot he always held, so no other suit moves and his
+// wake still rides his block, and the rung pays acorns instead.
+const SOLD_SUITS = new Set(["vanguard"]);
+// his entry as the list carried it, at the stars that fixed his place in
+// the pool - the list itself no longer names him
+if (!rows.some((r) => r.kind === "suit" && r.id === "vanguard"))
+  rows.push({ stars: 570, kind: "suit", id: "vanguard", name: "AcorNut", desc: "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake." });
 // their entries as the list carried them, at the stars that fixed their
 // order in the pool - the list itself no longer names them
 for (const [stars, id, name, desc] of [
@@ -132,6 +141,15 @@ slots.forEach((stars, i) => {
   // and a bare-id test quietly turned both trails into currency.
   if (r.kind === "helmet" && r.id && PRICED.has(r.id)) r = currency("acorns", b);   // the rung buys it; it does not hand it over
   out.push({ ...r, stars, desc: r.desc ? clean(r.desc) : r.desc });
+});
+// A SOLD SUIT pays acorns at its block's rate - substituted AFTER the pattern
+// is dealt, so the acorns/dust balance above never counts the substitution
+// and no later filler flips because of it. Nothing else may move, so
+// nothing else does.
+out.forEach((r, i) => {
+  if (r.kind !== "suit" || !r.id || !SOLD_SUITS.has(r.id)) return;
+  const b = Math.floor(slots.indexOf(r.stars) / ORDER.length);
+  out[i] = { ...currency("acorns", b), stars: r.stars };
 });
 // the road ends mid-block, so whatever the last block could not seat joins
 // the final rung as a set - the completionist's prize is the biggest one

@@ -461,7 +461,8 @@ try{
       unlockCounts[tab]=count;
     }
     if(mode==='production')assert(Object.values(unlockCounts).every(n=>n>0),'locked examples cover suits, helmets, trails and PALs');
-    assert.equal(STAR_UNLOCKS.suits.vanguard,570,'AcorNut still requires its real campaign threshold');
+    assert.equal(STAR_UNLOCKS.suits.vanguard,undefined,'AcorNut is sold for 1,000 acorns, not earned on the chart');
+    assert.equal(C.SUITS.find(u=>u.id==='vanguard').cost,1000,'AcorNut costs 1,000 acorns');
     assert.equal(STAR_UNLOCKS.suits.ghost,80,'Ghost still requires its real campaign threshold');
     e.open('hangar');
     const loadoutHelp=[...app.querySelectorAll('.ac-loadout button')].find(b=>b.querySelector('img')?.src.includes('/ui/help.png'));

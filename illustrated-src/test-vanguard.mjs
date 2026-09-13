@@ -44,48 +44,25 @@ const button=text=>[...app.querySelectorAll('button')].find(b=>b.textContent.inc
 function chart(){e.open('log');tick();tick();return app.querySelector('.ac-chartmap');}
 const VG=await import('../docs/js/vanguard.js');
 assert.equal(Cat.SUITS[0].id,'flight');assert.equal(Cat.TRAILS[0].id,'sparks');
-// The generated ladder (ten-star spacing) put AcorNut at 570 and his wake
-// at 520. Pin both, and pin the RELATIONSHIP that outlives any retune: the
-// wake must never land after the suit it belongs to, or it is unwearable
-// on the rung that grants it.
-assert.equal(C.STAR_UNLOCKS.suits.vanguard,570);assert.equal(C.STAR_UNLOCKS.trails.vanguardwake,520);
-assert(C.STAR_UNLOCKS.trails.vanguardwake<=C.STAR_UNLOCKS.suits.vanguard,'the wake cannot arrive after its suit');
+// ACORNUT IS SOLD (owner, 13 Sep 2026: "unlock acornaut with 1,000 acorns,
+// remove from star chart"). He used to be the 570-star prize; the rung pays
+// acorns now and his wake keeps its 520-star rung, wearable once he is
+// bought.
+assert.equal(C.STAR_UNLOCKS.suits.vanguard,undefined,'AcorNut has no rung on the road');
+assert.equal(C.STAR_UNLOCKS.trails.vanguardwake,520);
+assert.equal(Cat.SUITS.find(u=>u.id==='vanguard').cost,1000,'AcorNut costs 1,000 acorns');
 assert.equal(Cat.GUIDE_SUIT,'iontrim');assert(!Cat.IAP_ITEMS.includes('vanguard'));
 assert.equal(S.starsOf(e.save),0);
-if(mode==='production'){
-  assert.equal(e.buySuit('vanguard'),'locked');
-  // Eligibility boundary, read off the rung itself rather than pinned: the
-  // rung moved 500 -> 570 when the ladder was regenerated on ten-star
-  // spacing, and production now flies the same 260-mission / 780-star road
-  // the beta playtested, so this total is earnable on the live route.
-  const ledger=P.migrateCampaign(e.save),gate=C.STAR_UNLOCKS.suits.vanguard;
-  ledger.legacyEntitlementFloor=gate-1;assert.equal(e.buySuit('vanguard'),'locked');
-  ledger.legacyEntitlementFloor=gate;assert(['buy','equip'].includes(e.buySuit('vanguard')));
-  ledger.legacyEntitlementFloor=0;assert(S.suitRevealed(e.save,'vanguard'),'earned suit survives later save reconciliation');
-}else{
-  assert(S.suitRevealed(e.save,'vanguard'),'fresh beta opens flagship at zero stars');
-  assert(['buy','equip'].includes(e.buySuit('vanguard')));
-  // Climb the road to AcorNut's rung with real settlements. Derived from
-  // the rung (570 now, not 500) and the road's length (260 missions on both
-  // pages since the Star Map went live), so a future retune moves the climb
-  // instead of rotting the arithmetic.
-  const earned=S.defaultSave(),gate=C.STAR_UNLOCKS.suits.vanguard;
-  // Each mission is settled once and only once, walking forward down the
-  // road: whole missions pay three stars, the mission on the boundary pays
-  // exactly what is still owed.
-  let next=0;
-  const climb=target=>{
-    while(S.starsOf(earned)<target&&next<C.ALL_LEVELS.length)
-      P.settleMissionCredit(earned,C.ALL_LEVELS[next++],(1<<Math.min(3,target-S.starsOf(earned)))-1);
-    return S.starsOf(earned);
-  };
-  assert.equal(climb(gate-1),gate-1,'one star short of the rung');
-  assert.equal(climb(gate),gate);
-  assert(next<C.ALL_LEVELS.length,'the rung has to be reachable on the road that shipped');
-  // Replaying an already three-starred mission for a single goal never takes
-  // the other two back.
-  P.settleMissionCredit(earned,C.ALL_LEVELS[0],1);assert.equal(S.starsOf(earned),gate);
-}
+// THE PRICE, on both pages: on the shelf from the first launch, 999 acorns
+// is not enough, 1,000 buys him, the receipt lands in `purchased` and the
+// save keeps him through the tutorial strip.
+assert(S.suitRevealed(e.save,'vanguard'),'AcorNut is on the shelf at zero stars');
+assert(!S.tutorialSuitEarned(e.save)||mode!=='production','not earned until bought');
+e.save.acorns=999;assert.equal(e.buySuit('vanguard'),'poor','999 acorns is not enough');
+e.save.acorns=1000;assert.equal(e.buySuit('vanguard'),'buy');assert.equal(e.save.acorns,0,'1,000 acorns bought him');
+assert(e.save.purchased.includes('vanguard'),'the receipt is in purchased');
+assert(S.tutorialSuitEarned(e.save)&&S.suitRevealed(S.loadSave(),'vanguard')&&S.loadSave().unlockedSuits.includes('vanguard'),'a bought AcorNut survives the load');
+assert.equal(e.buySuit('vanguard'),'equip','owned: the tap equips');
 assert.equal(e.save.equippedSuit,'vanguard');
 e.save.equippedTrail='ion';e.save.unlockedTrails.push('ion');
 assert.equal(Cat.trailWornBy(e.save.equippedTrail,e.save.equippedSuit),'vanguardwake');
@@ -218,29 +195,31 @@ assert.deepEqual(legacy.vanguard,VG.createVanguardMotion());
 // original guarantee, not the blunt instrument that carried it: a grant
 // with NOTHING BEHIND IT does not survive a launch. Production is where
 // that has teeth - the beta opens every gate outright, so a list entry
-// there stands in for nothing.
-S.writeSave(e.save);
+// there stands in for nothing. (Since 13 Sep 2026 the thing behind an
+// entry is a RECEIPT, 1,000 acorns' worth; this run bought him above, so
+// the receipt is taken out again here to ask the question.)
+S.writeSave({...e.save,purchased:(e.save.purchased||[]).filter(id=>id!=='vanguard')});
 {
   const back=S.loadSave();
   if(mode==='production'){
-    assert(!S.tutorialSuitEarned(back),'no stars and no receipt at this point in the run');
+    assert(!S.tutorialSuitEarned(back),'no receipt at this point in the run');
     assert(!back.unlockedSuits.includes('vanguard'),'an UNEARNED list grant never carries AcorNut past a launch');
   } else {
     assert(S.tutorialSuitEarned(back),'the beta opens the flagship gate outright');
     assert(S.suitRevealed(back,'vanguard'),'the beta keeps AcorNut revealed across a launch');
   }
 }
-// ...and once he IS earned, the collection sticks: the tap writes the id,
-// the launch leaves it alone, and the shelf never asks a second time.
+// ...and once he IS bought, the purchase sticks: the buy writes the id and
+// the receipt, the launch leaves both alone, and the shelf never asks again.
 {
-  const earned={...e.save,allStars:true,unlockedSuits:[...new Set([...e.save.unlockedSuits,'vanguard'])]};
-  S.writeSave(earned);
+  const bought={...e.save,purchased:[...new Set([...(e.save.purchased||[]),'vanguard'])],unlockedSuits:[...new Set([...e.save.unlockedSuits,'vanguard'])]};
+  S.writeSave(bought);
   const back=S.loadSave();
-  assert(back.unlockedSuits.includes('vanguard'),'a collected AcorNut survives the launch that follows it');
+  assert(back.unlockedSuits.includes('vanguard'),'a bought AcorNut survives the launch that follows it');
 }
-P.migrateCampaign(e.save).legacyEntitlementFloor=C.STAR_UNLOCKS.suits.vanguard;S.writeSave(e.save);
+e.save.purchased=[...new Set([...(e.save.purchased||[]),'vanguard'])];S.writeSave(e.save);
 const reloaded=S.loadSave();
-assert.equal(S.starsOf(reloaded),C.STAR_UNLOCKS.suits.vanguard,'the star ledger is what survives the write');
-assert(S.suitRevealed(reloaded,'vanguard'),'an earned AcorNut survives the save round trip');
-console.log(`Vanguard ${mode}: fresh beta access / production ${C.STAR_UNLOCKS.suits.vanguard-1}→${C.STAR_UNLOCKS.suits.vanguard} gate, entitlements, built-in wake UI/actions, beta A/B and ledger persistence, real rapid taps/gate/contact, paused clocks, old suits and replay stars passed`);
+assert(reloaded.purchased.includes('vanguard'),'the receipt is what survives the write');
+assert(S.suitRevealed(reloaded,'vanguard')&&reloaded.unlockedSuits.includes('vanguard'),'a bought AcorNut survives the save round trip');
+console.log(`Vanguard ${mode}: on the shelf at zero stars, 999 poor / 1,000 buys, receipt in purchased, entitlements, built-in wake UI/actions, beta A/B and receipt persistence, real rapid taps/gate/contact, paused clocks, old suits and replay stars passed`);
 e.destroy?.();await win.happyDOM.abort();process.exit(0);

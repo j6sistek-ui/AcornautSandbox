@@ -988,6 +988,12 @@ export async function createEngine(canvas) {
             return "poor";
         save.acorns -= item.cost;
         save.unlockedSuits.push(id);
+        // AcorNut is BOUGHT now (owner, 13 Sep 2026: "unlock acornaut with
+        // 1,000 acorns, remove from star chart"), and the tutorial's strip in
+        // loadSave reads `purchased`, never unlockedSuits, to decide whether he
+        // is earned - so the receipt goes where that question looks.
+        if (id === TUTORIAL_SUIT)
+            save.purchased = [...new Set([...(save.purchased || []), id])];
         save.equippedSuit = id;
         dropOrphanedHelmet();
         guideStep("suit");

@@ -3,9 +3,11 @@
  *
  *  Owner, 8 Sep 2026: "i still have to collect acornut everytime i load in."
  *
- *  AcorNut is the 570-star prize, and the shelf card for a revealed, unowned,
- *  free suit is a reward: it prints COLLECT REWARD and the tap that reads as
- *  "equip" everywhere else is the collection. That tap writes the suit's id
+ *  AcorNut WAS the 570-star prize (since 13 Sep 2026 he is bought for 1,000
+ *  acorns in the Loadout; the receipt lands in `purchased`), and the shelf
+ *  card for a revealed, unowned, free suit was a reward: it printed COLLECT
+ *  REWARD and the tap that reads as "equip" everywhere else was the
+ *  collection. That tap wrote the suit's id
  *  into `unlockedSuits` - and loadSave tore that exact entry back out on
  *  every launch, unconditionally, so the card came back to be collected again
  *  the next time the game opened. Forever.
@@ -18,9 +20,9 @@
  *
  *  What is asserted here is the full round trip, on both pages:
  *
- *    * a fresh pilot has no AcorNut, and the road has not revealed him
- *    * at 570 stars he is REVEALED but not yet OWNED - one Collect Reward
- *    * the collect survives a save/load round trip, and a second, and a third
+ *    * a fresh pilot has no AcorNut; the shelf shows him priced, not owned
+ *    * every star on the road still does not earn him - he is bought
+ *    * the purchase survives a save/load round trip, and a second, and a third
  *    * an entry with no stars behind it is still stripped
  *    * graduation still takes back the tutorial's borrowed suit...
  *    * ...but never from a pilot who has already earned him outright
@@ -51,7 +53,8 @@ const beta = page !== 'production';
 const say = m => `${page}: ${m}`;
 
 assert.equal(NUT, 'vanguard');
-assert.equal(GATE, 570, 'AcorNut is the 570-star prize');
+assert.equal(GATE, undefined, 'AcorNut has no rung on the road: he is bought');
+assert.equal(Cat.SUITS.find((u) => u.id === NUT).cost, 1000, 'AcorNut costs 1,000 acorns');
 
 /** wipe the slot and load whatever `seed` describes, exactly as a launch would */
 function launch(seed) {
@@ -67,32 +70,32 @@ function launch(seed) {
   const s = launch(null);
   assert(!s.unlockedSuits.includes(NUT), say('a fresh save does not carry AcorNut'));
   assert.equal(S.starsOf(s), 0, say('a fresh save has no stars'));
-  if (!beta) assert(!S.suitRevealed(s, NUT), say('AcorNut is locked at 0 stars'));
+  assert(S.suitRevealed(s, NUT), say('AcorNut is on the shelf from the first launch, priced'));
+  if (!beta) assert(!S.tutorialSuitEarned(s), say('...but not earned until he is bought'));
   assert.equal(s.equippedSuit, 'flight', say('a fresh pilot wears Flight'));
 }
 
-// 2. THE 570th STAR. Revealed, so the card is on the shelf - but NOT owned,
-//    so it is still a reward with a Collect Reward tag on it. This is the
-//    one load that is supposed to ask.
+// 2. EVERY STAR ON THE ROAD. He used to be the 570-star prize; since 13 Sep
+//    2026 the stars say nothing about him - the shelf sells him.
 {
   const s = launch({allStars: true});
-  assert(S.starsOf(s) >= GATE, say('allStars clears the 570-star gate'));
-  assert(S.suitRevealed(s, NUT), say('AcorNut is revealed once the stars are in'));
-  assert(!s.unlockedSuits.includes(NUT), say('...but not collected until the pilot taps him'));
-  assert(S.tutorialSuitEarned(s), say('the stars alone make him earned'));
+  assert(S.suitRevealed(s, NUT), say('AcorNut is on the shelf with every star in'));
+  assert(!s.unlockedSuits.includes(NUT), say('...and still not owned until he is bought'));
+  if (!beta) assert(!S.tutorialSuitEarned(s), say('the stars alone no longer earn him'));
 }
 
-// 3. THE COLLECT, AND THE ROUND TRIP. This is the regression: the tap writes
-//    the id, the save is written, the game is closed and opened - three
-//    times - and the id is still there every time.
+// 3. THE PURCHASE, AND THE ROUND TRIP. This is the regression: the buy
+//    writes the id and the receipt, the save is written, the game is closed
+//    and opened - three times - and the id is still there every time.
 {
-  const s = launch({allStars: true});
-  s.unlockedSuits.push(NUT);              // exactly what the shelf tap does
+  const s = launch(null);
+  s.unlockedSuits.push(NUT);              // exactly what the Loadout's buy does...
+  s.purchased = [...(s.purchased || []), NUT];   // ...and the receipt it leaves
   S.writeSave(s);
   for (let launchNo = 1; launchNo <= 3; launchNo++) {
     const back = S.loadSave();
     assert(back.unlockedSuits.includes(NUT),
-      say(`AcorNut is still collected on launch ${launchNo} - a collect is not asked for twice`));
+      say(`AcorNut is still owned on launch ${launchNo} - a purchase is never taken back`));
     assert(S.suitRevealed(back, NUT), say(`AcorNut stays revealed on launch ${launchNo}`));
     S.writeSave(back);
   }
@@ -131,13 +134,13 @@ if (!beta) {
   assert(s.unlocked.includes(Cat.GUIDE_HELM), say('graduation hands over the Ion helmet'));
 }
 
-// 7. ...BUT IT HAS NOTHING TO TAKE FROM A PILOT WHO ALREADY EARNED HIM.
-//    Replaying the lesson at 570 stars must not confiscate the prize.
+// 7. ...BUT IT HAS NOTHING TO TAKE FROM A PILOT WHO ALREADY BOUGHT HIM.
+//    Replaying the lesson after the purchase must not confiscate it.
 {
-  const s = launch({allStars: true});
+  const s = launch({purchased: [NUT]});
   s.unlockedSuits.push(NUT);
   S.grantTutorialKit(s);
-  assert(s.unlockedSuits.includes(NUT), say('graduation cannot confiscate an earned AcorNut'));
+  assert(s.unlockedSuits.includes(NUT), say('graduation cannot confiscate a bought AcorNut'));
 }
 
 console.log(`acornut-collect ${page}: ok`);

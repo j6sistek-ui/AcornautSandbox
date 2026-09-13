@@ -1044,7 +1044,8 @@ export async function bootStandalone(root) {
     function suitRank(u) {
         const s = engine.save;
         // ACORNUT LEADS (owner, 7 Sep 2026): the flagship heads the standard
-        // row whether or not its 500 stars are in, so the goal is always seen.
+        // row bought or not, so the goal is always seen (1,000 acorns since
+        // 13 Sep 2026; he used to be the 570-star prize).
         if (u.id === "vanguard")
             return -2;
         const owned = s.unlockedSuits.includes(u.id) || (isIap(u.id) && ownsPremium(s, u.id));
