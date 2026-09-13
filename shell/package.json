@@ -10,7 +10,8 @@
     "sync": "node build-web.mjs && npx cap sync",
     "ios": "node build-web.mjs && npx cap sync ios && npx cap open ios",
     "android": "node build-web.mjs && npx cap sync android && npx cap open android",
-    "check": "node check.mjs"
+    "check": "node check.mjs",
+    "crazygames": "node build-crazygames.mjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "8.1.0",

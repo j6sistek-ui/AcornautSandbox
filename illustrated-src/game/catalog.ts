@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "290";
+export const ART_VER = "291";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -257,7 +257,10 @@ export function helmetWornBy(equippedHelmet: string, equippedSuit: string): Helm
 
 export const SUITS: Suit[] = [
   { id: "flight", name: "Flight", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#c8762c", suitLite: "#eda85a", suitDark: "#8a4c14", trim: "#f6cf8a", glow: null, dust: null },
-  { id: "vanguard", name: "AcorNut", cost: 0, ownHead: true, fur: "#c4783e", furDark: "#593b28", belly: "#f6e7d1", suit: "#dcdedb", suitLite: "#fff8e8", suitDark: "#28303b", trim: "#d6ae63", glow: "#85edff", dust: null },
+  // SOLD, NOT EARNED (owner, 13 Sep 2026: "unlock acornaut with 1,000
+  // acorns, remove from star chart"). The flagship left the 570-star rung
+  // for the Loadout shelf at this price; the tutorial still borrows him.
+  { id: "vanguard", name: "AcorNut", cost: 1000, ownHead: true, fur: "#c4783e", furDark: "#593b28", belly: "#f6e7d1", suit: "#dcdedb", suitLite: "#fff8e8", suitDark: "#28303b", trim: "#d6ae63", glow: "#85edff", dust: null },
   // Carbon armour, blue eyes and a blue electrical wake; its articulated
   // bare-headed pilot is one integrated look with independent flight motion.
   // ARCFLASH IS SOLD (owner, 7 Sep 2026): production, 1,850 star dust,
@@ -276,7 +279,9 @@ export const SUITS: Suit[] = [
   // The A/B is DECIDED: the standard bank won and flies "alien" above.
   // This is the retired custom-posed character, kept on the beta shelf as
   // Alien 1 by the owner's call ("alien 1 retires to unreleased").
-  { id: "ghost", name: "Ghost", cost: 0, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
+  // SOLD, NOT EARNED (owner, 13 Sep 2026: "make ghost unlock by 200
+  // acorns"). Left the 80-star rung for the shelf at this price.
+  { id: "ghost", name: "Ghost", cost: 200, ghost: true, fur: "#dfe9f5", furDark: "#9fb4cf", belly: "#ffffff", suit: "#b9c8e0", suitLite: "#e8f0fb", suitDark: "#7f93b3", trim: "#bfe9ff", glow: "#9fd8ff", dust: "#dff2ff" },
   { id: "bigbooty", name: "Big Booty", cost: 0, booty: true, fur: "#e09a45", furDark: "#a86a1f", belly: "#ffe9c4", suit: "#8a3fd4", suitLite: "#b876ff", suitDark: "#54258c", trim: "#ffd23f", glow: "#ffb84d", dust: "#ffe08a" },
   { id: "catsuit", name: "Cat", cost: 0, cat: true, fur: "#e0863a", furDark: "#a85a1f", belly: "#f3d5a8", suit: "#d1712a", suitLite: "#f0a256", suitDark: "#8a4413", trim: "#cfd8e0", glow: null, dust: null },
   // THE CRITTERS (owner, 7 Sep 2026): three more acorn-intolerant characters,

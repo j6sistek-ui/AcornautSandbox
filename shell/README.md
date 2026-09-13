@@ -72,6 +72,21 @@ The adapter (`adapter/adapter.js`, `adsOf`) preloads one rewarded and one
 interstitial ad, shows them on request and reloads after each. If the SDK
 cannot load an ad, the game simply does not offer it.
 
+## CrazyGames (the web portal)
+
+Owner, 13 Sep 2026: *"publish to crazy games."* A second adapter,
+`crazygames/adapter.js`, hands the bridge the CrazyGames HTML5 SDK v3:
+the data module for the save (with a one-time copy of an acornaut.app
+localStorage save), SDK ads for the same three placements as AdMob (mute
+on `adStarted`, nothing paid on `adError`, nothing offered to an ad
+blocker), `gameplayStart/Stop`, `happytime`, `loadingStart/Stop`, the
+portal's mute switch and no external links. The portal gets the current
+game as it is: same modes, same default. `npm run crazygames` builds `crazygames-dist/` from `../docs`,
+prints the budget against the portal's limits (250 MB, 1,500 files, 50 MB
+initial download, 10 s load) and zips `acornaut-crazygames.zip` for
+developer.crazygames.com. The audit, the work list and the upload steps
+are in `../CRAZYGAMES_PLAN.md`.
+
 ## The values, and where each one comes from
 
 Everything goes in `app.config.json`. Replace the `PLACEHOLDER_…` text,

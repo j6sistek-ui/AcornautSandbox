@@ -980,7 +980,8 @@ export async function bootStandalone(root: HTMLElement) {
   function suitRank(u: (typeof SUITS)[number]) {
     const s = engine.save;
     // ACORNUT LEADS (owner, 7 Sep 2026): the flagship heads the standard
-    // row whether or not its 500 stars are in, so the goal is always seen.
+    // row bought or not, so the goal is always seen (1,000 acorns since
+    // 13 Sep 2026; he used to be the 570-star prize).
     if (u.id === "vanguard") return -2;
     const owned = s.unlockedSuits.includes(u.id) || (isIap(u.id) && ownsPremium(s, u.id));
     if (owned) return -1;
@@ -4643,6 +4644,9 @@ export async function bootStandalone(root: HTMLElement) {
     // own screen and the gear goes back to being one thing.
     scroll.append(el("p", "ac-kicker ac-secthead", "Settings"), settingsRows());
 
+    // A PORTAL FORBIDS DOORS OUT (CrazyGames: no external links, no
+    // cross-promotion), so the whole Community section stays home there.
+    if (platform.links) {
     scroll.append(el("p", "ac-kicker ac-secthead", "Community"));
     const social = el("div", "ac-rows");
     // A real anchor rather than a scripted navigation: it middle-clicks,
@@ -4688,6 +4692,7 @@ export async function bootStandalone(root: HTMLElement) {
     social.append(mail);
 
     scroll.append(social);
+    }
 
     // NEWS IS GONE (owner, 10 Sep 2026: "eliminate news. got idea for that
     // later"). It was four hard-coded lines that could only ever restate

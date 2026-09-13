@@ -289,6 +289,16 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // the saved music preference applies before the first frame ever asks
   // for a track, so a switched-off score never blips on at boot
   music.setMuted(!!save.musicOff);
+  // THE SHELL'S MUTE (13 Sep 2026, CrazyGames): an ad on top of the game,
+  // or the portal's own mute switch, silences everything; lifting it
+  // restores exactly the pilot's own two settings. Neither setting is
+  // written by it.
+  let shellMuted = false;
+  const applyMute = () => {
+    music.setMuted(shellMuted || !!save.musicOff);
+    setSfxMuted(shellMuted || !!save.sfxOff);
+  };
+  const muteAll = (m: boolean) => { shellMuted = m; applyMute(); };
   const world = makeWorld(360, 640);
   let art: ArtBank | null = null;
   let raf = 0;
@@ -338,6 +348,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       resize();
       if (mode === "spill") { raceAccumulator = 0; last = performance.now(); save.spillSuspended = null; writeSave(save); void loadSpillScene(engine.art, save.equippedSuit).then(notify); }
       resetInputTracking();
+      platform.gameplayStart();
       notify();
     },
     startOver() {
@@ -425,6 +436,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       resetInputTracking();
       raceAccumulator = 0;
       guideStep("level");
+      platform.gameplayStart();
       notify();
       return true;
     },
@@ -432,6 +444,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (s !== "play") {
         cancelRaceControls();
         swipe = null;
+        // every route out of a run passes here: the portal's clock stops
+        if (world.screen === "play") platform.gameplayStop();
         // Stars are written by the sim, which the engine does not observe.
         // Every route back out of a run passes through here, so this is the
         // one choke point where "you crossed a dust line" can be noticed.
@@ -571,13 +585,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     setMusicOff(off) {
       save.musicOff = off;
       writeSave(save);
-      music.setMuted(off);
+      applyMute();
       notify();
     },
     setSfxOff(off) {
       save.sfxOff = off;
       writeSave(save);
-      setSfxMuted(off);
+      applyMute();
       notify();
     },
     setHelpOff(off) {
@@ -763,7 +777,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     continueRun() {
       const ok = reviveRun(world, save);
-      if (ok) notify();
+      if (ok) { platform.gameplayStart(); notify(); }
       return ok;
     },
     adOffer() {
@@ -774,11 +788,13 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     async continueWithAd() {
       if (!canRevive(world) || adBusy || !platform.rewardedAdReady()) return "unavailable";
       adBusy = true; notify();
-      const out = await platform.showRewardedAd("continue");
+      // the game goes silent for exactly as long as the ad is on screen
+      const out = await platform.showRewardedAd("continue", () => muteAll(true));
+      muteAll(false);
       adBusy = false;
       // the run may have been left while the ad played (a back button, a
       // resize pause): only a crash still on screen is revived
-      if (out === "earned" && canRevive(world)) reviveRun(world, save, true);
+      if (out === "earned" && canRevive(world)) { reviveRun(world, save, true); platform.gameplayStart(); }
       notify();
       return out;
     },
@@ -791,7 +807,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (engine.adDustState().left <= 0) return "spent";
       if (adBusy || !platform.rewardedAdReady()) return "unavailable";
       adBusy = true; notify();
-      const out = await platform.showRewardedAd("dust");
+      const out = await platform.showRewardedAd("dust", () => muteAll(true));
+      muteAll(false);
       adBusy = false;
       if (out === "earned") {
         const t = today();
@@ -815,7 +832,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       save.crashesSinceAd = 0;
       save.lastAdAt = Date.now();
       writeSave(save);
-      void platform.showInterstitialAd("crash").then(() => { adBusy = false; next(); notify(); });
+      void platform.showInterstitialAd("crash", () => muteAll(true)).then(() => { muteAll(false); adBusy = false; next(); notify(); });
     },
     spillThrust() {
       if (!world.spill || world.screen !== "play" || save.spillButtonsOff) return;
@@ -871,6 +888,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     spillSuspend() {
       if (world.screen !== "play" || !world.spill || !spillCheckpoint(world.spill)) return false;
       checkpointSpill(); world.spill = null; world.screen = "title";
+      platform.gameplayStop();
       resetInputTracking(); notify(); return true;
     },
     spillResume() {
@@ -880,7 +898,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       void loadSpillScene(engine.art, save.equippedSuit).then(notify);
       world.ready = false; world.squirrel.y = restored.pilot.y; world.squirrel.vy = 0;
       world.score = restored.cleared; save.spillSuspended = spillCheckpoint(restored); writeSave(save);
-      resetInputTracking(); raceAccumulator = 0; last = performance.now(); notify(); return true;
+      resetInputTracking(); raceAccumulator = 0; last = performance.now(); platform.gameplayStart(); notify(); return true;
     },
     spillStarter(id) {
       const preparing = world.screen === "play" && world.spill?.phase === "ready" && !world.spill.target;
@@ -923,12 +941,14 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // can never leak hidden-tab wall time into the time trial.
       if (world.race || world.spill) raceAccumulator = 0;
       pausePlay(world);
+      platform.gameplayStop();
       notify();
     },
     resume() {
       resumePlay(world);
       raceAccumulator = 0;
       last = performance.now();
+      platform.gameplayStart();
       notify();
     },
     setShopTab(t) {
@@ -1012,6 +1032,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (save.acorns < item.cost) return "poor";
     save.acorns -= item.cost;
     save.unlockedSuits.push(id);
+    // AcorNut is BOUGHT now (owner, 13 Sep 2026: "unlock acornaut with
+    // 1,000 acorns, remove from star chart"), and the tutorial's strip in
+    // loadSave reads `purchased`, never unlockedSuits, to decide whether he
+    // is earned - so the receipt goes where that question looks.
+    if (id === TUTORIAL_SUIT) save.purchased = [...new Set([...(save.purchased || []), id])];
     save.equippedSuit = id;
     dropOrphanedHelmet();
     guideStep("suit");
@@ -1712,6 +1737,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (!world.lvl && !world.race && !world.spill) save.crashesSinceAd = (save.crashesSinceAd ?? 0) + 1;
       writeSave(save);
       sfx.die();
+      platform.gameplayStop();
       notify();
     }
     if (ev === "shield") {
@@ -1893,7 +1919,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
 
   // the switches that are not read from the save on the fly are applied
   // once here, so a reload lands in the state the pilot left
-  setSfxMuted(!!save.sfxOff);
+  applyMute();
+  // the shell gets its line back into the game once, here
+  platform.attach({ mute: muteAll });
   document.body.classList.toggle("ac-nomotion", !!save.motionOff);
   setVanguardPitchTrim(suitPitchFor(save, "vanguard"));
 
