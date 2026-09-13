@@ -1,4 +1,4 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId, IAP_LIVE } from "./catalog";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId, IAP_LIVE, AD_RULES } from "./catalog";
 import { platform } from "./platform";
 import { beginFlightTest, type FlightTestPattern } from "./sim";
 import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX, type TapShape, type TailSpring } from "./control-constants";
@@ -45,6 +45,7 @@ import {
   resumePlay,
   reviveCost,
   reviveRun,
+  canRevive,
   setRaceInput,
   snapshot,
   takeRaceCueEffects,
@@ -159,6 +160,18 @@ export type Engine = {
   continueRun: () => boolean;
   /** what that continue costs right now (10, or 50 past gate 100) */
   continueCost: () => number;
+  /** ADS (13 Sep 2026). adOffer: what the crash sheet may offer right now -
+   *  "ad" when a rewarded ad can continue this run for free, "busy" while
+   *  one is playing, null otherwise. continueWithAd shows it and, on
+   *  "earned", revives without touching the wallet. */
+  adOffer: () => "ad" | "busy" | null;
+  continueWithAd: () => Promise<"earned" | "dismissed" | "unavailable">;
+  /** the Shop's rewarded dust: how many are left today and what one pays */
+  adDustState: () => { left: number; pays: number; busy: boolean };
+  watchAdForDust: () => Promise<"earned" | "dismissed" | "unavailable" | "spent">;
+  /** leave the crash sheet through a full-screen ad when one is due, then
+   *  run `next` (fly again, back to the menu); runs `next` at once otherwise */
+  afterCrash: (next: () => void) => void;
   /** Spill buttons and gestures share the same movement rules. */
   spillLunge: () => void;
   spillThrust: () => void;
@@ -753,6 +766,57 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (ok) notify();
       return ok;
     },
+    adOffer() {
+      if (!canRevive(world) || !platform.adsReady) return null;
+      if (adBusy) return "busy";
+      return platform.rewardedAdReady() ? "ad" : null;
+    },
+    async continueWithAd() {
+      if (!canRevive(world) || adBusy || !platform.rewardedAdReady()) return "unavailable";
+      adBusy = true; notify();
+      const out = await platform.showRewardedAd("continue");
+      adBusy = false;
+      // the run may have been left while the ad played (a back button, a
+      // resize pause): only a crash still on screen is revived
+      if (out === "earned" && canRevive(world)) reviveRun(world, save, true);
+      notify();
+      return out;
+    },
+    adDustState() {
+      const t = today();
+      const used = save.adDustDay === t ? save.adDustCount : 0;
+      return { left: Math.max(0, AD_RULES.rewardedDustPerDay - used), pays: AD_RULES.rewardedDust, busy: adBusy };
+    },
+    async watchAdForDust() {
+      if (engine.adDustState().left <= 0) return "spent";
+      if (adBusy || !platform.rewardedAdReady()) return "unavailable";
+      adBusy = true; notify();
+      const out = await platform.showRewardedAd("dust");
+      adBusy = false;
+      if (out === "earned") {
+        const t = today();
+        if (save.adDustDay !== t) { save.adDustDay = t; save.adDustCount = 0; }
+        save.adDustCount += 1;
+        save.starDust += AD_RULES.rewardedDust;
+        writeSave(save);
+      }
+      notify();
+      return out;
+    },
+    afterCrash(next) {
+      // THE INTERSTITIAL, at the crash sheet's exit and nowhere else: never
+      // over the receipt, never before the pilot has chosen to leave.
+      const due = platform.adsReady && platform.interstitialAdReady()
+        && save.runs >= AD_RULES.interstitialGraceRuns
+        && save.crashesSinceAd >= AD_RULES.interstitialEveryCrashes
+        && Date.now() - save.lastAdAt >= AD_RULES.interstitialMinGapSec * 1000;
+      if (!due || adBusy) { next(); return; }
+      adBusy = true; notify();
+      save.crashesSinceAd = 0;
+      save.lastAdAt = Date.now();
+      writeSave(save);
+      void platform.showInterstitialAd("crash").then(() => { adBusy = false; next(); notify(); });
+    },
     spillThrust() {
       if (!world.spill || world.screen !== "play" || save.spillButtonsOff) return;
       if (flap(world, save) === "flap") sfx.flap();
@@ -1141,6 +1205,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
    *  a daily. A second tap while one is in flight is ignored rather than
    *  opening a second sheet. */
   let dustPurchase: { id: string; state: DustPurchaseState } | null = null;
+  /** an ad is on screen (rewarded or interstitial): the sheets show it and refuse a second */
+  let adBusy = false;
   function buyDust(id: string) {
     const pack = DUST_PACKS.find((p) => p.id === id);
     if (!pack) return "missing";
@@ -1642,6 +1708,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (ev === "bounce") sfx.bounce();
     if (ev === "debris") sfx.bounce();
     if (ev === "die") {
+      // the interstitial cadence counts every crash; afterCrash spends it
+      if (!world.lvl && !world.race && !world.spill) save.crashesSinceAd = (save.crashesSinceAd ?? 0) + 1;
       writeSave(save);
       sfx.die();
       notify();

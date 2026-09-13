@@ -127,6 +127,13 @@ export type SaveData = {
   dustPaidTo: number;
   /** local date string of the last daily claim, e.g. "2026-08-24" */
   lastDaily: string;
+  /** THE AD LEDGER (13 Sep 2026): rewarded dust claimed today, and the
+   *  interstitial cadence - crashes since the last full-screen ad and when
+   *  it played (ms epoch) */
+  adDustDay: string;
+  adDustCount: number;
+  crashesSinceAd: number;
+  lastAdAt: number;
   /** THE FIRST SEVEN-DAY STREAK PAYS THE CRITTER PACK (owner, 8 Sep 2026);
    *  every seventh day after that pays the dust bonus. Set once. */
   streakPackClaimed: boolean;
@@ -255,6 +262,10 @@ export function defaultSave(): SaveData {
     suitLean: {},
     dustPaidTo: 0,
     lastDaily: "",
+    adDustDay: "",
+    adDustCount: 0,
+    crashesSinceAd: 0,
+    lastAdAt: 0,
     streakPackClaimed: false,
     dailyStreak: 0,
     steadyGates: false,
@@ -485,6 +496,8 @@ export function loadSave(): SaveData {
   }
   s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
   if (typeof s.lastDaily !== "string") s.lastDaily = "";
+  if (typeof s.adDustDay !== "string") s.adDustDay = "";
+  for (const k of ["adDustCount", "crashesSinceAd", "lastAdAt"] as const) if (typeof s[k] !== "number" || !isFinite(s[k])) s[k] = 0;
   if (typeof s.streakPackClaimed !== "boolean") s.streakPackClaimed = false;
   if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak)) s.dailyStreak = 0;
   // saves written before the flight mods existed

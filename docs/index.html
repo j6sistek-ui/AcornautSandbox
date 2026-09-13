@@ -835,6 +835,11 @@
     .ac-continue { background: linear-gradient(180deg, #ffd76a, #d4a12e);
       color: #241a04; border-color: #ffe9a8; }
     .ac-continue-short { opacity: .75; margin: 2px 0 6px; }
+    /* the ad continue (13 Sep 2026): the free way on, in the acorn button's shape but green so the two read as different offers */
+    .ac-continue.ac-adbtn { background: linear-gradient(180deg, #7ef0a8, #2fb56d); color: #062416; }
+    .ac-continue.ac-adbtn:disabled { opacity: .6; }
+    /* the Shop's rewarded-dust row: FREE where a price would be */
+    .ac-adrow .ac-modprice { color: #7ef0a8; letter-spacing: .06em; }
     /* HOLD, DON'T TAP. The fill is the promise being kept: it grows for
        exactly as long as the hold the script is counting, so letting go
        early visibly costs nothing. Painted in the button's own ::after so
@@ -2324,7 +2329,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js289/standalone.js")
+    import("./js290/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

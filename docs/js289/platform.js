@@ -42,12 +42,31 @@ function adapterOf() {
     const a = window.__acornautPlatform;
     return a && typeof a === "object" ? a : null;
 }
+/** THE BETA'S STAND-IN ADS. The beta page has no ad SDK, but the crash
+ *  sheet's ad continue, the shop's ad dust and the interstitial cadence
+ *  all have to be flown before a shell exists. On the beta page (and only
+ *  there) a pretend ad "plays" for a moment and pays out, so every ad
+ *  flow is exercisable; the web page offers no ads at all. */
+function betaAds() {
+    if (typeof window === "undefined")
+        return undefined;
+    if (window.__ACORNAUT_BETA__ !== true)
+        return undefined;
+    const play = (ms) => new Promise((r) => setTimeout(r, ms));
+    return {
+        rewardedReady: () => true,
+        rewarded: () => play(1200).then(() => "earned"),
+        interstitialReady: () => true,
+        interstitial: () => play(800),
+    };
+}
 function build(a) {
     const kind = a?.kind ?? "web";
     const native = kind !== "web";
     const storage = a?.storage ?? webStorage;
     const store = a?.store;
     const boards = a?.boards;
+    const ads = a?.ads ?? (a ? undefined : betaAds());
     return {
         kind,
         native,
@@ -65,6 +84,25 @@ function build(a) {
         }
         catch { /* a board that is down never costs a run */ } },
         showBoards: (board) => boards?.show(board),
+        adsReady: !!ads,
+        rewardedAdReady: () => { try {
+            return !!ads?.rewardedReady();
+        }
+        catch {
+            return false;
+        } },
+        showRewardedAd: (placement) => ads
+            ? ads.rewarded(placement).catch(() => "unavailable")
+            : Promise.resolve("unavailable"),
+        interstitialAdReady: () => { try {
+            return !!ads?.interstitialReady();
+        }
+        catch {
+            return false;
+        } },
+        // an ad that throws or hangs must never hold the game: a shell resolves
+        // on close, and a failure resolves too
+        showInterstitialAd: (placement) => ads ? ads.interstitial(placement).catch(() => undefined) : Promise.resolve(),
         devDoors: a?.devDoors ?? !native,
     };
 }

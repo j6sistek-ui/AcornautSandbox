@@ -624,6 +624,19 @@ export async function bootStandalone(root: HTMLElement) {
         // Not offered over the graduation gift - a brand-new pilot's first
         // crash is the gear moment, not a paywall.
         if (engine.save.guide !== "reward") {
+          // THE AD CONTINUE (13 Sep 2026): a rewarded ad flies on for free
+          // when the shell has one loaded; the acorn continue stays below
+          // it as the other way. While the ad plays the button waits.
+          const offer = engine.adOffer();
+          if (offer) {
+            const ad = el("button", "ac-primary ac-continue ac-adbtn", offer === "busy" ? "AD PLAYING…" : "WATCH AN AD — CONTINUE FREE");
+            ad.disabled = offer === "busy";
+            ad.onclick = () => { void engine.continueWithAd().then((out) => {
+              if (out === "dismissed") announce("The ad was closed early — nothing earned.");
+              else if (out === "unavailable") announce("No ad is ready right now.");
+            }); };
+            sheet.append(ad);
+          }
           const cost = engine.continueCost();
           const funds = engine.save.acorns ?? 0;
           if (funds >= cost) {
@@ -636,10 +649,11 @@ export async function bootStandalone(root: HTMLElement) {
               `Continue costs ${cost} acorns — you have ${funds}`));
           }
         }
-        const again = el("button", engine.save.guide !== "reward" && (engine.save.acorns ?? 0) >= engine.continueCost() ? "ac-ghost" : "ac-primary", "TRY AGAIN");
-        again.onclick = () => engine.fly(snap.flight);
+        const again = el("button", engine.save.guide !== "reward" && ((engine.save.acorns ?? 0) >= engine.continueCost() || engine.adOffer()) ? "ac-ghost" : "ac-primary", "TRY AGAIN");
+        // leaving the crash sheet is where a full-screen ad may play (engine.afterCrash)
+        again.onclick = () => engine.afterCrash(() => engine.fly(snap.flight));
         const menu = el("button", "ac-ghost", engine.save.guide === "reward" ? "COLLECT" : "MAIN MENU");
-        menu.onclick = () => engine.dismissDead();
+        menu.onclick = () => engine.afterCrash(() => engine.dismissDead());
         sheet.append(again, menu);
       }
       overlay.append(sheet);
@@ -4029,6 +4043,32 @@ export async function bootStandalone(root: HTMLElement) {
     }
     // ---- TOP UP.
     scroll.append(el("p", "ac-shelfhead", "STAR DUST"));
+    // THE AD DUST (13 Sep 2026): a rewarded ad pays a little Star Dust, a
+    // few times a day, wherever the shell has an ad loaded. Web: no row.
+    if (platform.adsReady) {
+      const ad = engine.adDustState();
+      const row = el("button", "ac-card ac-modcard ac-dustrow ac-adrow");
+      row.dataset.adDust = "1";
+      const face = el("span", "ac-dustface");
+      const emblem = el("img", "ac-stardust-emblem");
+      emblem.src = `${artRootUrl()}/shop/stardust-emblem.png?v=${ART_VER}`;
+      emblem.alt = ""; emblem.width = 128; emblem.height = 128;
+      face.append(emblem);
+      row.append(face);
+      const t = el("div", "ac-modtxt");
+      t.append(el("p", "ac-modname", `WATCH AN AD · +${ad.pays} STAR DUST`),
+        el("p", "ac-sub", ad.busy ? "Ad playing…" : ad.left > 0 ? `${ad.left} left today` : "Back tomorrow"));
+      row.append(t, el("span", "ac-modprice", ad.left > 0 ? "FREE" : "—"));
+      row.disabled = ad.busy || ad.left <= 0 || !platform.rewardedAdReady();
+      row.setAttribute("aria-label", `Watch an ad for ${ad.pays} Star Dust, ${ad.left} left today`);
+      row.onclick = () => { void engine.watchAdForDust().then((out) => {
+        if (out === "dismissed") announce("The ad was closed early — nothing earned.");
+        else if (out === "unavailable") announce("No ad is ready right now.");
+        else if (out === "spent") announce("That is all for today — back tomorrow.");
+        else clearDeny();
+      }); };
+      scroll.append(row);
+    }
     // while the store's sheet is up every row waits: the one being bought
     // says so, the rest cannot start a second purchase underneath it
     const inFlight = engine.dustPending();

@@ -39,6 +39,7 @@ window.__acornautPlatform = {
   store:   { priceOf, buy, restore, pending },   // StoreKit behind it; buy resolves { result, transactionId }
                                         // pending() lists every consumable on record, as game ids
   boards:  { submit, show },            // Game Center behind it
+  ads:     { rewardedReady, rewarded, interstitialReady, interstitial },  // AdMob behind it (13 Sep 2026)
   devDoors: false,
 };
 ```
@@ -61,6 +62,11 @@ Rules, enforced by `illustrated-src/test-platform-bridge.mjs`:
   itself until there is a backend that vouches for it.
 - `SAVE_KEY` never changes. A storage move is a migration inside the
   bridge, not a new key.
+- Ads pay only on `"earned"`, and the GAME decides what an ad buys
+  (`engine.continueWithAd`, `engine.watchAdForDust`); the numbers are
+  `AD_RULES` in the catalog. A full-screen ad plays only at the crash
+  sheet's exit (`engine.afterCrash`), never over play. The web page has no
+  ads; the beta page pretends so every flow can be flown.
 
 Adding a member is cheap. Reaching around the bridge is what makes a
 later shell expensive, so the test fails the build instead.

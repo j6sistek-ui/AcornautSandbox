@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "289",
-  "sourceCommit": "78ff7e1846f60cda4ae9b65383eb65cfc7e4a85e",
+  "artVer": "290",
+  "sourceCommit": "f7b1f9bd77c6f2261368d6747611386ea427d2fd",
   "models": [
     {
       "id": "flight",
@@ -128,7 +128,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/arcflash/body.png": "f20dee34d666ee8c48894b7df27729231e980bb4eee578d4bf54793d0826d69a",
+        "suits/arcflash/body.png": "1c7f0c52e4ba575169ce4af23022ad6de4fe8cd4591d195384729b50cf636be6",
         "suits/arcflash/parts.png": "3b243a739643dedd4f7e27c650e7a2071473aeac99111f46a91f20afa963f0aa"
       }
     },

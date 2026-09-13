@@ -3347,11 +3347,16 @@ function updateSpill(w, save, dt) {
         return die(w, save);
     return null;
 }
-export function reviveRun(w, save) {
+/** can this crash be continued at all - the same rule for acorns and ads */
+export function canRevive(w) {
+    return !(w.screen !== "dead" || w.lvl || w.race || w.spill || w.flight === "tunnel");
+}
+export function reviveRun(w, save, free = false) {
     // the Spill sells its own extra life in the Depot; the wallet stays shut
-    if (w.screen !== "dead" || w.lvl || w.race || w.spill || w.flight === "tunnel")
+    if (!canRevive(w))
         return false;
-    const cost = reviveCost(w);
+    // free: a rewarded ad paid for this one (13 Sep 2026); the wallet is untouched
+    const cost = free ? 0 : reviveCost(w);
     if ((save.acorns ?? 0) < cost)
         return false;
     save.acorns -= cost;

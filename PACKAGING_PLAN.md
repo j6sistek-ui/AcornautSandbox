@@ -43,6 +43,11 @@ In order, because each one hands the next its value.
    ticks), `acornaut.spill` (high to low) → `leaderboards.*`.
 6. ~~RevenueCat~~ — not for v1, same reason. The project you created can
    sit idle until the store comes back.
+6a. **AdMob** (13 Sep, "just ad revenue for now"): create the iOS and
+   Android apps at admob.google.com, one Rewarded and one Interstitial
+   unit each, paste the six ids into `admob.*` and set `"testing": false`.
+   Until then the build shows Google's test ads, which is fine for
+   TestFlight and wrong for the store.
 7. `npm run configure`, then **a Mac with Xcode**: build, run on a phone,
    upload to TestFlight.
 
@@ -71,10 +76,9 @@ relaunch with the save intact, airplane-mode boot.
   from the current hub, Star Chart, a flight, the shop.
 - Description, keywords, support URL, privacy URL
   (`https://acornaut.app/privacy.html` is packaged and live).
-- App Privacy answers: no accounts, no purchases, no tracking. (If an ad
-  SDK is added for the "ad revenue" model it brings its own answers and an
-  App Tracking Transparency prompt; that is a separate project and is not
-  in this build.)
+- App Privacy answers: no accounts, no purchases. AdMob (non-personalised
+  ads, no tracking prompt): Identifiers and Usage Data, "used for app
+  functionality / advertising", not linked to you, not used to track you.
 - Age rating questionnaire (no ads, no user content, cartoon violence none).
 - Cloud saves stay out of v1 by decision ("simple version first"). Say so
   nowhere in the listing; the iCloud key-value adapter is a shell-only
