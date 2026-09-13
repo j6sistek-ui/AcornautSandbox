@@ -315,7 +315,8 @@ try{
     assert(app.querySelector('.ac-caseplate').textContent.includes(C.SUITS.find(s=>s.id===priorSuit).name),'the still-eligible suit remains selected through rollover');
     assert.equal(JSON.stringify(e.save),beforeRollover,'roster rollover does not change player state');
     for(const streakPackClaimed of [false,true]){
-      e.save.lastDaily=new Date().toISOString().slice(0,10);e.save.dailyStreak=7;e.save.streakPackClaimed=streakPackClaimed;e.open('shop');
+      const localToday=new Date();
+      e.save.lastDaily=[localToday.getFullYear(),String(localToday.getMonth()+1).padStart(2,'0'),String(localToday.getDate()).padStart(2,'0')].join('-');e.save.dailyStreak=7;e.save.streakPackClaimed=streakPackClaimed;e.open('shop');
       assert.match(app.querySelector('.ac-daily .ac-sub').textContent,/^Day 7 of 7\. Come back tomorrow\.?$/,'both seventh-day reward variants keep compact copy');
       assert.equal(app.querySelectorAll('.ac-daily .ac-pip').length,7,'the streak indicator remains complete');
       assert(app.querySelector('.ac-dailygot').textContent.includes(`+${e.dailyState().amount}`),'compact daily receipt still shows the real granted amount');

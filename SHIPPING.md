@@ -172,7 +172,11 @@ nine descent paintings following Cyber's gold-standard poses and controller.
 Their sandbox export runs `export-cyber-trio.mjs` to key and register complete
 frames, generate head/wake geometry, retain ascent frame one as the fallback,
 and split its reviewed still body/tail mask. Both legacy premium exporters
-redirect to this entry point.
+redirect to this entry point. The trio also ships direct-source 512px detail
+companions under `suits/hd/`, using Lanczos reduction at both resolutions.
+The regular 256px sprites still determine geometry and bank readiness. Enlarged
+display demand loads optional detail in still/layer-pair/18-frame tiers; failed
+detail keeps the base images usable. Game and Studio share the sampling helper.
 Rebuild the lab and Flight Studio, then run the full gates and inspect every
 cleaned frame and its playback; old cut-rig receipts cannot validate this route.
 The production boundaries and retained source receipts are in

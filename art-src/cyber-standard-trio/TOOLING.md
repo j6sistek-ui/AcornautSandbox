@@ -35,17 +35,35 @@ Each suit directory contains:
   to the body. Their disjoint union must be exactly the still.
 
 `node illustrated-src/export-cyber-trio.mjs` exports all54 frames, three
-stills, and six rig layers. Each still is the exact level climb frame.
+stills, and six rig layers at256px, plus512px companions with the same
+filenames under `docs/art/suits/hd/`. Each resolution is sampled directly
+from the same keyed source master using Lanczos; HD never enlarges the256px
+painting. The whole-canvas scale stays uniform, and all measured translations
+are multiplied by2 only for HD pixels. Numeric geometry and runtime bank
+counts stay in the existing256px coordinate space. Each still is the exact
+level climb frame at its own resolution. HD split layers use the reviewed256px
+binary mask with nearest-neighbor2x selection, preserving an exact disjoint
+body/tail union without interpolating the selection boundary.
 It also generates the source hashes in `shipping-manifest.json` and the
-runtime boot/head registration in `game/cyber-trio-registration.ts`.
+runtime boot/head registration in `game/cyber-trio-registration.ts`. Existing
+manifest `frames`, `still` and `split` fields describe256px outputs; each
+suit's `hd` record adds `cell:512`, `logicalCell:256` and all63 companion
+output hashes across the three suits. Source, transform, matte, output size,
+exporter/resampler and on-disk output hashes control per-resolution reuse.
 Full builds reuse an existing PNG only when its source hash, transform,
-exporter fingerprint and output hash still match that manifest. This avoids
+exporter/resampler fingerprint and output hash still match that manifest. This avoids
 host-specific canvas rounding changing an already reviewed painting. Any
 changed input or output forces regeneration; partial previews always render.
 It fails on missing sources, clipped sprites, implausible alpha coverage,
 missing reviewed masks, or incomplete geometry. During art iteration,
-`--suit porcelain --bank asc --frames-only` exports a partial preview and
-deliberately does not write the final shipping manifest or registration.
+`--suit porcelain --bank asc --frames-only` exports both resolutions of a
+partial preview and deliberately does not write the final shipping manifest
+or registration. `--frames-only` omits split layers at both resolutions;
+ascent previews include an exact ASC1 still, while descent-only previews do
+not write a still. `--preview-output <name>` keeps256px outputs beneath that
+ignored preview directory and512px companions in its `hd/` subdirectory.
+Selected-suit and frames-only runs always render; only a complete default
+run updates the manifest and generated registration.
 
 `node illustrated-src/verify-cyber-trio-art.mjs` writes contact sheets,
 Cyber silhouette overlays, and `measurements.json` beneath
@@ -81,14 +99,15 @@ the suit's registration evidence. Source masters remain unchanged.
 
 Envoy's final independent motion review is pinned separately in
 `nacre/motion-review.json`; the exporter never updates it. The standard art
-gate requires all eighteen output hashes to match that review and checks
+gate requires all eighteen output hashes at both 256px and 512px to match that review and checks
 body and tail silhouette movement separately against Cyber. This replaces
 only Envoy's whole-silhouette 45-degree PCA floor: paired tails and Cyber's
 antennae make that axis unstable near equal eigenvalues, independently of
 the visible tail arc. All other suits retain the existing pitch check.
 Changed Envoy paintings require a new visual review before repinning.
 `python illustrated-src/test-cyber-trio-motion-review.py` exercises altered
-hash rejection and simulated frozen body/tail masks using temporary records.
+256px/512px hash rejection, incomplete HD review records and simulated frozen
+body/tail masks using temporary records.
 It does not change production images or grant visual acceptance.
 
 An isolated cache audit on 2026-09-12 verified the exporter fingerprint
@@ -105,4 +124,25 @@ fixture or a visual-acceptance record. No production artwork was modified.
 
 Use the repository's container workflow by default. If Docker is unavailable,
 the documented repository fallback permits an existing canvas dependency via
-`ACORNAUT_CANVAS`; no host package installation is required.
+`ACORNAUT_CANVAS` and an existing Python with Pillow via `ACORNAUT_PYTHON`;
+no host package installation is required. The default Python command is `python3`.
+
+## Sprite reduction quality
+
+The first stamp287 export used canvas `imageSmoothingQuality="high"` for a
+1254-to-256 reduction. In the shipping canvas library this aliases high-frequency
+painted details: it produces sharp speckles and uneven outlines even though the
+masters remain smooth. The PNG upload was byte-identical; the damage preceded it.
+
+The exporter now sends the keyed master through `resize-cyber-trio.py`, using
+Pillow's premultiplied-alpha Lanczos filter at the final sampling resolution.
+Canvas only places that filtered painting with the original scale and offsets.
+There is no sharpening, palette grading, independent feature warp, or motion
+change in this processing step. The helper's source hash is part of the cache
+fingerprint, so changing the filter invalidates existing outputs.
+
+`node illustrated-src/test-cyber-trio-resampling.mjs` invokes the actual exporter
+on isolated synthetic fixtures to catch aliasing, incorrect tone averaging,
+alpha-edge contamination and registration changes. Quality must also be judged
+against original art in the actual enlarged Loadout preview; motion parity and
+256px structural checks do not establish material or rendering fidelity.

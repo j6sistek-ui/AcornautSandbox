@@ -1,6 +1,11 @@
 {
   "exporter": "illustrated-src/export-cyber-trio.mjs",
-  "exporterSha256": "907b8e3d02ab4151d8348d25c989a5d1f10f4d914c0900a511c877c734c9915a",
+  "exporterSha256": "83a7daaac79b84a69236c458d073088f18777f749df6b2c3c9fe594171b15289",
+  "resampler": {
+    "file": "illustrated-src/resize-cyber-trio.py",
+    "sha256": "c7a71d794a5c03e83752f1d2c5c2d1cd15fa1a4e34438cd4e83d21475fe8d578",
+    "filter": "premultiplied-alpha Lanczos"
+  },
   "cell": 256,
   "suits": [
     {
@@ -95,7 +100,7 @@
       "frames": [
         {
           "file": "docs/art/suits/porcelain-asc-1.png",
-          "sha256": "74d64a092c694095429e8ca45faea2762fcdd1632912be6ff0efa2d063aadc43",
+          "sha256": "ee2d1852945db463768bc83d0a4e9475100fb804adc032e666c2ff33cf647eec",
           "source": "art-src/cyber-standard-trio/porcelain/frames/asc-1.png",
           "sourceSha256": "dcfc894c371082b7b6dab9fa13cb980c22aacb5f216ded1a59fd5673f4004e0d",
           "sourceSize": 1254,
@@ -107,11 +112,11 @@
             -5
           ],
           "background": "green-matte",
-          "opaquePixels": 8036
+          "opaquePixels": 8313
         },
         {
           "file": "docs/art/suits/porcelain-asc-2.png",
-          "sha256": "ccb7517f58ab8e3f83c825fd030e8b77644683e2f9d6bf46d07782b143f33aa5",
+          "sha256": "138b3688858eed41144253bf2b7dc21f79f90169c7ddfc92acc8b0e9509d56a4",
           "source": "art-src/cyber-standard-trio/porcelain/frames/asc-2.png",
           "sourceSha256": "b9e2fc881dfe92c498ffa999e996e9e1b38375b1c51d85a0f7daab76863742b7",
           "sourceSize": 1254,
@@ -123,11 +128,11 @@
             -6
           ],
           "background": "green-matte",
-          "opaquePixels": 7640
+          "opaquePixels": 7914
         },
         {
           "file": "docs/art/suits/porcelain-asc-3.png",
-          "sha256": "f78d97dc7a199e8b0cd761096b7d73f8a2e3dac1cd56914ee45e93cdf3dede29",
+          "sha256": "65d3de5c3f43c3882e6c643d41f009446e7504ce79a52698778166bb2c0d9910",
           "source": "art-src/cyber-standard-trio/porcelain/frames/asc-3.png",
           "sourceSha256": "3028c69b32490aba6d374813375aaab3385f8ad4f0e54d6239673810997e2f4b",
           "sourceSize": 1254,
@@ -139,11 +144,11 @@
             -8
           ],
           "background": "green-matte",
-          "opaquePixels": 7889
+          "opaquePixels": 8151
         },
         {
           "file": "docs/art/suits/porcelain-asc-4.png",
-          "sha256": "159e275bf74fcb5d39ad25bc1ea26cd1e12f9c5c5e054d5e7bf9dd3995b77f03",
+          "sha256": "fe9ae5a1b3fa061059652d8e64c2ce814e042531b64dcd325d09bf92ac0307de",
           "source": "art-src/cyber-standard-trio/porcelain/frames/asc-4.png",
           "sourceSha256": "7b0f78185abb12c03159fad8563d413ea4a57f5895999f69533525e15efdfba1",
           "sourceSize": 1254,
@@ -155,13 +160,13 @@
             -9
           ],
           "background": "green-matte",
-          "opaquePixels": 8329
+          "opaquePixels": 8637
         },
         {
           "file": "docs/art/suits/porcelain-asc-5.png",
-          "sha256": "63e3bfc40353181f5282e3a7f67de49a90a87d7d54442b24596d56b905311bb7",
+          "sha256": "e0eed660b132a609c90649dfe434d4f894eafbd1ebfd4e2b87e8238c24b3915c",
           "source": "art-src/cyber-standard-trio/porcelain/frames/asc-5.png",
-          "sourceSha256": "5afd2bc1d7635311a2675f7bd4b902bdb10433d738b66dcb6be69a2d62b28846",
+          "sourceSha256": "ce24896a7daa39326ce202d32b82a6e3d202f6c56f8f7383a99c8894edec1745",
           "sourceSize": 1254,
           "sourceCell": 0,
           "sourceLayout": "individual",
@@ -171,11 +176,11 @@
             -1
           ],
           "background": "green-matte",
-          "opaquePixels": 8692
+          "opaquePixels": 9000
         },
         {
           "file": "docs/art/suits/porcelain-asc-6.png",
-          "sha256": "8770a09f47b30b4189f8ef4ec3cdad7acb570865273a1ae458f803f783c5b055",
+          "sha256": "50de57cbb2070b80c054727c01b908dab3ff04128de44f6c3364bdc886000222",
           "source": "art-src/cyber-standard-trio/porcelain/frames/asc-6.png",
           "sourceSha256": "7a75251ebd44fb16af2497130622a2eab7416921fbbd267050ff32ff6b6e914e",
           "sourceSize": 1254,
@@ -187,11 +192,11 @@
             -8
           ],
           "background": "green-matte",
-          "opaquePixels": 7998
+          "opaquePixels": 8308
         },
         {
           "file": "docs/art/suits/porcelain-asc-7.png",
-          "sha256": "5c908435b1b0f7c6ea99a10dbdcab47fbcbbd322e0a1b0d346be2fb1583b9746",
+          "sha256": "b2dfc5dcf8ae198a5da0cc277dd30b2839d408e29222235565e9fe5de5d2060a",
           "source": "art-src/cyber-standard-trio/porcelain/frames/asc-7.png",
           "sourceSha256": "ae4f44d7deb0290eaaf5148efc6d056c9807b3fdb4e8dd024b54c898c82e05eb",
           "sourceSize": 1254,
@@ -203,11 +208,11 @@
             -6
           ],
           "background": "green-matte",
-          "opaquePixels": 8946
+          "opaquePixels": 9317
         },
         {
           "file": "docs/art/suits/porcelain-asc-8.png",
-          "sha256": "f377400f5041354d65f62a2f5acde18f954a98cf9fef7b0f89e44b2e8b51b238",
+          "sha256": "03544bf7e3a7a80cb2a24944ec316e4eb9c01e8b8c9e564fe932b5c935719a65",
           "source": "art-src/cyber-standard-trio/porcelain/frames/asc-8.png",
           "sourceSha256": "58eb44f8473afcb4eff6d116d308fef87c787feaa5f8202cf3e74b10dc26c2be",
           "sourceSize": 1254,
@@ -219,13 +224,13 @@
             5
           ],
           "background": "green-matte",
-          "opaquePixels": 9155
+          "opaquePixels": 9464
         },
         {
           "file": "docs/art/suits/porcelain-asc-9.png",
-          "sha256": "5673267f67c1c87576ef4070a1a96470ad925408d4fc58c95faffa98c285400a",
+          "sha256": "257f31fc42adc44e231184724bce4543c0fc82b75b73976ee042c296116539cc",
           "source": "art-src/cyber-standard-trio/porcelain/frames/asc-9.png",
-          "sourceSha256": "85778a37760421d235e430b2f99e74c662afaae6f71bdbc85a5ead759e50fee1",
+          "sourceSha256": "b5dd4ca835caf4edf38e1d014844abb5a0e6f06d8321fa11e280b3f14224b4ba",
           "sourceSize": 1254,
           "sourceCell": 0,
           "sourceLayout": "individual",
@@ -235,11 +240,11 @@
             5
           ],
           "background": "green-matte",
-          "opaquePixels": 8927
+          "opaquePixels": 9249
         },
         {
           "file": "docs/art/suits/porcelain-desc-1.png",
-          "sha256": "5983de81024c1998f16fd371021b46de353e15493d0446f54b550b704236e2de",
+          "sha256": "4877cb9427ef65fa6fab7b45d294c4bf8fff2e608680c7caebfbed927c18be9d",
           "source": "art-src/cyber-standard-trio/porcelain/frames/desc-1.png",
           "sourceSha256": "dade220539594f4b673e300598511b9c3c9519ccbf40de233d63ac0b149a3421",
           "sourceSize": 1254,
@@ -251,11 +256,11 @@
             -9
           ],
           "background": "green-matte",
-          "opaquePixels": 7907
+          "opaquePixels": 8186
         },
         {
           "file": "docs/art/suits/porcelain-desc-2.png",
-          "sha256": "b43da0564975c416e7b6e2baec21c900a8460c5407085319b1399090aa962923",
+          "sha256": "2dba1d554a268694ebe555a9abfd710d2c16e006586b08c0d15b0e1c9bdaf70f",
           "source": "art-src/cyber-standard-trio/porcelain/frames/desc-2.png",
           "sourceSha256": "105f087a421ab242be2b199d32a86ac6e81a460c51d3448c2fa7917011fce5b0",
           "sourceSize": 1254,
@@ -267,11 +272,11 @@
             -2
           ],
           "background": "green-matte",
-          "opaquePixels": 7768
+          "opaquePixels": 8027
         },
         {
           "file": "docs/art/suits/porcelain-desc-3.png",
-          "sha256": "4929e256c43c80d5d1b2549d69d79b3a01af55fc1f2a15506d9276cb91b3c742",
+          "sha256": "a107f3e8ff925c6d47b210bc3bd2dc3305cb79e5e99c3128a232290705808c2f",
           "source": "art-src/cyber-standard-trio/porcelain/frames/desc-3.png",
           "sourceSha256": "c1670f85f68a1b4feda244725da60b87da7c8f87f6f6a36625fc1e0419f0bfd0",
           "sourceSize": 1254,
@@ -283,11 +288,11 @@
             -2
           ],
           "background": "green-matte",
-          "opaquePixels": 7608
+          "opaquePixels": 7855
         },
         {
           "file": "docs/art/suits/porcelain-desc-4.png",
-          "sha256": "6fe9983c8d4d2e77e2b358df7502a524ed8b028a3338287b4220cca6fb7818cd",
+          "sha256": "190c77e1258bda5df0c5bfa76c0e221ad21082f348374143fbc61af77205e3c2",
           "source": "art-src/cyber-standard-trio/porcelain/frames/desc-4.png",
           "sourceSha256": "c7e39a47caeaaebe223293ee9aa5f20db78ab8178dd8c200c542118d6fe6278a",
           "sourceSize": 1254,
@@ -299,11 +304,11 @@
             -2
           ],
           "background": "green-matte",
-          "opaquePixels": 7652
+          "opaquePixels": 7904
         },
         {
           "file": "docs/art/suits/porcelain-desc-5.png",
-          "sha256": "a7cfcd5716d19f1d817bf139a3eee06a7fd0e2f1481f13aa559249c97e09f607",
+          "sha256": "23d82b8fc597942339d67cfa31c5cfeb10b65a6019dc8be20b3eafeb9ceed0fd",
           "source": "art-src/cyber-standard-trio/porcelain/frames/desc-5.png",
           "sourceSha256": "cfdd4e8d8a67d8663d58870719aec707fc440b5b6ddaad333433179e5f91abba",
           "sourceSize": 1254,
@@ -315,11 +320,11 @@
             -3
           ],
           "background": "green-matte",
-          "opaquePixels": 7656
+          "opaquePixels": 7890
         },
         {
           "file": "docs/art/suits/porcelain-desc-6.png",
-          "sha256": "4cd8cc10727fa4077f63caf1b2ecb3107bf22eb4ceadaa30e11f534aa2fcb92d",
+          "sha256": "6631b5ab7d8c28ff58c1bbb0c91f4b023d51b9b950e8220d61c51081c8effd74",
           "source": "art-src/cyber-standard-trio/porcelain/frames/desc-6.png",
           "sourceSha256": "c8c99e02ea80f447f7a454b036dcb92bed462e357cc07f1a243591788d138297",
           "sourceSize": 1254,
@@ -331,11 +336,11 @@
             -2
           ],
           "background": "green-matte",
-          "opaquePixels": 8414
+          "opaquePixels": 8707
         },
         {
           "file": "docs/art/suits/porcelain-desc-7.png",
-          "sha256": "d650a107c6724a5188ae14ddf3f6bf51776ed8551f5531161353f0cbc25c96d9",
+          "sha256": "79b36f4c1bfc6745c914ca0d54e40a9ed216e26289365d94d772027b3ae83058",
           "source": "art-src/cyber-standard-trio/porcelain/frames/desc-7.png",
           "sourceSha256": "56b8e66016a5eef15212ba42e15c6601340b18eb5229310d97ce46fdaaa71bc8",
           "sourceSize": 1254,
@@ -347,11 +352,11 @@
             -3
           ],
           "background": "green-matte",
-          "opaquePixels": 8200
+          "opaquePixels": 8469
         },
         {
           "file": "docs/art/suits/porcelain-desc-8.png",
-          "sha256": "eeb195d95fd5f8c5154a6dfdbd778f26639bf96f51bd786acd2f1388e4e2c4d8",
+          "sha256": "7872c5906488b9e706adbdfe108e60379694bed2bccdeacb124b823048dc6647",
           "source": "art-src/cyber-standard-trio/porcelain/frames/desc-8.png",
           "sourceSha256": "db293bd5a0984694537d3e7ab0c80c307605449d56ac494fce6d6fc156847fd3",
           "sourceSize": 1254,
@@ -363,11 +368,11 @@
             -4
           ],
           "background": "green-matte",
-          "opaquePixels": 8280
+          "opaquePixels": 8561
         },
         {
           "file": "docs/art/suits/porcelain-desc-9.png",
-          "sha256": "e94a7cae3a1eefa6ae81f88bc41c5fd7b96b93dfa9358ff79fcc7ceb874a0dab",
+          "sha256": "52db8b05248e0d487fe0a5c082698a55dffc15c48e1ff6de59c73034629f00f2",
           "source": "art-src/cyber-standard-trio/porcelain/frames/desc-9.png",
           "sourceSha256": "70dbfee5128686591dc58894b28acfcc52ccaeb459f8a2c65e8bfc7616d76e17",
           "sourceSize": 1254,
@@ -379,13 +384,13 @@
             -5
           ],
           "background": "green-matte",
-          "opaquePixels": 8359
+          "opaquePixels": 8674
         }
       ],
       "still": {
         "file": "docs/art/suits/porcelain.png",
         "source": "docs/art/suits/porcelain-asc-1.png",
-        "sha256": "74d64a092c694095429e8ca45faea2762fcdd1632912be6ff0efa2d063aadc43"
+        "sha256": "ee2d1852945db463768bc83d0a4e9475100fb804adc032e666c2ff33cf647eec"
       },
       "split": {
         "mask": "art-src/cyber-standard-trio/porcelain/still-tail-mask.png",
@@ -393,15 +398,331 @@
         "parts": [
           {
             "file": "docs/art/suits/porcelain-body.png",
-            "sha256": "5afda1c9e3c0d00301f4083e926c16c7b5d7bfae0f3099ef57437b48465b094b",
-            "opaquePixels": 5238
+            "sha256": "e1c2a337ee7d00ad0287c5b12b6dcdb4f8d594fa9d8d64239a5bf1739e017a96",
+            "opaquePixels": 5393
           },
           {
             "file": "docs/art/suits/porcelain-tail.png",
-            "sha256": "7ae1b942f95257ee5623f5c464c65793959077c43e75f498156f2c53fa2a9031",
-            "opaquePixels": 2798
+            "sha256": "256083663a873e1dfc4b77a677a62dd89039dcd524d40867bf97c6f9fa427db2",
+            "opaquePixels": 2920
           }
         ]
+      },
+      "hd": {
+        "cell": 512,
+        "logicalCell": 256,
+        "frames": [
+          {
+            "file": "docs/art/suits/hd/porcelain-asc-1.png",
+            "sha256": "da6b0c9d0f0fad701996c65a5acd6a4ea46eddfa683bb8cbee90a2df50e2c3a6",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/asc-1.png",
+            "sourceSha256": "dcfc894c371082b7b6dab9fa13cb980c22aacb5f216ded1a59fd5673f4004e0d",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -8,
+              -10
+            ],
+            "background": "green-matte",
+            "opaquePixels": 32568
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-asc-2.png",
+            "sha256": "e563b68da0158d1f1751a6691a352342ffed5788eed34de97198af1c6e09855f",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/asc-2.png",
+            "sourceSha256": "b9e2fc881dfe92c498ffa999e996e9e1b38375b1c51d85a0f7daab76863742b7",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -10,
+              -12
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30971
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-asc-3.png",
+            "sha256": "abe5f18b2726fbf517d6758fe0027444555640e6ab3b8e06c94ecee422c4f22b",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/asc-3.png",
+            "sourceSha256": "3028c69b32490aba6d374813375aaab3385f8ad4f0e54d6239673810997e2f4b",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -12,
+              -16
+            ],
+            "background": "green-matte",
+            "opaquePixels": 31925
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-asc-4.png",
+            "sha256": "7d294ae2df4b41a3a9a00f1aa1b4bc5047f4924a1825f36b8f9bb182a050cb09",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/asc-4.png",
+            "sourceSha256": "7b0f78185abb12c03159fad8563d413ea4a57f5895999f69533525e15efdfba1",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -10,
+              -18
+            ],
+            "background": "green-matte",
+            "opaquePixels": 33818
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-asc-5.png",
+            "sha256": "407007805754a536aba90d4c746df7b769f5309d765c8adbcfedf396b5523219",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/asc-5.png",
+            "sourceSha256": "ce24896a7daa39326ce202d32b82a6e3d202f6c56f8f7383a99c8894edec1745",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -2,
+              -2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 35234
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-asc-6.png",
+            "sha256": "a7c332e7dc152d736ce2f6fd8c8b6e647fbf6128baa068851df659ef01c5b997",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/asc-6.png",
+            "sourceSha256": "7a75251ebd44fb16af2497130622a2eab7416921fbbd267050ff32ff6b6e914e",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -4,
+              -16
+            ],
+            "background": "green-matte",
+            "opaquePixels": 32468
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-asc-7.png",
+            "sha256": "55a1ee125fe1d8f34830a5f66c5eaa97524cb90e87b9b9585ac35989360ca78b",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/asc-7.png",
+            "sourceSha256": "ae4f44d7deb0290eaaf5148efc6d056c9807b3fdb4e8dd024b54c898c82e05eb",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -16,
+              -12
+            ],
+            "background": "green-matte",
+            "opaquePixels": 36396
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-asc-8.png",
+            "sha256": "0527db701e317ccef984df93de0eb8471fb72d790503195eb6e11e4b46abbb44",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/asc-8.png",
+            "sourceSha256": "58eb44f8473afcb4eff6d116d308fef87c787feaa5f8202cf3e74b10dc26c2be",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -10,
+              10
+            ],
+            "background": "green-matte",
+            "opaquePixels": 37127
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-asc-9.png",
+            "sha256": "a528b65a6401fe04dd9e8b3c94c3ba49537f7a06c1917f9664d263dd6e41db43",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/asc-9.png",
+            "sourceSha256": "b5dd4ca835caf4edf38e1d014844abb5a0e6f06d8321fa11e280b3f14224b4ba",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -2,
+              10
+            ],
+            "background": "green-matte",
+            "opaquePixels": 36146
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-desc-1.png",
+            "sha256": "c20a00eba86d3edb06c78b4050a8fac61215adca325a63750ebfaac85413a287",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/desc-1.png",
+            "sourceSha256": "dade220539594f4b673e300598511b9c3c9519ccbf40de233d63ac0b149a3421",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -8,
+              -18
+            ],
+            "background": "green-matte",
+            "opaquePixels": 32067
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-desc-2.png",
+            "sha256": "4f7b3e8a84fb61d236fabb1f741271284ae452e2e7b344e60bf9c72b185cb0fa",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/desc-2.png",
+            "sourceSha256": "105f087a421ab242be2b199d32a86ac6e81a460c51d3448c2fa7917011fce5b0",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -10,
+              -4
+            ],
+            "background": "green-matte",
+            "opaquePixels": 31491
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-desc-3.png",
+            "sha256": "dca09128e3394e276effcdb5e0d66859953a14f1db1f35aa81b9cacdc67ec1d2",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/desc-3.png",
+            "sourceSha256": "c1670f85f68a1b4feda244725da60b87da7c8f87f6f6a36625fc1e0419f0bfd0",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -8,
+              -4
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30789
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-desc-4.png",
+            "sha256": "fa97e54bbf27b47e967cf63b622ee32880badc22596be1a7987de20de19869b2",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/desc-4.png",
+            "sourceSha256": "c7e39a47caeaaebe223293ee9aa5f20db78ab8178dd8c200c542118d6fe6278a",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -10,
+              -4
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30986
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-desc-5.png",
+            "sha256": "243f8a2ba1c43615bed7f14842a3e9e1b0c45e9f912b7b66e93b44486b113159",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/desc-5.png",
+            "sourceSha256": "cfdd4e8d8a67d8663d58870719aec707fc440b5b6ddaad333433179e5f91abba",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -12,
+              -6
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30958
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-desc-6.png",
+            "sha256": "afe82b24964294b960f62cd35d1f6850b8500732bf02a3630b1baa13eac17dea",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/desc-6.png",
+            "sourceSha256": "c8c99e02ea80f447f7a454b036dcb92bed462e357cc07f1a243591788d138297",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -10,
+              -4
+            ],
+            "background": "green-matte",
+            "opaquePixels": 34140
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-desc-7.png",
+            "sha256": "cf32ba7e3df776a342c192b3c93aad17ac3e485dad07103e27fd8986fb965276",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/desc-7.png",
+            "sourceSha256": "56b8e66016a5eef15212ba42e15c6601340b18eb5229310d97ce46fdaaa71bc8",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -8,
+              -6
+            ],
+            "background": "green-matte",
+            "opaquePixels": 33193
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-desc-8.png",
+            "sha256": "7167ce1d348a8d78fc2184cf81edfd05fbb4e0cbb6387288af565d914f3ded7c",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/desc-8.png",
+            "sourceSha256": "db293bd5a0984694537d3e7ab0c80c307605449d56ac494fce6d6fc156847fd3",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -18,
+              -8
+            ],
+            "background": "green-matte",
+            "opaquePixels": 33581
+          },
+          {
+            "file": "docs/art/suits/hd/porcelain-desc-9.png",
+            "sha256": "e536fa0e147c9bd3e9c63cdad12ef20cba2aecdc3af18e91431cc23c744eda37",
+            "source": "art-src/cyber-standard-trio/porcelain/frames/desc-9.png",
+            "sourceSha256": "70dbfee5128686591dc58894b28acfcc52ccaeb459f8a2c65e8bfc7616d76e17",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -18,
+              -10
+            ],
+            "background": "green-matte",
+            "opaquePixels": 33943
+          }
+        ],
+        "still": {
+          "file": "docs/art/suits/hd/porcelain.png",
+          "source": "docs/art/suits/hd/porcelain-asc-1.png",
+          "sha256": "da6b0c9d0f0fad701996c65a5acd6a4ea46eddfa683bb8cbee90a2df50e2c3a6"
+        },
+        "split": {
+          "mask": "art-src/cyber-standard-trio/porcelain/still-tail-mask.png",
+          "maskSha256": "d6eb07cfd04d4e20c6bc8c50e44b2631d2ab5ef8af2d5a418dc20589dab84ff1",
+          "parts": [
+            {
+              "file": "docs/art/suits/hd/porcelain-body.png",
+              "sha256": "54f70de87c8b8b980f1073d5fb05c8677749f54e75ddd20f523bab2f0eb090d7",
+              "opaquePixels": 21168
+            },
+            {
+              "file": "docs/art/suits/hd/porcelain-tail.png",
+              "sha256": "50a1f30aecd1c42f5b3d182edc40c9b48f3ce7ae5a70de63f43b5d75e9ce5293",
+              "opaquePixels": 11400
+            }
+          ],
+          "maskSampling": "nearest 2x"
+        }
       },
       "geometry": {
         "file": "art-src/cyber-standard-trio/porcelain/geometry.json",
@@ -500,7 +821,7 @@
       "frames": [
         {
           "file": "docs/art/suits/nacre-asc-1.png",
-          "sha256": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481",
+          "sha256": "cf39e38abf4528161639ec39891a71b214c98375964d07acf045a28c2c96042b",
           "source": "art-src/cyber-standard-trio/nacre/frames/asc-1.png",
           "sourceSha256": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db",
           "sourceSize": 1254,
@@ -512,11 +833,11 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 7626
+          "opaquePixels": 7923
         },
         {
           "file": "docs/art/suits/nacre-asc-2.png",
-          "sha256": "ca2c9c0bec84fa7e4c0ad616ee9c8d7dfac725defe78325a10a682aa0d12510c",
+          "sha256": "aee4d27af5144bf1fb2dcb5250e4f1bf8b4f133c5308feaf37cbe2f01b5e73e7",
           "source": "art-src/cyber-standard-trio/nacre/frames/asc-2.png",
           "sourceSha256": "f07718b7bfc7dbcb399bd9819fccb00ec57c0ea230502ac2d1e7097845654652",
           "sourceSize": 1254,
@@ -528,13 +849,13 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 7529
+          "opaquePixels": 7809
         },
         {
           "file": "docs/art/suits/nacre-asc-3.png",
-          "sha256": "cab090eadfc5eae3304decb3b2d27970e27da740b506e2f9056007ec25fd5fde",
+          "sha256": "341bd3752bf99b051c2de5f54d8ad539be8aec8771f022bb85b81ccd8dbfaaa3",
           "source": "art-src/cyber-standard-trio/nacre/frames/asc-3.png",
-          "sourceSha256": "185285b67afd21e628f57c5bb42eb4ba6316a47e2edd7ac0e7e4f712be2d8d9d",
+          "sourceSha256": "785a0177beb4f224ca907e9813ca24bed4e41683f17d1ac8127fced63ec40294",
           "sourceSize": 1254,
           "sourceCell": 0,
           "sourceLayout": "individual",
@@ -544,13 +865,13 @@
             -1
           ],
           "background": "green-matte",
-          "opaquePixels": 8063
+          "opaquePixels": 8378
         },
         {
           "file": "docs/art/suits/nacre-asc-4.png",
-          "sha256": "0ccc19eba8ae2b656ab3fdd0842e7eb6bbaff52a3b28012206a342c7bedaaabf",
+          "sha256": "26a7da75415034b34df52fbb4200170a769b6a8bf0d559558621cd190ca6af53",
           "source": "art-src/cyber-standard-trio/nacre/frames/asc-4.png",
-          "sourceSha256": "fb6a5a986c69e3e94a6c923d13a094627922ac0c49071e59f05aa35033a81cce",
+          "sourceSha256": "5709b4086cc71399210e9833cecbc3908969ad7b36a05024bde91808762da7f6",
           "sourceSize": 1254,
           "sourceCell": 0,
           "sourceLayout": "individual",
@@ -560,13 +881,13 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 8465
+          "opaquePixels": 8786
         },
         {
           "file": "docs/art/suits/nacre-asc-5.png",
-          "sha256": "bdd01345809b9f89f6295612f82f2d5f4886242ec776cc815d0c4bc712800bfd",
+          "sha256": "94ad5a837b8772326499591b5ed77d30cb9b37526d6be887ae13dc44a4adcc16",
           "source": "art-src/cyber-standard-trio/nacre/frames/asc-5.png",
-          "sourceSha256": "b92b188614bc5dc79f17dc30e5ebc8ffd0bbde403fa786320636385552fd0219",
+          "sourceSha256": "26717235d8d9b81a745f3fa518d307ce9e0854de7acad886871e1b97b8f01693",
           "sourceSize": 1254,
           "sourceCell": 0,
           "sourceLayout": "individual",
@@ -576,13 +897,13 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 7982
+          "opaquePixels": 8267
         },
         {
           "file": "docs/art/suits/nacre-asc-6.png",
-          "sha256": "4acc3a7d711a4ee06bf8b7ae7f4327bde4f1297af6038729f4beb868bca8e625",
+          "sha256": "60c5ca88c69b5f837906c7bc9934a49a52f39c39dc057b71a25c4086b419dd9f",
           "source": "art-src/cyber-standard-trio/nacre/frames/asc-6.png",
-          "sourceSha256": "b7830761252cc2b3881a06df2b398f0a50083fbe9da2c5a4c2bfd492c41fdd47",
+          "sourceSha256": "68312b138214264cda8d3f185c39eae33858bc5df470365a3c91c5a0beae91aa",
           "sourceSize": 1254,
           "sourceCell": 0,
           "sourceLayout": "individual",
@@ -592,13 +913,13 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 8547
+          "opaquePixels": 8889
         },
         {
           "file": "docs/art/suits/nacre-asc-7.png",
-          "sha256": "775facc7471fc8d315f4a9cbaf8d2b6e02a72c6d890c7d62e347860c956035cb",
+          "sha256": "48c1c702c7c2f8ec30818c4bfacee5641dc51d5259f29b3c365e657cc30502f0",
           "source": "art-src/cyber-standard-trio/nacre/frames/asc-7.png",
-          "sourceSha256": "f0b4a58dcfa7dd887055768698a4394333906dc1a5261f6c562881f70f223c3a",
+          "sourceSha256": "0d3b90dbd6f2d965b49298189e6ea6baed8c5e407c67573ed6cd40deb72d3070",
           "sourceSize": 1254,
           "sourceCell": 0,
           "sourceLayout": "individual",
@@ -608,11 +929,11 @@
             1
           ],
           "background": "green-matte",
-          "opaquePixels": 8664
+          "opaquePixels": 8898
         },
         {
           "file": "docs/art/suits/nacre-asc-8.png",
-          "sha256": "2e201392a4cf82aad4f54bb3c6ac592a7727e30d0ff916bdbc4f07790db4bb8b",
+          "sha256": "fbe3bb66b516d3affed3b6ba3e24b235a8981c4d58811ccd6ca772d07a41e83e",
           "source": "art-src/cyber-standard-trio/nacre/frames/asc-8.png",
           "sourceSha256": "c82eddd5c0b0bd962071675cc033694202c25f509114eed8abce8cc0a8bd49b1",
           "sourceSize": 1254,
@@ -624,13 +945,13 @@
             1
           ],
           "background": "green-matte",
-          "opaquePixels": 8416
+          "opaquePixels": 8746
         },
         {
           "file": "docs/art/suits/nacre-asc-9.png",
-          "sha256": "e65ab074a139f9721ba3a087bba5034de7e3c62d8cf7db6224d77e410644ce8d",
+          "sha256": "6081df9f2aff0ed1da4a48ed780918ee1bc35b99e167460a335ebb0a0ea8b88b",
           "source": "art-src/cyber-standard-trio/nacre/frames/asc-9.png",
-          "sourceSha256": "f64f769e8a4315e315451c8b890e1bf3383f00191979ce38d3ff0655003bbd69",
+          "sourceSha256": "ab59d068c468cb416426b48ab0f0519345bdd659b29bcdacfb351102234abfe5",
           "sourceSize": 1254,
           "sourceCell": 0,
           "sourceLayout": "individual",
@@ -640,11 +961,11 @@
             1
           ],
           "background": "green-matte",
-          "opaquePixels": 8842
+          "opaquePixels": 9158
         },
         {
           "file": "docs/art/suits/nacre-desc-1.png",
-          "sha256": "57fc85a50eebdfaea743a9fa7633af8b9e434472834afce35f908144693f3826",
+          "sha256": "13af366b5a81e70fb0b44a70f1d1d9d0d83cbe22ea6c3be0602272478ba12663",
           "source": "art-src/cyber-standard-trio/nacre/frames/desc-1.png",
           "sourceSha256": "d1ba483bdc8b5a52cf06d065cbad8a0450d012749ac3c101b9a72194b6e6a6e2",
           "sourceSize": 1254,
@@ -656,11 +977,11 @@
             6
           ],
           "background": "green-matte",
-          "opaquePixels": 7371
+          "opaquePixels": 7661
         },
         {
           "file": "docs/art/suits/nacre-desc-2.png",
-          "sha256": "53c93b89d2ca656cd71b7181e5cfb94b06b8c946a8785469e6c8218564144ec3",
+          "sha256": "f7d194b06584ab3aa278a1efe0fb7d1576748e0615f3ff80ece6d45620e8d85d",
           "source": "art-src/cyber-standard-trio/nacre/frames/desc-2.png",
           "sourceSha256": "4e69d373e7bd856127c2ba59353c01168aed7d5bea44a3e8ab9b995430dd3e51",
           "sourceSize": 1254,
@@ -672,11 +993,11 @@
             5
           ],
           "background": "green-matte",
-          "opaquePixels": 7698
+          "opaquePixels": 7999
         },
         {
           "file": "docs/art/suits/nacre-desc-3.png",
-          "sha256": "878f3a432cfb02f773101540dc4d1a2fd2b0047d3be8ce19d25c122cacd0192e",
+          "sha256": "f7dbe3bbef3c71a7c09f2715ab29fdfbd46f5159006781d8695173a0a96cb1bc",
           "source": "art-src/cyber-standard-trio/nacre/frames/desc-3.png",
           "sourceSha256": "5a50218e0a9e25cc3ce2f7832f347b8b6b41bf5226988df3aca41398061649b3",
           "sourceSize": 1254,
@@ -688,11 +1009,11 @@
             4
           ],
           "background": "green-matte",
-          "opaquePixels": 7585
+          "opaquePixels": 7921
         },
         {
           "file": "docs/art/suits/nacre-desc-4.png",
-          "sha256": "35024f44bd2d11580d4ae3f0be4e305e8bd68d9f6eb030399eec38a56056c8b8",
+          "sha256": "00e56d37bd72744e97d0920aa88f588bbbb00aaf1a74b3e0eeb6264d2e2ba352",
           "source": "art-src/cyber-standard-trio/nacre/frames/desc-4.png",
           "sourceSha256": "c49625e101eafd2148b28b435d81cbefa7e37828f2e7748cb27c7fcd72e1d0d0",
           "sourceSize": 1254,
@@ -704,11 +1025,11 @@
             3
           ],
           "background": "green-matte",
-          "opaquePixels": 7530
+          "opaquePixels": 7850
         },
         {
           "file": "docs/art/suits/nacre-desc-5.png",
-          "sha256": "3601c14223ed9e1ab19a0342498de977e6336e61b1b318bf0ea29fbfe172008f",
+          "sha256": "f6eb3bdb73208fbc75d6bfb7f01e5598be0d861e31d09c19785b6ba8985cf3bb",
           "source": "art-src/cyber-standard-trio/nacre/frames/desc-5.png",
           "sourceSha256": "4cff8072ab2e9e8de2f8c6591d9e59258741b45bbbb4d2d8a96f22faa4ec729c",
           "sourceSize": 1254,
@@ -720,11 +1041,11 @@
             2
           ],
           "background": "green-matte",
-          "opaquePixels": 7626
+          "opaquePixels": 7963
         },
         {
           "file": "docs/art/suits/nacre-desc-6.png",
-          "sha256": "7f4350f1495b35e48fdcc8277878729af2231515934b0363e32d03dfa5c3c716",
+          "sha256": "4c785b83d35f1bdd144104293a5c75949f6ff3d6fa21cf9e6236b93cad9b4dac",
           "source": "art-src/cyber-standard-trio/nacre/frames/desc-6.png",
           "sourceSha256": "dd9d403b2ddaf0326da5a87bc7afde38ff953d56d3c8f62e5510531c7b8418ef",
           "sourceSize": 1254,
@@ -736,11 +1057,11 @@
             -1
           ],
           "background": "green-matte",
-          "opaquePixels": 7724
+          "opaquePixels": 8045
         },
         {
           "file": "docs/art/suits/nacre-desc-7.png",
-          "sha256": "4e5e317dd7d007abc56ae469d8babcdcd78d07fbfe7dfdb918cdb54eca263246",
+          "sha256": "fffa04782f02e81a7e4563fd6b0f0bae4316f75907617426d334cd33ec7463d0",
           "source": "art-src/cyber-standard-trio/nacre/frames/desc-7.png",
           "sourceSha256": "259da623590a9e51ba8b1677e30751ec061138ac255e6185be7d42696e55f67e",
           "sourceSize": 1254,
@@ -752,11 +1073,11 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 7706
+          "opaquePixels": 8006
         },
         {
           "file": "docs/art/suits/nacre-desc-8.png",
-          "sha256": "90a98df15a42dde5550a77d0cbb939ddac4881eb56686bc386fca8004b4c7a65",
+          "sha256": "09df8245b046649412134b9e2a5bb3993b1190a00a63ad46a0f5467815cd618c",
           "source": "art-src/cyber-standard-trio/nacre/frames/desc-8.png",
           "sourceSha256": "c7d21ccc33a9db21369fd9fe7385a83198e6a67d7171d9a296780277257b48b2",
           "sourceSize": 1254,
@@ -768,11 +1089,11 @@
             3
           ],
           "background": "green-matte",
-          "opaquePixels": 7773
+          "opaquePixels": 8100
         },
         {
           "file": "docs/art/suits/nacre-desc-9.png",
-          "sha256": "bd3c78691a7c895a96edf18063d92c2f1c4e997acd52444cc3c0e085d6be6b1f",
+          "sha256": "537d2b0811fdbec17c061c200c8d76285068c3401172608c6a1772731bb47d52",
           "source": "art-src/cyber-standard-trio/nacre/frames/desc-9.png",
           "sourceSha256": "bd467e2bd7b584a2fbab5117a051a735a54157a440c81e022e9490a396d3e7c9",
           "sourceSize": 1254,
@@ -784,33 +1105,349 @@
             1
           ],
           "background": "green-matte",
-          "opaquePixels": 7855
+          "opaquePixels": 8145
         }
       ],
       "still": {
         "file": "docs/art/suits/nacre.png",
         "source": "docs/art/suits/nacre-asc-1.png",
-        "sha256": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481"
+        "sha256": "cf39e38abf4528161639ec39891a71b214c98375964d07acf045a28c2c96042b"
       },
       "split": {
         "mask": "art-src/cyber-standard-trio/nacre/still-tail-mask.png",
-        "maskSha256": "bbe110fe4d215b91d50e0d11d55904f221855dc30bf760359fb1aff6c04b7cbd",
+        "maskSha256": "bdfe9d98c96a46d6677221111106cc343a1f3e48274331f4c4a83d903102ddad",
         "parts": [
           {
             "file": "docs/art/suits/nacre-body.png",
-            "sha256": "69f8fdf9af1efcb35af92abc50cfff233d4e7a8a6837b69933d4d2c6b22f3114",
-            "opaquePixels": 5086
+            "sha256": "dc151f97487db336867e67231c095c3eaf815339428bc427e3afc34567999c9e",
+            "opaquePixels": 5226
           },
           {
             "file": "docs/art/suits/nacre-tail.png",
-            "sha256": "3cfb2426c5200c9f819d456960d3db74c4c1fa0608cbcf3dd43d5d35037aa81b",
-            "opaquePixels": 2540
+            "sha256": "d90fb096aecc8b6182756153fea8cf17124065ce8b0199cd9495338fbc8655ff",
+            "opaquePixels": 2697
           }
         ]
       },
+      "hd": {
+        "cell": 512,
+        "logicalCell": 256,
+        "frames": [
+          {
+            "file": "docs/art/suits/hd/nacre-asc-1.png",
+            "sha256": "d6cb22ecbe239d5adce4bc2455d17a0d6bafba15acceaf7dbe0c72c794441117",
+            "source": "art-src/cyber-standard-trio/nacre/frames/asc-1.png",
+            "sourceSha256": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -16,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30936
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-asc-2.png",
+            "sha256": "f02ca9cc1d4bf3087c1d47959aa5137c66a246eeb419a03b6ece23695f2c78f9",
+            "source": "art-src/cyber-standard-trio/nacre/frames/asc-2.png",
+            "sourceSha256": "f07718b7bfc7dbcb399bd9819fccb00ec57c0ea230502ac2d1e7097845654652",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -10,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30528
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-asc-3.png",
+            "sha256": "007fe8b06b0a6529a8b56c2a0468f69c5d402e65fc569c04d6c1bc230ff84f16",
+            "source": "art-src/cyber-standard-trio/nacre/frames/asc-3.png",
+            "sourceSha256": "785a0177beb4f224ca907e9813ca24bed4e41683f17d1ac8127fced63ec40294",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -12,
+              -2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 32732
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-asc-4.png",
+            "sha256": "e9a93c70a055e8a20ab22869c872d543941861c3bf7ccfa2583402d49c0f17c4",
+            "source": "art-src/cyber-standard-trio/nacre/frames/asc-4.png",
+            "sourceSha256": "5709b4086cc71399210e9833cecbc3908969ad7b36a05024bde91808762da7f6",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -6,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 34362
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-asc-5.png",
+            "sha256": "55d457b186f7dc39c4f757a7ff1244e1e0677febd4333206bb15180bfeb50578",
+            "source": "art-src/cyber-standard-trio/nacre/frames/asc-5.png",
+            "sourceSha256": "26717235d8d9b81a745f3fa518d307ce9e0854de7acad886871e1b97b8f01693",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -6,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 32309
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-asc-6.png",
+            "sha256": "e4c3a04c2e112d57f656164176575aadfa51b66d98961f9caf3d0de2f3997ae8",
+            "source": "art-src/cyber-standard-trio/nacre/frames/asc-6.png",
+            "sourceSha256": "68312b138214264cda8d3f185c39eae33858bc5df470365a3c91c5a0beae91aa",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -10,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 34716
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-asc-7.png",
+            "sha256": "1b4e5aa28bec457d679cd70136105f06ed4c40f7a33ad329c0a92370c31ffbde",
+            "source": "art-src/cyber-standard-trio/nacre/frames/asc-7.png",
+            "sourceSha256": "0d3b90dbd6f2d965b49298189e6ea6baed8c5e407c67573ed6cd40deb72d3070",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -2,
+              2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 34770
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-asc-8.png",
+            "sha256": "f2c9fd977b52cb4027f5db5097fa1615fc784e5f06e8b0653be924aebac4abaf",
+            "source": "art-src/cyber-standard-trio/nacre/frames/asc-8.png",
+            "sourceSha256": "c82eddd5c0b0bd962071675cc033694202c25f509114eed8abce8cc0a8bd49b1",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -6,
+              2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 34156
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-asc-9.png",
+            "sha256": "e7f3db033c7a1ede560fdecc103aab385cfeb6bbd85d862488a63196159b6b5f",
+            "source": "art-src/cyber-standard-trio/nacre/frames/asc-9.png",
+            "sourceSha256": "ab59d068c468cb416426b48ab0f0519345bdd659b29bcdacfb351102234abfe5",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -10,
+              2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 35841
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-desc-1.png",
+            "sha256": "f87bad3d114bfcfc631e95eedcf2a502322277e1cf6918bc009ceedeb164eb30",
+            "source": "art-src/cyber-standard-trio/nacre/frames/desc-1.png",
+            "sourceSha256": "d1ba483bdc8b5a52cf06d065cbad8a0450d012749ac3c101b9a72194b6e6a6e2",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -14,
+              12
+            ],
+            "background": "green-matte",
+            "opaquePixels": 29920
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-desc-2.png",
+            "sha256": "ea514abf46a8a1bc1eca0f7e2a5ab9a067c0349de98e4101e124e785a31c2418",
+            "source": "art-src/cyber-standard-trio/nacre/frames/desc-2.png",
+            "sourceSha256": "4e69d373e7bd856127c2ba59353c01168aed7d5bea44a3e8ab9b995430dd3e51",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -16,
+              10
+            ],
+            "background": "green-matte",
+            "opaquePixels": 31267
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-desc-3.png",
+            "sha256": "7846e14c605cedf3d1fcd6651902bdbb5b0928209d4355df007c7619dee6f89e",
+            "source": "art-src/cyber-standard-trio/nacre/frames/desc-3.png",
+            "sourceSha256": "5a50218e0a9e25cc3ce2f7832f347b8b6b41bf5226988df3aca41398061649b3",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -18,
+              8
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30871
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-desc-4.png",
+            "sha256": "d34e4790e0145aa221bdc3ebe1cf0d2d6ae13b4208e7f65d1b466a685aab19af",
+            "source": "art-src/cyber-standard-trio/nacre/frames/desc-4.png",
+            "sourceSha256": "c49625e101eafd2148b28b435d81cbefa7e37828f2e7748cb27c7fcd72e1d0d0",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -16,
+              6
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30613
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-desc-5.png",
+            "sha256": "71c43070af6dcb9c67e8070419fa8a98433ad064f333b141f495a4b4c874b2bb",
+            "source": "art-src/cyber-standard-trio/nacre/frames/desc-5.png",
+            "sourceSha256": "4cff8072ab2e9e8de2f8c6591d9e59258741b45bbbb4d2d8a96f22faa4ec729c",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -18,
+              4
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30990
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-desc-6.png",
+            "sha256": "6452a3c2d8debf22474c9501c4b6536c63fdb84b13d63f32193b34fa18ba86d9",
+            "source": "art-src/cyber-standard-trio/nacre/frames/desc-6.png",
+            "sourceSha256": "dd9d403b2ddaf0326da5a87bc7afde38ff953d56d3c8f62e5510531c7b8418ef",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -12,
+              -2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 31373
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-desc-7.png",
+            "sha256": "d72b237c5b4834d6f50bfb1bbe34ff2e0c81d6ae4367318f18ae3f7f3375a91e",
+            "source": "art-src/cyber-standard-trio/nacre/frames/desc-7.png",
+            "sourceSha256": "259da623590a9e51ba8b1677e30751ec061138ac255e6185be7d42696e55f67e",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -6,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 31255
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-desc-8.png",
+            "sha256": "5c128ff8e903624d325acc1d063778ac039d7b30a3bb94a7120ad2863d73ec6a",
+            "source": "art-src/cyber-standard-trio/nacre/frames/desc-8.png",
+            "sourceSha256": "c7d21ccc33a9db21369fd9fe7385a83198e6a67d7171d9a296780277257b48b2",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -4,
+              6
+            ],
+            "background": "green-matte",
+            "opaquePixels": 31583
+          },
+          {
+            "file": "docs/art/suits/hd/nacre-desc-9.png",
+            "sha256": "ad5a29cdbbf7d9d3783f2e32d6d75e3f6e98dbb71483374c071fc57b7c19f94b",
+            "source": "art-src/cyber-standard-trio/nacre/frames/desc-9.png",
+            "sourceSha256": "bd467e2bd7b584a2fbab5117a051a735a54157a440c81e022e9490a396d3e7c9",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -18,
+              2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 31859
+          }
+        ],
+        "still": {
+          "file": "docs/art/suits/hd/nacre.png",
+          "source": "docs/art/suits/hd/nacre-asc-1.png",
+          "sha256": "d6cb22ecbe239d5adce4bc2455d17a0d6bafba15acceaf7dbe0c72c794441117"
+        },
+        "split": {
+          "mask": "art-src/cyber-standard-trio/nacre/still-tail-mask.png",
+          "maskSha256": "bdfe9d98c96a46d6677221111106cc343a1f3e48274331f4c4a83d903102ddad",
+          "parts": [
+            {
+              "file": "docs/art/suits/hd/nacre-body.png",
+              "sha256": "e9b4efc6211a800852fc33a14f7cbc84ae29c5bcf9473bda62e4856cd1dca10a",
+              "opaquePixels": 20442
+            },
+            {
+              "file": "docs/art/suits/hd/nacre-tail.png",
+              "sha256": "6c2a9932777df215e752edea86f29ccbcccffc55007560223776339e4e8af86d",
+              "opaquePixels": 10494
+            }
+          ],
+          "maskSampling": "nearest 2x"
+        }
+      },
       "geometry": {
         "file": "art-src/cyber-standard-trio/nacre/geometry.json",
-        "sha256": "93fb4d7d69d4a383bf6d31205259b7813d984f725ed6211cc51d518e420e08ef"
+        "sha256": "af5c92e31bfa28f6d7683e81dca457f67ac583e1eac04e0a27dd96c81d4a1d10"
       }
     },
     {
@@ -905,7 +1542,7 @@
       "frames": [
         {
           "file": "docs/art/suits/origamist-asc-1.png",
-          "sha256": "53ca027936f6892e55952f61951afe1f32f6c9fdb8dc0271395e43235bd3f546",
+          "sha256": "bc13b96bdfbfd528ee67ce9dde62f3ff6f48f04167a5a079c7f06987492e8ae9",
           "source": "art-src/cyber-standard-trio/origamist/frames/asc-1.png",
           "sourceSha256": "f85efa3c3d99f39411ffd0e8a8a1b84272bc3a31c6c475d56a4808d33c6a3209",
           "sourceSize": 1254,
@@ -917,11 +1554,11 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 7390
+          "opaquePixels": 7620
         },
         {
           "file": "docs/art/suits/origamist-asc-2.png",
-          "sha256": "17360063f8c8efcd85cb947f6c7eb6e85abf3a594270ccfd01b344c85671a75c",
+          "sha256": "0666b405c5cde0fba17c78cb4b49a8b943c591498e85961077cde589292602ba",
           "source": "art-src/cyber-standard-trio/origamist/frames/asc-2.png",
           "sourceSha256": "b283ea31c1fd4bfca0c0dbaf8617775288c11adb78b6c8478bf88e72ba759294",
           "sourceSize": 1254,
@@ -933,11 +1570,11 @@
             -1
           ],
           "background": "green-matte",
-          "opaquePixels": 7283
+          "opaquePixels": 7500
         },
         {
           "file": "docs/art/suits/origamist-asc-3.png",
-          "sha256": "1951be2a6ff71a062e1000effffe1a421562e926ece41ce390f8f613f235151f",
+          "sha256": "a011d22fca4264a6fe8b3204234beb0793d3c6b02d7e7d0f8b28a868846c2d7a",
           "source": "art-src/cyber-standard-trio/origamist/frames/asc-3.png",
           "sourceSha256": "b03d2af5b1e9a026f061a0ef204ed94daa9f3d4089c041b1ba38b8a64acf4876",
           "sourceSize": 1254,
@@ -949,11 +1586,11 @@
             -1
           ],
           "background": "green-matte",
-          "opaquePixels": 7194
+          "opaquePixels": 7425
         },
         {
           "file": "docs/art/suits/origamist-asc-4.png",
-          "sha256": "c450c78ed265907b473effd81f8e3b5261dfaa7fe3760327a0a9dbcdad245d8f",
+          "sha256": "0ec4f8d3c3d7941dc38525ed14c82196085eda9bb6dc8cbb83d5292e58c8010d",
           "source": "art-src/cyber-standard-trio/origamist/frames/asc-4.png",
           "sourceSha256": "093d7bfdec7df82aaf1573854e8d9689363cf0cfdcb85ec7754dc0971d894896",
           "sourceSize": 1254,
@@ -965,11 +1602,11 @@
             1
           ],
           "background": "green-matte",
-          "opaquePixels": 7646
+          "opaquePixels": 7884
         },
         {
           "file": "docs/art/suits/origamist-asc-5.png",
-          "sha256": "137ba9ad7a4376ba41796ad87629ae8f03310dc8b062d6476b740648d48fa27a",
+          "sha256": "f37f8a439ac5bb0886fd9a7d0753932773806a8070e3ed327d7ab6f90374ca7a",
           "source": "art-src/cyber-standard-trio/origamist/frames/asc-5.png",
           "sourceSha256": "ae0b55f33ad1a4c96fe8b1ae1efc1cc908eb2b19a2d60de215fef6d209aeba16",
           "sourceSize": 1254,
@@ -981,11 +1618,11 @@
             -1
           ],
           "background": "green-matte",
-          "opaquePixels": 8524
+          "opaquePixels": 8752
         },
         {
           "file": "docs/art/suits/origamist-asc-6.png",
-          "sha256": "cfb1335e3f0b98fe4d85abcf9c06f6aff8238262afde54da99ae32763ec8c03c",
+          "sha256": "8f2db069ef481b7f51a679b01758e7bec3c8fee9d5f91dd7a6071dfdd5ba54c5",
           "source": "art-src/cyber-standard-trio/origamist/frames/asc-6.png",
           "sourceSha256": "2c3015360d195e2f36cfe0f49db0a2e2108fb2e1c0e74c4f0dff14d5b71803fa",
           "sourceSize": 1254,
@@ -997,11 +1634,11 @@
             -2
           ],
           "background": "green-matte",
-          "opaquePixels": 7951
+          "opaquePixels": 8190
         },
         {
           "file": "docs/art/suits/origamist-asc-7.png",
-          "sha256": "d5a7db89e6d2306014aa54c402cf300186b8a2180cf839f2ddfd8ca69f7077f8",
+          "sha256": "0a2cdc1e44e0b5f8c5cdbd6253427188863e16413caa95e86d7736475cca60a2",
           "source": "art-src/cyber-standard-trio/origamist/frames/asc-7.png",
           "sourceSha256": "4a516a43afa9001463e2c79763aa619eeea28cd04dd49f5f066a7c9c1980390a",
           "sourceSize": 1254,
@@ -1013,11 +1650,11 @@
             -1
           ],
           "background": "green-matte",
-          "opaquePixels": 8313
+          "opaquePixels": 8557
         },
         {
           "file": "docs/art/suits/origamist-asc-8.png",
-          "sha256": "a8a088854eebe4ddd6816f46c567332a334f6bfbbf38c5d53aae17fd194a4330",
+          "sha256": "62be2df29859e8f515c39f4370cfc9ef8eb59564a13cf78c681790adb63796ae",
           "source": "art-src/cyber-standard-trio/origamist/frames/asc-8.png",
           "sourceSha256": "9dd8416ef5fe51f88d5eaf23d72151192b2b63271594e7388f3b2590756863a4",
           "sourceSize": 1254,
@@ -1029,11 +1666,11 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 8032
+          "opaquePixels": 8263
         },
         {
           "file": "docs/art/suits/origamist-asc-9.png",
-          "sha256": "d81eb3f8b6f1a959a4b0ec4391076719255fe8af6d13d86feb998107b7a7b80d",
+          "sha256": "9b7f7c828351488e39477f90eb5cf57d4de6cea660be6b470fc552ea8dfe2d2b",
           "source": "art-src/cyber-standard-trio/origamist/frames/asc-9.png",
           "sourceSha256": "8d8123f57b9a84115cdc238922b55f6fb637dff707dd4fd04f5733d5aadba92a",
           "sourceSize": 1254,
@@ -1045,11 +1682,11 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 9089
+          "opaquePixels": 9375
         },
         {
           "file": "docs/art/suits/origamist-desc-1.png",
-          "sha256": "24f36bc1644f06d96816db90933abb22b05579e259a3ee43f7d84cd486ee83cf",
+          "sha256": "5060df5cea22b6c4d46c69b6cc1bd7b275946a71f14b9481ad05ddbbca5867f9",
           "source": "art-src/cyber-standard-trio/origamist/frames/desc-1.png",
           "sourceSha256": "185bfb9afe0d1c2a6b81cfd4ea21256c40c4c48a357a1fe722ecb9f39866adf6",
           "sourceSize": 1254,
@@ -1061,11 +1698,11 @@
             -3
           ],
           "background": "green-matte",
-          "opaquePixels": 7452
+          "opaquePixels": 7664
         },
         {
           "file": "docs/art/suits/origamist-desc-2.png",
-          "sha256": "ad5fdd167c68685a399e80c6e8d7475455ddfe1aee98d8d16af1cf542d40c25a",
+          "sha256": "c1a160e76819fac52645d41e30c698180421dff8eb7c32f4c7de5da31225e305",
           "source": "art-src/cyber-standard-trio/origamist/frames/desc-2.png",
           "sourceSha256": "3c27ed67efda5844aaad06b07d2c1686e10df5999a38ae43b2a5d1548e9673e9",
           "sourceSize": 1254,
@@ -1077,11 +1714,11 @@
             1
           ],
           "background": "green-matte",
-          "opaquePixels": 7336
+          "opaquePixels": 7562
         },
         {
           "file": "docs/art/suits/origamist-desc-3.png",
-          "sha256": "d1b458ae4dd38dfdec61a3f79c28af5ab70b3b89a9b199f85b36e0d7c4720250",
+          "sha256": "3b7dfcfbfade1d4eb13253f8ed1e949c07dab96de59e88e456b3b264704b11db",
           "source": "art-src/cyber-standard-trio/origamist/frames/desc-3.png",
           "sourceSha256": "ad1148e051977c2b95bac9e884982ec6168b0ebcc57b4f56e4e5e4939792e7e4",
           "sourceSize": 1254,
@@ -1093,11 +1730,11 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 7316
+          "opaquePixels": 7556
         },
         {
           "file": "docs/art/suits/origamist-desc-4.png",
-          "sha256": "90be785dbbceed483ed11de973c32f299687b072405cd4e08e030631f9c50989",
+          "sha256": "4663e0b52bd70dddb515702238446737d131d35b35ec41370d4bfbeb49c71417",
           "source": "art-src/cyber-standard-trio/origamist/frames/desc-4.png",
           "sourceSha256": "e36160668488e4531bdaf498fe1663ee4c849a758cb9c5c7a922072d352ac9c1",
           "sourceSize": 1254,
@@ -1109,11 +1746,11 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 7616
+          "opaquePixels": 7868
         },
         {
           "file": "docs/art/suits/origamist-desc-5.png",
-          "sha256": "6f26d7ba9178347fe18c72bffabc62a28602bbe8c44ffea3c939cb596f5af763",
+          "sha256": "d4d5e8f30b8cf26d03f682a3ae02e93fc2fa3457a4df46c4562256a571258da8",
           "source": "art-src/cyber-standard-trio/origamist/frames/desc-5.png",
           "sourceSha256": "773008b4e1f61b9754e58d244a254d55f64d6d14a74f5b8b91705954fc5d5c1f",
           "sourceSize": 1254,
@@ -1125,11 +1762,11 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 7233
+          "opaquePixels": 7460
         },
         {
           "file": "docs/art/suits/origamist-desc-6.png",
-          "sha256": "af9754cceb8297048f3f6e7327efbe7d510a670c1e9de1fafc193c3e20ecc57f",
+          "sha256": "b5797281270310733c31adff0bd54f818fd325767d4ca2f18a0143d1f938e4b3",
           "source": "art-src/cyber-standard-trio/origamist/frames/desc-6.png",
           "sourceSha256": "97daad83fbe7dc31dec6d122960899032d97e94edc8ba5b852cfb301b8232225",
           "sourceSize": 1254,
@@ -1141,11 +1778,11 @@
             3
           ],
           "background": "green-matte",
-          "opaquePixels": 7652
+          "opaquePixels": 7887
         },
         {
           "file": "docs/art/suits/origamist-desc-7.png",
-          "sha256": "6c9fb596c9b4c4b8d09a347523b8c487ff9d10efaffa4fdb36893e20a9d944b4",
+          "sha256": "6698d9b9d208150e5b9f19d5e9d5e1485dc3da9074ae42713934e9305164dacd",
           "source": "art-src/cyber-standard-trio/origamist/frames/desc-7.png",
           "sourceSha256": "cbcb4a26066e99d801b6cb387257b3df2ea8d0c327b03ad8fa2ab1933a2ef2f3",
           "sourceSize": 1254,
@@ -1157,11 +1794,11 @@
             1
           ],
           "background": "green-matte",
-          "opaquePixels": 7571
+          "opaquePixels": 7804
         },
         {
           "file": "docs/art/suits/origamist-desc-8.png",
-          "sha256": "76680088970aad8966e98122d9d08c0b7046155f788dc0a73c2532d854595961",
+          "sha256": "a38d7cd2287fce1ee00d506f3eb1d0937853e050836de5ff55e29092c89ea1cf",
           "source": "art-src/cyber-standard-trio/origamist/frames/desc-8.png",
           "sourceSha256": "6cd8c793a96f743390e545d23025cd693e452042db8afbac5390af64ffbdabe4",
           "sourceSize": 1254,
@@ -1173,11 +1810,11 @@
             1
           ],
           "background": "green-matte",
-          "opaquePixels": 8129
+          "opaquePixels": 8355
         },
         {
           "file": "docs/art/suits/origamist-desc-9.png",
-          "sha256": "0ab2da072cf438e283a66691d714a978ae35964ba9266d3eebde0db4c1720ade",
+          "sha256": "ff6b759a8e6c32f7798ea9fd51e38ff1cb7137cac89dbd9af3591c5732d05eab",
           "source": "art-src/cyber-standard-trio/origamist/frames/desc-9.png",
           "sourceSha256": "45bdd9c7260b58d6a9b63fa32e6eb27ed1a8619dfe3942f020945e95455d6fb5",
           "sourceSize": 1254,
@@ -1189,13 +1826,13 @@
             0
           ],
           "background": "green-matte",
-          "opaquePixels": 8217
+          "opaquePixels": 8461
         }
       ],
       "still": {
         "file": "docs/art/suits/origamist.png",
         "source": "docs/art/suits/origamist-asc-1.png",
-        "sha256": "53ca027936f6892e55952f61951afe1f32f6c9fdb8dc0271395e43235bd3f546"
+        "sha256": "bc13b96bdfbfd528ee67ce9dde62f3ff6f48f04167a5a079c7f06987492e8ae9"
       },
       "split": {
         "mask": "art-src/cyber-standard-trio/origamist/still-tail-mask.png",
@@ -1203,15 +1840,331 @@
         "parts": [
           {
             "file": "docs/art/suits/origamist-body.png",
-            "sha256": "e7e66f7f5e608a25b3baa1df0a459f025bf98845f0612e6f3cfd5ef81fc64d46",
-            "opaquePixels": 4941
+            "sha256": "5c577917e504480b913bf0b3fead004e8cd38123c0590c22816a1674336942c6",
+            "opaquePixels": 5109
           },
           {
             "file": "docs/art/suits/origamist-tail.png",
-            "sha256": "34b9bc69b37309474157add38720baf46347f444e25013753928d0caf2ee8746",
-            "opaquePixels": 2449
+            "sha256": "a6edd8b9f515181bb2e9160488d651e1ba4119563193d64d66ce9ab4d401a91a",
+            "opaquePixels": 2511
           }
         ]
+      },
+      "hd": {
+        "cell": 512,
+        "logicalCell": 256,
+        "frames": [
+          {
+            "file": "docs/art/suits/hd/origamist-asc-1.png",
+            "sha256": "4bcb1dea363f02644dc14448aacff557e0d400ee8397f0bf7dcc3fd022a28ba8",
+            "source": "art-src/cyber-standard-trio/origamist/frames/asc-1.png",
+            "sourceSha256": "f85efa3c3d99f39411ffd0e8a8a1b84272bc3a31c6c475d56a4808d33c6a3209",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              0,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 29918
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-asc-2.png",
+            "sha256": "39a02d824adf76f5373e336f602904082e4068e1c8c1740eb1a9519a444aa293",
+            "source": "art-src/cyber-standard-trio/origamist/frames/asc-2.png",
+            "sourceSha256": "b283ea31c1fd4bfca0c0dbaf8617775288c11adb78b6c8478bf88e72ba759294",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -2,
+              -2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 29446
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-asc-3.png",
+            "sha256": "9b51f56f5d2c1ddfc2abb1c93dc37e6f4add1eac1b084bbf46be9178261216bf",
+            "source": "art-src/cyber-standard-trio/origamist/frames/asc-3.png",
+            "sourceSha256": "b03d2af5b1e9a026f061a0ef204ed94daa9f3d4089c041b1ba38b8a64acf4876",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -4,
+              -2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 29086
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-asc-4.png",
+            "sha256": "09337c21fa2d6373d83262c40b562e81148ac7b5976e19a6527248654afb8a34",
+            "source": "art-src/cyber-standard-trio/origamist/frames/asc-4.png",
+            "sourceSha256": "093d7bfdec7df82aaf1573854e8d9689363cf0cfdcb85ec7754dc0971d894896",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              0,
+              2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30928
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-asc-5.png",
+            "sha256": "7e24aa04aba761ef628093db79507f109538a9ef095593212697ff94add8bf52",
+            "source": "art-src/cyber-standard-trio/origamist/frames/asc-5.png",
+            "sourceSha256": "ae0b55f33ad1a4c96fe8b1ae1efc1cc908eb2b19a2d60de215fef6d209aeba16",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              0,
+              -2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 34416
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-asc-6.png",
+            "sha256": "cf9537d8abd81ac968275b52cb8484e8c2dc99e21bbe27a52939f1b030c12c4f",
+            "source": "art-src/cyber-standard-trio/origamist/frames/asc-6.png",
+            "sourceSha256": "2c3015360d195e2f36cfe0f49db0a2e2108fb2e1c0e74c4f0dff14d5b71803fa",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              0,
+              -4
+            ],
+            "background": "green-matte",
+            "opaquePixels": 32138
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-asc-7.png",
+            "sha256": "d11d3035e1b37a726908e7e30723fe55b2527f4c774aaea3a39180470aa7c053",
+            "source": "art-src/cyber-standard-trio/origamist/frames/asc-7.png",
+            "sourceSha256": "4a516a43afa9001463e2c79763aa619eeea28cd04dd49f5f066a7c9c1980390a",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -10,
+              -2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 33615
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-asc-8.png",
+            "sha256": "fc072b66787fa9b2266ca51a984eadaf9de480f0e863b660d3f655f22bf442a2",
+            "source": "art-src/cyber-standard-trio/origamist/frames/asc-8.png",
+            "sourceSha256": "9dd8416ef5fe51f88d5eaf23d72151192b2b63271594e7388f3b2590756863a4",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -8,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 32438
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-asc-9.png",
+            "sha256": "6112e81bb6ed80f97eb705bd59a8966a170957d0f9e00f9a3c7e128119cb70df",
+            "source": "art-src/cyber-standard-trio/origamist/frames/asc-9.png",
+            "sourceSha256": "8d8123f57b9a84115cdc238922b55f6fb637dff707dd4fd04f5733d5aadba92a",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              0,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 36778
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-desc-1.png",
+            "sha256": "cc55f795772163fa508ac2b1cc8790e7573573da6fea56131efdaa492b39edc7",
+            "source": "art-src/cyber-standard-trio/origamist/frames/desc-1.png",
+            "sourceSha256": "185bfb9afe0d1c2a6b81cfd4ea21256c40c4c48a357a1fe722ecb9f39866adf6",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -2,
+              -6
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30122
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-desc-2.png",
+            "sha256": "9df36fc47352df57ca17461c493c767aea9a83ca8e633e57a0c34f211da3bfbc",
+            "source": "art-src/cyber-standard-trio/origamist/frames/desc-2.png",
+            "sourceSha256": "3c27ed67efda5844aaad06b07d2c1686e10df5999a38ae43b2a5d1548e9673e9",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -2,
+              2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 29678
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-desc-3.png",
+            "sha256": "a1d266c73be346bab1ae8d9132a11b6510b5b21a5820bc2623b69be7c9f99537",
+            "source": "art-src/cyber-standard-trio/origamist/frames/desc-3.png",
+            "sourceSha256": "ad1148e051977c2b95bac9e884982ec6168b0ebcc57b4f56e4e5e4939792e7e4",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -2,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 29640
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-desc-4.png",
+            "sha256": "0d95e93cbb4d14f1ee44e0ba4a92a2860d7ee19d4b052e8cc05e052bebcb1152",
+            "source": "art-src/cyber-standard-trio/origamist/frames/desc-4.png",
+            "sourceSha256": "e36160668488e4531bdaf498fe1663ee4c849a758cb9c5c7a922072d352ac9c1",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              0,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30839
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-desc-5.png",
+            "sha256": "8baf59ce9946301f4afe8979c4fb9968de15832cd5684af913c558e796edc7fe",
+            "source": "art-src/cyber-standard-trio/origamist/frames/desc-5.png",
+            "sourceSha256": "773008b4e1f61b9754e58d244a254d55f64d6d14a74f5b8b91705954fc5d5c1f",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              0,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 29260
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-desc-6.png",
+            "sha256": "cf49e8d963572cc3c3b307f5707f771c349872fb11bc909986941d2b3a9f3561",
+            "source": "art-src/cyber-standard-trio/origamist/frames/desc-6.png",
+            "sourceSha256": "97daad83fbe7dc31dec6d122960899032d97e94edc8ba5b852cfb301b8232225",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -6,
+              6
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30959
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-desc-7.png",
+            "sha256": "4ee118f5e2303dd54fb5db06fb57ba9a47630a2fdfe1a50294d3fa83e06107bc",
+            "source": "art-src/cyber-standard-trio/origamist/frames/desc-7.png",
+            "sourceSha256": "cbcb4a26066e99d801b6cb387257b3df2ea8d0c327b03ad8fa2ab1933a2ef2f3",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -2,
+              2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 30617
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-desc-8.png",
+            "sha256": "343f20aaae72aabe2074c42b8e28e94d9872e120b5317b78e9c19df12b5e1a1b",
+            "source": "art-src/cyber-standard-trio/origamist/frames/desc-8.png",
+            "sourceSha256": "6cd8c793a96f743390e545d23025cd693e452042db8afbac5390af64ffbdabe4",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              -2,
+              2
+            ],
+            "background": "green-matte",
+            "opaquePixels": 32854
+          },
+          {
+            "file": "docs/art/suits/hd/origamist-desc-9.png",
+            "sha256": "4442ae9aae4c15030c3bbd9500fbebc30283bdc4fad30f0ca962203cd1240040",
+            "source": "art-src/cyber-standard-trio/origamist/frames/desc-9.png",
+            "sourceSha256": "45bdd9c7260b58d6a9b63fa32e6eb27ed1a8619dfe3942f020945e95455d6fb5",
+            "sourceSize": 1254,
+            "sourceCell": 0,
+            "sourceLayout": "individual",
+            "scale": 1,
+            "offset": [
+              6,
+              0
+            ],
+            "background": "green-matte",
+            "opaquePixels": 33204
+          }
+        ],
+        "still": {
+          "file": "docs/art/suits/hd/origamist.png",
+          "source": "docs/art/suits/hd/origamist-asc-1.png",
+          "sha256": "4bcb1dea363f02644dc14448aacff557e0d400ee8397f0bf7dcc3fd022a28ba8"
+        },
+        "split": {
+          "mask": "art-src/cyber-standard-trio/origamist/still-tail-mask.png",
+          "maskSha256": "4cffd53cff988dbd59fdc955acf2cf70884418d54438838c21b33e67e0e4c7ec",
+          "parts": [
+            {
+              "file": "docs/art/suits/hd/origamist-body.png",
+              "sha256": "c26d8aad22d00c2f944dc0b924a1a8e6c6d7a17f53f99e7b434163b8adb45364",
+              "opaquePixels": 20024
+            },
+            {
+              "file": "docs/art/suits/hd/origamist-tail.png",
+              "sha256": "c17e99e2fa4c7b82a7a451ab9fefb6f27e33272a1823a9021b7dcd320affae67",
+              "opaquePixels": 9894
+            }
+          ],
+          "maskSampling": "nearest 2x"
+        }
       },
       "geometry": {
         "file": "art-src/cyber-standard-trio/origamist/geometry.json",

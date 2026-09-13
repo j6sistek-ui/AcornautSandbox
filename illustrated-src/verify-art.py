@@ -210,7 +210,12 @@ def verify_sprite_dimensions(
         checked += 1
         # Owner-authorized flagship: four times the sprite pixel budget.
         flagship = rel == "suits/vanguard.png" or bool(re.fullmatch(r"suits/vanguard/frame-\d+\.png", rel))
-        if re.fullmatch(r"suits/(porcelain|nacre|origamist)/flight\.png", rel):
+        trio_detail = bool(re.fullmatch(
+            r"suits/hd/(porcelain|nacre|origamist)(?:-(?:asc|desc)-[1-9]|-(?:body|tail))?\.png", rel
+        ))
+        if trio_detail:
+            expected = (512, 512)  # same 256px logical registration, 2x raster detail
+        elif re.fullmatch(r"suits/(porcelain|nacre|origamist)/flight\.png", rel):
             expected = (1024, 1024)  # sixteen complete 256px character frames
         elif rel in {"suits/vanguard/maneuver-parts.png", "suits/arcflash/parts.png"} or re.fullmatch(
             r"suits/(cinderforge|groveguard|cosmic|sunforged|abyssal|porcelain|nacre|origamist)/parts\.png", rel
@@ -1123,7 +1128,8 @@ def verify_nacre_reviewed_motion() -> list[str]:
     Envoy's two tails and Cyber's antennae distribute opaque mass differently.
     Near-equal covariance eigenvalues make the whole-sprite principal axis
     unstable. The owner prioritizes the visible tail phases over alignment.
-    This one shape-specific review is locked to all 18 final PNGs; the exporter
+    This one shape-specific review is locked to all 18 final PNGs at both
+    display resolutions; the exporter
     must never refresh the review fixture. Body/tail movement is also checked
     separately so a frozen part cannot be mistaken for a full motion bank.
     """
@@ -1136,13 +1142,17 @@ def verify_nacre_reviewed_motion() -> list[str]:
         return [f"nacre: final independent motion review is missing or invalid ({exc})"]
     expected = {f"nacre-{bank}-{i}.png" for bank in ("asc", "desc") for i in range(1, 10)}
     hashes = review.get("outputHashes", {})
+    hd_hashes = review.get("hdOutputHashes", {})
     problems = []
     if review.get("suit") != "nacre" or review.get("reference") != "cyber" or review.get("status") != "PASS" or set(hashes) != expected:
         return ["nacre: reviewed motion must cover exactly the 18 Cyber-comparison paintings"]
-    for name in sorted(expected):
-        png = DOCS_ART / "suits" / name
-        if not png.exists() or hashlib.sha256(png.read_bytes()).hexdigest() != hashes[name]:
-            problems.append(f"{name}: painting changed after independent motion review; inspect and re-pin deliberately")
+    if set(hd_hashes) != expected:
+        return ["nacre: reviewed motion must also cover exactly the 18 HD companion paintings"]
+    for folder, reviewed_hashes in ((DOCS_ART / "suits", hashes), (DOCS_ART / "suits/hd", hd_hashes)):
+        for name in sorted(expected):
+            png = folder / name
+            if not png.exists() or hashlib.sha256(png.read_bytes()).hexdigest() != reviewed_hashes[name]:
+                problems.append(f"{png.relative_to(DOCS_ART)}: painting changed after independent motion review; inspect and re-pin deliberately")
     if problems:
         return problems
     for bank in ("asc", "desc"):

@@ -43,8 +43,8 @@ to prompt a fresh motion review. Their settings are not silently reset.
 
 1. Select a model. All 34 current catalog models are included. Seven use
    articulated cut rigs: AcorNut, Arcflash and the five High Orbit suits.
-   Porcelain Paragon, Nacre Envoy and Foldspace Origamist each use a new
-   sixteen-frame full-body sheet bank.
+   Percy, Envoy and Patriot each use Cyber's nine ascent and nine descent
+   paintings with the same velocity-driven motion profile.
 2. Leave the pattern playing, or pause and scrub to a troublesome moment.
    Changes appear in both windows, including when paused. Step advances 1/60 s;
    playback also offers half and quarter speed.
@@ -60,6 +60,23 @@ simulation. Backgrounding a window does not leave it permanently behind.
 Changing a motion setting recalculates the same point in the loop, so a paused
 comparison updates immediately. Each complete loop restarts the same initial
 conditions; the loop boundary intentionally resets position and motion.
+
+Percy, Envoy and Patriot retain their 256px logical frame, registration and
+motion at every display size. Enlarged previews request optional 512px source
+detail from `docs/art/suits/hd/` when the full frame spans more than 256 physical
+canvas pixels. The game and Studio use the same density selection helper.
+Normal 52px gameplay does not request this tier at ordinary screen densities.
+The still loads one optional image; the game hover rig loads its two layers
+together; animation loads and publishes all 18 frames together. A missing or
+wrong-sized detail image retains the complete 256px bank and permits a retry
+after 30 seconds. These requests never delay normal artwork readiness.
+
+Decoded RGBA detail costs about 1 MiB per image: 18 MiB for an animated suit,
+plus at most 3 MiB for its still and hover layers if those surfaces are also
+shown. No suit fetches these optional files merely because its normal bank
+loaded in the background. The three complete optional tiers total 63 images
+and approximately 5.64 MB of PNG data in the current export; actual requests
+depend on the enlarged surfaces displayed during that session.
 
 ## Cut rigs
 
@@ -89,10 +106,15 @@ approval of every possible pose.
 
 ## Painted banks
 
-Registered tap frames play **on the clock after a tap**. Upward velocity does
-not pick the tap frame. Where the current source has only ascent paintings,
-the studio can play that bank as a timed tap sequence. It labels that choice
-explicitly; it does not claim the current game has been changed to match.
+Cyber, Percy, Envoy and Patriot default to **velocity-driven ascent and
+descent**, with rewind on a repeat tap. Their shared profile preserves the
+Cyber frame-selection and pitch behavior. Frame order and per-frame pitch
+remain editable without changing the underlying flight trajectory.
+
+Other registered tap banks default to **clocked playback after a tap**.
+Where the source has only ascent paintings, the studio can play that bank as
+a timed tap sequence. It labels that choice explicitly; it does not claim
+the current game has been changed to match. The clocked controls include:
 
 - Set a complete cycle to 1.0, 1.5 or any duration from 0.1–5 seconds.
 - Tap progression below 1 advances earlier; above 1 builds later.
@@ -114,15 +136,14 @@ first frame afterward. A separate continuous-play option is available for
 comparison. They also have whole-model tap/velocity pitch controls. Every image is drawn with fixed
 canvas registration; the tool does not fit each moving frame to its bounds.
 
-The three premium pilots use sixteen complete 256px paintings on a 1024px
-sheet. Their defaults match the shipping one-second clip: a rapid tap queues
-one following cycle, and completed playback returns to frame zero. Frame
-order, holds, timing and whole-model pitch are editable; **Body parts** is
-disabled. No head, limb or tail is separately assembled or deformed. Porcelain
-keeps its Sovereign Shell, Nacre stays helmetless, and Origamist keeps its
-Facet Shell. The shared game painter also draws each suit's custom wake from
-the selected frame's measured emitters. Registration guides show that frame's
-head and emitter measurements.
+The three replacement pilots each have nine complete 256px ascent paintings
+and nine descent paintings. Their current family is the same standard bank
+family as Cyber; the older sixteen-frame sheet route is retired. Percy keeps
+his Sovereign Shell, Envoy stays helmetless, and Patriot keeps his Facet Shell.
+Flight frames remain complete paintings. The game retains separate registered
+body/tail layers for its still hover fallback. The shared wake painter uses
+the selected frame's measured emitters, and optional display detail preserves
+all of these logical coordinates.
 
 ## The tap pattern
 
@@ -159,9 +180,9 @@ painter and asset hashes, all tuning values, frame sequences/holds/pitch, the
 complete timed pattern and view. Imports validate finite numeric ranges,
 available frames and ordered event times. Changed art/painter hashes produce
 an explicit review notice. Invalid imports leave the current session intact.
-The obsolete premium cut-rig presets have a different model family and are
-rejected; joint settings cannot be applied to these complete paintings. This
-does not change preset compatibility for the original 31 models.
+The obsolete premium cut-rig and sixteen-frame sheet presets have a different
+model family and are rejected. This does not change preset compatibility for
+the original 31 models.
 
 **Export creates a tuning preset, not a replacement sprite sheet or an
 automatic game patch.** See [APPLYING-PRESETS.md](APPLYING-PRESETS.md) for the
@@ -174,6 +195,7 @@ Edit `illustrated-src/flight-studio/`, then:
 ```sh
 node illustrated-src/build-flight-studio.mjs
 node illustrated-src/test-flight-studio.mjs
+node illustrated-src/test-cyber-trio-detail.mjs
 ```
 
 The build uses the repository's existing TypeScript dependency. It emits the
@@ -182,13 +204,17 @@ extracts model banks/head registrations into a manifest with asset hashes.
 It does not build or modify `docs/js*`, artwork or game sources. Rebuild the
 tool after relevant art/rig/bank changes, and reload both windows.
 
-The test checks all 34 models, seven cut rigs, three full-body sheet banks and
-their asset hashes; deterministic replay at
-30/60/144 Hz, pause/loop behavior, velocity-independent tap timing, descent
-gates, rapid-tap policies, frame holds, rig tuning, export/import, malformed
-presets, actual local-image rendering and the read-only loopback host. Every
-premium frame is compared pixel for pixel with the shared game painter, with
-and without its wake, including the absence of an added helmet or body parts.
+The Studio test checks all 34 models, seven cut rigs and the three replacement
+Cyber 9/9 banks, including their asset hashes. It verifies deterministic replay
+at 30/60/144 Hz, pause/loop behavior, the trio's Cyber controller parity, clocked
+tap timing for other banks, descent gates, rapid-tap policies, frame holds,
+rig tuning, export/import, malformed presets, local-image rendering and the
+read-only loopback host. Every replacement frame is compared pixel for pixel
+with its full-canvas painting and shared wake, with effects on and off and no
+added helmet or assembled limbs. The separate detail test requires a current
+game export too; it checks lazy loading, complete-tier publication, missing and
+wrong-sized files, retries, and unchanged logical destinations and controller
+state in actual game portraits, previews, live pilots, hover layers and Studio.
 `--write-review` also produces the contact sheet in
 `illustrated-src/design/flight-studio/`. Use the repository container checks
 by default; the documented workspace fallback applies if Docker is unavailable.

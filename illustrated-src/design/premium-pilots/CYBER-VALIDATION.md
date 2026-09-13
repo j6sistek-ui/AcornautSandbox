@@ -1,5 +1,9 @@
 # Cyber transfer validation
 
+**Historical stamp287 validation.** These checks describe the earlier transfer.
+The owner rejected its displayed art quality; that approval is superseded.
+See QUALITY-VALIDATION.md for the stamp288 export and display-quality repair.
+
 Validation recorded 12 September 2026. This file records mechanical checks;
 the separate independent visual review decides costume and motion acceptance.
 
