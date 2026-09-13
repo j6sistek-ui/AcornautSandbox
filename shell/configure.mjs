@@ -80,6 +80,15 @@ if (existsSync(ios)) {
   plist = plist.replace(/<key>UISupportedInterfaceOrientations~ipad<\/key>\s*<array>[\s\S]*?<\/array>/,
     `<key>UISupportedInterfaceOrientations~ipad</key>\n\t<array>\n\t\t<string>UIInterfaceOrientationPortrait</string>\n\t</array>`);
   if (!plist.includes("UIRequiresFullScreen")) plist = plist.replace("\t<key>UIViewControllerBasedStatusBarAppearance</key>", "\t<key>UIRequiresFullScreen</key>\n\t<true/>\n\t<key>UIViewControllerBasedStatusBarAppearance</key>");
+  // ADS (13 Sep 2026): the AdMob app id the SDK reads at launch, and
+  // Google's own SKAdNetwork id so iOS attributes installs from its ads
+  const gad = cfg.admob?.iosAppId;
+  if (gad) {
+    plist = plist.includes("GADApplicationIdentifier")
+      ? plist.replace(/(<key>GADApplicationIdentifier<\/key>\s*<string>)[^<]*/, `$1${gad}`)
+      : plist.replace("\t<key>UIRequiresFullScreen</key>", `\t<key>GADApplicationIdentifier</key>\n\t<string>${gad}</string>\n\t<key>SKAdNetworkItems</key>\n\t<array>\n\t\t<dict>\n\t\t\t<key>SKAdNetworkIdentifier</key>\n\t\t\t<string>cstr6suwn9.skadnetwork</string>\n\t\t</dict>\n\t</array>\n\t<key>UIRequiresFullScreen</key>`);
+    if (cfg.admob?.testing !== false) warn.push("admob.testing is true: the build shows Google's TEST ads");
+  }
   write(ip, plist);
   // storyboard: our bridge controller
   const sb = join(app, "Base.lproj", "Main.storyboard");
@@ -122,6 +131,12 @@ if (existsSync(android)) {
   let mf = read(mp);
   if (!mf.includes('android:screenOrientation')) mf = mf.replace('android:launchMode="singleTask"', 'android:launchMode="singleTask"\n            android:screenOrientation="portrait"');
   if (!mf.includes("com.google.android.gms.games.APP_ID")) mf = mf.replace("        <provider", `        <meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/game_services_project_id" />\n\n        <provider`);
+  // ADS (13 Sep 2026): the AdMob app id the SDK reads at launch
+  if (cfg.admob?.androidAppId) {
+    mf = mf.includes("com.google.android.gms.ads.APPLICATION_ID")
+      ? mf.replace(/(com\.google\.android\.gms\.ads\.APPLICATION_ID" android:value=")[^"]*/, `$1${cfg.admob.androidAppId}`)
+      : mf.replace("        <provider", `        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="${cfg.admob.androidAppId}" />\n\n        <provider`);
+  }
   write(mp, mf);
   // the java package: move to the stamped package, rewrite package lines
   const javaRoot = join(android, "src", "main", "java");

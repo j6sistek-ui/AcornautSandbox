@@ -55,9 +55,25 @@ export type PlatformAdapter = {
     /** open the platform's own leaderboard UI (all-time, monthly, friends) */
     show(board?: BoardId): void;
   };
+  /** ADS (13 Sep 2026, owner: "just ad revenue for now"). A shell with an
+   *  ad SDK hands in these; the game never imports one. Rewarded ads pay
+   *  the viewer only on "earned"; the game decides what that buys. */
+  ads?: {
+    /** a rewarded ad is loaded and could be shown right now */
+    rewardedReady(): boolean;
+    /** show one; "earned" when it was watched to the reward, "dismissed"
+     *  when closed early, "unavailable" when nothing could be shown */
+    rewarded(placement: AdPlacement): Promise<AdOutcome>;
+    interstitialReady(): boolean;
+    /** show a full-screen ad at a natural break; resolves when it closes */
+    interstitial(placement: AdPlacement): Promise<void>;
+  };
   /** the shell shows Rig Editor / Ship Bench / Wormhole doors? Default: web yes, shells no */
   devDoors?: boolean;
 };
+
+export type AdPlacement = "continue" | "dust" | "crash";
+export type AdOutcome = "earned" | "dismissed" | "unavailable";
 
 export type Platform = {
   kind: PlatformKind;
@@ -74,6 +90,13 @@ export type Platform = {
   boardsReady: boolean;
   submitScore(board: BoardId, score: number): void;
   showBoards(board?: BoardId): void;
+  /** true once an ads adapter is present (a shell with the SDK, or the
+   *  beta page's stand-in) - the crash sheet and the shop offer ad slots */
+  adsReady: boolean;
+  rewardedAdReady(): boolean;
+  showRewardedAd(placement: AdPlacement): Promise<AdOutcome>;
+  interstitialAdReady(): boolean;
+  showInterstitialAd(placement: AdPlacement): Promise<void>;
   devDoors: boolean;
 };
 
@@ -92,12 +115,30 @@ function adapterOf(): PlatformAdapter | null {
   return a && typeof a === "object" ? a : null;
 }
 
+/** THE BETA'S STAND-IN ADS. The beta page has no ad SDK, but the crash
+ *  sheet's ad continue, the shop's ad dust and the interstitial cadence
+ *  all have to be flown before a shell exists. On the beta page (and only
+ *  there) a pretend ad "plays" for a moment and pays out, so every ad
+ *  flow is exercisable; the web page offers no ads at all. */
+function betaAds(): NonNullable<PlatformAdapter["ads"]> | undefined {
+  if (typeof window === "undefined") return undefined;
+  if ((window as { __ACORNAUT_BETA__?: unknown }).__ACORNAUT_BETA__ !== true) return undefined;
+  const play = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+  return {
+    rewardedReady: () => true,
+    rewarded: () => play(1200).then(() => "earned" as const),
+    interstitialReady: () => true,
+    interstitial: () => play(800),
+  };
+}
+
 function build(a: PlatformAdapter | null): Platform {
   const kind: PlatformKind = a?.kind ?? "web";
   const native = kind !== "web";
   const storage = a?.storage ?? webStorage;
   const store = a?.store;
   const boards = a?.boards;
+  const ads = a?.ads ?? (a ? undefined : betaAds());
   return {
     kind,
     native,
@@ -112,6 +153,15 @@ function build(a: PlatformAdapter | null): Platform {
     boardsReady: !!boards,
     submitScore: (board, score) => { try { boards?.submit(board, score); } catch { /* a board that is down never costs a run */ } },
     showBoards: (board) => boards?.show(board),
+    adsReady: !!ads,
+    rewardedAdReady: () => { try { return !!ads?.rewardedReady(); } catch { return false; } },
+    showRewardedAd: (placement) => ads
+      ? ads.rewarded(placement).catch(() => "unavailable" as const)
+      : Promise.resolve("unavailable" as const),
+    interstitialAdReady: () => { try { return !!ads?.interstitialReady(); } catch { return false; } },
+    // an ad that throws or hangs must never hold the game: a shell resolves
+    // on close, and a failure resolves too
+    showInterstitialAd: (placement) => ads ? ads.interstitial(placement).catch(() => undefined) : Promise.resolve(),
     devDoors: a?.devDoors ?? !native,
   };
 }

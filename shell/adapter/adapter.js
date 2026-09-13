@@ -14,6 +14,7 @@ import { Capacitor, registerPlugin } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { Purchases, LOG_LEVEL, PRODUCT_CATEGORY } from "@revenuecat/purchases-capacitor";
 import { App } from "@capacitor/app";
+import { AdMob, RewardAdPluginEvents, InterstitialAdPluginEvents } from "@capacitor-community/admob";
 import config from "./config.json";
 
 const Boards = registerPlugin("Boards");
@@ -160,6 +161,73 @@ function boardsOf() {
   };
 }
 
+/** ADS (13 Sep 2026, owner: "just ad revenue for now ... tying in ads").
+ *  AdMob behind the bridge's `ads` member: one rewarded and one
+ *  interstitial ad kept loaded, shown on request, reloaded after each.
+ *  Non-personalised (npa) so no tracking prompt is needed. With
+ *  `admob.testing` the config carries Google's public test ids and the SDK
+ *  runs in test mode, so a TestFlight build shows test ads with no account.
+ *  Anything that fails leaves the game without an ad, never without a
+ *  screen: every promise here resolves. */
+function adsOf(platformName) {
+  const c = config.admob;
+  if (!c) return null;
+  const ios = platformName === "ios";
+  const rewardedId = ios ? c.rewardedIos : c.rewardedAndroid;
+  const interstitialId = ios ? c.interstitialIos : c.interstitialAndroid;
+  if (!rewardedId && !interstitialId) return null;
+  const testing = c.testing !== false;
+  const opts = (adId) => ({ adId, isTesting: testing, npa: true });
+  let rewardedLoaded = false, interstitialLoaded = false;
+  const ready = (async () => {
+    await AdMob.initialize({ initializeForTesting: testing });
+  })().catch((e) => console.warn("[acornaut shell] ads not ready:", e?.message || e));
+  const loadRewarded = async () => {
+    if (!rewardedId) return;
+    try { await AdMob.prepareRewardVideoAd(opts(rewardedId)); rewardedLoaded = true; }
+    catch (e) { rewardedLoaded = false; console.warn("[acornaut shell] rewarded ad:", e?.message || e); }
+  };
+  const loadInterstitial = async () => {
+    if (!interstitialId) return;
+    try { await AdMob.prepareInterstitial(opts(interstitialId)); interstitialLoaded = true; }
+    catch (e) { interstitialLoaded = false; console.warn("[acornaut shell] interstitial ad:", e?.message || e); }
+  };
+  void ready.then(() => Promise.all([loadRewarded(), loadInterstitial()]));
+  // one listener set for the life of the app; each show() reads the flags it flips
+  let rewardedEarned = false, rewardedClosed = null, interstitialClosed = null;
+  void AdMob.addListener(RewardAdPluginEvents.Rewarded, () => { rewardedEarned = true; });
+  void AdMob.addListener(RewardAdPluginEvents.Dismissed, () => { rewardedClosed?.(); });
+  void AdMob.addListener(RewardAdPluginEvents.FailedToShow, () => { rewardedClosed?.(); });
+  void AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => { interstitialClosed?.(); });
+  void AdMob.addListener(InterstitialAdPluginEvents.FailedToShow, () => { interstitialClosed?.(); });
+  // a show that never reports back (a lost activity, a webview reload)
+  // still lets the game go on after a while
+  const closes = (set, ms) => new Promise((resolve) => { const t = setTimeout(resolve, ms); set(() => { clearTimeout(t); resolve(); }); });
+  return {
+    rewardedReady: () => rewardedLoaded,
+    async rewarded() {
+      await ready;
+      if (!rewardedLoaded) { await loadRewarded(); if (!rewardedLoaded) return "unavailable"; }
+      rewardedLoaded = false; rewardedEarned = false;
+      const closed = closes((fn) => { rewardedClosed = fn; }, 120000);
+      try { await AdMob.showRewardVideoAd(); } catch (e) { rewardedClosed = null; void loadRewarded(); return "unavailable"; }
+      await closed; rewardedClosed = null;
+      void loadRewarded();
+      return rewardedEarned ? "earned" : "dismissed";
+    },
+    interstitialReady: () => interstitialLoaded,
+    async interstitial() {
+      await ready;
+      if (!interstitialLoaded) return;
+      interstitialLoaded = false;
+      const closed = closes((fn) => { interstitialClosed = fn; }, 90000);
+      try { await AdMob.showInterstitial(); } catch { interstitialClosed = null; void loadInterstitial(); return; }
+      await closed; interstitialClosed = null;
+      void loadInterstitial();
+    },
+  };
+}
+
 async function boot() {
   if (Capacitor.isNativePlatform()) {
     const platformName = Capacitor.getPlatform();           // "ios" | "android"
@@ -169,6 +237,8 @@ async function boot() {
     if (store) adapter.store = store;
     const boards = boardsOf();
     if (boards) adapter.boards = boards;
+    const ads = adsOf(platformName);
+    if (ads) adapter.ads = ads;
     window.__acornautPlatform = adapter;
     // Android's hardware back button: the game has its own back arrows;
     // the system button should never kill the app mid-run

@@ -43,6 +43,10 @@ export function defaultSave() {
         suitLean: {},
         dustPaidTo: 0,
         lastDaily: "",
+        adDustDay: "",
+        adDustCount: 0,
+        crashesSinceAd: 0,
+        lastAdAt: 0,
         streakPackClaimed: false,
         dailyStreak: 0,
         steadyGates: false,
@@ -333,6 +337,11 @@ export function loadSave() {
     s.pilotName = typeof s.pilotName === "string" ? cleanPilotName(s.pilotName) : "";
     if (typeof s.lastDaily !== "string")
         s.lastDaily = "";
+    if (typeof s.adDustDay !== "string")
+        s.adDustDay = "";
+    for (const k of ["adDustCount", "crashesSinceAd", "lastAdAt"])
+        if (typeof s[k] !== "number" || !isFinite(s[k]))
+            s[k] = 0;
     if (typeof s.streakPackClaimed !== "boolean")
         s.streakPackClaimed = false;
     if (typeof s.dailyStreak !== "number" || !isFinite(s.dailyStreak))
