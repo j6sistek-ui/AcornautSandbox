@@ -40,9 +40,17 @@ window.__acornautPlatform = {
                                         // pending() lists every consumable on record, as game ids
   boards:  { submit, show },            // Game Center behind it
   ads:     { rewardedReady, rewarded, interstitialReady, interstitial },  // AdMob behind it (13 Sep 2026)
+                                        // rewarded(placement, started?) - started fires when the ad is on screen
+  gameplay: { start, stop, happy },     // the portal's gameplayStart/Stop/happytime (CrazyGames, 13 Sep 2026)
+  listen:  (hooks) => {},               // the shell keeps hooks.mute(m) for its own mute switch
+  links:   false,                       // no Discord / X / mail rows (a portal forbids doors out)
+  defaultMode: "spill",                 // the title opens on Debris Field (portal build only)
   devDoors: false,
 };
 ```
+
+The CrazyGames build (`shell/crazygames/adapter.js`, `npm run crazygames`)
+is the second adapter; see `CRAZYGAMES_PLAN.md`.
 
 Rules, enforced by `illustrated-src/test-platform-bridge.mjs`:
 
@@ -56,6 +64,14 @@ Rules, enforced by `illustrated-src/test-platform-bridge.mjs`:
   the pending list on resume and Restore Purchases can all hand the game
   the same transaction and it pays once. A purchase that throws is a
   failed purchase the shop reports, never a stuck row.
+- The engine reports the run's lifecycle through `platform.gameplayStart`
+  / `gameplayStop` (launch, resume, revive; pause, crash, leaving) and
+  `platform.celebrate` (a finished mission, a new best). A shell that
+  does not care ignores them; a portal keys its ads and metrics off them.
+- An ad mutes the game while it is on screen: the engine's `muteAll`
+  sits over the pilot's own music and effects switches and writes nothing
+  into the save. A shell's own mute switch reaches it through
+  `listen({ mute })`.
 - A score is posted from `sim.ts` at run end through
   `platform.submitScore`; boards are read in the platform's own UI via
   `platform.showBoards`. The game never renders another player's score

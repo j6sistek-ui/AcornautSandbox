@@ -3554,6 +3554,9 @@ function exitWarp(w: World) {
 // goal 3 earned on Tuesday add up to the same three stars, which is what
 // lets a hard level be chipped at instead of demanding one perfect run.
 export function settleLevel(w: World, save: SaveData, finished: boolean) {
+  // a finished mission is a celebration beat for the platform (a portal's
+  // happytime); a failed one is not
+  if (finished) platform.celebrate();
   // A Wormhole mission grades off the tunnel's own ledger; sync it here so
   // the numbers on the result sheet are the numbers the run actually flew.
   if (w.lvl && w.lvl.def.base === "tunnel" && w.tunnel) {
@@ -3731,12 +3734,17 @@ function die(w: World, save: SaveData) {
   // lifetime tallies for the Profile screen: these only ever grow
   save.runs = (save.runs ?? 0) + 1;
   save.lifetimeAcorns = (save.lifetimeAcorns ?? 0) + w.runAcorns;
+  const priorBest = w.flight === "deep" ? save.deepBest : w.flight === "lost" ? save.lostBest
+    : w.flight === "arcade" ? save.arcadeBest : w.flight === "tunnel" ? save.tunnelBest
+    : w.flight === "spill" ? (save.spillBest ?? 0) : save.highScore;
   if (w.flight === "deep") save.deepBest = Math.max(save.deepBest, w.score);
   else if (w.flight === "lost") save.lostBest = Math.max(save.lostBest, w.score);
   else if (w.flight === "arcade") save.arcadeBest = Math.max(save.arcadeBest, w.score);
   else if (w.flight === "tunnel") save.tunnelBest = Math.max(save.tunnelBest, w.score);
   else if (w.flight === "spill") save.spillBest = Math.max(save.spillBest ?? 0, w.score);
   else save.highScore = Math.max(save.highScore, w.score);
+  // a new personal best is the one crash worth a cheer (a portal's happytime)
+  if (!w.lvl && !w.tut && w.score > (priorBest ?? 0)) platform.celebrate();
   // the same number goes to the platform's board (Game Center, Steam);
   // a mission or a tutorial is not a board run, and the web has no board
   if (!w.lvl && !w.tut && w.score > 0) platform.submitScore(w.flight, w.score);

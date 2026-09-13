@@ -62,14 +62,43 @@ export type PlatformAdapter = {
     /** a rewarded ad is loaded and could be shown right now */
     rewardedReady(): boolean;
     /** show one; "earned" when it was watched to the reward, "dismissed"
-     *  when closed early, "unavailable" when nothing could be shown */
-    rewarded(placement: AdPlacement): Promise<AdOutcome>;
+     *  when closed early, "unavailable" when nothing could be shown. The
+     *  optional `started` fires the moment the ad is actually on screen
+     *  (a portal's adStarted): the game mutes itself then, not on request. */
+    rewarded(placement: AdPlacement, started?: () => void): Promise<AdOutcome>;
     interstitialReady(): boolean;
     /** show a full-screen ad at a natural break; resolves when it closes */
-    interstitial(placement: AdPlacement): Promise<void>;
+    interstitial(placement: AdPlacement, started?: () => void): Promise<void>;
   };
+  /** GAMEPLAY EVENTS (13 Sep 2026, CrazyGames). A portal wants to know
+   *  when the pilot is actually flying (its ads, its metrics and its
+   *  "gameplay first" review all key off it). start on every launch,
+   *  resume and revive; stop on every break: pause, crash, leaving a run.
+   *  happy is an optional celebration beat (a mission finished, a Depot
+   *  reached) - a portal may confetti it, a shell may ignore it. */
+  gameplay?: { start(): void; stop(): void; happy?(): void };
+  /** may the game show links that leave it (Discord, X, mail)? A portal
+   *  forbids them (CrazyGames: no external links, no cross-promotion).
+   *  Default: yes. */
+  links?: boolean;
+  /** the mode the title selects on open, by mode id ("spill" is Debris
+   *  Field). Default: the game's own choice. A portal build that leads
+   *  with Debris Field says so here; the web page and the app are not
+   *  touched by it. */
+  defaultMode?: string;
+  /** the shell's line back INTO the game. The bridge calls this once at
+   *  boot with the hooks the game exposes; a shell keeps them and calls
+   *  them when the world outside changes (a portal's mute switch). */
+  listen?(hooks: PlatformHooks): void;
   /** the shell shows Rig Editor / Ship Bench / Wormhole doors? Default: web yes, shells no */
   devDoors?: boolean;
+};
+
+/** what the game hands a shell to call back into it */
+export type PlatformHooks = {
+  /** silence everything (music and effects) or restore the pilot's own
+   *  settings; the shell says which, the game remembers what they were */
+  mute(m: boolean): void;
 };
 
 export type AdPlacement = "continue" | "dust" | "crash";
@@ -94,9 +123,19 @@ export type Platform = {
    *  beta page's stand-in) - the crash sheet and the shop offer ad slots */
   adsReady: boolean;
   rewardedAdReady(): boolean;
-  showRewardedAd(placement: AdPlacement): Promise<AdOutcome>;
+  showRewardedAd(placement: AdPlacement, started?: () => void): Promise<AdOutcome>;
   interstitialAdReady(): boolean;
-  showInterstitialAd(placement: AdPlacement): Promise<void>;
+  showInterstitialAd(placement: AdPlacement, started?: () => void): Promise<void>;
+  /** the pilot is flying / has stopped flying (see PlatformAdapter.gameplay) */
+  gameplayStart(): void;
+  gameplayStop(): void;
+  celebrate(): void;
+  /** external links may be shown */
+  links: boolean;
+  /** the title's opening mode id, or null for the game's own default */
+  defaultMode: string | null;
+  /** hand the shell the game's hooks (once, at boot) */
+  attach(hooks: PlatformHooks): void;
   devDoors: boolean;
 };
 
@@ -155,13 +194,20 @@ function build(a: PlatformAdapter | null): Platform {
     showBoards: (board) => boards?.show(board),
     adsReady: !!ads,
     rewardedAdReady: () => { try { return !!ads?.rewardedReady(); } catch { return false; } },
-    showRewardedAd: (placement) => ads
-      ? ads.rewarded(placement).catch(() => "unavailable" as const)
+    showRewardedAd: (placement, started) => ads
+      ? ads.rewarded(placement, started).catch(() => "unavailable" as const)
       : Promise.resolve("unavailable" as const),
     interstitialAdReady: () => { try { return !!ads?.interstitialReady(); } catch { return false; } },
     // an ad that throws or hangs must never hold the game: a shell resolves
     // on close, and a failure resolves too
-    showInterstitialAd: (placement) => ads ? ads.interstitial(placement).catch(() => undefined) : Promise.resolve(),
+    showInterstitialAd: (placement, started) => ads ? ads.interstitial(placement, started).catch(() => undefined) : Promise.resolve(),
+    // a portal that is down never costs a run: every event is a try
+    gameplayStart: () => { try { a?.gameplay?.start(); } catch { /* the pilot flies regardless */ } },
+    gameplayStop: () => { try { a?.gameplay?.stop(); } catch { /* ditto */ } },
+    celebrate: () => { try { a?.gameplay?.happy?.(); } catch { /* ditto */ } },
+    links: a?.links ?? true,
+    defaultMode: typeof a?.defaultMode === "string" ? a.defaultMode : null,
+    attach: (hooks) => { try { a?.listen?.(hooks); } catch { /* a shell that cannot listen is a shell without a mute switch */ } },
     devDoors: a?.devDoors ?? !native,
   };
 }
