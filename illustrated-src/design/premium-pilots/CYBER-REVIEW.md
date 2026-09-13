@@ -1,5 +1,12 @@
 # Independent Cyber transfer review
 
+**Historical stamp287 review; quality approval superseded on 13 September 2026.**
+The owner reported degraded Loadout art. A new investigation reproduced aliasing
+in the export reduction and identified Envoy source material/lighting drift that
+this review missed. The capture hashes below describe commit46731e2, not corrected
+assets. Motion-parity evidence remains historical evidence; it is not a current
+art-quality approval.
+
 PASS for the exact reviewed Percy, Envoy and Patriot artwork and sampled production
 motion, 12 September 2026. This record is authored by the independent auditor, who
 did not generate production artwork or implement the production renderer. Final

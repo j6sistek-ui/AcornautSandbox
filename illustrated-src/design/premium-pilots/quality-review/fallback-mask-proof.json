@@ -1,0 +1,50 @@
+{
+  "at": "2026-09-13T04:33:39.965Z",
+  "changed": [
+    "art-src/cyber-standard-trio/nacre/geometry.json",
+    "art-src/cyber-standard-trio/nacre/still-tail-mask.png",
+    "art-src/cyber-standard-trio/shipping-manifest.json",
+    "docs/art/suits/hd/nacre-body.png",
+    "docs/art/suits/hd/nacre-tail.png",
+    "docs/art/suits/nacre-body.png",
+    "docs/art/suits/nacre-tail.png"
+  ],
+  "outputHashes": 126,
+  "unions": [
+    {
+      "id": "porcelain",
+      "size": 256,
+      "wrongChannels": 0
+    },
+    {
+      "id": "porcelain",
+      "size": 512,
+      "wrongChannels": 0
+    },
+    {
+      "id": "nacre",
+      "size": 256,
+      "wrongChannels": 0
+    },
+    {
+      "id": "nacre",
+      "size": 512,
+      "wrongChannels": 0
+    },
+    {
+      "id": "origamist",
+      "size": 256,
+      "wrongChannels": 0
+    },
+    {
+      "id": "origamist",
+      "size": 512,
+      "wrongChannels": 0
+    }
+  ],
+  "all108PaintedBanksAndSixStillsUnchanged": true,
+  "all54SourceMastersUnchanged": true,
+  "allNumericAnchorsOffsetsPivotUnchanged": true,
+  "selectedMaskMatchesCandidate": true,
+  "errors": []
+}

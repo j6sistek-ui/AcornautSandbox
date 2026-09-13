@@ -21,10 +21,11 @@ function compile(name){
   });
   writeFileSync(join(out,'game',name+'.mjs'),output);
 }
-for(const name of ['high-orbit','high-orbit-motion','premium-flight','premium-flight-frames','premium-bank-wake','arcflash','arcflash-motion','vanguard-maneuver','helmet-openings'])compile(name);
+for(const name of ['high-orbit','high-orbit-motion','premium-flight','premium-flight-frames','premium-bank-wake','sprite-detail','arcflash','arcflash-motion','vanguard-maneuver','helmet-openings'])compile(name);
 // Remove generated modules retired from the current dependency graph.
 for(const name of readdirSync(join(out,'game')))if(name.endsWith('.mjs')&&!visited.has(name.slice(0,-4)))rmSync(join(out,'game',name));
 const {PREMIUM_FLIGHT_FRAMES}=await import(pathToFileURL(join(out,'game/premium-flight-frames.mjs')).href);
+const {isPremiumSuit}=await import(pathToFileURL(join(out,'game/high-orbit-config.mjs')).href);
 const tables=buildTables(root),artSource=readFileSync(join(root,'illustrated-src/game/art.ts'),'utf8').replace(/\/\/[^\n]*/g,'');
 function bank(name){
   const b=artSource.match(new RegExp(`const ${name}_BANKS[^=]*=\\s*\\{([^}]*)\\}`));
@@ -46,6 +47,7 @@ const models=tables.suits.filter(s=>!s.frame).map(s=>{
   if(sheet){for(const kind of Object.keys(lists))lists[kind]=[];lists.loop=Array(sheet.frameCount).fill(atlas);}
   const assets=[...new Set([s.file,...Object.values(lists).flat(),...(atlas?[atlas]:[])])];
   for(const p of assets)if(!existsSync(join(root,'docs/art',p)))throw new Error('Missing '+p);
+  if(isPremiumSuit(s.id))assets.push(...assets.map(p=>p.replace('suits/','suits/hd/')).filter(p=>existsSync(join(root,'docs/art',p))));
   return {...s,family,atlas,...(sheet?{sheet}:{}),banks:lists,hashes:Object.fromEntries(assets.map(p=>[p,hash(p)]))};
 });
 const sourceCommit=execFileSync('git',['-c',`safe.directory=${root.replaceAll('\\','/')}`,'rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();

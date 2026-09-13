@@ -3,7 +3,7 @@
   "pathsRelativeTo": "this directory",
   "hashAlgorithm": "sha256",
   "independentReview": "motion-review.json",
-  "reviewedAt": "2026-09-12T22:52:14.636881+00:00",
+  "reviewedAt": "2026-09-13T04:38:11.764162+00:00",
   "sources": [
     {
       "source": "frames/asc-1.png",
@@ -21,50 +21,37 @@
     },
     {
       "source": "frames/asc-3.png",
-      "sha256": "185285b67afd21e628f57c5bb42eb4ba6316a47e2edd7ac0e7e4f712be2d8d9d",
+      "sha256": "785a0177beb4f224ca907e9813ca24bed4e41683f17d1ac8127fced63ec40294",
       "prompt": {
-        "file": "tail-phase-prompts.json",
-        "selector": {
-          "n": 3
-        }
+        "file": "frames/asc-3-material-repair-prompt.txt"
       }
     },
     {
       "source": "frames/asc-4.png",
-      "sha256": "fb6a5a986c69e3e94a6c923d13a094627922ac0c49071e59f05aa35033a81cce",
+      "sha256": "5709b4086cc71399210e9833cecbc3908969ad7b36a05024bde91808762da7f6",
       "prompt": {
-        "file": "tail-phase-prompts.json",
-        "selector": {
-          "n": 4
-        }
+        "file": "frames/asc-4-material-repair-prompt.txt"
       }
     },
     {
       "source": "frames/asc-5.png",
-      "sha256": "b92b188614bc5dc79f17dc30e5ebc8ffd0bbde403fa786320636385552fd0219",
+      "sha256": "26717235d8d9b81a745f3fa518d307ce9e0854de7acad886871e1b97b8f01693",
       "prompt": {
-        "file": "paired-tail-prompts.json",
-        "selector": {
-          "bank": "asc",
-          "n": 5
-        }
+        "file": "frames/asc-5-material-repair-prompt.txt"
       }
     },
     {
       "source": "frames/asc-6.png",
-      "sha256": "b7830761252cc2b3881a06df2b398f0a50083fbe9da2c5a4c2bfd492c41fdd47",
+      "sha256": "68312b138214264cda8d3f185c39eae33858bc5df470365a3c91c5a0beae91aa",
       "prompt": {
-        "file": "repair-prompts-4.json",
-        "selector": {
-          "n": 6
-        }
+        "file": "frames/asc-6-material-repair-prompt.txt"
       }
     },
     {
       "source": "frames/asc-7.png",
-      "sha256": "f0b4a58dcfa7dd887055768698a4394333906dc1a5261f6c562881f70f223c3a",
+      "sha256": "0d3b90dbd6f2d965b49298189e6ea6baed8c5e407c67573ed6cd40deb72d3070",
       "prompt": {
-        "file": "frames/asc-7-neckline-repair-prompt.txt"
+        "file": "frames/asc-7-material-repair-prompt.txt"
       }
     },
     {
@@ -79,9 +66,9 @@
     },
     {
       "source": "frames/asc-9.png",
-      "sha256": "f64f769e8a4315e315451c8b890e1bf3383f00191979ce38d3ff0655003bbd69",
+      "sha256": "ab59d068c468cb416426b48ab0f0519345bdd659b29bcdacfb351102234abfe5",
       "prompt": {
-        "file": "repair-asc-9.txt"
+        "file": "frames/asc-9-material-repair-prompt.txt"
       }
     },
     {
@@ -147,5 +134,8 @@
         "file": "frames/desc-9-retexture-prompt.txt"
       }
     }
-  ]
+  ],
+  "sourceMaterialReview": "material-review-20260913.json",
+  "status": "PASS: selected source, final SD/HD bank and corrected loading fallback independently reviewed; see motion-review.json and QUALITY-REVIEW.md.",
+  "integratedQualityReview": "illustrated-src/design/premium-pilots/QUALITY-REVIEW.md"
 }

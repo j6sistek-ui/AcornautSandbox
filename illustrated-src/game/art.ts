@@ -3,10 +3,11 @@ import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_C
 import { prepareDepotBear, type DepotBearFrame } from "./spill-depot-bear";
 import { SPILL_UTILITY_IDS } from "./spill-content";
 import {ORBIT_PILOT_IDS,PREMIUM_SUIT_IDS,isPremiumSuit,isHighOrbitRig,type HighOrbitRigId,type PremiumSuitId} from "./high-orbit-config";
+import { bindSpriteDetails, spriteImageFor, type DetailSprite } from "./sprite-detail";
 
 export type Box = { x: number; y: number; w: number; h: number };
 
-export type Sprite = HTMLImageElement & {
+export type Sprite = DetailSprite & {
   box: Box;
   core: number;
   /** centroid of the solid collision-bearing pixels, in source space */
@@ -217,6 +218,9 @@ function asSprite(img: HTMLImageElement): Sprite {
   s.core = m.core;
   s.coreX = m.coreX;
   s.coreY = m.coreY;
+  const still = typeof img.src === "string" ? img.src.match(/\/suits\/([^/]+)\.png(?:\?|$)/)?.[1] : undefined;
+  if (still && isPremiumSuit(still))
+    bindSpriteDetails([{ sprite: s, path: `suits/hd/${still}.png` }], path => loadImg(artUrl(path)));
   return s;
 }
 
@@ -367,7 +371,9 @@ export function drawSprite(
       ctx.restore();
     }
   }
-  ctx.drawImage(spr, box.x, box.y, box.w, box.h, dx, dy, dw, dh);
+  const image = spriteImageFor(ctx, spr, spr.width * scale, spr.height * scale);
+  const ratio = image.width / spr.width;
+  ctx.drawImage(image, box.x * ratio, box.y * ratio, box.w * ratio, box.h * ratio, dx, dy, dw, dh);
 }
 
 // ------------------------------------------------------------- lazy suits
@@ -549,6 +555,17 @@ export function loadSuitBank(bank: ArtBank, id: string): Promise<void> {
     // Publish both complete banks together, retaining the still on failure.
     const completeMotion = !isPremiumSuit(id) || (asc.length === ASC_BANKS[id] && desc.length === DESC_BANKS[id]
       && [...asc,...desc].every(frame=>frame.width===256&&frame.height===256));
+    if (isPremiumSuit(id)) {
+      const detail = (path: string) => loadImg(artUrl(path));
+      if (tail && body) bindSpriteDetails([
+        { sprite: tail, path: `suits/hd/${id}-tail.png` },
+        { sprite: body, path: `suits/hd/${id}-body.png` },
+      ], detail);
+      if (completeMotion) bindSpriteDetails([
+        ...asc.map((sprite, i) => ({ sprite, path: `suits/hd/${id}-asc-${i + 1}.png` })),
+        ...desc.map((sprite, i) => ({ sprite, path: `suits/hd/${id}-desc-${i + 1}.png` })),
+      ], detail);
+    }
     if (asc.length && completeMotion) bank.suitAsc[id] = asc;
     if (desc.length && completeMotion) bank.suitDesc[id] = desc;
     // many() drops a frame it could not fetch rather than sinking the whole

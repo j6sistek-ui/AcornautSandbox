@@ -8,8 +8,11 @@ The premium comparison lab now calls the production `Sim` and `paintPilot`,
 with Cyber beside the three replacements. The sixteen-frame design and
 validation record below describe the preceding implementation.
 
-Current evidence belongs in [CYBER-REVIEW.md](CYBER-REVIEW.md) and
-[CYBER-VALIDATION.md](CYBER-VALIDATION.md). Cyber's tail direction changes,
+The owner rejected the transfer's enlarged-preview quality. Current repair
+evidence belongs in [QUALITY-REVIEW.md](QUALITY-REVIEW.md) and
+[QUALITY-VALIDATION.md](QUALITY-VALIDATION.md); the original
+[CYBER-REVIEW.md](CYBER-REVIEW.md) and [CYBER-VALIDATION.md](CYBER-VALIDATION.md)
+remain historical records. Cyber's tail direction changes,
 frame counts, follow-through and settling are the owner's first priority;
 exact spec alignment is secondary. Envoy keeps two distinct tails and their
 loose crossing/unwind, with modest natural limb movement.

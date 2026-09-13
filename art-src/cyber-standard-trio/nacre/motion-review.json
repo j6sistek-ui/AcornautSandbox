@@ -2,44 +2,44 @@
   "suit": "nacre",
   "reference": "cyber",
   "status": "PASS",
-  "reviewedAt": "2026-09-12T22:52:14.636881+00:00",
+  "reviewedAt": "2026-09-13T04:38:11.764162+00:00",
   "reviewerRole": "Independent auditor; did not generate production art or implement runtime",
-  "scope": "All18 source and exported paintings, costume continuity, two-tail anatomy/interaction, Cyber phase rhythm, actual production-renderer sampled transitions and loading fallback.",
+  "scope": "All 18 current sources and delivered SD/HD paintings, stable costume/two-tail anatomy, Cyber phase rhythm, actual production-renderer sampled transitions and corrected loading fallback.",
   "reason": "Opaque-wholemass PCA is shape-dependent and ill-conditioned near equal covariance eigenvalues. This approval pins the exact visually reviewed twin-tail bank and is supplemented by separate body/tail motion checks; it is not a general PCA waiver.",
-  "method": "Native256 source contacts plus fixed head/body enlargements and Cyber overlays. Exported production Sim+drawPilot at52/192px,60Hz, single tap,150ms repeat,burst,dive,reset; real paintIllustrated loading fallback at tail angles\u2212.75..+.75rad. Two-row shared-renderer check600/600 equal; isolated traces1200/1200 equal toCyber.",
-  "phaseFindings": "Ascent1\u21923 gives two droop steps;3\u21927 gathers/lifts while two tails briefly cross and then unwind;7\u21929 follows through. Separate roots/tips remain traceable. Descent paired curls settle with modest relative plume motion. DESC2\u21923 local upper-plume opening changes a fixed-ROI angle but does not create a fresh whip in production captures.",
-  "costumeFindings": "Same pearl face/eyes/fin count, aubergine suit, ivory bracers/boots and thin piping. ASC7 missing neckline restored and reviewed. Minor pearl highlights/shading are retained; no significant native-size feature/color flicker seen.",
-  "limitations": "Independent browser surface was unavailable. Approval derives from source inspections and actual-renderer filmstrips, not an interactive browser session; fixed60Hz sampled scenarios are not every possible input/display rate. Anatomical anchors are approximate.",
+  "method": "All 18 actual portrait frame probes at158 CSS pixels/DPR2, source1254 and native512 inspection; actual Loadout/portrait52/158/192 CSS pixels atDPR2. Production Sim+drawPilot single tap,150ms repeat,100ms burst,dive,reset at60Hz:600/600 Nacre ticks match Cyber frame/vy/tailA. Real paintIllustrated fallback52/158 CSS pixels atangles -.75,-.35,0,.35,.75. ArtBank.detailImage populated directly; no raster interception.",
+  "phaseFindings": "Ascent1→3 gives two droop steps;3→7 gathers/lifts while two tails briefly cross and then unwind;7→9 follows through. Separate roots/tips remain traceable. Descent paired curls settle with modest relative plume motion. DESC2→3 local upper-plume opening changes a fixed-ROI angle but does not create a fresh whip in production captures.",
+  "costumeFindings": "Six bounded ASC3/4/5/6/7/9 material corrections remove hot/mottled lighting while preserving pearl face/eyes/fins, aubergine suit, ivory bracers/boots, four paws, thin neckline/piping and both tails. Actual HD frame/phase inspection found no significant costume/material flash.",
+  "limitations": "No independent interactive browser claim. Native-canvas production-renderer filmstrips sample fixed60Hz scenarios, not every input/display rate. ArtBank images are loaded directly; network/lazy-loader tested separately. Softer SD remains visible while HD group is pending. Anatomical anchors are approximate.",
   "outputHashes": {
-    "nacre-asc-1.png": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481",
-    "nacre-asc-2.png": "ca2c9c0bec84fa7e4c0ad616ee9c8d7dfac725defe78325a10a682aa0d12510c",
-    "nacre-asc-3.png": "cab090eadfc5eae3304decb3b2d27970e27da740b506e2f9056007ec25fd5fde",
-    "nacre-asc-4.png": "0ccc19eba8ae2b656ab3fdd0842e7eb6bbaff52a3b28012206a342c7bedaaabf",
-    "nacre-asc-5.png": "bdd01345809b9f89f6295612f82f2d5f4886242ec776cc815d0c4bc712800bfd",
-    "nacre-asc-6.png": "4acc3a7d711a4ee06bf8b7ae7f4327bde4f1297af6038729f4beb868bca8e625",
-    "nacre-asc-7.png": "775facc7471fc8d315f4a9cbaf8d2b6e02a72c6d890c7d62e347860c956035cb",
-    "nacre-asc-8.png": "2e201392a4cf82aad4f54bb3c6ac592a7727e30d0ff916bdbc4f07790db4bb8b",
-    "nacre-asc-9.png": "e65ab074a139f9721ba3a087bba5034de7e3c62d8cf7db6224d77e410644ce8d",
-    "nacre-desc-1.png": "57fc85a50eebdfaea743a9fa7633af8b9e434472834afce35f908144693f3826",
-    "nacre-desc-2.png": "53c93b89d2ca656cd71b7181e5cfb94b06b8c946a8785469e6c8218564144ec3",
-    "nacre-desc-3.png": "878f3a432cfb02f773101540dc4d1a2fd2b0047d3be8ce19d25c122cacd0192e",
-    "nacre-desc-4.png": "35024f44bd2d11580d4ae3f0be4e305e8bd68d9f6eb030399eec38a56056c8b8",
-    "nacre-desc-5.png": "3601c14223ed9e1ab19a0342498de977e6336e61b1b318bf0ea29fbfe172008f",
-    "nacre-desc-6.png": "7f4350f1495b35e48fdcc8277878729af2231515934b0363e32d03dfa5c3c716",
-    "nacre-desc-7.png": "4e5e317dd7d007abc56ae469d8babcdcd78d07fbfe7dfdb918cdb54eca263246",
-    "nacre-desc-8.png": "90a98df15a42dde5550a77d0cbb939ddac4881eb56686bc386fca8004b4c7a65",
-    "nacre-desc-9.png": "bd3c78691a7c895a96edf18063d92c2f1c4e997acd52444cc3c0e085d6be6b1f"
+    "nacre-asc-1.png": "cf39e38abf4528161639ec39891a71b214c98375964d07acf045a28c2c96042b",
+    "nacre-asc-2.png": "aee4d27af5144bf1fb2dcb5250e4f1bf8b4f133c5308feaf37cbe2f01b5e73e7",
+    "nacre-asc-3.png": "341bd3752bf99b051c2de5f54d8ad539be8aec8771f022bb85b81ccd8dbfaaa3",
+    "nacre-asc-4.png": "26a7da75415034b34df52fbb4200170a769b6a8bf0d559558621cd190ca6af53",
+    "nacre-asc-5.png": "94ad5a837b8772326499591b5ed77d30cb9b37526d6be887ae13dc44a4adcc16",
+    "nacre-asc-6.png": "60c5ca88c69b5f837906c7bc9934a49a52f39c39dc057b71a25c4086b419dd9f",
+    "nacre-asc-7.png": "48c1c702c7c2f8ec30818c4bfacee5641dc51d5259f29b3c365e657cc30502f0",
+    "nacre-asc-8.png": "fbe3bb66b516d3affed3b6ba3e24b235a8981c4d58811ccd6ca772d07a41e83e",
+    "nacre-asc-9.png": "6081df9f2aff0ed1da4a48ed780918ee1bc35b99e167460a335ebb0a0ea8b88b",
+    "nacre-desc-1.png": "13af366b5a81e70fb0b44a70f1d1d9d0d83cbe22ea6c3be0602272478ba12663",
+    "nacre-desc-2.png": "f7d194b06584ab3aa278a1efe0fb7d1576748e0615f3ff80ece6d45620e8d85d",
+    "nacre-desc-3.png": "f7dbe3bbef3c71a7c09f2715ab29fdfbd46f5159006781d8695173a0a96cb1bc",
+    "nacre-desc-4.png": "00e56d37bd72744e97d0920aa88f588bbbb00aaf1a74b3e0eeb6264d2e2ba352",
+    "nacre-desc-5.png": "f6eb3bdb73208fbc75d6bfb7f01e5598be0d861e31d09c19785b6ba8985cf3bb",
+    "nacre-desc-6.png": "4c785b83d35f1bdd144104293a5c75949f6ff3d6fa21cf9e6236b93cad9b4dac",
+    "nacre-desc-7.png": "fffa04782f02e81a7e4563fd6b0f0bae4316f75907617426d334cd33ec7463d0",
+    "nacre-desc-8.png": "09df8245b046649412134b9e2a5bb3993b1190a00a63ad46a0f5467815cd618c",
+    "nacre-desc-9.png": "537d2b0811fdbec17c061c200c8d76285068c3401172608c6a1772731bb47d52"
   },
   "sourceHashes": {
     "asc-1.png": "64ac4b1daacf118024fa3584248102d2f0d5c530ba305eb51a3a238e324aa2db",
     "asc-2.png": "f07718b7bfc7dbcb399bd9819fccb00ec57c0ea230502ac2d1e7097845654652",
-    "asc-3.png": "185285b67afd21e628f57c5bb42eb4ba6316a47e2edd7ac0e7e4f712be2d8d9d",
-    "asc-4.png": "fb6a5a986c69e3e94a6c923d13a094627922ac0c49071e59f05aa35033a81cce",
-    "asc-5.png": "b92b188614bc5dc79f17dc30e5ebc8ffd0bbde403fa786320636385552fd0219",
-    "asc-6.png": "b7830761252cc2b3881a06df2b398f0a50083fbe9da2c5a4c2bfd492c41fdd47",
-    "asc-7.png": "f0b4a58dcfa7dd887055768698a4394333906dc1a5261f6c562881f70f223c3a",
+    "asc-3.png": "785a0177beb4f224ca907e9813ca24bed4e41683f17d1ac8127fced63ec40294",
+    "asc-4.png": "5709b4086cc71399210e9833cecbc3908969ad7b36a05024bde91808762da7f6",
+    "asc-5.png": "26717235d8d9b81a745f3fa518d307ce9e0854de7acad886871e1b97b8f01693",
+    "asc-6.png": "68312b138214264cda8d3f185c39eae33858bc5df470365a3c91c5a0beae91aa",
+    "asc-7.png": "0d3b90dbd6f2d965b49298189e6ea6baed8c5e407c67573ed6cd40deb72d3070",
     "asc-8.png": "c82eddd5c0b0bd962071675cc033694202c25f509114eed8abce8cc0a8bd49b1",
-    "asc-9.png": "f64f769e8a4315e315451c8b890e1bf3383f00191979ce38d3ff0655003bbd69",
+    "asc-9.png": "ab59d068c468cb416426b48ab0f0519345bdd659b29bcdacfb351102234abfe5",
     "desc-1.png": "d1ba483bdc8b5a52cf06d065cbad8a0450d012749ac3c101b9a72194b6e6a6e2",
     "desc-2.png": "4e69d373e7bd856127c2ba59353c01168aed7d5bea44a3e8ab9b995430dd3e51",
     "desc-3.png": "5a50218e0a9e25cc3ce2f7832f347b8b6b41bf5226988df3aca41398061649b3",
@@ -72,31 +72,262 @@
   },
   "runtimeAtCapture": [
     {
-      "path": "docs/js/draw.js",
-      "sha256": "506fc30f97fbb37696c4a0bf0f37fae2543168cdcdd56c6b95e8b3ea9c389390"
+      "path": "docs/js/arcflash-motion.js",
+      "sha256": "35789544cbecabe60835073a879470596447dedb8634e4c1fb020956d5372fa0"
     },
     {
-      "path": "docs/js/sim.js",
-      "sha256": "afdac1929d33715a88b8c48386390d483aa42aeda04d127d6d38b8699f360430"
+      "path": "docs/js/arcflash-parts.js",
+      "sha256": "6917039b81873470b16529a923361899c35c10a7490d6b606bcd304955d2b11e"
+    },
+    {
+      "path": "docs/js/arcflash.js",
+      "sha256": "9ff2318d8b4f6d7c428ba8bd2c5c05d3ca15631d9dd220e4725589b2d8f80a26"
     },
     {
       "path": "docs/js/art.js",
-      "sha256": "6a5bee6ecfd97a99e7533ba917e670245274268eefafb52c7f88d98ec66f8061"
+      "sha256": "a21a7c8d438e15152af39af84460f086f94f6c0de5ed248b14b75b89337cf1b4"
+    },
+    {
+      "path": "docs/js/audio.js",
+      "sha256": "983405f072c8223ea0e5709dd0d8b15c7d764091f60a0c527236f3175c6354d0"
+    },
+    {
+      "path": "docs/js/beta-campaign-manifest.js",
+      "sha256": "c1e841a03f9782c4914eeff8edcbe8c3eb2e95269c9da41fa25e7c9e29e34854"
+    },
+    {
+      "path": "docs/js/campaign-manifest.js",
+      "sha256": "302a32aaa6897dd5f355467aa0ea4776714f31f1048823e46455c7a09bc71388"
+    },
+    {
+      "path": "docs/js/campaign-progress.js",
+      "sha256": "dddb3b72333a94724de6568d8819388984396657abdd96dbeb4c8e692bcfe083"
+    },
+    {
+      "path": "docs/js/campaign.js",
+      "sha256": "c5ba7b31a80ad28359444c022b9821a5a6cdc37abe67baeb429018cb121dc19c"
     },
     {
       "path": "docs/js/catalog.js",
-      "sha256": "25972a6ec12bd796d1febda5d518339d11c504a18b8e4fc6616b0e76400b453a"
+      "sha256": "6ae5af11377ae72eae9197a49f6140b173c2d69ddfb2143b1cda7af5e16f6d21"
+    },
+    {
+      "path": "docs/js/control-constants.js",
+      "sha256": "598684b99a95a4fb290e8fce9ce9a097e8bb7c48dd583c37acd8c1d83d269f53"
+    },
+    {
+      "path": "docs/js/cosmetics.js",
+      "sha256": "fe8ea07c8162b9d72fba13132f8f643b26af2e320df73a4e30038f63f39d88f8"
+    },
+    {
+      "path": "docs/js/cyber-trio-registration.js",
+      "sha256": "19bab7de1ec7dd200d169cd63f6a62b2dffaaa661636d4a9ce926ea85f525fef"
+    },
+    {
+      "path": "docs/js/draw.js",
+      "sha256": "cb6dcc098c055ffa97ebec328d1b9a12562118ea44707b79ade187ab909308a9"
+    },
+    {
+      "path": "docs/js/engine.js",
+      "sha256": "e4e077335fef42f65e243308bf155cca7482c07354bd9cd9fb899d1b2d27347c"
+    },
+    {
+      "path": "docs/js/helmet-openings.js",
+      "sha256": "6f428cd8f57fb8a57251985d0640f865f3738c33fd3cd98f08723904b3070b21"
+    },
+    {
+      "path": "docs/js/high-orbit-config.js",
+      "sha256": "fe655c496e5dd63fa61f5ea8e9c262cedf72ab0e2affafa1c194bd1e83de3167"
+    },
+    {
+      "path": "docs/js/high-orbit-effects.js",
+      "sha256": "3418888be8f6291c662e85ecf14c098d0491b186c16b7c24d9aebca33713d95a"
+    },
+    {
+      "path": "docs/js/high-orbit-motion.js",
+      "sha256": "4b70018253af058eb6d79a0d003f4acff977cdf13d9f6cdb8de3c7c3bee1fc58"
+    },
+    {
+      "path": "docs/js/high-orbit-parts.js",
+      "sha256": "3771e12fe3a7be208cdab0b484823ced0af82d1bbd13eaabea5c0e578e789bbf"
+    },
+    {
+      "path": "docs/js/high-orbit.js",
+      "sha256": "af1916b61729a6f93de4dc848a0673e7a2b2f9c5777cdd87e8f75e97811cbfb8"
+    },
+    {
+      "path": "docs/js/mission-rng.js",
+      "sha256": "5b6577f638edca5fa64b1e209662ae2b6554422514f110cab4491c8e5de6773e"
+    },
+    {
+      "path": "docs/js/planet-contrast.js",
+      "sha256": "b6a0e367218e211110d6461c2d7a986ffcf38b3821b67ea5e698739cf9a32735"
+    },
+    {
+      "path": "docs/js/planet-family.js",
+      "sha256": "d4b8900b55251efca121b1c5b1d95685debb026ecc957a1a119a1100971e3ce5"
+    },
+    {
+      "path": "docs/js/platform.js",
+      "sha256": "9ff43191025b4c0956071475e7c180c11cefa3d9dbeaa6696438fe4d4a92b127"
     },
     {
       "path": "docs/js/premium-bank-wake.js",
-      "sha256": "a16b54f52baeee80b6064282b9463da4764ba044b6e6b729192a04680121ae10"
+      "sha256": "957e4dc34c5f6e1eb7706a61368d96aec2edea108432e2f7ae4a5a0e2f8e37f4"
+    },
+    {
+      "path": "docs/js/premium-flight-frames.js",
+      "sha256": "3721e54fcd53f34035dcbb8071aa4f01e0fb1cf624f84c57ac25f71f8822066a"
+    },
+    {
+      "path": "docs/js/premium-flight.js",
+      "sha256": "3dce8c4f0d058756231c5f8ddf190cf7b37efacab6bdcc2d888a0ab3f92f65be"
+    },
+    {
+      "path": "docs/js/race-gesture.js",
+      "sha256": "3c60c8fadbc0d5cc59dbcadd63ceea558b111dafbaab3601aaec364ce08dff16"
+    },
+    {
+      "path": "docs/js/race-viewport.js",
+      "sha256": "de2c3b82863fe15cbc67b03b30ac430f5a88fec1cdd040ad2fa0793b9c8cbfdc"
+    },
+    {
+      "path": "docs/js/race.js",
+      "sha256": "b22ca66de4c7cc1cdb3b1e3a30bd703c3615692ee2825639e68cab710fed30e6"
+    },
+    {
+      "path": "docs/js/retro.js",
+      "sha256": "702a19e5a070a3eeeafc1cebd15c2dfa0a8cf3935d75b911bc2ee4330c460e0d"
+    },
+    {
+      "path": "docs/js/rig-limb-fit.js",
+      "sha256": "9329be1978096c3d58846c86bc9af2a48169b746f44dedd583d055267f425bab"
+    },
+    {
+      "path": "docs/js/save.js",
+      "sha256": "d18f299aa0a6a85481e19fdbf0d674aa9a26e02b9adc3fedeac7bfae8a611bb2"
+    },
+    {
+      "path": "docs/js/shop-cycle.js",
+      "sha256": "f24b54ac82ebcf130ef6c2e03d4174b01d74b5c159123b2f19f153194cff4f7c"
+    },
+    {
+      "path": "docs/js/sim.js",
+      "sha256": "dd673969a32009d5af1253cb68509b2dee7daf03bd20154d228e82cf88eba708"
+    },
+    {
+      "path": "docs/js/sky-gen.js",
+      "sha256": "eab744a5aa3d56a0b663bb59f7ff1ab1865eccd098d9c4776cb5dcd6aa019450"
+    },
+    {
+      "path": "docs/js/spill-appearance.js",
+      "sha256": "5f76b47016a75691b4ec0ad5b814ae5470e02b5e23afdcc2098cfbcf97e573aa"
+    },
+    {
+      "path": "docs/js/spill-content.js",
+      "sha256": "5c6fe30c14ddc588002e0790da4a90bc46ae70426b348de25261b58a7681a3f7"
+    },
+    {
+      "path": "docs/js/spill-control-art.js",
+      "sha256": "3dbb64cc824655ffdc92bccbb8f807cb3f0d7fdf987f46145f61125617b3a379"
+    },
+    {
+      "path": "docs/js/spill-depot-bear.js",
+      "sha256": "7b7cadce4affb844ff172eb2bf24e4072fbea431ab3a77190e8769571abdc7ea"
+    },
+    {
+      "path": "docs/js/spill-depot-gag.js",
+      "sha256": "7b2eb346e7eeb9065c9a6b55b2f530fc7cecd7732afb632a40bc141f70ac0196"
+    },
+    {
+      "path": "docs/js/spill-presentation.js",
+      "sha256": "433177e58e6a6bbea0af7f26a768e1131f99c03b1a42049739225973d1ec625f"
+    },
+    {
+      "path": "docs/js/spill-workshop.js",
+      "sha256": "b4ef7935d0effc23166998191d794bfdfc922fd5a65128d7e9e9ec12c893828b"
+    },
+    {
+      "path": "docs/js/spill.js",
+      "sha256": "925e3ff601e30af991a903f2705267afdba633101b8b0d61dff4e8286e86ef8f"
+    },
+    {
+      "path": "docs/js/sprite-detail.js",
+      "sha256": "bbac2eb473b137d7598c32a373bbaf11387d7b0f40fb469c7ee589389275026e"
+    },
+    {
+      "path": "docs/js/standalone.js",
+      "sha256": "ace6039c46bbdc0103f1187832d791f418f85009f9a2f479818fa22d83d5a269"
+    },
+    {
+      "path": "docs/js/star-map-rewards.js",
+      "sha256": "c1630b85adc20136c50ab19c8ed3910861d01d89689438c85979f376e9b4c3f9"
+    },
+    {
+      "path": "docs/js/star-map-view.js",
+      "sha256": "3fd189960fa1822bf3dd2a2fccd83e503818d424c70eaeb361f307121aa5df2b"
+    },
+    {
+      "path": "docs/js/star-trails.js",
+      "sha256": "2369a399ec196398e2bc9080720fd3083c3abd3532cec98e8822a09fdc15d174"
+    },
+    {
+      "path": "docs/js/vanguard-maneuver.js",
+      "sha256": "e5a8eeb49f57c256aea3c443ffcde1f1e855630c2fd2b3c294a9c9e2ca96f1d8"
+    },
+    {
+      "path": "docs/js/vanguard-parts.js",
+      "sha256": "34716dfa694ac04ef25b5e347595c4122327ae1a153c7e90e95944b4bc470f5a"
+    },
+    {
+      "path": "docs/js/vanguard-rig.js",
+      "sha256": "38c3fe750070c1f6003ecf03d7d56717e5481b601ef93959dc16e030d980339d"
+    },
+    {
+      "path": "docs/js/vanguard.js",
+      "sha256": "2a06af8693a06de6f7b3e67ed22abad8c92e215460f3615611a87f9f55bb8bb0"
+    },
+    {
+      "path": "docs/js/zone-planet-colors.js",
+      "sha256": "f62fdef0b7c2c6227500c72c736a4b483ec820a17c3b2b11d95831508a3d1f3b"
+    },
+    {
+      "path": "docs/js/zone-visuals.js",
+      "sha256": "2c11585b209d04e2f3a990bad7227811e603028592e08259abad0491b9badcd6"
     }
   ],
-  "retainedEvidence": "illustrated-src/design/premium-pilots/cyber-review/nacre-capture.json",
-  "captureReceiptSha256": "757af50154ec2cd5c59f77a6c01551f8584cdb292b6ab45fbe765f11d2d686ae",
+  "retainedEvidence": "illustrated-src/design/premium-pilots/quality-review/final-capture.json",
+  "captureReceiptSha256": "030944e9a03b722fa3af52661847ed641e77f8bf260821d11f68b91323ffe279",
   "fallbackHashes": {
-    "nacre.png": "36697a96bfd8f29279d127d87d8db08ecd592c66d35d50c6004687ed4fdd4481",
-    "nacre-body.png": "69f8fdf9af1efcb35af92abc50cfff233d4e7a8a6837b69933d4d2c6b22f3114",
-    "nacre-tail.png": "3cfb2426c5200c9f819d456960d3db74c4c1fa0608cbcf3dd43d5d35037aa81b"
-  }
+    "nacre.png": "cf39e38abf4528161639ec39891a71b214c98375964d07acf045a28c2c96042b",
+    "nacre-body.png": "dc151f97487db336867e67231c095c3eaf815339428bc427e3afc34567999c9e",
+    "nacre-tail.png": "d90fb096aecc8b6182756153fea8cf17124065ce8b0199cd9495338fbc8655ff"
+  },
+  "hdOutputHashes": {
+    "nacre-asc-1.png": "d6cb22ecbe239d5adce4bc2455d17a0d6bafba15acceaf7dbe0c72c794441117",
+    "nacre-asc-2.png": "f02ca9cc1d4bf3087c1d47959aa5137c66a246eeb419a03b6ece23695f2c78f9",
+    "nacre-asc-3.png": "007fe8b06b0a6529a8b56c2a0468f69c5d402e65fc569c04d6c1bc230ff84f16",
+    "nacre-asc-4.png": "e9a93c70a055e8a20ab22869c872d543941861c3bf7ccfa2583402d49c0f17c4",
+    "nacre-asc-5.png": "55d457b186f7dc39c4f757a7ff1244e1e0677febd4333206bb15180bfeb50578",
+    "nacre-asc-6.png": "e4c3a04c2e112d57f656164176575aadfa51b66d98961f9caf3d0de2f3997ae8",
+    "nacre-asc-7.png": "1b4e5aa28bec457d679cd70136105f06ed4c40f7a33ad329c0a92370c31ffbde",
+    "nacre-asc-8.png": "f2c9fd977b52cb4027f5db5097fa1615fc784e5f06e8b0653be924aebac4abaf",
+    "nacre-asc-9.png": "e7f3db033c7a1ede560fdecc103aab385cfeb6bbd85d862488a63196159b6b5f",
+    "nacre-desc-1.png": "f87bad3d114bfcfc631e95eedcf2a502322277e1cf6918bc009ceedeb164eb30",
+    "nacre-desc-2.png": "ea514abf46a8a1bc1eca0f7e2a5ab9a067c0349de98e4101e124e785a31c2418",
+    "nacre-desc-3.png": "7846e14c605cedf3d1fcd6651902bdbb5b0928209d4355df007c7619dee6f89e",
+    "nacre-desc-4.png": "d34e4790e0145aa221bdc3ebe1cf0d2d6ae13b4208e7f65d1b466a685aab19af",
+    "nacre-desc-5.png": "71c43070af6dcb9c67e8070419fa8a98433ad064f333b141f495a4b4c874b2bb",
+    "nacre-desc-6.png": "6452a3c2d8debf22474c9501c4b6536c63fdb84b13d63f32193b34fa18ba86d9",
+    "nacre-desc-7.png": "d72b237c5b4834d6f50bfb1bbe34ff2e0c81d6ae4367318f18ae3f7f3375a91e",
+    "nacre-desc-8.png": "5c128ff8e903624d325acc1d063778ac039d7b30a3bb94a7120ad2863d73ec6a",
+    "nacre-desc-9.png": "ad5a29cdbbf7d9d3783f2e32d6d75e3f6e98dbb71483374c071fc57b7c19f94b"
+  },
+  "qualityReview": "illustrated-src/design/premium-pilots/QUALITY-REVIEW.md",
+  "hdFallbackHashes": {
+    "nacre.png": "d6cb22ecbe239d5adce4bc2455d17a0d6bafba15acceaf7dbe0c72c794441117",
+    "nacre-body.png": "e9b4efc6211a800852fc33a14f7cbc84ae29c5bcf9473bda62e4856cd1dca10a",
+    "nacre-tail.png": "6c2a9932777df215e752edea86f29ccbcccffc55007560223776339e4e8af86d"
+  },
+  "fallbackFindings": "Corrected mask moves the thin lower-tail pink contour with the plumes; final actual52/158DPR2 fallback across legal±.75rad preserves leg trim and dorsal armor, with no stationary tail fragment."
 }

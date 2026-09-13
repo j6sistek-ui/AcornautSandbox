@@ -21,6 +21,7 @@ import { goalHud } from "./campaign";
 import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics";
 import { proceduralSky, hueShifted } from "./sky-gen";
 import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD, type ArtBank, type Sprite } from "./art";
+import { spriteImageFor } from "./sprite-detail";
 import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro";
 import { suitPitchFor, tapShapeFor, tapAccentStrengthFor, type SaveData } from "./save";
 import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS, type Particle, type World } from "./sim";
@@ -4068,7 +4069,8 @@ function drawRigLayer(
       ctx.drawImage(h, ox - pad, oy - pad, h.width * scale, h.height * scale);
     }
   }
-  ctx.drawImage(layer, ox, oy, layer.width * scale, layer.height * scale);
+  ctx.drawImage(spriteImageFor(ctx, layer, layer.width * scale, layer.height * scale),
+    ox, oy, layer.width * scale, layer.height * scale);
   ctx.restore();
 }
 
