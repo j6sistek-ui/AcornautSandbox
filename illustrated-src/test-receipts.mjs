@@ -19,6 +19,8 @@ const ok = (c, m) => { if (!c) fail.push(m); };
 const bought = [];
 let pendingCalls = 0;
 globalThis.window = {
+  // the real-money store is off by default (13 Sep 2026); this test is the store path
+  __ACORNAUT_IAP__: true,
   location: { href: "http://local/" }, devicePixelRatio: 1,
   addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }),
   __acornautPlatform: {

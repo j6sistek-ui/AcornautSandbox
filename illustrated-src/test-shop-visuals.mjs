@@ -91,6 +91,7 @@ win.HTMLElement.prototype.scrollIntoView=function(){};
 win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasElement.prototype.releasePointerCapture=function(){};
 
 const prices=new Map(),storeCalls=[];let resolvePurchase,restoreCalls=0;
+if(mode==='native')win.__ACORNAUT_IAP__=true;   // the store scenarios are the store-back-on configuration (13 Sep 2026)
 if(mode==='native')win.__acornautPlatform={kind:'ios',devDoors:false,store:{
   priceOf:id=>prices.get(id)??null,
   buy:id=>{storeCalls.push(id);return new Promise(resolve=>{resolvePurchase=resolve;});},
@@ -219,12 +220,12 @@ try{
     day=dateWith(cycle=>cycle.suits.includes(id));reset();await tick();assertCompactStructure();
     const tile=[...app.querySelectorAll('.ac-shoptile')].find(node=>node.querySelector('.ac-tilename')?.textContent===C.SUITS.find(s=>s.id===id).name);
     assertItemArtwork(tile?.querySelector('canvas'),{kind:'suit',id});assert(!tile.querySelector('img'),'individual pilot cards use only actual in-game artwork');
-    assert(tile.querySelector('.ac-tileprice')?.textContent.includes('1,000'));
+    assert(tile.querySelector('.ac-tileprice')?.textContent.includes('100'));
   }
   const trio=C.BUNDLES.find(b=>b.id==='bundle-premium-trio');assert.equal(trio.name,'Premium Pilot Trio','catalog identity is preserved');
   assert.equal(C.BUNDLES.length,8,'the catalog retains eight multi-item bundles');
   assert(C.BUNDLES.every(bundle=>bundle.items.length>=3),'every bundle contains at least three actual product items');
-  assert.equal(C.bundleQuote(trio,()=>false).discountPercent,16.7,'the 500 discount on 3000 retail is displayed as 16.7 percent');
+  assert.equal(C.bundleQuote(trio,()=>false).discountPercent,16.7,'the 50 discount on 300 retail is displayed as 16.7 percent');
   assert.equal(card(trio.id)?.querySelector('.ac-modname')?.textContent,'Premium Trio');
   const bannerHashes=new Set();
   for(const bundle of C.BUNDLES){
@@ -387,7 +388,7 @@ try{
     for(const count of [1,2]){
       reset();e.save.purchased.push(...['porcelain','nacre'].slice(0,count));e.open('shop');
       const quote=assertQuote(card(trio.id),trio,id=>S.ownsPremium(e.save,id));
-      assert.equal(quote.credit,count*1000,'trio credits the full individual purchase price');assert.equal(quote.due,count===1?1500:500);
+      assert.equal(quote.credit,count*100,'trio credits the full individual purchase price');assert.equal(quote.due,count===1?150:50);
       card(trio.id).click();assertQuote(sheet(),trio,id=>S.ownsPremium(e.save,id));
       assert.equal([...included()].filter(tile=>tile.dataset.shopItemKind==='suit'&&tile.querySelector('.ac-tileprice.owned')).length,count,'review marks owned pilots accurately');close();
     }
@@ -397,7 +398,7 @@ try{
     trace('partial checkout');const partial=C.BUNDLES.find(b=>b.id==='bundle-aurora');
     reset();e.save.purchased.push(...C.idGrants('cryostar'));day=dateWith(cycle=>cycle.feature?.id===partial.id,e.save);e.open('shop');
     const due=C.featurePrice(partial,id=>S.ownsPremium(e.save,id));assert(due<C.featurePrice(partial,()=>false));
-    const partialQuote=assertQuote(card(partial.id),partial,id=>S.ownsPremium(e.save,id));assert.equal(partialQuote.credit,360);assert.equal(due,360);
+    const partialQuote=assertQuote(card(partial.id),partial,id=>S.ownsPremium(e.save,id));assert.equal(partialQuote.credit,40);assert.equal(due,40);
     e.save.starDust=due;card(partial.id).click();
     for(const item of [{kind:'suit',id:'cryostar'},{kind:'helm',id:'cryostar'},{kind:'trail',id:'celestialtide'}])
       assert.equal(sheet().querySelector(`button[data-shop-item-id="${item.id}"][data-shop-item-kind="${item.kind}"] .ac-tileprice`)?.textContent,'OWNED',itemKey(item)+' is covered by one real Cryostar purchase');
@@ -496,8 +497,14 @@ try{
       assert(![...app.querySelectorAll('img')].some(img=>img.src.includes('/art/shop/')),screen+' uses no Shop marketing image');
     }
     reset();const dustBefore=e.save.starDust,pack=C.DUST_PACKS[0];
-    const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(row);assert.equal(row.querySelector('.ac-cashprice').textContent,pack.price);row.click();
-    assert.equal(e.save.starDust,dustBefore+(mode==='beta'?pack.dust+pack.bonus:0),'web and beta retain their existing dust purchase behavior');
+    // THE STORE IS OFF (owner, 13 Sep 2026: "leave the packs in, they just cost
+    // acorns ... 1000 acorn = 500 star dust"): the pack is priced in acorns on
+    // web and beta alike, and buys with them
+    const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(row);
+    assert.equal(row.querySelector('.ac-acornprice')?.textContent.replace(/\D/g,''),String(pack.acorns),'the pack shows its acorn price');assert(!row.querySelector('.ac-cashprice'),'no cash sticker while the store is off');
+    e.save.acorns=pack.acorns-1;row.click();assert.equal(e.save.starDust,dustBefore,'short of acorns buys nothing');
+    e.save.acorns=pack.acorns;e.open('shop');await tick();app.querySelector(`[data-dust-pack-id="${pack.id}"]`).click();
+    assert.equal(e.save.starDust,dustBefore+pack.dust+pack.bonus,'acorns buy the pack on web and beta alike');assert.equal(e.save.acorns,0,'and the acorns are spent');
     console.log(`PASS Shop visuals ${mode}: one five-item mixed row with independent preview/cart, zero/nonzero scroll and focus preservation, zero-PAL rollover; ${C.BUNDLES.length} distinct kit banners, actual product art, ${rotation.length+1} offers, ${reviews} animated item/wake reviews, accurate summaries/discount/ownership credit, paid and zero-price two-step checkout, keyboard/date rollover and Shop-only scope.`);
   }else{
     // Exercise the actual native bridge, not hardcoded cash labels or a

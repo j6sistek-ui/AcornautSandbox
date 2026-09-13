@@ -44,8 +44,8 @@ for (const b of BUNDLES) {
   const suitOnly = bundlePrice(aurora, owner(idGrants("cryostar")));
   const trailOnly = bundlePrice(aurora, owner("celestialtide"));
   const offer = bundlePrice(aurora, none);
-  ok(offer === 720 && suitOnly === 360,
-    `the 720 Aurora offer credits the full 360 Cryostar purchase, got ${suitOnly}`);
+  ok(offer === 80 && suitOnly === 40,
+    `the 80 Aurora offer credits the full 40 Cryostar purchase, got ${suitOnly}`);
   ok(trailOnly === offer, "a free trail must not be credited again while its granting suit is unowned");
   ok(total === 16, `Aurora should weigh 16 (3 suits, 3 helms, 3 trails, 1 pal), got ${total}`);
 }
@@ -60,9 +60,9 @@ for (const b of BUNDLES) {
   ok(bundlePrice(circuit, twoSuitsOwned) === 0 && !bundleIds(circuit).every(twoSuitsOwned),
     "full retail credit may cover a remaining item without making it already owned");
   const companions = byId("bundle-cosmic-companions");
-  ok(bundlePrice(companions, none) === 200 && bundlePrice(companions, owner("magnetar")) === 110 &&
-    bundlePrice(companions, owner("magnetar", "babyalien")) === 20,
-    "new companion collections credit each 90-Stardust item at its complete retail value");
+  ok(bundlePrice(companions, none) === 20 && bundlePrice(companions, owner("magnetar")) === 10 &&
+    bundlePrice(companions, owner("magnetar", "babyalien")) === 0,
+    "new companion collections credit each 10-Stardust item at its complete retail value");
 }
 
 // ---- the shelf is the date's, not the pilot's --------------------------
@@ -116,19 +116,19 @@ for (const b of BUNDLES) {
   // the single-item rate, pinned at real numbers rather than restated as
   // its own formula: a suit on its own, a suit that carries its helmet on
   // the same id, and a trail
-  ok(idDust("volt") === 270, `a suit alone should be 270 dust, got ${idDust("volt")}`);
-  ok(idDust("cryostar") === 360, `a suit that brings its helmet should be 360, got ${idDust("cryostar")}`);
-  ok(idDust("celestialtide") === 90, `a trail should be 90, got ${idDust("celestialtide")}`);
+  ok(idDust("volt") === 30, `a suit alone should be 30 dust, got ${idDust("volt")}`);
+  ok(idDust("cryostar") === 40, `a suit that brings its helmet should be 40, got ${idDust("cryostar")}`);
+  ok(idDust("celestialtide") === 10, `a trail should be 10, got ${idDust("celestialtide")}`);
   // and a sticker price beats the rate wherever the owner set one
-  ok(DUST_STICKER.arcflash === 1850 && idDust("arcflash") === 1850,
-    `Arcflash is priced by hand at 1850, got ${idDust("arcflash")}`);
+  ok(DUST_STICKER.arcflash === 185 && idDust("arcflash") === 185,
+    `Arcflash is priced by hand at 185, got ${idDust("arcflash")}`);
 
   // Fixed-price pilots share the daily premium slot. Their individual
   // entitlement and sticker remain independent of the featured bundle.
   ok(JSON.stringify(FIXED_SHOP_SUIT_IDS) === JSON.stringify(["arcflash", "porcelain", "nacre", "origamist"]),
     "the fixed-price pilots remain explicit individual offers");
   for (const id of FIXED_SHOP_SUIT_IDS) {
-    const sticker = id === "arcflash" ? 1850 : 1000;
+    const sticker = id === "arcflash" ? 185 : 100;
     ok(C.SUITS.some((suit) => suit.id === id && !suit.beta) && IAP_ITEMS.includes(id), `${id} must be a production premium suit`);
     ok(DUST_STICKER[id] === sticker && idDust(id) === sticker, `${id} must carry its fixed single-item sticker`);
     ok(!byId(`bundle-${id}`), `${id} is a single item, never a pretend bundle`);
@@ -158,9 +158,9 @@ for (const b of BUNDLES) {
   ok(featurePrice(aurora, owner("cryostar")) < featurePrice(aurora, none),
     "a part-owned pack must feature for less than the same pack untouched");
   const trio = byId("bundle-premium-trio");
-  ok(featurePrice(trio, none) === 2500 && featurePrice(trio, owner("porcelain")) === 1500 &&
-    featurePrice(trio, owner("porcelain", "nacre")) === 500,
-    "trio ownership credits each complete 1000-Stardust pilot at full retail");
+  ok(featurePrice(trio, none) === 250 && featurePrice(trio, owner("porcelain")) === 150 &&
+    featurePrice(trio, owner("porcelain", "nacre")) === 50,
+    "trio ownership credits each complete 100-Stardust pilot at full retail");
 }
 
 // ---- the first shelf a new pilot ever sees ------------------------------

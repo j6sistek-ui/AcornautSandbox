@@ -30,5 +30,6 @@
     "lost": "",
     "arcade": "",
     "tunnel": ""
-  }
+  },
+  "iap": false
 }

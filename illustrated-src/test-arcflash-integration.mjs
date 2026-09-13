@@ -59,7 +59,7 @@ if(mode==='production'){
  // and its wake is locked with it.
  assert(Cat.FIXED_SHOP_SUIT_IDS.includes('arcflash'),'a fixed-price individual pilot, independent of bundle contents');
  const price=Cat.idDust('arcflash');
- assert.equal(price,1850,'the owner set this sticker by hand, not by weight');
+ assert.equal(price,185,'the owner set this sticker by hand, not by weight');
  assert(Cat.IAP_ITEMS.includes('arcflash'),'production sells it');
  assert(!Cat.IAP_ITEMS.includes('arcflashwake'),'the wake is never priced separately');
  assert(!S.suitRevealed(e.save,'arcflash'),'unbought on a fresh production save');

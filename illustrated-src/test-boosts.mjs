@@ -27,17 +27,17 @@ const fail = [];
 const ok = (c, m) => { if (!c) fail.push(m); };
 
 // ---- the catalog ----------------------------------------------------------
-ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.dust === 500,
-  "two boosts: Level Skip 100, Star Unlock 500");
+ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 10 && BOOSTS.starunlock.dust === 50,
+  "two boosts: Level Skip 10, Star Unlock 50");
 
 // ---- buying ---------------------------------------------------------------
 {
   const s = defaultSave();
   ok(!boostReady(s, "levelskip") && !boostReady(s, "starunlock"), "a fresh save holds no boosts");
   ok(buyBoost(s, "levelskip") === "poor" && s.boosts.levelskip === 0, "no dust, no boost");
-  s.starDust = 650;
-  ok(buyBoost(s, "levelskip") === "ok" && s.starDust === 550 && s.boosts.levelskip === 1, "Level Skip charges 100 into the account");
-  ok(buyBoost(s, "starunlock") === "ok" && s.starDust === 50 && s.boosts.starunlock === 1, "Star Unlock charges 500 into the account");
+  s.starDust = 65;
+  ok(buyBoost(s, "levelskip") === "ok" && s.starDust === 55 && s.boosts.levelskip === 1, "Level Skip charges 10 into the account");
+  ok(buyBoost(s, "starunlock") === "ok" && s.starDust === 5 && s.boosts.starunlock === 1, "Star Unlock charges 50 into the account");
   ok(buyBoost(s, "starunlock") === "poor" && s.boosts.starunlock === 1, "a short purse buys nothing");
 }
 
@@ -49,7 +49,7 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.
   ok(skipEligible(s, second) === "locked", "mission 2 is behind mission 1");
   ok(skipEligible(s, HYPER_RUN_MISSION) === "hyper", "Hyper Run refuses the skip");
   ok(skipLevel(s, first) === "none" && starsOf(s) === 0, "nothing held, nothing skipped");
-  s.starDust = 100; buyBoost(s, "levelskip");
+  s.starDust = 10; buyBoost(s, "levelskip");
   const dustBefore = s.starDust;
   ok(skipLevel(s, first) === "ok", "a held skip lands on mission 1");
   ok(s.boosts.levelskip === 0 && s.starDust === dustBefore, "the spend takes the boost, not dust");
@@ -144,8 +144,8 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 100 && BOOSTS.starunlock.
     ok(group, "Magnetar belongs to the actual Cosmic Companions group");
     if (group) {
       const quote = C.bundleQuote(group, id => ownsPremium(s, id));
-      ok(quote.offer === 200 && quote.credit === 90 && quote.due === 110,
-        "the earned Magnetar credits its full 90 retail against the 200 companion offer");
+      ok(quote.offer === 20 && quote.credit === 10 && quote.due === 10,
+        "the earned Magnetar credits its full 10 retail against the 20 companion offer");
       ok(!C.bundleIds(group).every(id => ownsPremium(s, id)), "the other companions remain available to buy in the group");
     }
     ok(!C.IAP_ITEMS.some((i) => i === "magnetar" && !ownsPremium(s, i)), "and the id reads as owned for the single shelf");

@@ -12,12 +12,18 @@ const rows = [
   ["ios.appStoreConnectAppId", cfg.ios?.appStoreConnectAppId, "App Store Connect → the app → App Information → Apple ID"],
   ["android.packageName", cfg.android?.packageName, "your choice, usually the same as appId; fixed forever once uploaded to Play"],
   ["android.playGamesProjectId", cfg.android?.playGamesProjectId, "Play Console → Play Games Services → Configuration → Project ID"],
+  // THE REAL-MONEY STORE IS OFF (owner, 13 Sep 2026: "eliminate IAP, just
+  // ad revenue for now ... leave the packs in, they just cost acorns"). With
+  // "iap": false the RevenueCat keys and the product ids are not required;
+  // flip it to true when the store comes back.
+  ...(cfg.iap === false ? [] : [
   ["revenuecat.iosApiKey", cfg.revenuecat?.iosApiKey, "RevenueCat → Project → Apps → the iOS app → Public API key"],
   ["revenuecat.androidApiKey", cfg.revenuecat?.androidApiKey, "RevenueCat → Project → Apps → the Android app → Public API key"],
   ...Object.entries(cfg.products).map(([k, v]) => [`products.${k}`, v, "App Store Connect → In-App Purchases (consumable) → Product ID; same ID in Play Console → In-app products"]),
   // The hyper board is scored on TIME, so it is the one board that must be
   // sorted the other way: the game posts finish ticks (sim.ts), and a board
   // left on the default sort would crown the slowest pilot.
+  ]),
   ...Object.entries(cfg.leaderboards).filter(([, v]) => v !== "").map(([k, v]) => [`leaderboards.${k}`, v,
     "App Store Connect → Game Center → Leaderboards → Leaderboard ID; Play Console → Play Games Services → Leaderboards → ID"
     + (k === "hyper" ? "  ** sort LOW TO HIGH, format elapsed time: this board is posted finish ticks **" : "")]),
