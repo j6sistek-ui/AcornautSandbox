@@ -45,6 +45,33 @@ fill those values, and have the shell set `window.__ACORNAUT_IAP__ = true`
 before the bundle loads (see `IAP_LIVE` in `game/catalog.ts`). There is no
 ad SDK yet; that is its own project.
 
+## Ads (AdMob)
+
+Owner, 13 Sep 2026: *"just ad revenue for now ... tying in ads."* Three
+placements, all numbers in `AD_RULES` (`game/catalog.ts`): a rewarded ad
+continues a crashed free flight for free (the acorn continue stays as the
+other way), a rewarded ad in the Shop pays 25 Star Dust up to three times a
+day, and a full-screen ad plays when the pilot leaves the crash sheet after
+every third crash, never in the first five runs and never twice within two
+minutes. Ads are non-personalised (`npa`), so no tracking prompt is shown.
+
+`app.config.json` ships with **Google's public test ids** and
+`"admob": { "testing": true }`, so a TestFlight build shows test ads with no
+account. Before the store build:
+
+1. admob.google.com → Apps → Add app (iOS, then Android) → copy each **App
+   ID** (`ca-app-pub-…~…`) into `admob.iosAppId` / `admob.androidAppId`.
+2. Each app → Ad units → Add: one **Rewarded** and one **Interstitial** →
+   copy the unit ids (`ca-app-pub-…/…`) into `admob.rewarded*` /
+   `admob.interstitial*`.
+3. Set `"testing": false`, run `npm run configure` and `npm run check`.
+4. App Privacy answers for the SDK: Identifiers and Usage Data collected,
+   not linked to you, not used for tracking (non-personalised ads).
+
+The adapter (`adapter/adapter.js`, `adsOf`) preloads one rewarded and one
+interstitial ad, shows them on request and reloads after each. If the SDK
+cannot load an ad, the game simply does not offer it.
+
 ## The values, and where each one comes from
 
 Everything goes in `app.config.json`. Replace the `PLACEHOLDER_…` text,

@@ -31,5 +31,14 @@
     "arcade": "",
     "tunnel": ""
   },
-  "iap": false
+  "iap": false,
+  "admob": {
+    "testing": true,
+    "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+    "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+    "rewardedIos": "ca-app-pub-3940256099942544/1712485313",
+    "rewardedAndroid": "ca-app-pub-3940256099942544/5224354917",
+    "interstitialIos": "ca-app-pub-3940256099942544/4411468910",
+    "interstitialAndroid": "ca-app-pub-3940256099942544/1033173712"
+  }
 }

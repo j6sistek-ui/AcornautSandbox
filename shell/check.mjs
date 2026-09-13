@@ -24,6 +24,12 @@ const rows = [
   // sorted the other way: the game posts finish ticks (sim.ts), and a board
   // left on the default sort would crown the slowest pilot.
   ]),
+  // ADS (13 Sep 2026, "just ad revenue for now"). Google's public test ids
+  // ship in the config so a TestFlight build shows test ads with no account;
+  // the real AdMob app and unit ids are required once "testing" is false.
+  ...(cfg.admob?.testing === false ? ["iosAppId", "androidAppId", "rewardedIos", "rewardedAndroid", "interstitialIos", "interstitialAndroid"]
+    .map((k) => [`admob.${k}`, cfg.admob?.[k] && !String(cfg.admob[k]).startsWith("ca-app-pub-3940256099942544") ? cfg.admob[k] : "",
+      "AdMob → Apps → the app → App ID (~) / Ad units → the unit id (/); test ids do not count once testing is off"]) : []),
   ...Object.entries(cfg.leaderboards).filter(([, v]) => v !== "").map(([k, v]) => [`leaderboards.${k}`, v,
     "App Store Connect → Game Center → Leaderboards → Leaderboard ID; Play Console → Play Games Services → Leaderboards → ID"
     + (k === "hyper" ? "  ** sort LOW TO HIGH, format elapsed time: this board is posted finish ticks **" : "")]),
@@ -31,6 +37,7 @@ const rows = [
 let missing = 0;
 for (const [k, v, from] of rows) { const ok = !unset(v); if (!ok) missing++; console.log(`${ok ? "  set    " : "  MISSING"} ${k.padEnd(28)} ${ok ? "" : "← " + from}`); }
 console.log(`\n${missing} value(s) still to fill in app.config.json, then \`npm run configure\`.`);
+if (cfg.admob?.testing !== false) console.log("ads:            TEST ads (admob.testing is true) - set it to false and fill admob.* before the store build");
 const pb = join(here, "ios", "App", "App.xcodeproj", "project.pbxproj");
 // "STAMPED" MUST MEAN THE PLUGIN IS REACHABLE (audit, 8 Sep 2026). The pbxproj
 // alone only proves BoardsPlugin compiles. The window SceneDelegate builds is

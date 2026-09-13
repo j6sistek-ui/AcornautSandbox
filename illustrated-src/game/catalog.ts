@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "288";
+export const ART_VER = "289";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -1011,6 +1011,20 @@ export type BoostId = keyof typeof BOOSTS;
 export const BOOST_IDS = Object.keys(BOOSTS) as BoostId[];
 
 /** claimed once per day; the seventh straight day pays the streak bonus */
+/** THE AD RULES (owner, 13 Sep 2026: "just ad revenue for now ... tying in
+ *  ads"). Three placements, every number here so the owner can dial them:
+ *  a rewarded ad continues a crashed free flight for free (the acorn
+ *  continue stays as the other option); a rewarded ad in the Shop pays
+ *  Star Dust, a few times a day; a full-screen ad plays at the crash
+ *  sheet's exit every few crashes, never in a pilot's first runs and never
+ *  twice within the gap. The web page has no ads; the beta page pretends. */
+export const AD_RULES = {
+  rewardedDust: 25,             // Star Dust for one rewarded ad in the Shop
+  rewardedDustPerDay: 3,        // how many of those a day
+  interstitialEveryCrashes: 3,  // a full-screen ad after every third crash...
+  interstitialMinGapSec: 120,   // ...and never within two minutes of the last
+  interstitialGraceRuns: 5,     // no full-screen ads in a pilot's first five runs
+};
 export const DAILY_DUST = 5;
 export const DAILY_STREAK_BONUS = 25;
 export const DAILY_STREAK_LEN = 7;
