@@ -223,7 +223,7 @@ try{
     assert(tile.querySelector('.ac-tileprice')?.textContent.includes('100'));
   }
   const trio=C.BUNDLES.find(b=>b.id==='bundle-premium-trio');assert.equal(trio.name,'Premium Pilot Trio','catalog identity is preserved');
-  assert.equal(C.BUNDLES.length,8,'the catalog retains eight multi-item bundles');
+  assert.equal(C.BUNDLES.length,5,'five multi-item bundles: the Circuit Pack and the two companion kits left the shop (15 Sep 2026)');
   assert(C.BUNDLES.every(bundle=>bundle.items.length>=3),'every bundle contains at least three actual product items');
   assert.equal(C.bundleQuote(trio,()=>false).discountPercent,16.7,'the 50 discount on 300 retail is displayed as 16.7 percent');
   assert.equal(card(trio.id)?.querySelector('.ac-modname')?.textContent,'Premium Trio');
@@ -242,7 +242,10 @@ try{
     // DOM structure and state restoration complement real-browser geometry.
     // These checks deliberately do not treat happy-dom rectangles as CSS proof.
     trace('compact mixed row');
-    day=dateWith(cycle=>cycle.suits.includes('porcelain')&&cycle.helms.length>0&&cycle.pals.length>0);reset();await tick();
+    // no PAL slot in the cycle any more (15 Sep 2026: every pal is free), so
+    // the mixed row is suits and helmets; a second helmet stands where the
+    // companion did as the independent cart entry
+    day=dateWith(cycle=>cycle.suits.includes('porcelain')&&cycle.helms.length>1);reset();await tick();
     const fixedName=C.SUITS.find(s=>s.id==='porcelain').name;
     const untouched=JSON.stringify(e.save),kept={outer:231,items:129};
     shopScroll().scrollTop=kept.outer;rail().scrollLeft=kept.items;
@@ -272,12 +275,13 @@ try{
       assert(app.querySelector('.ac-caseplate').textContent.includes(C.HELMETS.find(h=>h.id===id).name),'details identify the helmet actually being previewed');
       await choose('helm',id);assert.deepEqual(pickedRailIds(),[]);
     }
-    const pal=rail().querySelector('button[data-shop-item-kind="pal"]').dataset.shopItemId;
-    await choose('pal',pal);assert.deepEqual(pickedRailIds(),[pal]);
-    assert(app.querySelector('.ac-casesub').textContent.includes(C.PALS.find(p=>p.id===pal).name));
-    assertItemArtwork(app.querySelector('.ac-casecanvas'),{kind:'pal',id:pal});
+    assert(!rail().querySelector('button[data-shop-item-kind="pal"]'),'no pal is dealt into the rail');
+    const pal=helmets[0];
+    await choose('helm',pal);assert.deepEqual(pickedRailIds(),[pal]);
+    assert(app.querySelector('.ac-caseplate').textContent.includes(C.HELMETS.find(h=>h.id===pal).name));
+    assertItemArtwork(app.querySelector('.ac-casecanvas'),{kind:'helm',id:pal});
     const partner=[...rail().querySelectorAll('button[data-shop-item-kind="suit"]')].find(n=>n.dataset.shopItemId!=='porcelain').dataset.shopItemId;
-    await choose('suit',partner);assert.deepEqual(pickedRailIds(),[pal,partner].sort(),'suit and pal selections remain independent cart entries');
+    await choose('suit',partner);assert.deepEqual(pickedRailIds(),[pal,partner].sort(),'suit and helmet selections remain independent cart entries');
     assert(app.querySelector('.ac-caseplate').textContent.includes(C.SUITS.find(s=>s.id===partner).name));
     assert(app.querySelector('.ac-combobar').textContent.includes('2 ITEMS SELECTED'));
     const railCart=cartState();card(trio.id).click();await tick();close();
@@ -293,25 +297,35 @@ try{
     const extraSuit=[...rail().querySelectorAll('button[data-shop-item-kind="suit"]')]
       .sort((a,b)=>b.textContent.length-a.textContent.length)[0].dataset.shopItemId;
     const extraHelm=helmets.find(id=>id!==extraSuit&&id!==pal);assert(extraHelm);
-    await choose('suit',extraSuit);await choose('pal',pal);await choose('helm',extraHelm);
+    await choose('suit',extraSuit);await choose('helm',pal);await choose('helm',extraHelm);
     assert.equal(pickedRailIds().length,3,'three distinct items exercise the expanded cart');
     app.querySelector('.ac-cartclear').click();await tick();
     assert.deepEqual(pickedRailIds(),[]);assert.deepEqual(railOffsets(),kept,'Clear retains explicit outer zero and the inner row position');
     assert.equal(document.activeElement?.dataset.focus,'shop:cart','Clear returns keyboard focus to the persistent cart');
     assert.equal(JSON.stringify(e.save),untouched);
-    // A date without a companion must clear an unowned preview from the
-    // previous date, even when its suit remains today's valid selection.
-    const palDate=dateWith(cycle=>cycle.pals.length>0);day=palDate;reset();await tick();
-    const priorCycle=selectShopCycle(day,id=>S.ownsPremium(e.save,id)),priorPal=priorCycle.pals[0],priorSuit=priorCycle.suits[0];
-    railItem('suit',priorSuit).click();railItem('pal',priorPal).click();await tick();
-    assert(app.querySelector('.ac-casesub')?.textContent.includes(C.PALS.find(p=>p.id===priorPal).name));
+    // Rollover keeps an OWNED suit selected in the stage across dates and
+    // never seats a companion there. (Until 15 Sep 2026 this scenario cleared
+    // an unowned PAL from the previous date; pals are free and off the rail
+    // now, so the stage sub-line - the companion line - is simply never drawn.)
+    // The pair must be showable together: a suit with a swappable head and
+    // a helmet that is neither suit-only nor a shared suit/helmet key, or the
+    // helmet tap would put a different pilot on the stage.
+    const openHead=id=>{const u=C.SUITS.find(x=>x.id===id);return u&&!C.wearsOwnHead(u);};
+    const plainHelm=id=>{const h=C.HELMETS.find(x=>x.id===id);return h&&!h.suitOnly&&!C.SUITS.some(u=>u.id===id);};
+    const helmDate=dateWith(cycle=>cycle.suits.some(openHead)&&cycle.helms.some(plainHelm));day=helmDate;reset();await tick();
+    const priorCycle=selectShopCycle(day,id=>S.ownsPremium(e.save,id)),priorHelm=priorCycle.helms.find(plainHelm),priorSuit=priorCycle.suits.find(openHead);
+    const priorHelmName=C.HELMETS.find(h=>h.id===priorHelm).name;
+    railItem('suit',priorSuit).click();railItem('helm',priorHelm).click();await tick();
+    assert(app.querySelector('.ac-caseplate')?.textContent.includes(priorHelmName));
+    assert.equal(app.querySelector('.ac-casesub'),null,'no companion line on the plate: pals are not shop items');
     // Owning the shown suit keeps its preview eligible across dates. This
     // is an isolated save fixture, not a Shop purchase or equipment change.
-    e.save.purchased.push(...C.idGrants(priorSuit),...C.PALS.filter(p=>C.isIap(p.id)&&p.id!==priorPal).map(p=>p.id));
+    e.save.purchased.push(...C.idGrants(priorSuit));
     const beforeRollover=JSON.stringify(e.save);
-    day=dateWith(cycle=>cycle.pals.length===0&&!cycle.held.has(priorPal),e.save);e.open('shop');await tick();
-    assert.equal(rail().querySelectorAll('button[data-shop-item-kind="pal"]').length,0,'a zero-PAL day has no companion card');
-    assert.equal(app.querySelector('.ac-casesub'),null,'the previous unowned PAL is not silently retained in the stage');
+    day=dateWith(cycle=>!cycle.helms.includes(priorHelm)&&!cycle.held.has(priorHelm),e.save);e.open('shop');await tick();
+    assert.equal(rail().querySelectorAll('button[data-shop-item-kind="pal"]').length,0,'no companion card is ever dealt');
+    assert(!railItem('helm',priorHelm),'yesterday\'s helmet is off the rail');
+    assert.equal(app.querySelector('.ac-casesub'),null,'still no companion line after rollover');
     assert(app.querySelector('.ac-caseplate').textContent.includes(C.SUITS.find(s=>s.id===priorSuit).name),'the still-eligible suit remains selected through rollover');
     assert.equal(JSON.stringify(e.save),beforeRollover,'roster rollover does not change player state');
     for(const streakPackClaimed of [false,true]){
@@ -323,11 +337,12 @@ try{
     }
     reset();await tick();
     // Every actual rotating pack is reached through its day on the real
-    // shelf. This includes standalone companions/visors and mixed packs.
+    // shelf: the visor collection and the mixed suit/helmet/wake packs.
+    // (No companion kit and no Circuit Pack since 15 Sep 2026: pals are free
+    // and the Cyber/Volt/Robo trio is owned from the first launch.)
     const rotation=C.BUNDLES.filter(b=>!b.fixed&&!b.alwaysAvailable&&!C.SHOP_CYCLE.excludedBundleIds.includes(b.id)),seenKinds=new Set();let reviews=0;
     assert.deepEqual(reviewItems(trio).filter(item=>item.kind==='trail').map(item=>item.id).sort(),['nacrewake','origamistwake','porcelainwake'],'all three signature wakes are shown with the trio');
-    const circuit=C.BUNDLES.find(b=>b.id==='bundle-circuit');
-    assert.deepEqual(reviewItems(circuit).filter(item=>!circuit.items.includes(item)),[{kind:'trail',id:'clockwork'}],'Circuit adds the free Cyber wake once');
+    assert(!C.BUNDLES.some(b=>b.items.some(item=>item.kind==='pal')),'no bundle sells a companion');
     for(const bundle of [...rotation,trio]){
       trace(bundle.id);
       day=bundle.alwaysAvailable?20000:dateWith(cycle=>cycle.feature?.id===bundle.id);reset();await tick();
@@ -370,7 +385,7 @@ try{
       }
       close();assert(!sheet(),bundle.id+' closes the modal');
     }
-    assert.deepEqual([...seenKinds].sort(),['helm','pal','suit','trail']);
+    assert.deepEqual([...seenKinds].sort(),['helm','suit','trail'],'bundles review suits, helmets and wakes; companions are free');
 
     // Keyboard review stays in the dialog and returns to the exact item,
     // then to its offer, without arming or spending the purchase.
@@ -399,11 +414,11 @@ try{
     trace('partial checkout');const partial=C.BUNDLES.find(b=>b.id==='bundle-aurora');
     reset();e.save.purchased.push(...C.idGrants('cryostar'));day=dateWith(cycle=>cycle.feature?.id===partial.id,e.save);e.open('shop');
     const due=C.featurePrice(partial,id=>S.ownsPremium(e.save,id));assert(due<C.featurePrice(partial,()=>false));
-    const partialQuote=assertQuote(card(partial.id),partial,id=>S.ownsPremium(e.save,id));assert.equal(partialQuote.credit,40);assert.equal(due,40);
+    const partialQuote=assertQuote(card(partial.id),partial,id=>S.ownsPremium(e.save,id));assert.equal(partialQuote.credit,40);assert.equal(due,30,'70 offer (120 retail without Prismwing, 15 Sep 2026) less the 40 Cryostar credit');
     e.save.starDust=due;card(partial.id).click();
     for(const item of [{kind:'suit',id:'cryostar'},{kind:'helm',id:'cryostar'},{kind:'trail',id:'celestialtide'}])
       assert.equal(sheet().querySelector(`button[data-shop-item-id="${item.id}"][data-shop-item-kind="${item.kind}"] .ac-tileprice`)?.textContent,'OWNED',itemKey(item)+' is covered by one real Cryostar purchase');
-    sheet().querySelector('[data-shop-item-kind="pal"]').click();
+    sheet().querySelector('[data-shop-item-kind="helm"][data-shop-item-id="verdant"]').click();
     const before=JSON.stringify(e.save);sheet().querySelector('.ac-featurebuy').focus();sheet().querySelector('.ac-featurebuy').click();assert.equal(JSON.stringify(e.save),before,'first press does not charge');
     assert.equal(document.activeElement,sheet().querySelector('.ac-featurebuy'),'confirmation keeps keyboard focus on checkout');
     assert(sheet().querySelector('.ac-featurebuy').textContent.includes('CONFIRM'));sheet().querySelector('.ac-featurebuy').click();
@@ -460,7 +475,7 @@ try{
       }
       unlockCounts[tab]=count;
     }
-    if(mode==='production')assert(Object.values(unlockCounts).every(n=>n>0),'locked examples cover suits, helmets, trails and PALs');
+    if(mode==='production')assert(['suits','helmets','trails'].every(t=>unlockCounts[t]>0)&&unlockCounts.pals===0,'locked examples cover suits, helmets and trails; every pal is free (15 Sep 2026)');
     assert.equal(STAR_UNLOCKS.suits.vanguard,undefined,'AcorNut is sold for 1,000 acorns, not earned on the chart');
     assert.equal(C.SUITS.find(u=>u.id==='vanguard').cost,1000,'AcorNut costs 1,000 acorns');
     assert.equal(STAR_UNLOCKS.suits.ghost,undefined,'Ghost is sold for 200 acorns, not earned on the chart');
@@ -504,6 +519,9 @@ try{
     // acorns ... 1000 acorn = 500 star dust"): the pack is priced in acorns on
     // web and beta alike, and buys with them
     const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(row);
+    // the cash pack is a store item: the beta previews it with its sticker, the web page does not show it
+    const cashRow=app.querySelector(`[data-dust-pack-id="${C.CASH_PACKS[0].id}"]`);
+    if(mode==='production')assert(!cashRow,'no cash pack on a page with no store');else assert.equal(cashRow?.querySelector('.ac-cashprice')?.textContent,C.CASH_PACKS[0].price,'the beta previews the cash pack with its sticker');
     assert.equal(row.querySelector('.ac-acornprice')?.textContent.replace(/\D/g,''),String(pack.acorns),'the pack shows its acorn price');assert(!row.querySelector('.ac-cashprice'),'no cash sticker while the store is off');
     e.save.acorns=pack.acorns-1;row.click();assert.equal(e.save.starDust,dustBefore,'short of acorns buys nothing');
     e.save.acorns=pack.acorns;e.open('shop');await tick();app.querySelector(`[data-dust-pack-id="${pack.id}"]`).click();
@@ -512,12 +530,17 @@ try{
   }else{
     // Exercise the actual native bridge, not hardcoded cash labels or a
     // replaced buy handler. Every scenario uses a deferred fake store.
+    // ONE CASH PACK beside the acorn packs (owner, 15 Sep 2026: "Restore a
+    // single IAP for 2500 star dust @$3.99. User can still buy star dust
+    // with acorns"): the store sells the one, acorns buy the rest
     assert.equal(app.querySelectorAll('.ac-dustrow').length,C.DUST_PACKS.length);
-    for(const pack of C.DUST_PACKS){const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(row.disabled);assert.equal(row.querySelector('.ac-cashprice').textContent,'…');row.click();}
+    assert.equal(C.CASH_PACKS.length,1);assert.equal(C.CASH_PACKS[0].dust,2500);
+    for(const pack of C.ACORN_PACKS){const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(!row.disabled);assert(row.querySelector('.ac-acornprice'),pack.id+' is an acorn pack in the app too');}
+    for(const pack of C.CASH_PACKS){const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(row.disabled);assert.equal(row.querySelector('.ac-cashprice').textContent,'…');row.click();}
     assert.equal(storeCalls.length,0,'unknown locale prices cannot start a purchase');
-    C.DUST_PACKS.forEach((pack,i)=>prices.set(pack.id,`€${i+1},29`));e.open('shop');
-    for(const pack of C.DUST_PACKS){const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(!row.disabled);assert.equal(row.querySelector('.ac-cashprice').textContent,prices.get(pack.id));}
-    const pack=C.DUST_PACKS[1],row=()=>app.querySelector(`[data-dust-pack-id="${pack.id}"]`);
+    C.CASH_PACKS.forEach((pack,i)=>prices.set(pack.id,`€${i+1},29`));e.open('shop');
+    for(const pack of C.CASH_PACKS){const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(!row.disabled);assert.equal(row.querySelector('.ac-cashprice').textContent,prices.get(pack.id));}
+    const pack=C.CASH_PACKS[0],row=()=>app.querySelector(`[data-dust-pack-id="${pack.id}"]`);
     const starting=e.save.starDust;
     async function begin(){const calls=storeCalls.length;row().click();await settle();assert.equal(storeCalls.length,calls+1);assert.equal(storeCalls.at(-1),pack.id);assert.equal(e.dustPending(),pack.id);assert.equal(e.save.starDust,starting);assert([...app.querySelectorAll('.ac-dustrow')].every(n=>n.disabled));assert(row().textContent.includes('Waiting for the store'));for(const n of app.querySelectorAll('.ac-dustrow'))n.click();assert.equal(storeCalls.length,calls+1,'pending blocks a second purchase');}
     await begin();resolvePurchase({result:'cancelled'});await settle();assert(app.querySelector('.ac-deny')?.textContent.includes('cancelled'),'cancelled purchase has visible feedback');e.open('shop');assert.equal(e.save.starDust,starting);assert(!row().disabled);

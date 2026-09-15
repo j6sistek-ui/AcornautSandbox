@@ -44,25 +44,22 @@ for (const b of BUNDLES) {
   const suitOnly = bundlePrice(aurora, owner(idGrants("cryostar")));
   const trailOnly = bundlePrice(aurora, owner("celestialtide"));
   const offer = bundlePrice(aurora, none);
-  ok(offer === 80 && suitOnly === 40,
-    `the 80 Aurora offer credits the full 40 Cryostar purchase, got ${suitOnly}`);
+  ok(offer === 70 && suitOnly === 30,
+    `the 70 Aurora offer (120 retail less 50, the pal gone since 15 Sep 2026) credits the full 40 Cryostar purchase, got ${suitOnly}`);
   ok(trailOnly === offer, "a free trail must not be credited again while its granting suit is unowned");
-  ok(total === 16, `Aurora should weigh 16 (3 suits, 3 helms, 3 trails, 1 pal), got ${total}`);
+  ok(total === 15, `Aurora should weigh 15 (3 suits, 3 helms, 3 trails; no pal since 15 Sep 2026), got ${total}`);
 }
 
 // ---- the cross-pack discount, which is the whole point ------------------
 {
-  const circuit = byId("bundle-circuit");
-  const afterCircuit = owner(bundleIds(circuit).flatMap(idGrants));
-  ok(afterCircuit("robo") && afterCircuit("nightglider") && afterCircuit("cyber") && afterCircuit("clockwork"),
-    "Circuit includes both retired duos, including Cyber's free Clockwork wake");
-  const twoSuitsOwned = owner("robo", "cyber", "clockwork");
-  ok(bundlePrice(circuit, twoSuitsOwned) === 0 && !bundleIds(circuit).every(twoSuitsOwned),
+  // the Circuit Pack and the companion kits are gone (15 Sep 2026: Cyber,
+  // Volt and Robo are everyone's from the first flight, and so is every
+  // pal); the Critter Pack carries the same rule
+  ok(!byId("bundle-circuit") && !byId("bundle-cosmic-companions") && !byId("bundle-starlight-companions"), "the retired kits are gone");
+  const critters = byId("bundle-critters");
+  const twoOwned = owner("raccoon", "ferret");
+  ok(bundlePrice(critters, twoOwned) === 0 && !bundleIds(critters).every(twoOwned),
     "full retail credit may cover a remaining item without making it already owned");
-  const companions = byId("bundle-cosmic-companions");
-  ok(bundlePrice(companions, none) === 20 && bundlePrice(companions, owner("magnetar")) === 10 &&
-    bundlePrice(companions, owner("magnetar", "babyalien")) === 0,
-    "new companion collections credit each 10-Stardust item at its complete retail value");
 }
 
 // ---- the shelf is the date's, not the pilot's --------------------------
@@ -184,17 +181,14 @@ for (const b of BUNDLES) {
   ok(suits.length === 0,
     `no suit may read "Collect Reward" on a brand-new save; ${suits.map((u) => u.id).join(", ")} does`);
 
-  // and the two that caused it are shop stock behind a chart gate, not prizes
+  // and the two that caused it are shop stock with a price and NO chart gate
+  // (15 Sep 2026: priced helmets are bought whenever the pilot likes)
   const CAMP = await import("../docs/js/campaign.js");
   for (const id of ["phoenix", "princess"]) {
     const h = C.HELMETS.find((x) => x.id === id);
     ok(h && h.cost > 0, `${id} must carry an acorn price, has ${h && h.cost}`);
-    const gate = CAMP.STAR_UNLOCKS.helmets[id];
-    ok(gate > 0, `${id} must sit behind a star gate, has ${gate}`);
-    ok(!SAVE.helmetRevealed(s0, id), `${id} must be locked on a new save`);
-    const at = SAVE.defaultSave();
-    at.allStars = true;
-    ok(SAVE.helmetRevealed(at, id), `${id} must open once the chart is earned`);
+    ok(CAMP.STAR_UNLOCKS.helmets[id] === undefined, `${id} has no star gate`);
+    ok(SAVE.helmetRevealed(s0, id) && !s0.unlocked.includes(id), `${id} is on the shelf, priced, not owned, on a new save`);
   }
 }
 

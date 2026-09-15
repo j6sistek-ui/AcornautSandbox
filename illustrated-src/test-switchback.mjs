@@ -42,41 +42,14 @@ const {bootStandalone}=await import('../docs/js/standalone.js');const app=docume
 const tick=()=>{now+=1000/60;const batch=[...frames.values()];frames.clear();batch.forEach(fn=>fn(now));};
 const button=text=>[...app.querySelectorAll('button')].find(b=>b.textContent.includes(text));
 function chart(){e.open('log');tick();tick();return app.querySelector('.ac-chartmap');}
-assert(Cat.PALS.some(p=>p.id==='switchback'));assert(Cat.isIap('switchback'));
-assert.equal(Cat.PAL_ANIM.switchback,16);assert.equal(Cat.idDust('switchback'),10);
-assert(!S.palUnlocked(e.save,'switchback'));assert.equal(e.equipPal('switchback'),'locked');
-// Existing featured rotation includes the new companion pack. No new store
-// or grant path: this is the same ownership/Star Dust transaction as peers.
-// Read the pack's name from the catalog rather than pinning the display
-// string: the companion was renamed Switchback -> Stopwatch, and the
-// assertion that matters is that its pack reaches the shelf, not its wording.
-const swPack=Cat.BUNDLES.find(b=>b.items.some(item=>item.kind==='pal'&&item.id==='switchback'));
-assert(swPack,'Stopwatch is included in a companion bundle');
-// NO DAY-0 SHELF ANY MORE. The storefront is the shop on both pages now
-// (drawShop returns drawShopBeta), and the storefront FEATURES ONE PACK A
-// DAY, stepping through packs that are neither fixed-price, always available,
-// nor already owned; it does not deal three by hash the retired tabbed
-// PACKS page did. So the day a pack is on the shelf is its place in that
-// rotation, and a pinned date rots the moment a pack joins the pool ahead of
-// it. Walk the rotation on the same screen the pilot sees and take the day it
-// deals this pack. One pack a day means every pack has to come round inside
-// BUNDLES.length days - a pack that never appears is a starved rotation.
-const originalNow=Date.now;
-let swDay=-1;
-for(let d=0;d<Cat.BUNDLES.length;d++){
-  Date.now=()=>d*Cat.SHOP_DAY_MS;e.open('shop');tick();
-  if(app.textContent.includes(swPack.name)){swDay=d;break;}
-}
-Date.now=originalNow;
-assert(swDay>=0,`the ${swPack.name} pack never reaches the shop across ${Cat.BUNDLES.length} days of rotation`);
-// and it got there by the ROTATION RULE rather than by luck: the featured day
-// is the pack's place among the packs the rotation cycles - a fixed-price
-// pack keeps its own shelf slot and sits out of that cycle.
-assert.equal(swDay,Cat.BUNDLES.filter(b=>!b.fixed&&!b.alwaysAvailable&&!Cat.SHOP_CYCLE.excludedBundleIds.includes(b.id)).findIndex(b=>b.id===swPack.id));
-e.save.starDust=9;assert.equal(e.buyShopItem('switchback'),'poor');
-e.save.starDust=10;assert.equal(e.buyShopItem('switchback'),'ok');
-assert.equal(e.save.starDust,0);assert(S.palUnlocked(e.save,'switchback'));
-assert.equal(e.buyShopItem('switchback'),'owned');assert.equal(e.equipPal('switchback'),'equip');
+assert(Cat.PALS.some(p=>p.id==='switchback'));
+// EVERY PAL IS FREE (owner, 15 Sep 2026: "By default all Pals unlocked"):
+// Stopwatch is nobody's premium and sits in no kit; a fresh pilot equips it.
+assert(!Cat.isIap('switchback'),'Stopwatch is not for sale any more');
+assert.equal(Cat.PAL_ANIM.switchback,16);
+assert(S.palUnlocked(e.save,'switchback'));assert.equal(e.equipPal('switchback'),'equip');assert.equal(e.save.equippedPal,'switchback');
+// no pack, no Star Dust: the companion shelf is open from the first flight
+assert(!Cat.BUNDLES.some(b=>b.items.some(item=>item.kind==='pal')),'no kit carries a pal any more (15 Sep 2026)');
 S.writeSave(e.save);assert.equal(S.loadSave().equippedPal,'switchback');
 // Recorded beta ownership survives the new premium classification.
 const old={...S.defaultSave(),unlockedPals:['none','switchback'],equippedPal:'switchback'};

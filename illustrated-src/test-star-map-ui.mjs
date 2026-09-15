@@ -58,7 +58,7 @@ function chart(){
 chart();assert.equal(app.querySelectorAll('.ac-mapnode').length,C.CHART_LEVELS.length);
 const beforeHeaderBack=JSON.stringify(e.save);app.querySelector('.ac-menuhead .ac-backbtn').click();
 assert.equal(e.world.screen,'title');assert.equal(JSON.stringify(e.save),beforeHeaderBack,'the retained header Back does not change progress');chart();
-assert.equal(C.CHART_LEVELS.length,260);
+assert.equal(C.CHART_LEVELS.length,mode==='production'?100:260,'production shows the first 100 missions, the beta all 260 (15 Sep 2026)');
 assert.equal(app.querySelectorAll('.ac-palmark.planned').length,mode==='production'?0:25);
 assert.equal(app.querySelectorAll('.ac-palmark.planned.earned').length,0);
 if(mode!=='production'){
@@ -68,7 +68,7 @@ if(mode!=='production'){
   button('Back to chart').click();tick();assert.equal(JSON.stringify(e.save),before);
   assert.equal(app.querySelectorAll('[data-reward-concept]').length,0);
 }
-assert.equal(app.querySelectorAll('.ac-zone-scene').length,26);
+assert.equal(app.querySelectorAll('.ac-zone-scene').length,mode==='production'?10:26,'ten chapters on the 100-mission production road, 26 on the beta (15 Sep 2026)');
 assert.equal(app.querySelectorAll('.ac-debristag').length,3);
 assert(app.querySelectorAll('.ac-mapdisc canvas').length<=48);
 for(const c of app.querySelectorAll('.ac-mapdisc canvas')){
@@ -76,12 +76,14 @@ for(const c of app.querySelectorAll('.ac-mapdisc canvas')){
   assert.equal(Number(c.dataset.planet),V.mapPlanetIndex(def));
 }
 if(mode==='production'){
-  assert(Cat.PALS.some(p=>p.id==='switchback'));assert(Cat.isIap('switchback'));
+  assert(Cat.PALS.some(p=>p.id==='switchback'));assert(!Cat.isIap('switchback'),'every pal is free (15 Sep 2026)');
   assert(!e.flyLevel(C.HYPER_RUN_MISSION.id),'production rejects Hyper Run before arrival/access');
   assert(!e.flyLevel('2-1'),'star totals cannot skip the road');
-  // Actual engine launches and sim settlement, one star at a time, through all 260.
+  // Actual engine launches and sim settlement, one star at a time, through the
+  // production road (the first 100 since 15 Sep 2026; missions 101+ are the beta's).
+  assert(!e.flyLevel(C.ALL_LEVELS[100].id),'mission 101 is not on the production chart');
   const stopped=[];
-  for(const def of C.LEVELS){
+  for(const def of C.CHART_LEVELS){
     if(!e.flyLevel(def.id)){
       const barrier=C.gateBefore(def.ord,e.save.raceGates);assert(barrier);stopped.push(barrier.after);
       assert(e.flyLevel(C.HYPER_RUN_MISSION.id));e.world.lvl.stats.finishTicks=barrier.ticks;Sim.settleLevel(e.world,e.save,true);
@@ -96,14 +98,15 @@ if(mode==='production'){
   // shield, 999 taps), so a mission banks its finish star and nothing more - except
   // the road's own gimmes, which a finish alone satisfies: the chapter-10 Free Flight
   // and Spill rows carry repeat `finish` goals (test-star-map pins that contract) and
-  // three early rows ask for a single bounce. Was 100 on the retired 100-mission road;
-  // today 367 = 260 finishes + 107 gimmes, and it follows the road rather than a page.
+  // three early rows ask for a single bounce. 143 = 100 finishes + 43 gimmes on the
+  // production road (15 Sep 2026); the beta's 260-mission road is walked separately.
+  const ROAD_STARS_100=143;
   const gimmes=def=>def.goals.filter((g,i)=>i>0&&(g.kind==='finish'||(g.kind==='bounces'&&g.n<=1))).length;
-  const roadStars=C.LEVELS.length+C.LEVELS.reduce((n,def)=>n+gimmes(def),0);
-  assert.equal(roadStars,367,'260 finishes plus 107 finish-alone gimmes');
+  const roadStars=C.CHART_LEVELS.length+C.CHART_LEVELS.reduce((n,def)=>n+gimmes(def),0);
+  assert.equal(roadStars,ROAD_STARS_100,'100 finishes plus the finish-alone gimmes of the first 100 missions');
   assert.equal(P.earnedCampaignStars(e.save),roadStars);
-  // Every mission on the road now reads done - the road is 260 long, not the retired
-  // 100 - and with nothing left unflown no node keeps the `cur` class.
+  // Every mission on the production road now reads done, and with nothing left
+  // unflown on it no node keeps the `cur` class.
   chart();assert.equal(app.querySelectorAll('.ac-mapnode.done').length,C.CHART_LEVELS.length);
   assert.equal(app.querySelectorAll('.ac-mapnode.cur').length,0);
   assert.equal(app.querySelectorAll('.ac-debristag.done').length,3);

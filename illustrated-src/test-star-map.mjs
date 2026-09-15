@@ -72,8 +72,9 @@ for(const def of C.ALL_LEVELS.filter(d=>d.ord>100&&d.base==='fly')){
 // generator's business (illustrated-src/reward-ladder.mjs, 8 Sep 2026:
 // "every 5 levels almost"), so the test asks for presence, gates and a
 // rung every ten stars, not for star counts.
-const ownerRewards=[['helmet','sammie'],['suit','sammie'],['pal','magnetar'],['trail','phoenixplume'],['trail','opalfeather'],
-  ['pal','astrafox'],['pal','satellite'],['pal','switchback'],['helmet','gemmie'],['suit','gemmie']];
+// (pals left the road on 15 Sep 2026: every pal is free)
+const ownerRewards=[['helmet','sammie'],['suit','sammie'],['trail','phoenixplume'],['trail','opalfeather'],['helmet','gemmie'],['suit','gemmie']];
+assert(!C.STAR_REWARDS.some(r=>r.kind==='pal'),'no pal rung on the road');
 for(const [kind,id] of ownerRewards){
   const reward=C.STAR_REWARDS.find(r=>r.kind===kind&&r.id===id);
   assert(reward,`owner reward ${kind}/${id} exists`);
@@ -93,11 +94,9 @@ for(const r of C.STAR_REWARDS){
   assert(item,`the ${r.kind} rung at ${r.stars} stars names a real item (${r.id})`);
   assert.equal(item.cost,0,`the ${r.kind} rung at ${r.stars} stars (${r.id}) still costs ${item.cost} acorns in the Loadout: a rung grants, it does not reveal`);
 }
-// and the other half of that bargain: those nine helmets keep their shelf
-// gate at the star count they always appeared at (PRICED_HELMET_GATES), so
-// by the time the shop shows one, the road has paid for it. Cumulative, not
-// per-rung: 180 stars is the Flight Mods gate, so the Royal Helmet's shelf
-// gate has no acorn rung of its own and is covered by the road behind it.
+// and the other half of that bargain: a helmet with a price has NO star
+// gate any more (15 Sep 2026), so this loop only ever sees the free rung
+// helmets; it stays as the rule for any priced helmet that grows a gate.
 for(const [id,stars] of Object.entries(C.STAR_UNLOCKS.helmets)){
   const h=Cat.HELMETS.find(x=>x.id===id);
   if(!h||h.cost<=0||Cat.isIap(id))continue;
@@ -107,15 +106,17 @@ for(const [id,stars] of Object.entries(C.STAR_UNLOCKS.helmets)){
 assert(C.STAR_REWARDS.filter(r=>r.kind==='dust').reduce((a,r)=>a+r.amount,0)>0,'dust rungs exist');
 {const rungs=[...new Set(C.STAR_REWARDS.map(r=>r.stars))].sort((a,b)=>a-b);
  for(let i=1;i<rungs.length;i++)assert(rungs[i]-rungs[i-1]<=10,`no stretch longer than ten stars without a reward (${rungs[i-1]}→${rungs[i]})`);
- assert.equal(rungs[rungs.length-1],780,'the road ends on a reward');}
+ assert.equal(rungs[rungs.length-1],300,'the road ends on a reward (300 stars, the 100-mission road, 15 Sep 2026)');}
 if(page!=='production'){
   assert.equal(Cat.SAVE_KEY,'acornaut_illust_beta');
   assert.equal(C.CHART_LEVELS.length,260);
   assert.equal(C.CHART_LEVELS.filter(l=>C.levelUnlocked(l,{},0,[])).length,260);
 } else {
-  // production flies the whole road and EARNS it: mission 1 open, mission 2 shut until 1 is passed
-  assert.equal(C.CHART_LEVELS.length,260);
-  assert.notEqual(C.levelById(plan.missions[100].id),null);
+  // production flies the FIRST 100 missions (owner, 15 Sep 2026: "convert star
+  // chart to 100 levels. move the remaining 160 to Beta") and EARNS them:
+  // mission 1 open, mission 2 shut until 1 is passed; mission 101 is beta's
+  assert.equal(C.CHART_LEVELS.length,100);
+  assert.equal(C.levelById(plan.missions[100].id),null);
   assert(C.levelUnlocked(C.CHART_LEVELS[0],{},0,[])); assert(!C.levelUnlocked(C.CHART_LEVELS[1],{},0,[]));
   assert.equal(C.CHART_LEVELS.filter(l=>C.levelUnlocked(l,{},0,[])).length,1);
 }
@@ -135,7 +136,7 @@ if(page==='production'){
   const U=C.STAR_UNLOCKS;
   assert(!S.helmetRevealed(saveAt(U.helmets.sammie-3),'sammie'));assert(S.helmetRevealed(saveAt(U.helmets.sammie),'sammie'));
   assert(!S.suitRevealed(saveAt(U.suits.sammie-3),'sammie'));assert(S.suitRevealed(saveAt(U.suits.sammie),'sammie'));
-  assert(!S.palUnlocked(saveAt(U.pals.magnetar-3),'magnetar'));assert(S.palUnlocked(saveAt(U.pals.magnetar),'magnetar'));
+  assert(S.palUnlocked(saveAt(0),'magnetar'),'every pal is free from the first flight (15 Sep 2026)');
   assert(!S.trailUnlocked(saveAt(U.trails.opalfeather-3),'opalfeather'));assert(S.trailUnlocked(saveAt(U.trails.opalfeather),'opalfeather'));
 }
 // Existing IDs, mission targets and goals are exact, including all Spill assignments.
@@ -188,7 +189,7 @@ S.writeSave(migrated);assert.deepEqual(S.loadSave(),migrated,'migration is idemp
 assert.deepEqual(JSON.parse(storage.get(Cat.SAVE_KEY+':before-campaign-v1')),legacy);
 const owned=fresh();owned.unlockedSuits.push('catsuit');assert(S.suitRevealed(owned,'catsuit'),'earned ownership survives a low star tally');
 const dust=C.STAR_REWARDS.find(r=>r.kind==='dust');assert.equal(P.rewardId(dust),P.rewardId({...dust,name:'Renamed Dust reward'}));
-const code=fresh();code.allStars=true;assert.equal(S.starsOf(code),C.CHART_MAX_STARS);assert.equal(C.CHART_MAX_STARS,780);assert.equal(P.earnedCampaignStars(code),0);assert.deepEqual(Object.values(P.routeMasks(code)),C.LEVELS.map(()=>0));
+const code=fresh();code.allStars=true;assert.equal(S.starsOf(code),C.CHART_MAX_STARS);assert.equal(C.CHART_MAX_STARS,page==='production'?300:780);assert.equal(P.earnedCampaignStars(code),0);assert.deepEqual(Object.values(P.routeMasks(code)),C.LEVELS.map(()=>0));
 // Seeding beta from an already-versioned production save also preserves slots.
 const cross=fresh(),crossDef=C.LEVELS.find(l=>l.id==='2-4');P.migrateCampaign(cross,false);
 const otherId=Cat.IS_BETA?'2-4':'beta-tunnel-2-4';

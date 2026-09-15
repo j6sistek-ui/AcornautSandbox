@@ -68,26 +68,26 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 10 && BOOSTS.starunlock.d
 {
   const s = defaultSave();
   const byKind = (k) => STAR_REWARDS.find((r) => r.kind === k && r.id && !rewardOwned(s, r));
-  const suit = byKind("suit"), helm = byKind("helmet"), trail = byKind("trail"), pal = byKind("pal");
+  const suit = byKind("suit"), helm = byKind("helmet"), trail = byKind("trail");
+  ok(!STAR_REWARDS.some((r) => r.kind === "pal"), "no pal rung: every pal is free (15 Sep 2026)");
   const deep = STAR_REWARDS.find((r) => r.kind === "mode" && r.id === "deep");
   const shield = STAR_REWARDS.find((r) => r.kind === "mod" && r.id === "startShield");
   const mods = STAR_REWARDS.find((r) => r.kind === "mod" && r.id === "flightmods");
   const dust = STAR_REWARDS.find((r) => r.kind === "dust");
-  ok(suit && helm && trail && pal && deep && shield && mods && dust, "the ladder carries one of every kind");
+  ok(suit && helm && trail && deep && shield && mods && dust, "the ladder carries one of every kind");
   ok(unlockReward(s, suit) === "none", "nothing held, nothing unlocked");
   ok(unlockReward(s, dust) === "currency", "a currency line is not an item");
-  s.boosts.starunlock = 7;
+  s.boosts.starunlock = 6;
   ok(unlockReward(s, suit) === "ok" && suitRevealed(s, suit.id) && s.unlockedSuits.includes(suit.id), `suit ${suit.id} opens`);
   ok(unlockReward(s, helm) === "ok" && helmetRevealed(s, helm.id), `helmet ${helm.id} opens`);
   ok(unlockReward(s, trail) === "ok" && trailUnlocked(s, trail.id), `trail ${trail.id} opens`);
-  ok(unlockReward(s, pal) === "ok" && palUnlocked(s, pal.id), `pal ${pal.id} opens`);
   ok(unlockReward(s, deep) === "ok" && deepUnlocked(s) && s.keyUnlocks.includes("deep"), "Deep Space opens by key");
   ok(unlockReward(s, shield) === "ok" && startShieldUnlocked(s), "the Start Shield opens by key");
   ok(unlockReward(s, mods) === "ok" && modsUnlocked(s), "the flight mods open by key");
-  ok(s.boosts.starunlock === 0, "seven unlocks, seven boosts");
+  ok(s.boosts.starunlock === 0, "six unlocks, six boosts");
   ok(unlockReward(s, suit) === "owned", "an owned reward is refused before the purse is touched");
-  for (const r of [suit, helm, trail, pal, deep, shield, mods]) ok(rewardOwned(s, r), `${r.name} reads as owned on the rail`);
-  ok(!unlockableRewards(s).some((r) => [suit, helm, trail, pal, deep, shield, mods].includes(r)), "opened rewards leave the unlockable list");
+  for (const r of [suit, helm, trail, deep, shield, mods]) ok(rewardOwned(s, r), `${r.name} reads as owned on the rail`);
+  ok(!unlockableRewards(s).some((r) => [suit, helm, trail, deep, shield, mods].includes(r)), "opened rewards leave the unlockable list");
   ok(unlockableRewards(s).every((r) => r.kind !== "dust" && r.kind !== "acorns"), "currency never appears in the unlockable list");
   ok(starsOf(s) === 0, "an unlock adds no stars");
 }
@@ -96,19 +96,22 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 10 && BOOSTS.starunlock.d
 {
   const { ownsPremium, settleStarRewards } = Save;
   const Prog2 = Prog;
-  const magnetar = STAR_REWARDS.find((r) => r.kind === "pal" && r.id === "magnetar");
-  const bee = STAR_REWARDS.find((r) => r.kind === "pal" && r.id === "bee");
-  ok(magnetar && bee, "Magnetar and Astrolobee sit on the road");
+  // the worked examples were pals until 15 Sep 2026 (every pal is free now):
+  // Gemmie is the premium suit on the road (Regalia kit) and Bubble Jets the
+  // free trail on it
+  const magnetar = STAR_REWARDS.find((r) => r.kind === "suit" && r.id === "gemmie");
+  const bee = STAR_REWARDS.find((r) => r.kind === "trail" && r.id === "bubble");
+  ok(magnetar && bee && C.isIap("gemmie") && !C.isIap("bubble"), "Gemmie (premium) and Bubble Jets (free) sit on the road");
   const reach = (s, stars) => { s.allStars = false; s.campaignProgress = undefined; s.stars = {}; let left = stars; for (const def of CHART_LEVELS) { if (left <= 0) break; const n = Math.min(3, left); Prog2.settleMissionCredit(s, def, (1 << n) - 1); left -= n; } };
   // bought in the shop, then the road reaches its rung: Star Dust instead
   {
-    const s = defaultSave(); s.starDust = 0; s.purchased = ["magnetar"];
-    ok(ownsPremium(s, "magnetar") && !ownsPremium(s, "astrafox"), "a bought pal is owned; an unbought one is not");
+    const s = defaultSave(); s.starDust = 0; s.purchased = ["gemmie"];
+    ok(ownsPremium(s, "gemmie") && !ownsPremium(s, "seraph"), "a bought suit is owned; an unbought one is not");
     reach(s, magnetar.stars);
     const acorns = s.acorns;
     settleStarRewards(s);
     const sub = s.rewardSubs[Prog2.rewardId(magnetar)];
-    ok(sub && sub.kind === "acorns" && sub.amount === Camp.substituteFor(magnetar.stars).amount, `the Magnetar rung paid acorns instead (${JSON.stringify(sub)})`);
+    ok(sub && sub.kind === "acorns" && sub.amount === Camp.substituteFor(magnetar.stars).amount, `the Gemmie rung paid acorns instead (${JSON.stringify(sub)})`);
     ok(s.acorns - acorns >= sub.amount, "the acorns landed in the purse");
     // the first settle also paid every currency rung crossed on the way, so
     // idempotence is measured from AFTER it: a second pass moves nothing
@@ -120,18 +123,18 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 10 && BOOSTS.starunlock.d
   // opened with a Star Unlock, then the road reaches its rung: acorns instead
   {
     const s = defaultSave(); s.boosts.starunlock = 1;
-    ok(unlockReward(s, bee) === "ok" && palUnlocked(s, "bee"), "Astrolobee opens by Star Unlock");
+    ok(unlockReward(s, bee) === "ok" && trailUnlocked(s, "bubble"), "Bubble Jets opens by Star Unlock");
     reach(s, bee.stars);
     const before = s.acorns;
     settleStarRewards(s);
     const sub = s.rewardSubs[Prog2.rewardId(bee)];
-    ok(sub && sub.kind === "acorns" && sub.amount === Camp.substituteFor(bee.stars).amount, `the Astrolobee rung paid acorns instead (${JSON.stringify(sub)})`);
+    ok(sub && sub.kind === "acorns" && sub.amount === Camp.substituteFor(bee.stars).amount, `the Bubble Jets rung paid acorns instead (${JSON.stringify(sub)})`);
     ok(s.acorns - before >= sub.amount, "the acorns landed in the wallet");
   }
   // a premium id opened with a Star Unlock is owned the way the shop reads it
   {
     const s = defaultSave(); s.boosts.starunlock = 1;
-    ok(unlockReward(s, magnetar) === "ok" && ownsPremium(s, "magnetar") && palUnlocked(s, "magnetar"), "a Star-Unlocked premium pal is owned everywhere");
+    ok(unlockReward(s, magnetar) === "ok" && ownsPremium(s, "gemmie") && suitRevealed(s, "gemmie"), "a Star-Unlocked premium suit is owned everywhere");
     reach(s, magnetar.stars); settleStarRewards(s);
     ok(s.rewardSubs[Prog2.rewardId(magnetar)]?.kind === "acorns", "and its rung pays acorns, not dust");
   }
@@ -139,16 +142,17 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 10 && BOOSTS.starunlock.d
   {
     const s = defaultSave();
     reach(s, magnetar.stars); settleStarRewards(s);
-    ok(ownsPremium(s, "magnetar") && !s.rewardSubs[Prog2.rewardId(magnetar)], "a road-earned pal is owned and its rung paid no substitute");
-    const group = C.BUNDLES.find(b => b.id === "bundle-cosmic-companions");
-    ok(group, "Magnetar belongs to the actual Cosmic Companions group");
+    ok(ownsPremium(s, "gemmie") && !s.rewardSubs[Prog2.rewardId(magnetar)], "a road-earned suit is owned and its rung paid no substitute");
+    const group = C.BUNDLES.find(b => b.id === "bundle-regalia");
+    ok(group, "Gemmie belongs to the actual Regalia kit");
     if (group) {
       const quote = C.bundleQuote(group, id => ownsPremium(s, id));
-      ok(quote.offer === 20 && quote.credit === 10 && quote.due === 10,
-        "the earned Magnetar credits its full 10 retail against the 20 companion offer");
-      ok(!C.bundleIds(group).every(id => ownsPremium(s, id)), "the other companions remain available to buy in the group");
+      const full = C.bundleQuote(group, () => false);
+      ok(quote.offer === full.offer && quote.credit > 0 && quote.due === quote.offer - quote.credit && quote.due < quote.offer,
+        `the earned Gemmie credits its retail against the Regalia offer (${JSON.stringify(quote)})`);
+      ok(!C.bundleIds(group).every(id => ownsPremium(s, id)), "the rest of the kit remains available to buy");
     }
-    ok(!C.IAP_ITEMS.some((i) => i === "magnetar" && !ownsPremium(s, i)), "and the id reads as owned for the single shelf");
+    ok(!C.IAP_ITEMS.some((i) => i === "gemmie" && !ownsPremium(s, i)), "and the id reads as owned for the single shelf");
   }
   // the substitute is flat, whatever the rung and whichever way the item arrived
   // (owner: "acorns, 250, flat regardless of star unlock or store purchase")
