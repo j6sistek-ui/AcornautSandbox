@@ -92,12 +92,11 @@ try{
     own(allIds.filter(id=>!['nacre','origamist'].includes(id))),
   ];
   for(const owns of owners)for(let d=20000;d<20028;d++)check(d,owns);
-  // Every unowned cheap suit currently has a kit companion, so fully
-  // unowned stock correctly prefers a PAL every day. Own the coordinated
-  // companions to exercise genuine random/zero-PAL fallback instead.
-  const coordinated=C.BUNDLES.filter(b=>b.items.some(i=>i.kind==='suit'||i.kind==='helm')).flatMap(b=>b.items.filter(i=>i.kind==='pal').map(i=>i.id));
-  for(let d=20000;d<20366;d++)check(d,own(coordinated));
-  assert(matchedHelmetCases>0&&matchedPalCases>0&&randomPalDays>0&&emptyPalDays>0,'dates and ownership fixtures exercise matching and optional random fallback');
+  // PALS LEFT THE STORE (15 Sep 2026: every pal is free), so no kit carries
+  // one and the cycle never deals a PAL slot: three helmets every day.
+  assert(!C.PALS.some(p=>C.isIap(p.id)),'no pal is for sale');
+  assert.equal(matchedPalCases+randomPalDays,0,'no PAL slot is ever dealt');
+  assert(matchedHelmetCases>0,'dates and ownership fixtures exercise helmet matching');
   for(const p of C.PALS.filter(p=>C.isIap(p.id)))assert(seen.pals.has(p.id),p.id+' reaches a PAL slot under eligible ownership/date conditions');
   for(let d=0;d<14;d++){
     const empty=check(d,own(allIds));assert.deepEqual(idsOf(empty),[]);assert.equal(empty.feature,null);assert.deepEqual(empty.always,[]);

@@ -277,7 +277,9 @@ export function defaultSave(): SaveData {
     tutorialDone: false,
     unlocked: ["clear"],
     equipped: "clear",
-    unlockedSuits: ["flight"],
+    // CYBER, VOLT AND ROBO ARE FREE (owner, 15 Sep 2026: "Remove Cyber,
+    // Robo, Volt bundle, make those available at start")
+    unlockedSuits: ["flight", "cyber", "volt", "robo"],
     equippedSuit: "flight",
     unlockedTrails: ["sparks"],
     equippedTrail: "sparks",
@@ -374,6 +376,8 @@ export function loadSave(): SaveData {
   const s: SaveData = { ...defaultSave(), ...(parsed as Partial<SaveData>) };
   if (!s.unlocked?.includes("clear")) s.unlocked = ["clear", ...(s.unlocked || [])];
   if (!s.unlockedSuits?.includes("flight")) s.unlockedSuits = ["flight", ...(s.unlockedSuits || [])];
+  // the free trio backfills into every existing save (15 Sep 2026)
+  for (const id of ["cyber", "volt", "robo"]) if (!s.unlockedSuits.includes(id)) s.unlockedSuits.push(id);
   if (!s.unlockedTrails?.includes("sparks")) s.unlockedTrails = ["sparks", ...(s.unlockedTrails || [])];
   if (!s.unlockedPals?.includes("none")) s.unlockedPals = ["none", ...(s.unlockedPals || [])];
   // Grandfather recorded ownership from the earlier beta companion. The
@@ -705,10 +709,13 @@ export function starsOf(s: SaveData) {
 // Progression is EARNED BY STARS now — the Star Chart is the one ladder.
 // The old XP thresholds are retired for good with the production split:
 // a gate is stars, a stored unlock, or the beta. Nothing else opens one.
-export function palUnlocked(s: SaveData, id: string) {
-  if (STAR_UNLOCKS.pals[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.pals[id]) return true;
-  if (isIap(id)) return iapOwned(s, id);
-  return BETA_UNLOCK_GATES || s.unlockedPals.includes(id);
+// EVERY PAL IS EVERYONE'S (owner, 15 Sep 2026: "By default all Pals
+// unlocked ... gating all the fun features behind purchase or heavy
+// gameplay was the wrong move to attract new players"). No rung, no price,
+// no kit: the companion shelf is open from the first flight. The signature
+// stays so every caller keeps asking the question in one place.
+export function palUnlocked(_s: SaveData, _id: string) {
+  return true;
 }
 
 // Helmets with a rung on the ladder reveal at their star count; the four

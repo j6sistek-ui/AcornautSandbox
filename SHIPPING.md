@@ -224,7 +224,7 @@ What a store build changes, and where:
 | Concern | Where it lives | Web | App |
 |---|---|---|---|
 | Save storage | `platform.storage` | localStorage | shell's durable store, preloaded |
-| Dust packs | `platform.store` (off: `IAP_LIVE`) | bought with acorns, 2 per dust (13 Sep 2026) | the same; StoreKit only when a shell sets `window.__ACORNAUT_IAP__` |
+| Dust packs | `platform.store` | four acorn packs, 2 acorns per dust (13 Sep 2026); the cash pack (2,500 dust, $3.99, 15 Sep 2026) hidden on the web, sticker on the beta | the acorn packs the same; the cash pack through StoreKit once the shell's store answers |
 | Boards | `platform.boards` | local bests only | Game Center: all-time, monthly, friends |
 | Prototype doors | `platform.devDoors` | Help sheet | hidden |
 | Build line | `BUILD` | "Alpha V1.0.x" | "V1.0.x" |

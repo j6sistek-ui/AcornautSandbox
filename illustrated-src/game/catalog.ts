@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "291";
+export const ART_VER = "292";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -650,7 +650,6 @@ export const BUNDLES: Bundle[] = [
       { kind: "suit", id: "cryostar" }, { kind: "suit", id: "verdant" }, { kind: "suit", id: "eclipse" },
       { kind: "helm", id: "cryostar" }, { kind: "helm", id: "verdant" }, { kind: "helm", id: "eclipse" },
       { kind: "trail", id: "celestialtide" }, { kind: "trail", id: "verdantflourish" }, { kind: "trail", id: "eclipseglyph" },
-      { kind: "pal", id: "prismwing" },
     ],
   },
   {
@@ -665,20 +664,13 @@ export const BUNDLES: Bundle[] = [
       { kind: "helm", id: "gemmie" }, { kind: "helm", id: "sammie" },
       { kind: "helm", id: "seraph" }, { kind: "helm", id: "leviathan" },
       { kind: "trail", id: "opalfeather" }, { kind: "trail", id: "clockwork" }, { kind: "trail", id: "phoenixplume" },
-      { kind: "pal", id: "clockling" },
     ],
   },
-  {
-    id: "bundle-circuit",
-    kit: { banner: "shop/bundle-circuit.png", discountDust: 50 },
-    name: "Circuit Pack",
-    blurb: "Chrome, current and code. All three come with custom helmets.",
-    dust: 75,
-    items: [
-      { kind: "suit", id: "cyber" }, { kind: "suit", id: "volt" }, { kind: "suit", id: "robo" },
-      { kind: "pal", id: "nightglider" },
-    ],
-  },
+  // THE CIRCUIT PACK IS GONE (owner, 15 Sep 2026: "Remove Cyber, Robo, Volt
+  // bundle, make those available at start"): the three suits are in every
+  // save's unlockedSuits from the first flight. PALS LEFT EVERY KIT the same
+  // day ("By default all Pals unlocked"): Prismwing, TurClock, Nightglider,
+  // and the two companion kits that were nothing but pals.
   {
     id: "bundle-critters",
     kit: { banner: "shop/bundle-critters.png", discountDust: 45 },
@@ -688,22 +680,6 @@ export const BUNDLES: Bundle[] = [
     items: [
       { kind: "suit", id: "raccoon" }, { kind: "suit", id: "ferret" }, { kind: "suit", id: "hedgehog" },
     ],
-  },
-  {
-    id: "bundle-cosmic-companions",
-    kit: { banner: "shop/bundle-cosmic-companions.png", discountDust: 10 },
-    name: "Cosmic Companions",
-    blurb: "Magnetar, Baby Alien and Satellite: three companions with their own flight effects.",
-    dust: 20,
-    items: [{ kind: "pal", id: "magnetar" }, { kind: "pal", id: "babyalien" }, { kind: "pal", id: "satellite" }],
-  },
-  {
-    id: "bundle-starlight-companions",
-    kit: { banner: "shop/bundle-starlight-companions.png", discountDust: 10 },
-    name: "Starlight Companions",
-    blurb: "Space Puppy, AstraFox and Stopwatch: three companions with their own flight effects.",
-    dust: 20,
-    items: [{ kind: "pal", id: "spacepuppy" }, { kind: "pal", id: "astrafox" }, { kind: "pal", id: "switchback" }],
   },
   {
     id: "bundle-visor-collection",
@@ -989,15 +965,22 @@ export const SHOP_CYCLE = {
 // These strings are the WEB sticker only - a native shell shows the store's
 // own localized price, so the same halving has to be set as the price
 // tier on each product in App Store Connect and Play Console.
-/** `acorns` is what a pack costs while IAP_LIVE is off (owner, 13 Sep 2026:
- *  "1000 acorn = 500 star dust" - the bonus dust rides free); `price` is the
- *  web sticker for the real-money store, unused until a shell turns it on. */
-export const DUST_PACKS: { id: string; dust: number; bonus: number; acorns: number; price: string }[] = [
+/** `acorns` is what an acorn pack costs (owner, 13 Sep 2026: "1000 acorn =
+ *  500 star dust" - the bonus dust rides free). THE ONE REAL-MONEY PACK
+ *  (owner, 15 Sep 2026: "Restore a single IAP for 2500 star dust @$3.99.
+ *  User can still buy star dust with acorns") is `cash: true`: a shell's
+ *  store sells it at its own localized price, `price` is the sticker the
+ *  beta page previews it with, and a page with no store does not show it. */
+export const DUST_PACKS: { id: string; dust: number; bonus: number; acorns: number; price: string; cash?: true }[] = [
   { id: "dust-100",  dust: 100,  bonus: 0,   acorns: 100 * ACORNS_PER_DUST,  price: "$0.49" },
   { id: "dust-550",  dust: 500,  bonus: 50,  acorns: 500 * ACORNS_PER_DUST,  price: "$2.49" },
   { id: "dust-1200", dust: 1000, bonus: 200, acorns: 1000 * ACORNS_PER_DUST, price: "$4.99" },
   { id: "dust-2600", dust: 2000, bonus: 600, acorns: 2000 * ACORNS_PER_DUST, price: "$9.99" },
+  { id: "dust-2500", dust: 2500, bonus: 0,   acorns: 0,                      price: "$3.99", cash: true },
 ];
+/** the packs a store sells for money, and the ones acorns buy */
+export const CASH_PACKS = DUST_PACKS.filter((p) => p.cash);
+export const ACORN_PACKS = DUST_PACKS.filter((p) => !p.cash);
 
 /** STAR CHART BOOSTS (owner, 8 Sep 2026: "a level skip item... instant 3
  *  star any level (make it 100 star dust). And instant unlock any star

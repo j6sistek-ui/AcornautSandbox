@@ -33,17 +33,18 @@ Waiting on you, in this order:
 
 `npm run check` prints exactly what is still missing.
 
-## The store is off for v1
+## One in-app purchase
 
-Owner, 13 Sep 2026: *"eliminate IAP, just ad revenue for now ... leave the
-packs in, they just cost acorns ... 1000 acorn = 500 star dust."* The Star
-Dust packs are bought with acorns in the game; nothing is sold for money.
-`app.config.json` carries `"iap": false`, so `npm run check` does not ask for
-the RevenueCat keys or the product ids, and App Store Connect needs no
-in-app purchases for this build. To bring the store back: set `"iap": true`,
-fill those values, and have the shell set `window.__ACORNAUT_IAP__ = true`
-before the bundle loads (see `IAP_LIVE` in `game/catalog.ts`). There is no
-ad SDK yet; that is its own project.
+Owner, 15 Sep 2026: *"Restore a single IAP for 2500 star dust @$3.99. User
+can still buy star dust with acorns."* The four Star Dust packs are bought
+with acorns in the game, always, on every page. The one real-money product
+is `dust-2500` (2,500 Star Dust, $3.99 tier), `cash: true` in
+`DUST_PACKS`; the shop shows it only where a store answers (a shell with
+its store, or the beta's sticker preview). `app.config.json` still carries
+`"iap": false` until the accounts exist: flip it, fill the RevenueCat keys
+and the one product id (`products.dust-2500`, a consumable at the $3.99
+tier in App Store Connect and Play Console), and have the shell set
+`window.__ACORNAUT_IAP__ = true` before the bundle loads.
 
 ## Ads (AdMob)
 

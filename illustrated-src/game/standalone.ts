@@ -13,7 +13,7 @@ import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog";
 import { repeatTapMode, FLIGHT_TEST_PATTERNS, type FlightTestPattern } from "./sim";
 import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, type BoostId, IAP_LIVE, ACORNS_PER_DUST} from "./catalog";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, type BoostId, IAP_LIVE, ACORNS_PER_DUST} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, FROZEN_SUITS, type ShipPick } from "./draw";
 import { bundleQuote, type BundleItem } from "./catalog";
 import { drawSprite as drawSpriteOn } from "./art";
@@ -4089,14 +4089,21 @@ export async function bootStandalone(root: HTMLElement) {
       // sticker is only the web page's placeholder. A shell that has not
       // answered yet shows no price and cannot be tapped: a USD sticker in
       // front of a non-US reviewer is a rejection, not a fallback.
-      if (!IAP_LIVE) {
+      // THE CASH PACK (owner, 15 Sep 2026: "Restore a single IAP for 2500
+      // star dust @$3.99") only where a store can sell it: a shell with its
+      // store, the beta (sticker, granted), or the store switch for review.
+      if (dp.cash && !platform.storeReady && !IS_BETA && !IAP_LIVE) continue;
+      if (!dp.cash) {
         // ACORNS BUY STAR DUST (owner, 13 Sep 2026: "leave the packs in,
-        // they just cost acorns ... 1000 acorn = 500 star dust")
+        // they just cost acorns ... 1000 acorn = 500 star dust"; 15 Sep
+        // 2026: "User can still buy star dust with acorns")
         const pr = el("span", "ac-modprice ac-acornprice");
         pr.append(acornImg(14), el("span", "", dp.acorns.toLocaleString()));
         row.append(t, pr);
         row.setAttribute("aria-label", `${(dp.dust + dp.bonus).toLocaleString()} Star Dust for ${dp.acorns.toLocaleString()} acorns`);
-        row.onclick = () => { tx(row, () => engine.buyDust(dp.id), dp.acorns, "acorns"); render(); };
+        // the acorn rows wait with the rest while the store's sheet is up
+        if (inFlight) row.disabled = true;
+        row.onclick = () => { if (inFlight) return; tx(row, () => engine.buyDust(dp.id), dp.acorns, "acorns"); render(); };
         scroll.append(row);
         continue;
       }
@@ -4118,7 +4125,7 @@ export async function bootStandalone(root: HTMLElement) {
       const note = DUST_OUTCOME_TEXT[outcome.state];
       if (note) announce(note); else clearDeny();
     }
-    if (IAP_LIVE && platform.storeReady) {
+    if (platform.storeReady) {
       // Apple asks for this button on every storefront, consumables or not
       const restore = el("button", "ac-ghost ac-restore", "RESTORE PURCHASES");
       restore.onclick = () => { void engine.restorePurchases(); };
@@ -4129,11 +4136,9 @@ export async function bootStandalone(root: HTMLElement) {
     // Say where the money goes. A shell with a store says nothing; the
     // beta says dust is granted; the live web page says the store is
     // the app's.
-    if (!IAP_LIVE) scroll.append(el("p", "ac-fine",
-      `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500.`));
-    else if (!platform.storeReady) scroll.append(el("p", "ac-fine", IS_BETA
-      ? "The payment rail is not connected yet, so dust is granted during the beta."
-      : "Star Dust packs are sold in the app. Everything else on this page works."));
+    if (!platform.storeReady) scroll.append(el("p", "ac-fine", IS_BETA
+      ? `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The payment rail is not connected yet, so the ${CASH_PACKS[0]?.dust.toLocaleString()} pack is granted during the beta.`
+      : `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500.`));
 
     box.append(scroll);
     // THE CYCLE INSPECTOR SHIPS ON BOTH PAGES. It was gated on beta while

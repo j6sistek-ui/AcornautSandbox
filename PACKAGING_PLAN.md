@@ -41,9 +41,11 @@ In order, because each one hands the next its value.
    Purchase. Team ID `7DH55F49XW` is already in the config.
 3. **Create the app record** in App Store Connect → copy the Apple ID
    number into `ios.appStoreConnectAppId`.
-4. ~~Four consumables~~ — **not for v1.** Owner, 13 Sep: "eliminate IAP,
-   just ad revenue for now." The packs are bought with acorns in the game;
-   `"iap": false` in the shell config drops these values from the check.
+4. **One consumable** (owner, 15 Sep: "Restore a single IAP for 2500
+   star dust @$3.99"): `dust-2500`, $3.99 tier, in App Store Connect and
+   Play Console → `products.dust-2500`. The acorn packs stay acorn-priced
+   and need nothing from the stores. `"iap": false` in the shell config
+   drops the value from the check until the account exists.
 5. **Three leaderboards** in Game Center: `acornaut.normal` (high to low),
    `acornaut.hyper` (**low to high, elapsed time** — it is posted finish
    ticks), `acornaut.spill` (high to low) → `leaderboards.*`.

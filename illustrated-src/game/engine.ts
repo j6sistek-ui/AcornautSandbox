@@ -1,4 +1,4 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId, IAP_LIVE, AD_RULES } from "./catalog";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId, AD_RULES } from "./catalog";
 import { platform } from "./platform";
 import { beginFlightTest, type FlightTestPattern } from "./sim";
 import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX, type TapShape, type TailSpring } from "./control-constants";
@@ -1235,10 +1235,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function buyDust(id: string) {
     const pack = DUST_PACKS.find((p) => p.id === id);
     if (!pack) return "missing";
-    // ACORNS BUY STAR DUST while the real-money store is off (owner, 13 Sep
-    // 2026: "leave the packs in, they just cost acorns ... 1000 acorn = 500
-    // star dust"). No receipt: nothing outside the save was charged.
-    if (!IAP_LIVE) {
+    // ACORNS BUY STAR DUST (owner, 13 Sep 2026: "leave the packs in, they
+    // just cost acorns ... 1000 acorn = 500 star dust"; 15 Sep 2026: "User
+    // can still buy star dust with acorns"). No receipt: nothing outside
+    // the save was charged. Only the cash pack goes to a store.
+    if (!pack.cash) {
       if (save.acorns < pack.acorns) return "poor";
       save.acorns -= pack.acorns;
       grantDust(pack);

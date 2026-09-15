@@ -49,7 +49,7 @@ assert.equal(Cat.SUITS[0].id,'flight');assert.equal(Cat.TRAILS[0].id,'sparks');
 // acorns now and his wake keeps its 520-star rung, wearable once he is
 // bought.
 assert.equal(C.STAR_UNLOCKS.suits.vanguard,undefined,'AcorNut has no rung on the road');
-assert.equal(C.STAR_UNLOCKS.trails.vanguardwake,520);
+assert.equal(C.STAR_UNLOCKS.trails.vanguardwake,undefined,'the wake has no rung either (15 Sep 2026): it is built in, worn only by AcorNut');
 assert.equal(Cat.SUITS.find(u=>u.id==='vanguard').cost,1000,'AcorNut costs 1,000 acorns');
 assert.equal(Cat.GUIDE_SUIT,'iontrim');assert(!Cat.IAP_ITEMS.includes('vanguard'));
 assert.equal(S.starsOf(e.save),0);

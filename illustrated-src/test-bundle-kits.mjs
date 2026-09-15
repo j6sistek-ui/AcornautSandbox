@@ -73,31 +73,39 @@ assert.equal(S.loadSave().starDust,37,'the beta funding floor never applies in p
 const snapshot=JSON.parse(readFileSync(new URL('./design/shop-refresh/baseline.json',import.meta.url),'utf8'));
 const none=()=>false;
 assert.equal(snapshot.provenance.revision,'d296e6bc404aaec14221a8b79186132fb4426dea');
-const retained=['bundle-premium-trio','bundle-aurora','bundle-regalia','bundle-circuit','bundle-critters'];
+// 15 Sep 2026 (owner: "By default all Pals unlocked"; "Remove Cyber, Robo,
+// Volt bundle, make those available at start"): every pal is free, so the
+// two companion kits are gone and Aurora and Regalia carry no pal; the
+// Circuit Pack is gone and its three suits are in every save's unlockedSuits.
+const FREED=new Set([...C.PALS.map(p=>p.id),'cyber','volt','robo']);
+const retained=['bundle-premium-trio','bundle-aurora','bundle-regalia','bundle-critters'];
 const collections={
-  'bundle-cosmic-companions':{kind:'pal',name:'Cosmic Companions',ids:['magnetar','babyalien','satellite']},
-  'bundle-starlight-companions':{kind:'pal',name:'Starlight Companions',ids:['spacepuppy','astrafox','switchback']},
   'bundle-visor-collection':{kind:'helm',name:'Visor Collection',ids:['amethyst','ivoryguard','reactor']},
 };
 const retired=snapshot.bundles.filter(b=>!retained.includes(b.id)).map(b=>b.id);
-assert.equal(retired.length,15,'thirteen singleton offers and two duos are retired');
-assert.deepEqual(C.BUNDLES.map(b=>b.id),[...retained,...Object.keys(collections)],'only the five retained kits and three actual collections remain');
+assert.equal(retired.length,16,'thirteen singleton offers, two duos and the Circuit Pack are retired');
+assert.deepEqual(C.BUNDLES.map(b=>b.id),[...retained,...Object.keys(collections)],'only the four retained kits and the one actual collection remain');
+assert(!C.BUNDLES.some(b=>b.items.some(i=>i.kind==='pal')),'no kit carries a pal');
 assert.deepEqual(C.FIXED_SHOP_SUIT_IDS,['arcflash','porcelain','nacre','origamist']);
 // The DUST in each pack is unchanged from the baseline; the DOLLAR sticker is
 // half of it (owner, 12 Sep 2026: "cut the stardust cost in half globally in
 // the store ... i meant the actual dollar values in half"). The web string is
 // pinned here; the store tier is set by hand in App Store Connect / Play.
-assert.deepEqual(C.DUST_PACKS.map(({price,acorns,...pack})=>pack),snapshot.stardustOffers.map(({totalGrant,price,...pack})=>pack),'cash offers keep their dust and bonus grants');
-// the packs are bought with acorns while the store is off (owner, 13 Sep 2026: "1000 acorn = 500 star dust")
-assert.equal(C.ACORNS_PER_DUST,2);for(const pack of C.DUST_PACKS)assert.equal(pack.acorns,pack.dust*C.ACORNS_PER_DUST,pack.id+' costs two acorns per base dust, bonus free');
-assert.deepEqual(C.DUST_PACKS.map(pack=>pack.price),['$0.49','$2.49','$4.99','$9.99'],'pack stickers are half the baseline dollars');
+assert.deepEqual(C.ACORN_PACKS.map(({price,acorns,...pack})=>pack),snapshot.stardustOffers.map(({totalGrant,price,...pack})=>pack),'the acorn packs keep their dust and bonus grants');
+// the acorn packs are bought with acorns (owner, 13 Sep 2026: "1000 acorn = 500 star dust"; 15 Sep 2026: "User can still buy star dust with acorns")
+assert.equal(C.ACORNS_PER_DUST,2);for(const pack of C.ACORN_PACKS)assert.equal(pack.acorns,pack.dust*C.ACORNS_PER_DUST,pack.id+' costs two acorns per base dust, bonus free');
+assert.deepEqual(C.ACORN_PACKS.map(pack=>pack.price),['$0.49','$2.49','$4.99','$9.99'],'pack stickers are half the baseline dollars');
+// THE ONE CASH PACK (owner, 15 Sep 2026: "Restore a single IAP for 2500 star dust @$3.99")
+assert.deepEqual(C.CASH_PACKS,[{id:'dust-2500',dust:2500,bonus:0,acorns:0,price:'$3.99',cash:true}],'one real-money pack, 2,500 dust at $3.99');
+assert.equal(C.DUST_PACKS.length,C.ACORN_PACKS.length+C.CASH_PACKS.length);
 assert.deepEqual(snapshot.stardustOffers.map(pack=>pack.price),['$0.99','$4.99','$9.99','$19.99'],'the baseline still records the pre-sale dollars');
 // The owner replaced the old pinned shelf with a smaller daily roster.
 // Its selection rules are tested independently by test-shop-cycle.mjs;
 // this pricing regression still forbids separately sold bonus wakes.
 assert.equal(C.SHOP_CYCLE.trails,0,'daily stock never sells free set or signature wakes');
-assert.deepEqual([...C.IAP_ITEMS].sort(),snapshot.individualItems.map(item=>item.id).sort(),'all ownership atoms remain available after the bundle regrouping');
+assert.deepEqual([...C.IAP_ITEMS].sort(),snapshot.individualItems.map(item=>item.id).filter(id=>!FREED.has(id)).sort(),'every ownership atom that is still for sale remains available; the freed pals and the Circuit trio left the store');
 for(const item of snapshot.individualItems){
+  if(FREED.has(item.id))continue;
   // the baseline was re-priced on 13 Sep 2026 (owner: "lower the pack prices
   // a lot"): see provenance.repriced in baseline.json
   assert.equal(C.idDust(item.id),item.dust,item.id+' single price matches the re-priced baseline');
@@ -157,7 +165,7 @@ for(const b of C.BUNDLES){
   assert.throws(()=>C.bundleQuote({...b,kit:undefined},none),/Invalid bundle kit/);
   assert.throws(()=>C.bundleQuote({...b,kit:{...b.kit,banner:'../outside.png'}},none),/Invalid bundle kit/);
 }
-assert.equal(quoteCases,440,'416 retained ownership cases plus three complete 8-case collections');
+assert.equal(quoteCases,216,'208 retained ownership cases (trio 8, Aurora 64, Regalia 128, Critters 8) plus one complete 8-case collection');
 assert.equal(new Set(C.BUNDLES.map(b=>b.kit.banner)).size,C.BUNDLES.length,'every kit has its own banner path');
 const trio=C.BUNDLES.find(b=>b.id==='bundle-premium-trio');
 assert.equal(C.bundleQuote(trio,none).discountPercent,16.7,'the trio percentage is displayed to one decimal');

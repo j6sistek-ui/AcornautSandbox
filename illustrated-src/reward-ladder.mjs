@@ -34,58 +34,25 @@ const rows = [...block.matchAll(/\{ stars: (\d+), kind: "(\w+)", (?:id: "([^"]+)
 const by = (kind) => rows.filter((r) => r.kind === kind);
 const clean = (d) => d.replace(/\s*Earned at \d+ stars\.?/g, "").replace(/\s*Earned here or available early in the shop\./g, "").replace(/\s*Earned on the Star Chart; also available early in the Regalia Pack\./g, "").replace(/\s*A second chart milestone for the Opal Feather Trail\./, "").trim() || "Earned on the Star Chart.";
 
-// A RUNG NEVER CHARGES (owner, 8 Sep 2026: "remove from star rung ... at
-// those star rung replace with acorns for now. might add new asset later to
-// replace"). These nine helmet rungs used to REVEAL a helmet the Loadout
-// then charged 90-500 acorns for, so the road announced an unlock over a
-// price tag. They pay acorns now, at their block's rate, and the helmets
-// keep their shelf gate at the same star count - so the rung is what buys
-// the thing it puts in the window.
-//
-// They stay in the POOL, holding the slots they always held, and only what
-// gets WRITTEN changes. That is the whole trick: drop them instead and the
-// eight surviving helmets re-spread, which walks the Ghost Suit to 60, the
-// Cat Suit to 300, AcorNut to 550 and the Chronarch Helmet all the way down
-// to 15 stars. Nothing else may move, so nothing else does. test-star-map
-// holds the rule for whatever is dropped onto these rungs later.
-const PRICED = new Set(["void", "comet", "cherry", "phoenix", "royal", "aurora", "princess", "meteor", "chrono"]);
-// SOLD, NOT EARNED (owner, 13 Sep 2026: "unlock acornaut with 1,000
-// acorns, remove from star chart"; "make ghost unlock by 200 acorns").
-// Same trick as the priced helmets: each keeps the suit slot it always
-// held, so no other suit moves (and AcorNut's wake still rides his block),
-// and the rung pays acorns instead.
-const SOLD_SUITS = new Set(["vanguard", "ghost"]);
-// their entries as the list carried them, at the stars that fixed their
-// place in the pool - the list itself no longer names them
-for (const [stars, id, name, desc] of [
-  [80, "ghost", "Ghost Suit", "Spectral tail, cyan-burning eyes."],
-  [570, "vanguard", "AcorNut", "The flagship squirrel. Integrated gold helmet, custom flight and exclusive wake."],
-]) if (!rows.some((r) => r.kind === "suit" && r.id === id)) rows.push({ stars, kind: "suit", id, name, desc });
-rows.sort((a, b) => a.stars - b.stars);
-// their entries as the list carried them, at the stars that fixed their
-// order in the pool - the list itself no longer names them
-for (const [stars, id, name, desc] of [
-  [15, "void", "Void Helmet", "Obsidian glass, gold rim. In the shop."],
-  [60, "comet", "Comet Helmet", "Molten amber glass. In the shop."],
-  [70, "cherry", "Cherry Helmet", "Rose-tinted glass. In the shop."],
-  [120, "phoenix", "Phoenix Helmet", "Firebird glass, ember rim. In the shop."],
-  [180, "royal", "Royal Helmet", "Crowned. Obviously. In the shop."],
-  [190, "aurora", "Aurora Helmet", "Polar light under glass. In the shop."],
-  [300, "princess", "Rose Helmet", "Petal glass, violet rim. In the shop."],
-  [540, "meteor", "Meteor Helmet", "Burnished impact glass. In the shop."],
-  [560, "chrono", "Chrono Helmet", "Brass clockwork glass. In the shop."],
-]) rows.push({ stars, kind: "helmet", id, name, desc });
-rows.sort((a, b) => a.stars - b.stars);
+// NOTHING ON THE ROAD IS FOR SALE (owner, 15 Sep 2026). The priced helmets
+// (Void, Comet, Cherry, Phoenix, Royal, Aurora, Rose, Meteor, Chrono) and the
+// sold suits (AcorNut 1,000 acorns, Ghost 200) are shop items with no rung
+// and no star gate; the phantom rows that once held their slots so nothing
+// else moved are gone with the 780-star road they held them on.
 
 const suits = by("suit");
 const helmetsAll = by("helmet");
 const matched = new Set(helmetsAll.filter((h) => suits.some((s) => s.id === h.id)).map((h) => h.id));
 const helmets = helmetsAll.filter((h) => !matched.has(h.id));
-const pals = by("pal");
+const pals = [];   // every pal is free (owner, 15 Sep 2026); none on the road
 const seen = new Set();
 const trailsAll = by("trail").filter((t) => (seen.has(t.id) ? false : seen.add(t.id)));   // one Opal Feather, not two
 const trails = trailsAll.filter((t) => t.id !== "vanguardwake");
-const gates = [...by("mode"), ...by("mod")];
+// THE 300-STAR GATES (owner, 15 Sep 2026): the early four keep their rungs;
+// the two far gates move with the road (Flight Mods 180 -> 70, Second
+// Companion 720 -> 280).
+const GATE_STARS = { flightmods: 70, dualpal: 280 };
+const gates = [...by("mode"), ...by("mod")].map((g) => ({ ...g, stars: GATE_STARS[g.id] ?? g.stars }));
 
 // ---- the grid --------------------------------------------------------------
 // Owner, 8 Sep 2026: "every 5 levels almost, maybe a few extra early on to
@@ -95,9 +62,12 @@ const gates = [...by("mode"), ...by("mod")];
 // owner's order; a family with more items than blocks spills its extras
 // into the currency rungs of the same block, so content always outranks
 // filler and nothing is ever dropped.
-const MAX = 780, STEP = 10, EXTRA = [5, 15, 25];
+// THE 100-MISSION ROAD (owner, 15 Sep 2026: "move all star chart rewards
+// onto the 100 level path"): 300 stars, a rung every five, no extras
+// needed because every five is already the opening cadence.
+const MAX = 300, STEP = 5, EXTRA = [];
 const slots = [...new Set([...EXTRA, ...Array.from({ length: MAX / STEP }, (_, i) => (i + 1) * STEP)])].sort((a, b) => a - b);
-const ORDER = ["trail", "pal", "helmet", "acorns", "dust", "suit"];
+const ORDER = ["trail", "helmet", "acorns", "dust", "suit"];   // pals left the road (15 Sep 2026)
 const BLOCKS = Math.ceil(slots.length / ORDER.length);
 const spread = (items, blocks = BLOCKS) => {
   // first item in the first block, last in the last, even between; a block
@@ -143,21 +113,11 @@ slots.forEach((stars, i) => {
   // BY KIND AND ID, never the id alone: the Comet Booster and the Aurora
   // Ribbon are TRAILS that share their name-ids with these two helmets,
   // and a bare-id test quietly turned both trails into currency.
-  if (r.kind === "helmet" && r.id && PRICED.has(r.id)) r = currency("acorns", b);   // the rung buys it; it does not hand it over
   out.push({ ...r, stars, desc: r.desc ? clean(r.desc) : r.desc });
-});
-// A SOLD SUIT pays acorns at its block's rate - substituted AFTER the pattern
-// is dealt, so the acorns/dust balance above never counts the substitution
-// and no later filler flips because of it. Nothing else may move, so
-// nothing else does.
-out.forEach((r, i) => {
-  if (r.kind !== "suit" || !r.id || !SOLD_SUITS.has(r.id)) return;
-  const b = Math.floor(slots.indexOf(r.stars) / ORDER.length);
-  out[i] = { ...currency("acorns", b), stars: r.stars };
 });
 // the road ends mid-block, so whatever the last block could not seat joins
 // the final rung as a set - the completionist's prize is the biggest one
-for (const f of Object.keys(carry)) for (const r0 of carry[f]) { const r = r0.kind === "helmet" && r0.id && PRICED.has(r0.id) ? currency("acorns", BLOCKS - 1) : r0; out.push({ ...r, stars: MAX, desc: r.desc ? clean(r.desc) : r.desc }); }
+for (const f of Object.keys(carry)) for (const r of carry[f]) out.push({ ...r, stars: MAX, desc: r.desc ? clean(r.desc) : r.desc });
 // the gates keep their own rungs (fives); a currency filler there gives way
 const snap = (n) => Math.max(5, Math.round(n / 5) * 5);
 for (const g of gates) {
