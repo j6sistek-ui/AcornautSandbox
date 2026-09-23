@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "292";
+export const ART_VER = "293";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -970,9 +970,12 @@ export const SHOP_CYCLE = {
  *  (owner, 15 Sep 2026: "Restore a single IAP for 2500 star dust @$3.99.
  *  User can still buy star dust with acorns") is `cash: true`: a shell's
  *  store sells it at its own localized price, `price` is the sticker the
- *  beta page previews it with, and a page with no store does not show it. */
+ *  beta page previews it with, and a page with no store does not show it.
+ *  TWO CASH PACKS, NO SMALL ACORN PACK (owner, 23 Sep 2026: "The 200 acorn
+ *  pack in shop was supposed to be a $1.99 IAP for 250 stardust (no acorn
+ *  options below 1000 acorns)"): dust-250 takes dust-100's slot. */
 export const DUST_PACKS: { id: string; dust: number; bonus: number; acorns: number; price: string; cash?: true }[] = [
-  { id: "dust-100",  dust: 100,  bonus: 0,   acorns: 100 * ACORNS_PER_DUST,  price: "$0.49" },
+  { id: "dust-250",  dust: 250,  bonus: 0,   acorns: 0,                      price: "$1.99", cash: true },
   { id: "dust-550",  dust: 500,  bonus: 50,  acorns: 500 * ACORNS_PER_DUST,  price: "$2.49" },
   { id: "dust-1200", dust: 1000, bonus: 200, acorns: 1000 * ACORNS_PER_DUST, price: "$4.99" },
   { id: "dust-2600", dust: 2000, bonus: 600, acorns: 2000 * ACORNS_PER_DUST, price: "$9.99" },

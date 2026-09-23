@@ -91,12 +91,18 @@ assert.deepEqual(C.FIXED_SHOP_SUIT_IDS,['arcflash','porcelain','nacre','origamis
 // half of it (owner, 12 Sep 2026: "cut the stardust cost in half globally in
 // the store ... i meant the actual dollar values in half"). The web string is
 // pinned here; the store tier is set by hand in App Store Connect / Play.
-assert.deepEqual(C.ACORN_PACKS.map(({price,acorns,...pack})=>pack),snapshot.stardustOffers.map(({totalGrant,price,...pack})=>pack),'the acorn packs keep their dust and bonus grants');
+// dust-100 left on 23 Sep 2026 (its slot is the $1.99 dust-250 cash pack);
+// the baseline keeps it as the record of what the shop used to sell
+assert(!C.DUST_PACKS.some(pack=>pack.id==='dust-100'),'the 100-dust acorn pack is gone');
+assert.deepEqual(C.ACORN_PACKS.map(({price,acorns,...pack})=>pack),snapshot.stardustOffers.filter(pack=>pack.id!=='dust-100').map(({totalGrant,price,...pack})=>pack),'the acorn packs keep their dust and bonus grants');
 // the acorn packs are bought with acorns (owner, 13 Sep 2026: "1000 acorn = 500 star dust"; 15 Sep 2026: "User can still buy star dust with acorns")
 assert.equal(C.ACORNS_PER_DUST,2);for(const pack of C.ACORN_PACKS)assert.equal(pack.acorns,pack.dust*C.ACORNS_PER_DUST,pack.id+' costs two acorns per base dust, bonus free');
-assert.deepEqual(C.ACORN_PACKS.map(pack=>pack.price),['$0.49','$2.49','$4.99','$9.99'],'pack stickers are half the baseline dollars');
-// THE ONE CASH PACK (owner, 15 Sep 2026: "Restore a single IAP for 2500 star dust @$3.99")
-assert.deepEqual(C.CASH_PACKS,[{id:'dust-2500',dust:2500,bonus:0,acorns:0,price:'$3.99',cash:true}],'one real-money pack, 2,500 dust at $3.99');
+assert.deepEqual(C.ACORN_PACKS.map(pack=>pack.price),['$2.49','$4.99','$9.99'],'pack stickers are half the baseline dollars');
+// NO ACORN PACK BELOW 1,000 ACORNS (owner, 23 Sep 2026)
+assert.deepEqual(C.ACORN_PACKS.map(pack=>pack.acorns),[1000,2000,4000],'three acorn packs, the smallest 1,000 acorns');
+// TWO CASH PACKS (owner, 15 Sep 2026: "Restore a single IAP for 2500 star dust @$3.99";
+// 23 Sep 2026: "The 200 acorn pack in shop was supposed to be a $1.99 IAP for 250 stardust")
+assert.deepEqual(C.CASH_PACKS,[{id:'dust-250',dust:250,bonus:0,acorns:0,price:'$1.99',cash:true},{id:'dust-2500',dust:2500,bonus:0,acorns:0,price:'$3.99',cash:true}],'two real-money packs: 250 dust at $1.99, 2,500 at $3.99');
 assert.equal(C.DUST_PACKS.length,C.ACORN_PACKS.length+C.CASH_PACKS.length);
 assert.deepEqual(snapshot.stardustOffers.map(pack=>pack.price),['$0.99','$4.99','$9.99','$19.99'],'the baseline still records the pre-sale dollars');
 // The owner replaced the old pinned shelf with a smaller daily roster.

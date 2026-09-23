@@ -4084,7 +4084,8 @@ export async function bootStandalone(root: HTMLElement) {
       row.append(face);
       const t = el("div", "ac-modtxt");
       t.append(el("p", "ac-modname", `${(dp.dust + dp.bonus).toLocaleString()} Star Dust`),
-        el("p", "ac-sub", dp.bonus ? `${dp.dust.toLocaleString()} + ${dp.bonus} bonus` : "Starter handful."));
+        el("p", "ac-sub", dp.bonus ? `${dp.dust.toLocaleString()} + ${dp.bonus} bonus`
+          : dp.dust < 1000 ? "Starter handful." : "Best value."));
       // the STORE's localized price when a shell is answering; the catalog's
       // sticker is only the web page's placeholder. A shell that has not
       // answered yet shows no price and cannot be tapped: a USD sticker in
@@ -4137,7 +4138,7 @@ export async function bootStandalone(root: HTMLElement) {
     // beta says dust is granted; the live web page says the store is
     // the app's.
     if (!platform.storeReady) scroll.append(el("p", "ac-fine", IS_BETA
-      ? `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The payment rail is not connected yet, so the ${CASH_PACKS[0]?.dust.toLocaleString()} pack is granted during the beta.`
+      ? `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The payment rail is not connected yet, so the ${CASH_PACKS.map((p) => p.dust.toLocaleString()).join(" and ")} packs are granted during the beta.`
       : `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500.`));
 
     box.append(scroll);
