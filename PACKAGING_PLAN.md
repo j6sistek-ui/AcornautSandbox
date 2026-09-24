@@ -41,10 +41,13 @@ In order, because each one hands the next its value.
    Purchase. Team ID `7DH55F49XW` is already in the config.
 3. **Create the app record** in App Store Connect → copy the Apple ID
    number into `ios.appStoreConnectAppId`.
-4. **One consumable** (owner, 15 Sep: "Restore a single IAP for 2500
-   star dust @$3.99"): `dust-2500`, $3.99 tier, in App Store Connect and
-   Play Console → `products.dust-2500`. The acorn packs stay acorn-priced
-   and need nothing from the stores. `"iap": false` in the shell config
+4. **Two consumables** (owner, 15 Sep: "Restore a single IAP for 2500
+   star dust @$3.99"; 23 Sep: "The 200 acorn pack in shop was supposed to
+   be a $1.99 IAP for 250 stardust"): `dust-250` at the $1.99 tier and
+   `dust-2500` at the $3.99 tier, in App Store Connect and Play Console →
+   `products.dust-250` / `products.dust-2500`. The three acorn packs
+   (1,000 / 2,000 / 4,000 acorns) stay acorn-priced and need nothing from
+   the stores. `"iap": false` in the shell config
    drops the value from the check until the account exists.
 5. **Three leaderboards** in Game Center: `acornaut.normal` (high to low),
    `acornaut.hyper` (**low to high, elapsed time** — it is posted finish

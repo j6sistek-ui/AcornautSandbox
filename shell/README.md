@@ -33,18 +33,21 @@ Waiting on you, in this order:
 
 `npm run check` prints exactly what is still missing.
 
-## One in-app purchase
+## Two in-app purchases
 
 Owner, 15 Sep 2026: *"Restore a single IAP for 2500 star dust @$3.99. User
-can still buy star dust with acorns."* The four Star Dust packs are bought
-with acorns in the game, always, on every page. The one real-money product
-is `dust-2500` (2,500 Star Dust, $3.99 tier), `cash: true` in
-`DUST_PACKS`; the shop shows it only where a store answers (a shell with
-its store, or the beta's sticker preview). `app.config.json` still carries
-`"iap": false` until the accounts exist: flip it, fill the RevenueCat keys
-and the one product id (`products.dust-2500`, a consumable at the $3.99
-tier in App Store Connect and Play Console), and have the shell set
-`window.__ACORNAUT_IAP__ = true` before the bundle loads.
+can still buy star dust with acorns."* Owner, 23 Sep 2026: *"The 200 acorn
+pack in shop was supposed to be a $1.99 IAP for 250 stardust (no acorn
+options below 1000 acorns)."* Three Star Dust packs are bought with acorns
+in the game, always, on every page (1,000 / 2,000 / 4,000 acorns). The two
+real-money products are `dust-250` (250 Star Dust, $1.99 tier) and
+`dust-2500` (2,500 Star Dust, $3.99 tier), `cash: true` in `DUST_PACKS`;
+the shop shows them only where a store answers (a shell with its store, or
+the beta's sticker preview). `app.config.json` still carries `"iap": false`
+until the accounts exist: flip it, fill the RevenueCat keys and the two
+product ids (`products.dust-250` and `products.dust-2500`, consumables at
+the $1.99 and $3.99 tiers in App Store Connect and Play Console), and have
+the shell set `window.__ACORNAUT_IAP__ = true` before the bundle loads.
 
 ## Ads (AdMob)
 
@@ -101,7 +104,7 @@ save, run `npm run configure`. Nothing else is edited by hand.
 | `android.packageName` | Android's name for the bundle id. Usually identical to `appId`. Permanent once uploaded to Play. | You choose it. |
 | `android.playGamesProjectId` | The Play Games Services project number. | play.google.com/console → the app → Grow → Play Games Services → Setup and management → Configuration. |
 | `revenuecat.iosApiKey` / `androidApiKey` | Public SDK keys, one per platform app. Safe to ship. | app.revenuecat.com → Project → Apps → each app → Public API key. |
-| `products.dust-100` … `dust-2600` | Store product IDs for the four consumables, e.g. `acornaut.dust.100`. Use the same string on both stores. | App Store Connect → the app → In-App Purchases → + → Consumable. Play Console → Monetize → In-app products. |
+| `products.dust-250` / `dust-2500` | Store product IDs for the two consumables, e.g. `acornaut.dust.250`. Use the same string on both stores. | App Store Connect → the app → In-App Purchases → + → Consumable. Play Console → Monetize → In-app products. |
 | `leaderboards.fly` / `hyper` / `spill` | Leaderboard IDs, e.g. `acornaut.normal`. Same string on both stores. Leave the others empty unless you want them. | App Store Connect → the app → Game Center → Leaderboards. Play Console → Play Games Services → Leaderboards. |
 
 ## Apple, slowly
@@ -123,11 +126,10 @@ afternoon on the Mac.
 1. appstoreconnect.apple.com → My Apps → + → New App. Platform iOS, name
    Acornaut, primary language, the bundle ID you registered, SKU `acornaut`.
 2. App Information → copy the **Apple ID** number into `ios.appStoreConnectAppId`.
-3. In-App Purchases → + → Consumable, four times. Reference name and product
-   ID from the table (`acornaut.dust.100`, etc). Set a price tier and a
-   display name each. The tiers are **$0.49 / $2.49 / $4.99 / $9.99** for
-   dust-100 / 550 / 1200 / 2600 - halved on 12 Sep 2026 (owner: "anyone
-   willing to pay should do it without it feeling expensive"); the strings in
+3. In-App Purchases → + → Consumable, twice. Reference name and product
+   ID from the table (`acornaut.dust.250`, `acornaut.dust.2500`). Set a price
+   tier and a display name each. The tiers are **$1.99** for dust-250 and
+   **$3.99** for dust-2500 (owner, 15 and 23 Sep 2026); the strings in
    `DUST_PACKS` are only the web sticker, the store tier is the real price. They can sit in "Ready to Submit" until the app's first review.
 4. Game Center → Leaderboards → + → Classic. ID `acornaut.normal`, score
    format integer, sort high to low. Repeat for `acornaut.hyper` and

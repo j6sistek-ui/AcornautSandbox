@@ -17,6 +17,7 @@
     "androidApiKey": "PLACEHOLDER_REVENUECAT_ANDROID_KEY"
   },
   "products": {
+    "dust-250": "PLACEHOLDER_PRODUCT_DUST_250",
     "dust-2500": "PLACEHOLDER_PRODUCT_DUST_2500"
   },
   "leaderboards": {

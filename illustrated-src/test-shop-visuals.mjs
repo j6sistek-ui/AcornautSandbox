@@ -514,14 +514,17 @@ try{
       e.open(screen);await tick();assert(!app.querySelector('.ac-shopvisual'),screen+' is outside the Shop treatment');
       assert(![...app.querySelectorAll('img')].some(img=>img.src.includes('/art/shop/')),screen+' uses no Shop marketing image');
     }
-    reset();const dustBefore=e.save.starDust,pack=C.DUST_PACKS[0];
+    reset();const dustBefore=e.save.starDust,pack=C.ACORN_PACKS[0];
     // THE STORE IS OFF (owner, 13 Sep 2026: "leave the packs in, they just cost
     // acorns ... 1000 acorn = 500 star dust"): the pack is priced in acorns on
     // web and beta alike, and buys with them
     const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(row);
-    // the cash pack is a store item: the beta previews it with its sticker, the web page does not show it
-    const cashRow=app.querySelector(`[data-dust-pack-id="${C.CASH_PACKS[0].id}"]`);
-    if(mode==='production')assert(!cashRow,'no cash pack on a page with no store');else assert.equal(cashRow?.querySelector('.ac-cashprice')?.textContent,C.CASH_PACKS[0].price,'the beta previews the cash pack with its sticker');
+    // the cash packs are store items: the beta previews them with their stickers, the web page does not show them
+    for(const cash of C.CASH_PACKS){
+      const cashRow=app.querySelector(`[data-dust-pack-id="${cash.id}"]`);
+      if(mode==='production')assert(!cashRow,cash.id+' is not shown on a page with no store');else assert.equal(cashRow?.querySelector('.ac-cashprice')?.textContent,cash.price,cash.id+' is previewed on the beta with its sticker');
+    }
+    assert.equal(app.querySelectorAll('.ac-dustrow[data-dust-pack-id]').length,mode==='production'?C.ACORN_PACKS.length:C.DUST_PACKS.length,'the web page lists the acorn packs only');
     assert.equal(row.querySelector('.ac-acornprice')?.textContent.replace(/\D/g,''),String(pack.acorns),'the pack shows its acorn price');assert(!row.querySelector('.ac-cashprice'),'no cash sticker while the store is off');
     e.save.acorns=pack.acorns-1;row.click();assert.equal(e.save.starDust,dustBefore,'short of acorns buys nothing');
     e.save.acorns=pack.acorns;e.open('shop');await tick();app.querySelector(`[data-dust-pack-id="${pack.id}"]`).click();
@@ -530,11 +533,12 @@ try{
   }else{
     // Exercise the actual native bridge, not hardcoded cash labels or a
     // replaced buy handler. Every scenario uses a deferred fake store.
-    // ONE CASH PACK beside the acorn packs (owner, 15 Sep 2026: "Restore a
+    // TWO CASH PACKS beside the acorn packs (owner, 15 Sep 2026: "Restore a
     // single IAP for 2500 star dust @$3.99. User can still buy star dust
-    // with acorns"): the store sells the one, acorns buy the rest
+    // with acorns"; 23 Sep 2026: "$1.99 IAP for 250 stardust"): the store
+    // sells those two, acorns buy the rest
     assert.equal(app.querySelectorAll('.ac-dustrow').length,C.DUST_PACKS.length);
-    assert.equal(C.CASH_PACKS.length,1);assert.equal(C.CASH_PACKS[0].dust,2500);
+    assert.deepEqual(C.CASH_PACKS.map(pack=>pack.dust),[250,2500]);
     for(const pack of C.ACORN_PACKS){const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(!row.disabled);assert(row.querySelector('.ac-acornprice'),pack.id+' is an acorn pack in the app too');}
     for(const pack of C.CASH_PACKS){const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(row.disabled);assert.equal(row.querySelector('.ac-cashprice').textContent,'…');row.click();}
     assert.equal(storeCalls.length,0,'unknown locale prices cannot start a purchase');
