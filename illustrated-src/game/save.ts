@@ -69,6 +69,11 @@ export type SaveData = {
   spillSignal?: boolean;
   spillEngineColor?: SpillEngineColor;
   spillDepotGuideSeen?: boolean;
+  /** FIRST-TIME GUIDES (owner, 26 Sep 2026): the pals sheet the first time the
+   *  Loadout's PALS tab opens, and the Star Chart sheet the first time the
+   *  chart opens after the guided start. Each shows once; its "?" reopens it. */
+  palGuideSeen?: boolean;
+  chartGuideSeen?: boolean;
   purchased: string[];
   /** store transaction ids already turned into dust, so a re-delivered
    *  receipt is never paid twice (owner's store build, 8 Sep 2026) */
@@ -566,6 +571,8 @@ export function loadSave(): SaveData {
   s.spillEngineColor = spillEngineColor(s).id;
   s.spillSignal = s.spillEngineColor !== "stock";
   s.spillDepotGuideSeen = s.spillDepotGuideSeen === true;
+  s.palGuideSeen = s.palGuideSeen === true;
+  s.chartGuideSeen = s.chartGuideSeen === true;
   // favourites are ids only; anything else in the array is a hand-edit
   // the case used to remember "compact"; it starts folded now and only
   // remembers "expanded". The pin-to-home list is gone with its feature.

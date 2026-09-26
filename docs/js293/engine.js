@@ -419,6 +419,14 @@ export async function createEngine(canvas) {
             writeSave(save);
             notify();
         },
+        guideSeen(which) {
+            if (which === "pals")
+                save.palGuideSeen = true;
+            else
+                save.chartGuideSeen = true;
+            writeSave(save);
+            notify();
+        },
         setSpillButtonsOff(off) {
             save.spillButtonsOff = off;
             writeSave(save);
