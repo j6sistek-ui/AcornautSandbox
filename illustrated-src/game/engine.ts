@@ -201,6 +201,8 @@ export type Engine = {
   /** the four settings switches, each persisted; see SaveData */
   setSfxOff: (off: boolean) => void;
   setHelpOff: (off: boolean) => void;
+  /** a first-time guide was read: it does not open on its own again */
+  guideSeen: (which: "pals" | "chart") => void;
   setMotionOff: (off: boolean) => void;
   setIntroOff: (off: boolean) => void;
   /** star or unstar a suit, helmet or trail for the FAVOURITES shelf */
@@ -596,6 +598,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     setHelpOff(off) {
       save.helpOff = off;
+      writeSave(save);
+      notify();
+    },
+    guideSeen(which) {
+      if (which === "pals") save.palGuideSeen = true; else save.chartGuideSeen = true;
       writeSave(save);
       notify();
     },

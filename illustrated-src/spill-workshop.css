@@ -200,3 +200,16 @@ body .ac-shipmenu .ac-sheet-scroll{padding-bottom:calc(24px + env(safe-area-inse
 .ac-guide-utilityhead.ac-guide-utilityhead{margin:10px 0 4px;padding-top:8px}
 .ac-guide-utilityhead.ac-guide-utilityhead h3{font-size:14px}
 .ac-guide-carry.ac-guide-carry{margin:10px 0 14px;padding-top:12px}
+/* THE FREE-PICK NUDGE (owner, 26 Sep 2026). After DEPOT_HINT_MS on the pre-flight
+   Depot a gold arrow bobs toward each option card and a ring pulses around the
+   one button that fits the free upgrade. --hint-delay is set per redraw from when
+   the Depot opened, so a redraw resumes the pulse instead of restarting it. */
+.ac-workshop-hint-arrows .ac-workshop-system::after{content:"";position:absolute;left:50%;width:12px;height:12px;margin-left:-7px;border:solid #ffd978;border-width:3px 0 0 3px;border-radius:2px;filter:drop-shadow(0 0 4px #ffbd57);opacity:0;pointer-events:none;animation:ac-hint-show .35s ease-out var(--hint-delay,3s) both,ac-hint-bob 1.1s ease-in-out var(--hint-delay,3s) infinite}
+.ac-workshop-hint-arrows .ac-workshop-system[data-system=plating]::after,.ac-workshop-hint-arrows .ac-workshop-system[data-system=shield]::after{top:calc(100% + 8px);--hint-turn:45deg;--hint-bob:-5px}
+.ac-workshop-hint-arrows .ac-workshop-system[data-system=thrusters]::after,.ac-workshop-hint-arrows .ac-workshop-system[data-system=pulse]::after{bottom:calc(100% + 8px);--hint-turn:225deg;--hint-bob:5px}
+.ac-workshop-hint-ring{position:relative}
+.ac-workshop-hint-ring::after{content:"";position:absolute;inset:-3px;border:2px solid #ffe29a;border-radius:inherit;opacity:0;pointer-events:none;animation:ac-hint-ring 1.4s ease-out var(--hint-delay,3s) infinite}
+@keyframes ac-hint-show{from{opacity:0}to{opacity:1}}
+@keyframes ac-hint-bob{0%,100%{transform:translateY(0) rotate(var(--hint-turn))}50%{transform:translateY(var(--hint-bob)) rotate(var(--hint-turn))}}
+@keyframes ac-hint-ring{0%{opacity:.95;transform:scale(1)}100%{opacity:0;transform:scale(1.22)}}
+@media(prefers-reduced-motion:reduce){.ac-workshop-hint-arrows .ac-workshop-system::after{animation:ac-hint-show .01s linear var(--hint-delay,3s) both;transform:rotate(var(--hint-turn))}.ac-workshop-hint-ring::after{animation:ac-hint-show .01s linear var(--hint-delay,3s) both;transform:scale(1.08)}}

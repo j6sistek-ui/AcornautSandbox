@@ -125,8 +125,13 @@ export function drawSpillLaunchSetup(engine: Engine, onGuide: () => void) {
   actions.append(back, go); wrap.append(actions); return wrap;
 }
 
-export type DepotView = { key: string; part: System; extras: boolean; specialties: boolean; guide: boolean; swap: SpillUtility | null; receipt: string; flashAt: number };
-export const createDepotView = (): DepotView => ({ key: "", part: "plating", extras: false, specialties: false, guide: false, swap: null, receipt: "", flashAt: -10000 });
+export type DepotView = { key: string; part: System; extras: boolean; specialties: boolean; guide: boolean; swap: SpillUtility | null; receipt: string; flashAt: number; openedAt: number; picked: boolean };
+export const createDepotView = (): DepotView => ({ key: "", part: "plating", extras: false, specialties: false, guide: false, swap: null, receipt: "", flashAt: -10000, openedAt: performance.now(), picked: false });
+/** THE FREE-PICK NUDGE (owner, 26 Sep 2026: "after a few seconds a pulsing ring
+ *  around the free button and arrows to each of the upgraded options to help
+ *  prompt a selection pick and clear selection route"). It waits this long
+ *  after the pre-flight Depot opens. */
+export const DEPOT_HINT_MS = 3000;
 function drawDepotGuide(engine: Engine, onClose: () => void, closeLabel: string) {
   const sheet = el("section", "ac-lvlcard ac-depotcard ac-depotguidecard");
   sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-modal", "true"); sheet.setAttribute("aria-label", "How the Depot works"); sheet.tabIndex = -1;
@@ -227,6 +232,14 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
   const sheet = el("section", "ac-lvlcard ac-depotcard ac-workshop-card");
   sheet.setAttribute("role", "dialog"); sheet.setAttribute("aria-label", "Salvage depot");
   const arming = (sp.depot?.arm ?? 0) > 0;
+  // A redraw must not restart the nudge, so its delay is measured from when
+  // this Depot opened: negative once the wait is over, which resumes the
+  // pulse mid-cycle instead of hiding it again.
+  const hinting = !!(sp.welcome && sp.freeUpgrade) && !arming;
+  if (hinting) {
+    sheet.classList.add("ac-workshop-hinting");
+    sheet.style.setProperty("--hint-delay", `${Math.round(DEPOT_HINT_MS - (performance.now() - view.openedAt))}ms`);
+  }
   const feedback = (message: string) => { view.receipt = message; view.flashAt = performance.now(); };
   const priceButton = (what: SpillBuyable, label?: string) => {
     const price = spillPrice(sp, what), b = el("button", "ac-workshop-buy"); b.dataset.spillControl = what;
@@ -254,6 +267,8 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
   status.append(health, shields); if (!sp.welcome) status.append(priceButton("repair", "Repair")); sheet.append(status);
   if (sp.welcome) sheet.append(el("p", "ac-workshop-free", sp.freeUpgrade ? "Choose one free upgrade" : "✓ Upgrade fitted · ready to launch"));
   const stage = el("div", "ac-workshop-stage"); stage.append(shipPreview(engine, spillBuildFromState(sp), 192, view.flashAt));
+  // the arrows point at the four options until the pilot taps one of them
+  if (hinting && !view.picked) stage.classList.add("ac-workshop-hint-arrows");
   const links = document.createElementNS("http://www.w3.org/2000/svg", "svg"); links.classList.add("ac-workshop-links"); links.setAttribute("viewBox", "0 0 344 192"); links.setAttribute("aria-hidden", "true");
   const paths = { plating: "M 97 36 L 119 36 L 153 85", shield: "M 252 36 L 235 36 L 214 82", thrusters: "M 90 165 L 104 130 L 110 119", pulse: "M 255 164 L 260 138 L 252 121" };
   for (const id of systems) {
@@ -264,7 +279,7 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
     name.append(systemIcon(id), el("b", "", SPILL_SHOP[id].name));
     const cost = el("span", "ac-workshop-systemprice", price === null ? "Full" : sp.welcome && !sp.freeUpgrade ? "Next stop" : price === 0 ? "Free" : String(price));
     if (price && !sp.welcome) cost.append(coin()); b.append(name, cost);
-    b.onclick = () => { view.part = id; view.specialties = false; rerender(); }; stage.append(b);
+    b.onclick = () => { view.part = id; view.specialties = false; view.picked = true; rerender(); }; stage.append(b);
   }
   stage.append(links); sheet.append(stage);
   const part = view.part, tier = part === "shield" ? sp.shield : sp.up[part], max = part === "shield" ? 2 : 3;
@@ -272,7 +287,10 @@ export function drawDepotWorkshop(engine: Engine, view: DepotView, rerender: () 
   words.append(el("h3", "", `${SPILL_SHOP[part].name}${part === "plating" ? " upgrade" : ""}`), el("p", "", part === "shield"
     ? tier >= max ? "Two shields ready" : `Blocks one hit · ${tier} → ${tier + 1} shields`
     : tier >= max ? "Fully upgraded" : SPILL_SHOP[part].levels[tier]));
-  selection.append(systemIcon(part), words, priceButton(part)); sheet.append(selection);
+  const take = priceButton(part);
+  // the ring marks the one button that fits the free upgrade
+  if (hinting) take.classList.add("ac-workshop-hint-ring");
+  selection.append(systemIcon(part), words, take); sheet.append(selection);
   const price = spillPrice(sp, part);
   if (!sp.welcome && price !== null && price > sp.ore) sheet.append(el("p", "ac-workshop-need", `${price - sp.ore} more Acorn Coins needed`));
   if (!sp.welcome && part !== "shield" && tier >= 2) {

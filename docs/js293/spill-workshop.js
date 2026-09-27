@@ -171,7 +171,12 @@ export function drawSpillLaunchSetup(engine, onGuide) {
     wrap.append(actions);
     return wrap;
 }
-export const createDepotView = () => ({ key: "", part: "plating", extras: false, specialties: false, guide: false, swap: null, receipt: "", flashAt: -10000 });
+export const createDepotView = () => ({ key: "", part: "plating", extras: false, specialties: false, guide: false, swap: null, receipt: "", flashAt: -10000, openedAt: performance.now(), picked: false });
+/** THE FREE-PICK NUDGE (owner, 26 Sep 2026: "after a few seconds a pulsing ring
+ *  around the free button and arrows to each of the upgraded options to help
+ *  prompt a selection pick and clear selection route"). It waits this long
+ *  after the pre-flight Depot opens. */
+export const DEPOT_HINT_MS = 3000;
 function drawDepotGuide(engine, onClose, closeLabel) {
     const sheet = el("section", "ac-lvlcard ac-depotcard ac-depotguidecard");
     sheet.setAttribute("role", "dialog");
@@ -291,6 +296,14 @@ export function drawDepotWorkshop(engine, view, rerender) {
     sheet.setAttribute("role", "dialog");
     sheet.setAttribute("aria-label", "Salvage depot");
     const arming = (sp.depot?.arm ?? 0) > 0;
+    // A redraw must not restart the nudge, so its delay is measured from when
+    // this Depot opened: negative once the wait is over, which resumes the
+    // pulse mid-cycle instead of hiding it again.
+    const hinting = !!(sp.welcome && sp.freeUpgrade) && !arming;
+    if (hinting) {
+        sheet.classList.add("ac-workshop-hinting");
+        sheet.style.setProperty("--hint-delay", `${Math.round(DEPOT_HINT_MS - (performance.now() - view.openedAt))}ms`);
+    }
     const feedback = (message) => { view.receipt = message; view.flashAt = performance.now(); };
     const priceButton = (what, label) => {
         const price = spillPrice(sp, what), b = el("button", "ac-workshop-buy");
@@ -342,6 +355,9 @@ export function drawDepotWorkshop(engine, view, rerender) {
         sheet.append(el("p", "ac-workshop-free", sp.freeUpgrade ? "Choose one free upgrade" : "✓ Upgrade fitted · ready to launch"));
     const stage = el("div", "ac-workshop-stage");
     stage.append(shipPreview(engine, spillBuildFromState(sp), 192, view.flashAt));
+    // the arrows point at the four options until the pilot taps one of them
+    if (hinting && !view.picked)
+        stage.classList.add("ac-workshop-hint-arrows");
     const links = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     links.classList.add("ac-workshop-links");
     links.setAttribute("viewBox", "0 0 344 192");
@@ -362,7 +378,7 @@ export function drawDepotWorkshop(engine, view, rerender) {
         if (price && !sp.welcome)
             cost.append(coin());
         b.append(name, cost);
-        b.onclick = () => { view.part = id; view.specialties = false; rerender(); };
+        b.onclick = () => { view.part = id; view.specialties = false; view.picked = true; rerender(); };
         stage.append(b);
     }
     stage.append(links);
@@ -373,7 +389,11 @@ export function drawDepotWorkshop(engine, view, rerender) {
     words.append(el("h3", "", `${SPILL_SHOP[part].name}${part === "plating" ? " upgrade" : ""}`), el("p", "", part === "shield"
         ? tier >= max ? "Two shields ready" : `Blocks one hit · ${tier} → ${tier + 1} shields`
         : tier >= max ? "Fully upgraded" : SPILL_SHOP[part].levels[tier]));
-    selection.append(systemIcon(part), words, priceButton(part));
+    const take = priceButton(part);
+    // the ring marks the one button that fits the free upgrade
+    if (hinting)
+        take.classList.add("ac-workshop-hint-ring");
+    selection.append(systemIcon(part), words, take);
     sheet.append(selection);
     const price = spillPrice(sp, part);
     if (!sp.welcome && price !== null && price > sp.ore)

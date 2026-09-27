@@ -2628,6 +2628,11 @@ export async function bootStandalone(root: HTMLElement) {
       grid.append(el("p", "ac-palseats", dualPalUnlocked(s)
         ? "TWO SEATS \u00b7 tap a second pal to fly it low \u00b7 tap a flying pal to dismiss it"
         : `SECOND SEAT AT \u2605 ${STAR_UNLOCKS.dualPal} \u00b7 fly two pals at once, effects stacked`));
+      const how = el("button", "ac-ghost ac-guidebtn");
+      how.dataset.guide = "pals";
+      how.append(el("span", "ac-guidemark", "?"), el("span", "", "How pals work"));
+      how.onclick = () => { guideOpen = "pals"; render(); };
+      grid.append(how);
       for (const p of PALS.filter((x) => !isIap(x.id) || ownsPremium(s, x.id))) grid.append(palCardOf(p));
     } else if (engine.shopTab === "ship") {
       // ENGINE COLOUR ONLY (owner, 12 Sep 2026: "Remove everything from the
@@ -2745,6 +2750,7 @@ export async function bootStandalone(root: HTMLElement) {
     }
     selection.append(scroll);
     if (spendAsk) box.append(drawSpendSheet());
+    else if (engine.shopTab === "pals" && guideShows("pals")) box.append(drawGuideSheet("pals"));
     return box;
   }
 
@@ -3271,6 +3277,68 @@ export async function bootStandalone(root: HTMLElement) {
 
   /** ONE REWARD ON THE RAIL, opened: what it is, how far off it is, and -
    *  when a Star Unlock is held - the hold that opens it now. */
+  /** FIRST-TIME GUIDES (owner, 26 Sep 2026: "Need a first time guide for pal
+   *  selection what they do and why. Also on star chart explaining pals are
+   *  picked for you. and how the unlocks work"). Each opens by itself once -
+   *  the pals sheet on the first visit to the PALS tab, the chart sheet on the
+   *  first visit after the guided start, so it never covers "Fly MISSION 1" -
+   *  and the "?" beside each reopens it. Help prompts off keeps both shut. */
+  function guideShows(which: "pals" | "chart") {
+    if (guideOpen === which) return true;
+    const s = engine.save;
+    if (s.helpOff) return false;
+    if (which === "pals") return !s.palGuideSeen;
+    return !s.chartGuideSeen && s.guide === "done";
+  }
+  const GUIDE_TEXT: Record<"pals" | "chart", { kicker: string; title: string; rows: [string, string][] }> = {
+    pals: {
+      kicker: "LOADOUT · PALS",
+      title: "Meet your pals",
+      rows: [
+        ["Every pal changes your flight.", "Some help, like Acorn's magnet or UFO's starting shield. Some add a twist, like Nut-Sack's double acorns with no shields."],
+        ["Pick one to shape your run.", "Fly for more acorns, an easier line, or a harder challenge. Every pal is free to try."],
+        [`A second seat opens at \u2605 ${STAR_UNLOCKS.dualPal}.`, "Then two pals fly together and their effects stack."],
+        ["Just like the look?", "Turn on Pal Effects Off and any pal flies along for show."],
+        ["Your pals fly in Free Flight.", "Star Chart missions bring their own pal."],
+      ],
+    },
+    chart: {
+      kicker: "STAR CHART",
+      title: "How the road works",
+      rows: [
+        ["Each mission earns up to 3 stars.", "Your stars add up across the whole road."],
+        ["Rewards hang on the road.", "Each one sits at the star count that opens it. Reach it and the reward is yours: gear opens in the Loadout, acorns and Star Dust go straight to you."],
+        ["Already own a reward?", `That rung pays ${SUB_ACORNS} acorns instead.`],
+        ["Missions pick your pal for you.", "Each one flies with the pal it was built around, or with none. The mission card shows which. Your Loadout pals wait for Free Flight."],
+        ["Can't wait for a reward?", "A Star Unlock from the Shop opens any one of them early."],
+      ],
+    },
+  };
+  function drawGuideSheet(which: "pals" | "chart") {
+    const g = GUIDE_TEXT[which];
+    const wrap = el("div", "ac-lvlsheet");
+    wrap.dataset.guideSheet = which;
+    const sheet = el("div", "ac-lvlcard ac-guidesheet");
+    sheet.setAttribute("role", "dialog");
+    sheet.setAttribute("aria-label", g.title);
+    sheet.append(el("p", "ac-kicker", g.kicker), el("h2", "ac-lvlname", g.title));
+    const list = el("ul", "ac-guidelist");
+    for (const [lead, rest] of g.rows) {
+      const li = el("li");
+      li.append(el("b", "", lead), el("span", "", rest));
+      list.append(li);
+    }
+    sheet.append(list);
+    const close = () => { guideOpen = null; engine.guideSeen(which); render(); };
+    const ok = el("button", "ac-primary", "GOT IT");
+    ok.dataset.guideClose = which;
+    ok.onclick = close;
+    sheet.append(ok);
+    wrap.append(sheet);
+    wrap.onclick = (e) => { if (e.target === wrap) close(); };
+    return wrap;
+  }
+
   function drawRewardSheet(key: string) {
     const wrap = el("div", "ac-lvlsheet");
     const r = STAR_REWARDS.find((x) => rewardId(x) === key);
@@ -3331,7 +3399,13 @@ export async function bootStandalone(root: HTMLElement) {
     box.classList.add("ac-chartscene", "ac-zone-chart");
     const totalPill = el("div", "ac-pill ac-pill-gold");
     totalPill.append(el("span", "ac-pip on", "\u2605"), el("span", "", `${total} / ${CHART_MAX_STARS}`));
-    box.append(header(STAR_MAP_PREVIEW ? "260 missions · all unlocked in beta" : `${CHART_LEVELS.length} missions · the road ahead`, "Star Chart", totalPill));
+    const chartAside = el("div", "ac-headaside");
+    const chartHelp = el("button", "ac-helpdot", "?");
+    chartHelp.dataset.guide = "chart";
+    chartHelp.setAttribute("aria-label", "How the Star Chart works");
+    chartHelp.onclick = () => { guideOpen = "chart"; render(); };
+    chartAside.append(totalPill, chartHelp);
+    box.append(header(STAR_MAP_PREVIEW ? "260 missions · all unlocked in beta" : `${CHART_LEVELS.length} missions · the road ahead`, "Star Chart", chartAside));
     const nav = el("div", "ac-chart-nav");
     nav.append(el("span", "ac-current-zone", "DEEP SPACE"));
     const goTo = (id?: string) => {
@@ -3381,6 +3455,7 @@ export async function bootStandalone(root: HTMLElement) {
     }
     if (STAR_MAP_PREVIEW && rewardPreviewAt) box.append(drawRewardPreview());
     if (rewardOpen) box.append(drawRewardSheet(rewardOpen));
+    else if (!chartLevel && !hyperRunOpen && !(STAR_MAP_PREVIEW && rewardPreviewAt) && guideShows("chart")) box.append(drawGuideSheet("chart"));
     // THE DEBRIS FIELD'S BRIEFING. The gate nodes live on this screen, but
     // hyperRunOpen was only ever read by the hub - so tapping a field set a
     // flag nothing on the chart looked at, and the one route to Hyper Run
@@ -3682,6 +3757,7 @@ export async function bootStandalone(root: HTMLElement) {
   // Unlock on a reward from the rail. Both are hold-to-confirm.
   let boostConfirm: BoostId | null = null; // the shop card asking "are you sure"
   let rewardOpen: string | null = null;    // the reward sheet on the chart, by rewardId
+  let guideOpen: "pals" | "chart" | null = null;   // a first-time guide reopened from its "?"
   let boostNote: string | null = null;     // one line under a boost control that refused
   let landOnPilot = false;                 // the next chart render scrolls to the pilot
   // THE CART. Tapping a tile INCLUDES it - any combination, in any order -
