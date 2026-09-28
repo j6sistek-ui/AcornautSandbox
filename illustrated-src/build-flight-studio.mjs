@@ -21,7 +21,7 @@ function compile(name){
   });
   writeFileSync(join(out,'game',name+'.mjs'),output);
 }
-for(const name of ['high-orbit','high-orbit-motion','premium-flight','premium-flight-frames','premium-bank-wake','sprite-detail','arcflash','arcflash-motion','vanguard-maneuver','helmet-openings'])compile(name);
+for(const name of ['high-orbit','high-orbit-motion','premium-flight','premium-flight-frames','premium-bank-wake','sprite-detail','arcflash','arcflash-motion','vanguard-maneuver','helmet-openings','helmet-fit'])compile(name);
 // Remove generated modules retired from the current dependency graph.
 for(const name of readdirSync(join(out,'game')))if(name.endsWith('.mjs')&&!visited.has(name.slice(0,-4)))rmSync(join(out,'game',name));
 const {PREMIUM_FLIGHT_FRAMES}=await import(pathToFileURL(join(out,'game/premium-flight-frames.mjs')).href);

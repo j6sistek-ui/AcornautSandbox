@@ -42,6 +42,8 @@ mkdirSync(join(root,"docs/lab/high-orbit"),{recursive:true});
 cpSync(join(root,"illustrated-src/lab/high-orbit.html"),join(root,"docs/lab/high-orbit/index.html"));
 mkdirSync(join(root,"docs/lab/premium-pilots"),{recursive:true});
 cpSync(join(root,"illustrated-src/lab/premium-pilots.html"),join(root,"docs/lab/premium-pilots/index.html"));
+mkdirSync(join(root,"docs/lab/helmet-fit"),{recursive:true});
+cpSync(join(root,"illustrated-src/lab/helmet-fit.html"),join(root,"docs/lab/helmet-fit/index.html"));
 console.log(
   "built lab: docs/lab/rig/js, docs/lab/skytest/js, docs/lab/ship/js " +
     `(${t.suits.length} heads, ${t.helmets.length} helmets, art v${t.artVer})`,

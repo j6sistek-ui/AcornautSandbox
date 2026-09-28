@@ -8,7 +8,7 @@ Run from anywhere in the repository:
 This gate checks contracts that can be decided mechanically, including the
 base suits' calibrated on-screen helmet scale. Helmet seating is deliberately
 not one of them: shaped glass openings and unusual heads still need the
-20-suit x 23-helmet visual matrix described in ART_SPEC.md.
+catalog-complete visual matrix in design/helmet-fit-all/REVIEW.md.
 """
 
 from __future__ import annotations
@@ -71,20 +71,20 @@ BASE_SUIT_IDS = (
     "bigbooty",
 )
 # Each suit has its own head-to-body proportions. These display scales
-# record the build-206 head/collar fitting review against unchanged art;
+# record the build-295 head-cavity fitting review against unchanged art;
 # uniform ratios against the whole character would undo that fit. Retain
 # the existing +/-5% typo guard for every suit, now including Flight.
 # Values are fitted DOME radius / runtime alpha-trimmed content span.
 CALIBRATED_HELMET_SCALES = {
-    "flight": 0.2609,     # 48 / 184
+    "flight": 40.32 / 184,
     "iontrim": 0.2304,    # 44 / 191
     "copper": 0.2538,     # 50 / 197
     "frost": 0.2308,      # 39 / 169
     "voidsuit": 0.2312,   # 46 / 199
     "ember": 0.2367,      # 40 / 169
-    "robo": 0.2275,       # 43 / 189
+    "robo": 36.12 / 189,
     "ghost": 0.2178,      # 49 / 225
-    "bigbooty": 0.1872,
+    "bigbooty": 28 / 187,
 }
 CALIBRATED_HELMET_TOLERANCE = 0.05
 NATURAL_FLIGHT_SUITS = {"iontrim", "copper", "voidsuit", "sammie", "gemmie", "leviathan", "ember", "frost", "ghost"}

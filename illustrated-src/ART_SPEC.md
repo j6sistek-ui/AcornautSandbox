@@ -1,17 +1,22 @@
 # Acornaut art spec — heads and helmets
 
-## Animated helmet fitting (7 September 2026)
+## Animated helmet fitting (28 September 2026)
 
-The current production roster has 16 suits with interchangeable helmets.
+The current roster has 34 characters: 21 accept wearable helmets and 13
+retain their integrated appearance. There are 30 helmets and 570 valid
+pairings (27 general helmets on 21 suits, plus Leviathan, Groveguard and
+Sunforged on their matching suit only).
 Their static portraits and bare-headed motion banks use per-painting `DOME`
 positions, radii and optional local rotations. Fit the ears, muzzle and
 collar in each pose; a uniform head-to-body ratio is not a substitute for
 that review. Flight's current suit banks are bare-headed too. Only the
 eight original `art/squirrel` idle/flap paintings retain baked Clear domes.
 
-See [the helmet fitting review](design/helmet-fit/REVIEW.md) for the current
-animated comparisons and unchanged-flight regression. Its roster and bank
-coverage supersede the older static combination counts below.
+See [the complete fitting review](design/helmet-fit-all/REVIEW.md), its
+catalog inventory and contact sheets for every valid pairing. The game and
+Flight Studio share `game/helmet-fit.ts`; the fitting bench reads the same
+head cavities. `/lab/helmet-fit/` is the read-only moving comparison page.
+The [7 September review](design/helmet-fit/REVIEW.md) remains historical evidence.
 
 ## Arcflash parts atlas (owner request, 6 September 2026)
 
@@ -36,11 +41,10 @@ renderer supplies blue wrist jets and the persistent boot wake separately.
 The review scripts include game-size renders and the 100/180/300ms tap cases;
 see `design/arcflash/REVIEW.md` for reproduction and known limits.
 
-Every helmet has to sit on every helmet-wearing suit. There are 17 suits —
-one of which, the Cat, wears its own head — and 20 helmets, so that is 320
-shipping combinations. Flight's eight animation frames keep their baked
-Clear dome; any custom helmet uses the bare Flight rig, avoiding another
-160 stacked-dome combinations.
+Every general helmet must fit every helmet-wearing suit. Suit-exclusive
+helmets retain their catalog restrictions. Current Flight suit banks are
+bare-headed; the original `squirrel/idle-*` and `flap-*` fallback images
+alone retain their baked Clear dome.
 
 The **rig editor** (`docs/lab/rig/`, reachable from Help) is the bench for
 setting these two tables by hand. It draws every pairing the way the game
@@ -48,22 +52,24 @@ does and hands the numbers back as text.
 
 ## The contract
 
-A suit sprite carries a **head circle**. A helmet sprite carries a **glass
-circle**. At draw time the helmet is scaled so its glass circle lands exactly
-on the head circle:
+A suit sprite carries a **head circle**. A helmet sprite carries a **head
+cavity** independent of the glass mask, shell, crown or decorative halo.
+At draw time the helmet is uniformly scaled to the head circle:
 
 ```
-scale = headRadius * 1.04 / glassRadius
+scale = headRadius / helmetSeatRadius
 ```
 
-Those two circles are the numbers in `draw.ts`: `DOME` for suits (keyed
-`"suit:<id>"`) and `HELM_GLASS` for helmets. Get them right and any helmet
-fits any suit. Get one wrong and that item is broken against all 20-odd of
-the others — which is exactly how we ended up with a dome that read huge on
-one suit and small on the next.
+`draw.ts` stores suit and per-frame head circles in `DOME`.
+`helmet-fit.ts` stores each helmet's `[x,y,r,angle?]` in `HELMET_SEATS`.
+`HELM_GLASS` in `draw.ts` controls transparency only. Never change a glass
+mask to resize a helmet: that also changes the painted visor. The cavity
+centre maps to the head centre; local frame and helmet rotations are added.
+Head radii stay constant within each motion bank. Uniform scaling preserves
+the helmet's proportions and decorations.
 
-**Measure them. Do not estimate them.** Every fault we have had here came
-from a plausible-looking proxy, and the plausible proxies all lie:
+Measure the actual skull, ears and muzzle, then review the composites.
+Automatic circles are diagnostics, not a substitute for visual fitting:
 
 - The blob of warm fur around a face includes ears, muzzle and neck, and
   those move with the pose. `sqrt(area / pi)` over that blob swings by a
@@ -71,9 +77,9 @@ from a plausible-looking proxy, and the plausible proxies all lie:
 - Colour tests find no head at all on **alien** (green), **ghost** and
   **frost** (white) or **robo** (chrome), and on several suits a belly of
   warm fur outscores the face.
-- A helmet's **visible visor** is nothing like its glass radius, because the
-  shell hides most of the sphere's edge. Measuring Sammie's visor gave 78
-  where the answer was 124.
+- A helmet's visible visor, outer shell and wearable cavity are different.
+  A crown or flower must not enlarge the wearer's head. Seat shaped helmets
+  against multiple heads, including small Robo and large Eclipse poses.
 
 ## How it flies
 
@@ -107,9 +113,12 @@ frames, head radius held constant across all of them.
 
 ## The head standard
 
-**Head diameter = 43% of the sprite's longest content dimension**, ±4.
+The older painting families used **head diameter = 43% of the sprite's
+longest content dimension**, ±4. The natural-flight nine and five High Orbit
+rigs now use a fixed 36px skull radius at their 192px reference size.
+Preserve their existing registration when adjusting helmets.
 
-Measured across the shipping suits: range 38.8% – 48.8%, median 43.0%.
+The historical survey measured 38.8% – 48.8%, median 43.0%.
 The thirteen original suits sit at 38.8–45.8%; the four helmetless renders
 (Seraph, Leviathan, Gemmie, Sammie) came in at 47–49%, which is why they
 needed larger head circles than the rest rather than the same one.
@@ -120,9 +129,9 @@ size on screen from suit to suit, which is what a player actually notices.
 
 ## The helmet standard
 
-The glass circle is what must land on the head. For a plain bubble helmet it
-is the sphere itself; the twelve plain bubbles all carry `125` and all
-measure `103–107` as an inscribed circle, hence the constant in the tool.
+The head cavity must land on the head. A plain dome needs room for the ears
+and muzzle without an empty oversized bubble; its original padded glass
+mask is not the sizing reference. Current seats are in `HELMET_SEATS`.
 
 Helmets with **ears, a crown, a halo or a long chin** are the exception:
 an inscribed circle finds the wrong feature on them. **princess**, **sammie**,
@@ -152,7 +161,8 @@ python3 illustrated-src/fit-suit.py art-src/suit-new-master.png docs/art/suits/n
 python3 illustrated-src/measure-art.py suit   docs/art/suits/newsuit.png
 python3 illustrated-src/measure-art.py helmet docs/art/helms/newhelm.png
 
-# 3. paste the printed line into DOME / HELM_GLASS in draw.ts
+# 3. review DOME in draw.ts and HELMET_SEATS in helmet-fit.ts
+#    retain HELM_GLASS as the transparency mask, not the fit circle
 # 4. add the id to catalog.ts (SUITS or HELMETS) and to art.ts
 
 # 5. cut the tail off at the neck, and paste the printed TAIL_PIVOT back
@@ -195,9 +205,13 @@ decodes every shipping raster, enforces runtime dimensions and alpha,
 checks catalog/load coverage, audits the reviewed planet/debris cutouts,
 and runs the full tail-rig audit.
 
-Then inspect `docs/lab/visual-audit/` on both halves of its light/dark plate.
-It renders all 320 suit/helmet combinations, the eight baked-Clear Flight
-frames, and every planet and debris sprite using gameplay's measured fit.
+Then inspect `docs/lab/helmet-fit/` on its light/dark plates, in portrait,
+flight and dive views at both close and game size. It derives valid pairings
+from the catalog. `node illustrated-src/review-helmet-fit.mjs
+illustrated-src/design/helmet-fit-all --motion` generates native contact
+sheets, including every bank frame and High Orbit preview samples.
+`node illustrated-src/test-helmet-fit.mjs` checks catalog coverage, constant
+bank radii, integrated-head preservation and game/Studio pixel parity.
 The rig editor at `docs/lab/rig/` remains the authoritative place to adjust
 head and helmet circles.
 
@@ -210,20 +224,20 @@ to those derived 256px cutouts must stay conservative.
 ## Suits that keep their own head
 
 `ownHead: true` in `catalog.ts` tells the renderer not to paint a helmet at
-all. It is for models whose face is the costume — the Cat is the only one
-using it. It is a last resort, not a fix for a suit that happens to have been
+all. The 13 current integrated appearances are listed in the review inventory.
+It is a last resort, not a fix for a suit that happens to have been
 rendered wearing a dome; get a bare-headed render instead.
 
 ## Reference
 
-`flight` is the reference suit. Its anchor is hand-tuned and everything else
-is measured against it:
+`flight` remains a useful reference suit. Its current still anchor is:
 
 ```
-"suit:flight": [194, 97, 50]
+"suit:flight": [182, 88, 40.32, 0]
 ```
 
-Change it and every other suit's measurement moves with it.
+This is Flight's current still socket. Other suits and motion frames retain
+their independently reviewed sockets; changing Flight does not recalibrate them.
 
 
 ### Vanguard flagship exception (owner request, 5 September 2026)
