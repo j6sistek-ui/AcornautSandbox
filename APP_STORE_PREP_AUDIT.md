@@ -1,5 +1,9 @@
 # App Store prep audit
 
+> **Superseded on 12 Sep 2026 by [`AUDIT_2026-09-12.md`](AUDIT_2026-09-12.md)**, which re-verifies
+> every item below against main at `6f85ca0`. Kept because code comments
+> cite its section numbers.
+
 Repo audit at `956a92f` (main, 7 Sep 2026), read-only; §3 also notes the one commit that landed on main while it ran. Four passes: waste
 (assets and files), code and gameplay logic, UI and layout, store readiness.
 Every claim carries a `file:line`; a claim that was not confirmed by
