@@ -43,6 +43,8 @@ export function buildTables(root) {
 
   const dome = triples(block(draw, /const DOME[^=]*=\s*\{/));
   const glass = triples(block(draw, /const HELM_GLASS[^=]*=\s*\{/));
+  const fit = readFileSync(join(root, "illustrated-src/game/helmet-fit.ts"), "utf8");
+  const seats = triples(block(fit, /const HELMET_SEATS[^=]*=\s*\{/));
 
   const artVer = (cat.match(/ART_VER\s*=\s*"([^"]+)"/) || [, "1"])[1];
 
@@ -203,6 +205,7 @@ export function buildTables(root) {
       name: r.name,
       file: `helms/${r.id}.png`,
       glass: [glass[r.id][0], glass[r.id][1], glass[r.id][2], glass[r.id][3] || 0],
+      seat: [seats[r.id][0], seats[r.id][1], seats[r.id][2], seats[r.id][3] || 0],
       // suit-locked helmets never render on any other suit (the game snaps
       // back to Clear), so the editor must not offer those pairings to fit
       suitOnly: r.suitOnly,

@@ -1,0 +1,31 @@
+{
+  "date": "2026-09-28",
+  "baseCommit": "e416d0680bf531568ec065ac3c25984fadbc3102",
+  "artVersion": "295",
+  "sourceExport": "pass",
+  "labBuild": "pass",
+  "studioBuild": "pass",
+  "typecheck": "pass",
+  "artGroupsPassed": 32,
+  "validPairings": 570,
+  "gameStudioPixelComparisons": 360,
+  "bankHelmetRenders": 7576,
+  "integratedCharactersPreserved": 13,
+  "finalSuite": {
+    "total": 72,
+    "passed": 69,
+    "failed": 3,
+    "skipped": 0,
+    "failuresReproducedOnBase": [
+      "test-arcflash-render.mjs: unchanged fallback differs by 20 channels, maximum delta 3/255 on this Canvas runtime",
+      "test-hyper-run.mjs: keyboard repeat can resume an orientation-paused race before physical key release",
+      "test-platform-bridge.mjs: scanner matches localStorage in two existing comments"
+    ]
+  },
+  "shippingArtChanged": false,
+  "motionControllersChanged": false,
+  "boostsChanged": false,
+  "browserInteractiveReview": "unverified: no browser connector; desktop Chrome launch approval timed out",
+  "visualReview": "all 570 native portrait pairs, all 280 bank frames with Clear, 120 High Orbit rig samples with Clear, Rose and matching helmets",
+  "environment": "Docker unavailable; existing local dependencies; no installation"
+}

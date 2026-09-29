@@ -187,6 +187,12 @@ runs `export-arcflash-portrait.mjs` after compiling the live rig, so the
 New art follows the existing shape and the tiers pick it up: a pal is a
 still plus `<id>-N.png` frames and a `PAL_ANIM` count; a suit is a still
 plus `asc/desc` (or `tap`, `loop`) banks registered in `art.ts`.
+Helmet fitting uses `game/helmet-fit.ts` for wearable head cavities and
+`draw.ts` for suit/frame head sockets; glass masks remain separate. Rebuild
+the lab and Flight Studio after either table changes. The catalog-driven
+`/lab/helmet-fit/` page and `review-helmet-fit.mjs --motion` cover every valid
+pairing; `test-helmet-fit.mjs` guards game/Studio parity and bank scale stability.
+See [the fitting review](illustrated-src/design/helmet-fit-all/REVIEW.md).
 Owner-authorized articulated kits use their registered atlas and a portrait
 rendered by the same painter. Percy, Envoy and Patriot use nine ascent and
 nine descent paintings following Cyber's gold-standard poses and controller.

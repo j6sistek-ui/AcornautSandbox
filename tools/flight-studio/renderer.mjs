@@ -5,6 +5,7 @@ import {paintPremiumBankWake} from './game/premium-bank-wake.mjs';
 import {paintArcflash} from './game/arcflash.mjs';
 import {paintManeuver} from './game/vanguard-maneuver.mjs';
 import {clipHelmetGlass} from './game/helmet-openings.mjs';
+import {paintFittedHelmet} from './game/helmet-fit.mjs';
 import {bindSpriteDetails,spriteImageFor} from './game/sprite-detail.mjs';
 const DEG=Math.PI/180;
 export class StudioRenderer{
@@ -20,7 +21,8 @@ export class StudioRenderer{
   }
   async loadModel(model,helmet){
     const files=model.family==='bank'?[model.file,...Object.values(model.banks).flat()]:model.family==='premium-flight'?[model.file,model.atlas]:[model.atlas];
-    const h=this.manifest.helmets.find(h=>h.id===helmet);
+    const selected=this.manifest.helmets.find(h=>h.id===helmet);
+    const h=selected&&(!selected.suitOnly||selected.suitOnly===model.id)?selected:this.manifest.helmets.find(h=>h.id==='clear');
     if(h&&!model.ownHead&&model.family!=='arcflash'&&model.family!=='acornut')files.push(h.file);
     await Promise.all(files.map(p=>this.load(p)));
     if(model.family==='bank'&&isPremiumSuit(model.id)){
@@ -47,8 +49,7 @@ export class StudioRenderer{
         c.save();clipHelmetGlass(c,id);c.globalCompositeOperation='destination-out';c.fillStyle=grad;c.fillRect(0,0,spr.width,spr.height);c.restore();c.globalCompositeOperation='source-over';}
       this.helmets.set(id,spr);
     }
-    const g=h.glass,scale=r*1.04/g[2];ctx.save();ctx.translate(x,y);ctx.rotate((angle+(g[3]||0))*DEG);
-    ctx.drawImage(spr,-g[0]*scale,-g[1]*scale,spr.width*scale,spr.height*scale);ctx.restore();
+    paintFittedHelmet(ctx,spr,id,spr.width,spr.height,x,y,r,angle);
   }
   paint(ctx,model,project,simulation,x,y,size){
     const s=simulation.animation,p=project.profile,view=project.view,atlas=this.image(model.atlas),pitch=s.pitch*DEG;

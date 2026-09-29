@@ -2,18 +2,18 @@
 //
 // The game seats a helmet on a head with two numbers tables and one line of
 // arithmetic. DOME says where each suit's head is and how big, in that
-// suit's own 256px canvas. HELM_GLASS says where each helmet's glass circle
+// suit's own 256px canvas. HELMET_SEATS says where each helmet's head cavity
 // is and how big, in the helmet's own canvas. Everything else follows:
 //
 //   scale = size / max(box.w, box.h)          // suit sprite, trimmed
 //   hx    = x - box.w*scale/2 + (a[0]-box.x)*scale
 //   r     = a[2] * scale
-//   s2    = r * 1.04 / g[2]
+//   s2    = r / g[2]
 //   helmet drawn at (hx - g[0]*s2, hy - g[1]*s2)
 //
 // Two tables — one triple per suit and one per helmet, not one per
 // pairing. That is deliberate and this editor protects it: you edit the
-// SUIT's head or the HELMET's glass, and the fix lands everywhere at once.
+// SUIT's head or the HELMET's head cavity, and the fix lands everywhere at once.
 // Per-pair overrides exist, but as a DIAGNOSTIC (see foldable() below) —
 // if one helmet needs the same nudge on twelve suits, the helmet's number
 // is wrong, and the editor says so.
@@ -39,7 +39,8 @@ type HelmRow = {
   id: string;
   name: string;
   file: string;
-  glass: Glass;
+  glass: Glass; // transparency only
+  seat: Glass; // wearable head cavity
   suitOnly?: string;    // locked to one suit; the game snaps to Clear elsewhere
   opaqueVisor?: boolean; // never punched — the visor is meant to hide the face
 };
@@ -184,7 +185,7 @@ function checkpoint() {
   if (!S.tables) return;
   undoStack.push(JSON.stringify({
     suits: S.tables.suits.map((s) => [s.key, s.dome]),
-    helmets: S.tables.helmets.map((h) => [h.id, h.glass]),
+    helmets: S.tables.helmets.map((h) => [h.id, h.seat]),
     over: S.over,
   }));
   if (undoStack.length > 30) undoStack.shift();
@@ -196,7 +197,7 @@ function undo(): boolean {
   const domes = new Map<string, Tri>(d.suits);
   const glasses = new Map<string, Glass>(d.helmets);
   for (const s of S.tables.suits) { const v = domes.get(s.key); if (v) s.dome = v; }
-  for (const h of S.tables.helmets) { const v = glasses.get(h.id); if (v) h.glass = v; }
+  for (const h of S.tables.helmets) { const v = glasses.get(h.id); if (v) h.seat = v; }
   S.over = d.over || {};
   punched.clear();
   return true;
@@ -228,9 +229,9 @@ function effective(s: SuitRow, h: HelmRow) {
     ? [s.dome[0] + ov[0], s.dome[1] + ov[1], s.dome[2] * (1 + ov[2])]
     : [s.dome[0], s.dome[1], s.dome[2]];
   // a motion frame's dome carries its own pose rotation as a 4th value -
-  // the game adds it to the glass rot, so the editor previews the same sum
-  const rot = h.glass[3] + (s.dome[3] || 0) + (ov ? ov[3] : 0);
-  return { a, g: h.glass, rot };
+  // the game adds it to the seat rotation, so the editor previews the same sum
+  const rot = h.seat[3] + (s.dome[3] || 0) + (ov ? ov[3] : 0);
+  return { a, g: h.seat, rot };
 }
 
 function saveLocal() {
@@ -243,7 +244,7 @@ function saveLocal() {
         // sets the draft aside instead of wearing it (restoreLocal)
         artVer: S.tables.artVer,
         suits: Object.fromEntries(S.tables.suits.map((s) => [s.key, s.dome])),
-        helmets: Object.fromEntries(S.tables.helmets.map((h) => [h.id, h.glass])),
+        helmets: Object.fromEntries(S.tables.helmets.map((h) => [h.id, h.seat])),
         over: S.over,
         locks: S.locks,
       }),
@@ -279,7 +280,7 @@ function restoreLocal() {
     for (const s of S.tables.suits) if (d.suits?.[s.key]) s.dome = d.suits[s.key].slice(0, 4);
     for (const h of S.tables.helmets) {
       const g = d.helmets?.[h.id];
-      if (g) h.glass = [g[0], g[1], g[2], g[3] || 0];
+      if (g) h.seat = [g[0], g[1], g[2], g[3] || 0];
     }
     S.over = d.over || {};
     S.locks = d.locks || {};
@@ -328,15 +329,15 @@ function paintTile(cv: HTMLCanvasElement, s: SuitRow, h: HelmRow, size: number) 
 
   // a suit-locked helmet on the wrong suit is a pairing the game refuses —
   // it snaps back to Clear — so there is nothing here to fit
-  if (h.suitOnly && h.suitOnly !== s.id) {
+  if (h.suitOnly && h.suitOnly !== s.id.replace(/-(asc|desc|tap|bounce)-\d+$/, "")) {
     label(ctx, `locked to ${h.suitOnly} — game falls back to Clear`, size);
     return;
   }
 
   const helm = bank.get(h.file);
   if (helm && !skip) {
-    const s2 = (r * 1.04) / g[2];
-    const p = punch(helm, h.id, g, h.opaqueVisor === true);
+    const s2 = r / g[2];
+    const p = punch(helm, h.id, h.glass, h.opaqueVisor === true);
     ctx.save();
     ctx.globalAlpha = S.ghost ? 0.45 : 1;
     if (rot) {
@@ -349,20 +350,13 @@ function paintTile(cv: HTMLCanvasElement, s: SuitRow, h: HelmRow, size: number) 
   }
 
   if (S.rings) {
-    // the head circle the contract is built on, and the 1.04 seat the
-    // helmet is actually scaled to
+    // The head and helmet cavity share this circle.
     ctx.save();
     ctx.strokeStyle = "rgba(110,220,255,.85)";
     ctx.lineWidth = 1.25;
     ctx.beginPath();
     ctx.arc(hx, hy, r, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.strokeStyle = "rgba(255,190,90,.55)";
-    ctx.setLineDash([3, 3]);
-    ctx.beginPath();
-    ctx.arc(hx, hy, r * 1.04, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
     ctx.fillStyle = "rgba(110,220,255,.9)";
     ctx.fillRect(hx - 3, hy - 0.5, 6, 1);
     ctx.fillRect(hx - 0.5, hy - 3, 1, 6);
@@ -391,18 +385,18 @@ function nudge(dxScreen: number, dyScreen: number, s: SuitRow, h: HelmRow, scale
     ov[0] += dxScreen / scale;
     ov[1] += dyScreen / scale;
   } else {
-    // moving the helmet right means its glass centre sits further LEFT
+    // moving the helmet right means its head cavity centre sits further LEFT
     // inside its own frame — the drawn origin is (hx - g[0]*s2)
     const { a, g } = effective(s, h);
-    const s2 = (a[2] * scale * 1.04) / g[2];
-    h.glass[0] -= dxScreen / s2;
-    h.glass[1] -= dyScreen / s2;
+    const s2 = (a[2] * scale) / g[2];
+    h.seat[0] -= dxScreen / s2;
+    h.seat[1] -= dyScreen / s2;
   }
 }
 
 // The D-pad and the arrow keys work in TABLE units, not screen pixels. A
 // drag has to follow your finger, which on a 110px tile means one pixel of
-// travel is five units of glass — fine for finding the fix, useless for
+// travel is five units of the helmet seat — fine for finding the fix, useless for
 // landing it. This is the other half of that: one press, one unit, whatever
 // the tile is.
 function nudgeUnits(dx: number, dy: number, s: SuitRow, h: HelmRow) {
@@ -415,8 +409,8 @@ function nudgeUnits(dx: number, dy: number, s: SuitRow, h: HelmRow) {
     ov[0] += dx;
     ov[1] += dy;
   } else {
-    h.glass[0] -= dx;
-    h.glass[1] -= dy;
+    h.seat[0] -= dx;
+    h.seat[1] -= dy;
   }
 }
 
@@ -428,8 +422,8 @@ function resize(k: number, s: SuitRow, h: HelmRow) {
     const ov = (S.over[key] ||= [0, 0, 0, 0]);
     ov[2] = (1 + ov[2]) * k - 1;
   } else {
-    // a bigger helmet on the same head means a smaller glass radius
-    h.glass[2] /= k;
+    // a bigger helmet on the same head means a smaller cavity radius
+    h.seat[2] /= k;
   }
 }
 
@@ -440,11 +434,11 @@ function spin(deg: number, s: SuitRow, h: HelmRow) {
     ov[3] += deg;
   } else if (s.frame) {
     // in the frames view ROT dials THIS FRAME's pose rotation, not the
-    // helmet art's - one frame's dive angle must never re-tilt the glass
+    // helmet art's - one frame's dive angle must never re-tilt the helmet
     // under every suit on the roster
     s.dome[3] = (s.dome[3] || 0) + deg;
   } else {
-    h.glass[3] += deg;
+    h.seat[3] += deg;
   }
 }
 
@@ -455,12 +449,12 @@ function resetTile(s: SuitRow, h: HelmRow) {
   } else if (S.target === "pair") {
     delete S.over[pairKey(s.id, h.id)];
   } else {
-    h.glass = b.helmets.find((x) => x.id === h.id)!.glass.slice(0, 4) as Glass;
+    h.seat = b.helmets.find((x) => x.id === h.id)!.seat.slice(0, 4) as Glass;
   }
 }
 
 // A helmet carrying the same override on many suits is not twenty local
-// problems; it is one wrong glass number. Folding the median of its
+// problems; it is one wrong seat number. Folding the median of its
 // overrides into the helmet and clearing them is the fix, and the count is
 // the evidence.
 function foldable(h: HelmRow) {
@@ -481,19 +475,19 @@ function fold(h: HelmRow) {
   const dr = med(ds.map(([, v]) => v[3]));
 
   // An override says "on this suit the helmet wanted to be elsewhere".
-  // Re-expressed on the helmet: the seat scale is s2 = r*1.04/g[2], so
-  // growing the head by (1+dk) and shrinking the glass by the same factor
+  // Re-expressed on the helmet: the seat scale is s2 = r/g[2], so
+  // growing the head by (1+dk) and shrinking the cavity by the same factor
   // are the same drawing. The offset converts through that scale —
-  // Δorigin = -Δg*s2, so a head nudge of +dx becomes a glass nudge of
-  // -dx*g[2]/(r*1.04). r differs per suit, which is precisely why the fold
+  // Δorigin = -Δg*s2, so a head nudge of +dx becomes a seat nudge of
+  // -dx*g[2]/(r). r differs per suit, which is precisely why the fold
   // is an ESTIMATE: it uses the median head radius of the suits involved
   // and leaves the residue for you to see in the grid.
-  h.glass[2] /= 1 + dk;
+  h.seat[2] /= 1 + dk;
   const rMed = med(ds.map(([k]) => suitOf(k.split("|")[0]).dome[2]));
-  const conv = h.glass[2] / (rMed * 1.04);
-  h.glass[0] -= dx * conv;
-  h.glass[1] -= dy * conv;
-  h.glass[3] += dr;
+  const conv = h.seat[2] / (rMed);
+  h.seat[0] -= dx * conv;
+  h.seat[1] -= dy * conv;
+  h.seat[3] += dr;
   for (const [k] of ds) delete S.over[k];
   punched.clear();
   return ds.length;
@@ -514,7 +508,7 @@ function changes() {
   });
   const helmets = S.tables!.helmets.filter((h) => {
     const o = b.helmets.find((x) => x.id === h.id)!;
-    return h.glass.some((v, i) => Math.abs(v - o.glass[i]) > 0.5);
+    return h.seat.some((v, i) => Math.abs(v - o.seat[i]) > 0.5);
   });
   return { suits, helmets, over: S.over };
 }
@@ -534,12 +528,12 @@ function reportJSON() {
           },
         ]),
       ),
-      HELM_GLASS: Object.fromEntries(
+      HELMET_SEATS: Object.fromEntries(
         c.helmets.map((h) => [
           h.id,
           {
-            was: b.helmets.find((x) => x.id === h.id)!.glass.slice(0, h.glass[3] ? 4 : 3),
-            now: h.glass.slice(0, h.glass[3] ? 4 : 3).map((v) => round(v, 1)),
+            was: b.helmets.find((x) => x.id === h.id)!.seat.slice(0, h.seat[3] ? 4 : 3),
+            now: h.seat.slice(0, h.seat[3] ? 4 : 3).map((v) => round(v, 1)),
           },
         ]),
       ),
@@ -562,10 +556,10 @@ function reportTS() {
     }
   }
   if (c.helmets.length) {
-    out.push("// draw.ts — HELM_GLASS");
+    out.push("// helmet-fit.ts — HELMET_SEATS");
     for (const h of c.helmets) {
-      const n = h.glass[3] ? 4 : 3;
-      out.push(`  "${h.id}": [${h.glass.slice(0, n).map((v) => round(v, 1)).join(", ")}],`);
+      const n = h.seat[3] ? 4 : 3;
+      out.push(`  "${h.id}": [${h.seat.slice(0, n).map((v) => round(v, 1)).join(", ")}],`);
     }
   }
   const ov = Object.entries(c.over);
@@ -804,7 +798,7 @@ export async function bootRig(root: HTMLElement) {
     const k = lockKey(t.s, t.h);
     const what = S.target === "suit" ? `${t.s.name}'s head`
       : S.target === "pair" ? `${t.s.name} × ${t.h.name}`
-      : `${t.h.name}'s glass`;
+      : `${t.h.name}'s head cavity`;
     if (S.locks[k]) { delete S.locks[k]; flash(`unlocked ${what}`); }
     else { S.locks[k] = true; flash(`locked ${what}`); }
     saveLocal();
@@ -848,7 +842,7 @@ export async function bootRig(root: HTMLElement) {
     // is WHICH number you are editing and how far the fix travels.
     hint.textContent =
       S.target === "helm"
-        ? "Tap a tile to select it, then drag. HELMET edits this helmet's own glass number — the fix lands on every suit that wears it."
+        ? "Tap a tile to select it, then drag. HELMET edits this helmet's own head cavity — the fix lands on every suit that wears it."
         : S.target === "suit"
         ? "Tap a tile to select it, then drag. SUIT HEAD edits where this suit's head is — the helmet follows here and under every other helmet. The suit's painting itself never moves; the blue ring is what you are placing."
         : "Tap a tile to select it, then drag. THIS PAIR writes a local override — evidence, not a fix. Three on one helmet and FOLD turns them into the helmet's own number.";
@@ -946,8 +940,8 @@ export async function bootRig(root: HTMLElement) {
     const nOver = Object.keys(S.over).length;
     stat.textContent =
       `${s.name} head [${round(s.dome[0])}, ${round(s.dome[1])}, ${round(s.dome[2])}]   ·   ` +
-      `${h.name} glass [${round(h.glass[0], 1)}, ${round(h.glass[1], 1)}, ${round(h.glass[2], 1)}` +
-      (h.glass[3] ? `, ${round(h.glass[3], 1)}°` : "") + "]" +
+      `${h.name} seat [${round(h.seat[0], 1)}, ${round(h.seat[1], 1)}, ${round(h.seat[2], 1)}` +
+      (h.seat[3] ? `, ${round(h.seat[3], 1)}°` : "") + "]" +
       (nOver ? `   ·   ${nOver} override${nOver > 1 ? "s" : ""}` : "");
     const at = activeTile();
     const held = at ? isLocked(at.s, at.h) : false;

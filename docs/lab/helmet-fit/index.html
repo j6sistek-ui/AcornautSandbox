@@ -1,0 +1,34 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Helmet fitting review · Acornaut</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#09121f;color:#e5edf8;font:15px system-ui,sans-serif}header{padding:22px;position:sticky;top:0;background:#0d192bed;z-index:1;border-bottom:1px solid #30435d}h1{font-size:23px;margin:0 0 8px}p{color:#a9bcd4;margin:6px 0}nav{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-top:16px}label{display:grid;gap:4px;color:#bacce0}select,button{background:#20314a;color:#f0f6ff;border:1px solid #4c6687;border-radius:7px;padding:8px;font:inherit}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;padding:18px}article{border:1px solid #2d415e;border-radius:12px;overflow:hidden;background:#142237}h2{font-size:15px;margin:14px 16px 0}canvas{width:100%;height:auto;display:block}footer{padding:20px;color:#a9bcd4}a{color:#8bd5ef}input{max-width:180px}.light article{background:#e9eef4}
+</style>
+<header><h1>Helmet fitting review</h1><p>Compare the actual game painters through tap, glide and descent. No save data is read or changed.</p>
+<nav><label>Character<select id="suit"></select></label><label>View<select id="mode"><option value="flight">Repeating flight</option><option value="sweep">Climb / dive sweep</option><option value="portrait">Portrait / loading still</option></select></label><label>Display size<select id="size"><option value="130">Close view</option><option value="52">Game size · 52 px</option></select></label><label>Background<select id="bg"><option value="dark">Dark</option><option value="light">Light</option></select></label><button id="play">Pause</button><label>Time<input id="time" type="range" min="0" max="8" step="0.02" value="0"></label></nav>
+<p id="status" role="status">Loading catalog…</p></header><main id="grid"></main><footer><a href="../../">Game</a> · <a href="../rig/">Fitting bench</a> · Integrated heads retain their authored appearance. Suit-exclusive helmets appear only on their matching suit.</footer>
+<script type="module">
+import {HELMETS,SUITS,ART_VER,wearsOwnHead} from '../../js/catalog.js';
+import {emptyArt,loadSuitBank} from '../../js/art.js';
+import {paintPortrait,paintFlightPreview} from '../../js/draw.js';
+window.__ACORNAUT_ART__=new URL('../../art/',location.href).pathname.replace(/\/$/,'');
+const $=id=>document.getElementById(id),art=emptyArt(),loaded=new Set(),status=$('status');let generation=0,rows=[],time=0,paused=false,last=performance.now();
+for(const s of SUITS)$('suit').add(new Option(s.name,s.id));
+const pairs=SUITS.filter(s=>!wearsOwnHead(s)).reduce((n,s)=>n+HELMETS.filter(h=>!h.suitOnly||h.suitOnly===s.id).length,0);
+const load=src=>new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=src;});
+await Promise.all(HELMETS.map(async h=>art.helms[h.id]=await load('../../art/helms/'+h.id+'.png?v='+ART_VER)));
+async function select(){
+ const ticket=++generation,s=SUITS.find(s=>s.id===$('suit').value);status.textContent='Loading '+s.name+'…';rows=[];$('grid').replaceChildren();
+ if(!loaded.has(s.id)){await loadSuitBank(art,s.id);if(!art.suits[s.id]){
+   const image=await load('../../art/suits/'+(s.id==='arcflash'?'arcflash/body':s.id)+'.png?v='+ART_VER);
+   const c=document.createElement('canvas'),w=image.naturalWidth,h=image.naturalHeight;c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.drawImage(image,0,0);const data=ctx.getImageData(0,0,w,h).data;let l=w,t=h,r=0,b=0;
+   for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(data[(y*w+x)*4+3]>=16){l=Math.min(l,x);t=Math.min(t,y);r=Math.max(r,x);b=Math.max(b,y);}
+   image.box=r<l?{x:0,y:0,w,h}:{x:Math.max(0,l-2),y:Math.max(0,t-2),w:Math.min(w,r-l+5),h:Math.min(h,b-t+5)};art.suits[s.id]=image;
+ }loaded.add(s.id);}if(ticket!==generation)return;
+ const helmets=wearsOwnHead(s)?[HELMETS[0]]:HELMETS.filter(h=>!h.suitOnly||h.suitOnly===s.id);
+ for(const h of helmets){const card=document.createElement('article'),title=document.createElement('h2'),canvas=document.createElement('canvas');title.textContent=wearsOwnHead(s)?s.name+' · Integrated appearance':s.name+' / '+h.name;canvas.width=520;canvas.height=420;canvas.setAttribute('aria-label',title.textContent);card.append(title,canvas);$('grid').append(card);rows.push({s,h,canvas,ctx:canvas.getContext('2d')});}
+ status.textContent=`${s.name}: ${wearsOwnHead(s)?'integrated appearance':helmets.length+' valid helmets'} · ${pairs} valid pairings in the full roster · art ${ART_VER}`;
+}
+$('suit').onchange=()=>select().catch(()=>status.textContent='Character art could not load. Reload this page to retry.');$('play').onclick=()=>{paused=!paused;$('play').textContent=paused?'Play':'Pause';};$('time').oninput=()=>{time=+$('time').value;paused=true;$('play').textContent='Play';};$('bg').onchange=()=>document.body.classList.toggle('light',$('bg').value==='light');
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(!paused){time=(time+dt)%8;$('time').value=String(time);}for(const {s,h,ctx}of rows){ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,260,210);const size=+$('size').value;if($('mode').value==='portrait')paintPortrait(ctx,art,h,s,114,108,size);else paintFlightPreview(ctx,art,s,h,114,108,size,time,undefined,$('mode').value==='sweep',0);}requestAnimationFrame(frame);}
+await select();requestAnimationFrame(frame);
+</script></html>
