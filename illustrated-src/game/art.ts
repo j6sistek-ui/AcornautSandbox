@@ -654,7 +654,7 @@ export function prefetchArtBanks(bank: ArtBank, idle: () => boolean = () => true
   // NOT WHILE FLYING (audit, 30 Sep 2026): the sweep was pulling 10 MB
   // through a 10-second run and doubling its frame times. It waits, a
   // second at a time, until the pilot is back on a menu.
-  const whenIdle = () => new Promise<void>((r) => { const tick = () => (idle() ? r() : setTimeout(tick, 1000)); tick(); });
+  const whenIdle = () => new Promise<void>((r) => { const tick = () => { if (idle()) r(); else setTimeout(tick, 1000); }; tick(); });
   for (const id of Object.keys(PAL_ANIM)) {
     if (palBankLoads.has(id)) continue;
     chain = chain.then(whenIdle).then(() => loadPalBank(bank, id)).then(breathe);

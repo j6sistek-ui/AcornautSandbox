@@ -1960,7 +1960,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       void loadZoneArt(bank, world.envB).then(notify);
       if (world.spill) void loadSpillScene(bank, save.equippedSuit).then(notify);
       notify();
-      prefetchArtBanks(bank, () => world.screen !== "play" && world.screen !== "pause");
+      // ...and once the engine is stopped the sweep stops waiting too, or its
+      // one-second poll would keep a headless test's process alive forever
+      prefetchArtBanks(bank, () => !running || (world.screen !== "play" && world.screen !== "pause"));
     })
     .catch(() => {});
   notify();
