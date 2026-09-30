@@ -2501,7 +2501,8 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.font = "800 11px Figtree, system-ui";
     const label = names;
     const tw = ctx.measureText(label).width;
-    const cx = 16, cy = H - (w.insetTop || 0) - 26 - 14;
+    // above the DIVE pad while the pads are on, the way the hint card is
+    const cx = 16, cy = H - (w.insetTop || 0) - (padsOn ? 156 : 40);
     const cw = tw + 26;
     ctx.fillStyle = "rgba(14,20,38,.8)";
     round(ctx, cx, cy - 15, cw, 30, 15);
@@ -5973,7 +5974,8 @@ if (w.lvl) {
     for (let i = 0; i < w.shieldCharges; i++) {
       ctx.fillStyle = "rgba(122,216,255,0.9)";
       ctx.beginPath();
-      ctx.arc(W - 22 - i * 16, 26, 6, 0, Math.PI * 2);
+      // left of the pause button, which owns the top-right corner
+      ctx.arc(W - 64 - i * 16, 26, 6, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = "rgba(255,255,255,0.7)";
       ctx.lineWidth = 1;
@@ -6004,7 +6006,7 @@ if (w.lvl) {
   if (w.flight === "tunnel" && w.tunnel && w.tunnel.multiplierLeft > 0)
     hudLine(`FLOW BOOST  ${Math.ceil(w.tunnel.multiplierLeft)}s`, "#ffe680");
   const experiment = w.stuck ? "STICKY CONTACT · TAP TO RELEASE"
-    : fxOf(w).tapFreeze || runPals(save, w).includes("switchback") ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
+    : fxOf(w).tapFreeze || (runPals(save, w).includes("switchback") && !w.tut && w.flight === "fly") ? `TAP SLOW · ${w.tapFrozen ? "ON" : "OFF"}`
     : w.scrollReversing ? `SWITCHBACK · ${w.scrollDirection > 0 ? "FORWARD" : "REVERSE"}` : "";
   if (experiment && !w.ready) {
     ctx.save(); ctx.font="bold 12px sans-serif"; ctx.textAlign="center";
@@ -6026,7 +6028,7 @@ if (w.lvl) {
         ? "TIMELINE SHIFT!"
         : w.warpKind === "worm" || w.flight === "lost"
           ? "WORMHOLE!"
-          : "BLACK HOLE!",
+          : w.flight === "deep" ? "SPACE SHIFT!" : "BLACK HOLE!",
       W / 2, w.H * 0.3,
     );
   }

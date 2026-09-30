@@ -199,7 +199,7 @@ export async function bootStandalone(root) {
         // mode option in the mode list")
         { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
         { id: "race", label: "HYPER RUN", short: "HYPER", blurb: "Thread gates. Center the wormhole rings." },
-        { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
+        { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Space shifts every 10 seconds." },
         { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
         { id: "tunnel", label: "WORMHOLE RUN", short: "WORMHOLE", blurb: "Hold to thrust down the corridor." },
     ];
@@ -700,12 +700,14 @@ export async function bootStandalone(root) {
                         sheet.append(el("p", "ac-sub ac-continue-short", `Continue costs ${cost} acorns — you have ${funds}`));
                     }
                 }
-                const again = el("button", engine.save.guide !== "reward" && ((engine.save.acorns ?? 0) >= engine.continueCost() || engine.adOffer()) ? "ac-ghost" : "ac-primary", "TRY AGAIN");
+                const graduating = engine.save.guide === "reward";
+                const again = el("button", graduating || (engine.save.acorns ?? 0) >= engine.continueCost() || engine.adOffer() ? "ac-ghost" : "ac-primary", "TRY AGAIN");
                 // leaving the crash sheet is where a full-screen ad may play (engine.afterCrash)
                 again.onclick = () => engine.afterCrash(() => engine.fly(snap.flight));
-                const menu = el("button", "ac-ghost", engine.save.guide === "reward" ? "COLLECT" : "MAIN MENU");
+                // the gift leads on graduation, as it does on the Debris Field sheet
+                const menu = el("button", graduating ? "ac-primary" : "ac-ghost", graduating ? "COLLECT" : "MAIN MENU");
                 menu.onclick = () => engine.afterCrash(() => engine.dismissDead());
-                sheet.append(again, menu);
+                sheet.append(graduating ? menu : again, graduating ? again : menu);
             }
             overlay.append(sheet);
             return;
@@ -1638,7 +1640,7 @@ export async function bootStandalone(root) {
         // ONE WORD (owner, 7 Sep 2026: "instead of free flight, just Launch...
         // large and in charge"). The ribbon above names the mode; the line
         // under says what the tap does in it.
-        ltxt.append(el("b", "", suspended ? "RESUME" : "LAUNCH"), el("span", "ac-hubsub", suspended ? `Saved at Depot ${suspended.state.wave}` : spillSelected ? "Survive the dangers of space" : "Begin your flight"));
+        ltxt.append(el("b", "", suspended ? "RESUME" : "LAUNCH"), el("span", "ac-hubsub", suspended ? (suspended.state.wave ? `Saved at Depot ${suspended.state.wave}` : "Saved at pre-flight") : spillSelected ? "Survive the dangers of space" : "Begin your flight"));
         // WHAT IS ACTUALLY ON. Mods and a pal's effect change how the run plays
         // and were previously invisible from here - you had to remember. One
         // line, named plainly, so nobody launches wondering why the gates are
@@ -1657,7 +1659,7 @@ export async function bootStandalone(root) {
                     if (palOn)
                         on.push(`${palOn.name} \u00b7 ${palOn.desc}`);
                 }
-            if (on.length && !spillSelected) {
+            if (on.length && !spillSelected && MODES[selectedMode].id !== "race") {
                 // prefixed, because an unlabelled green line beneath a launch button
                 // reads as a slogan rather than as the state of the run. One CHIP
                 // per effect, so a long description wraps to its own row instead
@@ -1771,7 +1773,7 @@ export async function bootStandalone(root) {
         back.onclick = () => { modesOpen = false; render(); };
         sheet.append(modeHead);
         if (s.spillSuspended) {
-            const resume = el("button", "ac-primary", `RESUME DEBRIS FIELD · DEPOT ${s.spillSuspended.state.wave}`);
+            const resume = el("button", "ac-primary", `RESUME DEBRIS FIELD · ${s.spillSuspended.state.wave ? `DEPOT ${s.spillSuspended.state.wave}` : "PRE-FLIGHT"}`);
             resume.onclick = () => { modesOpen = false; engine.spillResume(); };
             sheet.append(resume);
         }
@@ -1847,11 +1849,11 @@ export async function bootStandalone(root) {
                     // a locked Hyper Run still answers: it shows the chart where the
                     // field that unlocks it actually is
                     if (!open) {
-                        if (m.id === "race") {
-                            modesOpen = false;
-                            engine.open("log");
-                            render();
-                        }
+                        // every locked row answers with the chart: that is where the field
+                        // or the stars that open it live
+                        modesOpen = false;
+                        engine.open("log");
+                        render();
                         return;
                     }
                     selectedMode = i;
@@ -3822,14 +3824,15 @@ export async function bootStandalone(root) {
         if (last.def.standalone && last.def.base === "race" && last.raceRecord) {
             const r = last.raceRecord;
             const sheet = el("div", "ac-sheet ac-center");
-            sheet.append(el("p", "ac-kicker", "HYPER RUN"));
+            sheet.append(el("p", "ac-kicker", "TIME TRIAL"));
             sheet.append(el("h2", "", "HYPER RUN"));
             sheet.append(el("p", "ac-kicker", "FINISH"));
             sheet.append(el("h2", "", formatRaceTicks(r.finishTicks)));
+            // the best is a time, said as one, with the gap to it (audit, 30 Sep 2026)
             if (r.newBestTime)
                 sheet.append(el("p", "ac-gold", "NEW BEST"));
             else
-                sheet.append(el("p", "ac-sub", `+${((r.finishTicks - r.bestFinishTicks) / 60).toFixed(3)}`));
+                sheet.append(el("p", "ac-sub", `BEST ${formatRaceTicks(r.bestFinishTicks)} \u00b7 +${formatRaceTicks(r.finishTicks - r.bestFinishTicks)}`));
             // A cleared field outranks a personal best on this screen: the best
             // is a number, the field is a road that just opened.
             if (r.clearedGate) {
@@ -3855,7 +3858,7 @@ export async function bootStandalone(root) {
             });
             sheet.append(labels);
             sheet.append(el("p", "", `ACORNS  ${r.acorns} / ${HYPER_RUN_MAX_ACORNS}`));
-            sheet.append(el("p", "", `BEST  ${r.bestAcorns}`));
+            sheet.append(el("p", "", `BEST ACORNS  ${r.bestAcorns}`));
             if (r.newBestAcorns)
                 sheet.append(el("p", "ac-gold", "NEW ACORN BEST"));
             sheet.append(el("p", "ac-sub", "OWN RECORD — CAMPAIGN STARS UNCHANGED"));
@@ -5110,7 +5113,7 @@ export async function bootStandalone(root) {
             { id: "arcade", name: "Arcade", best: s.arcadeBest || 0, unit: "gates" },
             { id: "tunnel", name: "Wormhole Run", best: s.tunnelBest || 0, unit: "score" },
             { id: "spill", name: "Debris Field", best: s.spillBest || 0, unit: "waves" },
-        ].sort((a, b) => b.best - a.best);
+        ].filter((r) => r.id !== "tunnel" || WORMHOLE_RUN_ON_SHEET || r.best > 0).sort((a, b) => b.best - a.best);
         const box = el("div", "ac-menu");
         box.append(header("Your bests", "Leaderboard", headAside(s.acorns)));
         const scroll = el("div", "ac-sheet-scroll");

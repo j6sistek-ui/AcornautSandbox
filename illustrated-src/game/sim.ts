@@ -486,6 +486,9 @@ export type World = {
   tailA: number;
   tailV: number;
   recoveryMsg: string;
+  /** a HOLD TO CONTINUE / ad continue happened this run: the crash that
+   *  follows is the same run ending, not a second flight (audit, 30 Sep 2026) */
+  continued: boolean;
   palPos: { x: number; y: number; dart: number };
   /** the low slot's companion (owner, 7 Sep 2026: "one flys high one flys low") */
   palPos2: { x: number; y: number; dart: number };
@@ -655,6 +658,7 @@ export function makeWorld(W: number, H: number): World {
     tailA: 0,
     tailV: 0,
     recoveryMsg: "",
+    continued: false,
     palPos: { x: 0, y: 0, dart: 0 },
     palPos2: { x: 0, y: 0, dart: 0 },
     shake: 0,
@@ -880,7 +884,10 @@ function palIds(save: SaveData, w: World): string[] {
   // switch is a loadout comfort, and a star certifies the designated
   // flight; a mission without a pal has no pal effects at all
   if (w.lvl) return w.lvl.def.fx.pal && w.lvl.def.fx.pal !== "switchback" ? [w.lvl.def.fx.pal] : [];
-  if (w.tut && (w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal")) return ["buddy"];
+  // THE LESSON FLIES CLEAN (audit, 30 Sep 2026): the tutorial lends Acorn
+  // for its pal stages and nobody otherwise, so an equipped Magnetar
+  // cannot teach the first flight upside down
+  if (w.tut) return w.tut.stage === "pal" || w.tut.stage === "gates7" || w.tut.stage === "portal" ? ["buddy"] : [];
   // PAL EFFECTS OFF. Every gameplay effect a companion has is behind this
   // one question, so answering "nobody" here turns all of them off at once
   // and cannot miss one the way a flag checked in fourteen places would.
@@ -1765,12 +1772,16 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   // and computing this above it read the PREVIOUS run's mission, which is
   // how a mission flew the loadout's pal effects and a free flight after a
   // mission kept the mission's (owner, 8 Sep 2026).
-  w.palFx = palIds(save, w).reduce<LabFx | null>((acc, id) => {
+  // ...and BEFORE the tutorial flag is read: a REPLAY TUTORIAL is set up
+  // below, so this looked at the previous run's tutorial (or none) and let
+  // the loadout's pal fly the lesson (audit, 30 Sep 2026)
+  const lesson = tutorial && !level && flight !== "tunnel";
+  w.palFx = lesson ? null : palIds(save, w).reduce<LabFx | null>((acc, id) => {
     const fx = PAL_FX[id];
     return fx ? mergeFx(acc ?? {}, fx) : acc;
   }, null);
   w.palFlip = !!w.palFx?.upsideDown;
-  w.bounceHouse = hasPal(save, w, "spacepuppy");
+  w.bounceHouse = !lesson && hasPal(save, w, "spacepuppy");
   // every run starts in this game; the arcade acorn is the only way out
   // Arcade IS the retro game — it starts there and never leaves. Every
   // other mode starts illustrated; in Free Flight the 8-bit acorn is the
@@ -1873,6 +1884,7 @@ export function resetRun(w: World, save: SaveData, flight: FlightMode, tutorial:
   w.driftFactor = 1;
   w.tiltPhase = (w.missionRng ?? Math.random)() * 100;
   w.recoveryMsg = "";
+  w.continued = false;
   w.envA = 0;
   w.envB = 0;
   w.envBlend = 1;
@@ -2442,7 +2454,7 @@ function enterWormhole(w: World, save: SaveData) {
 }
 
 /** Back to the gate run, exactly as it was left. */
-function exitWormhole(w: World) {
+function exitWormhole(w: World, crashed = false) {
   const hold = w.wormHold;
   if (!hold) return;
   w.wormHold = null;
@@ -2462,8 +2474,9 @@ function exitWormhole(w: World) {
   w.particles = [];
   w.wormExitArmed = false;
   // ONE GATE ON, and not one more. The corridor pays acorns; the ladder is
-  // climbed by flying gates. In at twenty, out at twenty-one.
-  w.score = hold.score + 1;
+  // climbed by flying gates. In at twenty, out at twenty-one - unless the
+  // pilot crashed in the corridor, which is no exit at all (audit, 30 Sep 2026)
+  w.score = hold.score + (crashed ? 0 : 1);
   // THE SECOND MOUTH, and the same two seconds. The pilot has been flying a
   // corridor and is being handed back a tilted gate run whose next gate is
   // already on screen; at full pace that is a coin flip, which is what
@@ -3678,7 +3691,7 @@ function die(w: World, save: SaveData) {
   // it - the corridor is fifteen seconds of that run, not a run of its
   // own. Come home first, so the score, the best and the result screen all
   // belong to the flight the pilot actually chose.
-  if (w.wormHold) exitWormhole(w);
+  if (w.wormHold) exitWormhole(w, true);
   // The first flight and the first mission are both unfailable, and this is
   // the last door out - settleLevel below would end the run as a LOSS, which
   // for level one means a new pilot's first mission after the tutorial tells
@@ -3698,6 +3711,13 @@ function die(w: World, save: SaveData) {
   w.deadTimer = 0;
   w.tut = null;
   w.shake = 0.35;
+  // a recovery banner ("FLIGHT CONTINUES!") must not print through the crash sheet
+  w.recoveryMsg = "";
+  // the best BEFORE this crash: a continue's second crash at the same score
+  // is not a new best, and neither is a tie (audit, 30 Sep 2026)
+  const priorBest = w.flight === "deep" ? save.deepBest : w.flight === "lost" ? save.lostBest
+    : w.flight === "arcade" ? save.arcadeBest : w.flight === "tunnel" ? save.tunnelBest
+    : w.flight === "spill" ? (save.spillBest ?? 0) : save.highScore;
   // Graduation: the first crash after the tutorial hands over the first
   // suit and helmet, free. The crash sheet announces it, the coach walks
   // the pilot through wearing it, and Mission 1 takes it from there.
@@ -3709,18 +3729,7 @@ function die(w: World, save: SaveData) {
   w.lastRun = {
     score: w.score,
     acorns: w.runAcorns,
-    best:
-      w.flight === "deep"
-        ? w.score >= save.deepBest
-        : w.flight === "lost"
-          ? w.score >= save.lostBest
-          : w.flight === "arcade"
-            ? w.score >= save.arcadeBest
-            : w.flight === "tunnel"
-              ? w.score > save.tunnelBest
-            : w.flight === "spill"
-              ? w.score > 0 && w.score >= save.spillBest
-            : w.score >= save.highScore,
+    best: w.score > 0 && w.score > (priorBest ?? 0),
     flowBest: w.tunnel?.flowBest ?? 0,
     bestChain: w.tunnel?.bestChain ?? 0,
     sections: w.tunnel?.sectionsCleared ?? 0,
@@ -3731,12 +3740,10 @@ function die(w: World, save: SaveData) {
     holes: w.run.holes,
   };
   save.acorns += w.runAcorns;
-  // lifetime tallies for the Profile screen: these only ever grow
-  save.runs = (save.runs ?? 0) + 1;
+  // lifetime tallies for the Profile screen: these only ever grow - one
+  // flight per run, however many continues it took
+  if (!w.continued) save.runs = (save.runs ?? 0) + 1;
   save.lifetimeAcorns = (save.lifetimeAcorns ?? 0) + w.runAcorns;
-  const priorBest = w.flight === "deep" ? save.deepBest : w.flight === "lost" ? save.lostBest
-    : w.flight === "arcade" ? save.arcadeBest : w.flight === "tunnel" ? save.tunnelBest
-    : w.flight === "spill" ? (save.spillBest ?? 0) : save.highScore;
   if (w.flight === "deep") save.deepBest = Math.max(save.deepBest, w.score);
   else if (w.flight === "lost") save.lostBest = Math.max(save.lostBest, w.score);
   else if (w.flight === "arcade") save.arcadeBest = Math.max(save.arcadeBest, w.score);
@@ -3747,7 +3754,9 @@ function die(w: World, save: SaveData) {
   if (!w.lvl && !w.tut && w.score > (priorBest ?? 0)) platform.celebrate();
   // the same number goes to the platform's board (Game Center, Steam);
   // a mission or a tutorial is not a board run, and the web has no board
-  if (!w.lvl && !w.tut && w.score > 0) platform.submitScore(w.flight, w.score);
+  // the Debris Field's board takes waves cleared, posted by the engine's
+  // cue dispatch - not the score here (it posted twice; audit, 30 Sep 2026)
+  if (!w.lvl && !w.tut && w.score > 0 && w.flight !== "spill") platform.submitScore(w.flight, w.score);
   if (w.startShieldArmed) save.startShield = false;
   spark(w, pilotX(w), w.squirrel.y, ["#e8dcc8", "#ff6a28"], 20);
   return "die";
@@ -3883,6 +3892,7 @@ export function reviveRun(w: World, save: SaveData, free = false): boolean {
   w.shieldSlow = 3;
   w.absorbGrace = 2.2;
   w.recoveryMsg = "FLIGHT CONTINUES!";
+  w.continued = true;
   w.deadTimer = 0;
   w.screen = "play";
   return true;

@@ -860,6 +860,16 @@ function beginDocking(s) {
     s.knock = 0;
     s.pilot.vx = 0;
     s.rocks = [];
+    // the coins still on screen when the dock call comes are the pilot's:
+    // the ship is on autopilot to the Depot and cannot collect them, so they
+    // are paid into the wallet rather than swept away (audit, 30 Sep 2026)
+    for (const n of s.nuts) {
+        if (n.got || n.kind === "hull" || n.x <= 0 || n.x >= s.W)
+            continue;
+        const worth = n.kind === "gold" ? 5 : 1;
+        s.ore += worth;
+        s.oreMined += worth;
+    }
     s.nuts = [];
     s.banner = "";
     s.bannerT = 0;
@@ -950,6 +960,9 @@ function settleContract(s) {
     cue(s, "contract");
 }
 function closeDepot(s) {
+    // the contract line belongs to the Depot it was settled at; it does not
+    // greet the next one (audit, 30 Sep 2026)
+    s.contractMessage = "";
     s.firstPass = false;
     s.welcome = false;
     s.freeUpgrade = false;

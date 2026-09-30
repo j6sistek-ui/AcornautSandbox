@@ -472,7 +472,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       }
       world.screen = s;
       if (s === "title") world.tut = null;
-      if (s === "title" || s === "log") {
+      if (s === "title" || s === "log" || s === "hangar" || s === "shop" || s === "profile" || s === "help" || s === "scores") {
+        // an aborted Debris Field run still banks its waves and records
+        if (world.spill && (world.screen === "play" || world.screen === "pause")) { bankSpill(save, world.spill, true); writeSave(save); }
         world.race = null;
         world.spill = null;
         raceAccumulator = 0;
@@ -1712,7 +1714,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     }
   });
   window.addEventListener("blur", () => {
-    if ((world.race || world.spill) && world.screen === "play") {
+    if (world.screen === "play") {
       engine.pause();
       return;
     }
@@ -1721,7 +1723,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
-      if ((world.race || world.spill) && world.screen === "play") {
+      if (world.screen === "play") {
         engine.pause();
         return;
       }
@@ -1742,7 +1744,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (ev === "debris") sfx.bounce();
     if (ev === "die") {
       // the interstitial cadence counts every crash; afterCrash spends it
-      if (!world.lvl && !world.race && !world.spill) save.crashesSinceAd = (save.crashesSinceAd ?? 0) + 1;
+      if (!world.lvl && !world.race && !world.spill && !world.continued) save.crashesSinceAd = (save.crashesSinceAd ?? 0) + 1;
       writeSave(save);
       sfx.die();
       platform.gameplayStop();
@@ -1783,7 +1785,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // reached submitScore (sim.ts). Waves cleared is the Debris Field's
       // own number - it is what the mode is scored on and what spillBest
       // already keeps - and higher is better, so it needs no special board.
-      if (spill.cleared > 0) platform.submitScore("spill", spill.cleared);
+      // a mission is not a board run (the same rule the sim keeps)
+      if (spill.cleared > 0 && !spill.target) platform.submitScore("spill", spill.cleared);
       if (!spill.target) save.spillSuspended = null;
       writeSave(save);
     } else if (cues.includes("depot")) checkpointSpill();

@@ -1468,9 +1468,11 @@ try {
     && pauseContract.includes("if (world.race || world.spill) raceAccumulator = 0;")
     && pauseContract.includes("pausePlay(world);"),
   "engine pause no longer discards the race accumulator before pausing authority");
-  assert(/window\.addEventListener\("blur", \(\) => \{\s*if \(\(world\.race \|\| world\.spill\) && world\.screen === "play"\) \{\s*engine\.pause\(\);\s*return;/m.test(engineSource),
+  // every live run pauses on blur/hide since 30 Sep 2026 (the race and the
+  // Debris Field included): the guard is the screen, not the mode
+  assert(/window\.addEventListener\("blur", \(\) => \{\s*if \(world\.screen === "play"\) \{\s*engine\.pause\(\);\s*return;/m.test(engineSource),
     "engine blur no longer routes an active race through pause");
-  assert(/document\.addEventListener\("visibilitychange", \(\) => \{\s*if \(document\.hidden\) \{\s*if \(\(world\.race \|\| world\.spill\) && world\.screen === "play"\) \{\s*engine\.pause\(\);\s*return;/m.test(engineSource),
+  assert(/document\.addEventListener\("visibilitychange", \(\) => \{\s*if \(document\.hidden\) \{\s*if \(world\.screen === "play"\) \{\s*engine\.pause\(\);\s*return;/m.test(engineSource),
     "engine visibility loss no longer routes an active race through pause");
   assert(engineSource.includes("dispatchRaceCues(takeRaceCueEffects(world));")
     && engineSource.includes("for (const effect of planRaceCueEffects(cues))")
