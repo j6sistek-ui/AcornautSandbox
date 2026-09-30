@@ -1317,6 +1317,60 @@ function autopilot(s: SpillState, dt: number) {
  * and by any input that landed between steps - oldest first, and clears
  * them. The sim turns them into sound and the engine into a re-render.
  */
+/** ORE AND THE DRIFTS: move every coin (magnet pull included), collect the
+ *  ones under the ship, and drop the ones that left the screen. Shared by
+ *  the wave, the drain and the countdown, so a coin is never drawn where it
+ *  cannot be picked up. */
+function stepNuts(s: SpillState, dt: number) {
+  if (s.comboT > 0) {
+    s.comboT = Math.max(0, s.comboT - dt);
+    if (s.comboT === 0) s.combo = 0;
+  }
+  for (const n of s.nuts) {
+    if (n.got) continue;
+    if (spillHas(s, "magnet") && n.kind !== "hull") {
+      const dx = s.pilot.x - n.x, dy = s.pilot.y - n.y, distance = Math.hypot(dx, dy);
+      if (distance > 1 && distance < 100 * Math.sqrt(lane(s))) {
+        const pull = Math.min(distance, 420 * dt);
+        n.x += dx / distance * pull; n.y += dy / distance * pull;
+      }
+    }
+    n.x += n.vx * dt;
+    n.y += n.vy * dt;
+    n.bob += dt * 4;
+    const dx = n.x - s.pilot.x;
+    const dy = n.y + Math.sin(n.bob) * 3 - s.pilot.y;
+    if (dx * dx + dy * dy < 30 * 30) {
+      n.got = true;
+      if (n.kind === "hull") {
+        s.hull = Math.min(s.maxHull, s.hull + 1);
+        say(s, "HEALTH RESTORED", 1.3);
+        burst(s, n.x, n.y, 14, "hull", 0.9);
+        cue(s, "hull");
+      } else {
+        const worth = n.kind === "gold" ? 5 : 1;
+        s.ore += worth;
+        s.oreMined += worth;
+        s.repairOre += worth;
+        if (s.specialties.plating === "salvage" && s.repairOre >= 30 && s.repairsThisWave < 2 && s.hull < s.maxHull) {
+          s.repairOre -= 30; s.repairsThisWave++; s.hull++; cue(s, "hull"); say(s, "SALVAGE ARMOR · +1 HEALTH", 1.2);
+        }
+        s.repairOre = Math.min(30, s.repairOre);
+        s.combo = Math.min(9, s.combo + 1);
+        s.comboT = 2.6;
+        s.score += 25 * s.combo * (n.kind === "gold" ? 2 : 1);
+        if (n.kind === "gold") {
+          s.charge = Math.min(spillChargeCap(s), s.charge + (s.specialties.pulse === "efficient" ? 0.65 : 0.5));
+          say(s, s.up.pulse >= 1 ? (s.charge >= 1 ? "PULSE ARMED" : "CHARGED COIN · CHARGING") : "CHARGED COIN", 1);
+          cue(s, "gold");
+        } else cue(s, "ore");
+        burst(s, n.x, n.y, n.kind === "gold" ? 14 : 7, n.kind === "gold" ? "gold" : "ore", 0.8);
+      }
+    }
+  }
+  s.nuts = s.nuts.filter((n) => !n.got && n.x > -40 && n.y > -40 && n.y < s.H + 40);
+}
+
 export function stepSpill(s: SpillState, dt: number): SpillCue[] {
   stepSpillBody(s, dt);
   const out = s.cues;
@@ -1359,9 +1413,11 @@ function stepSpillBody(s: SpillState, dt: number) {
       const home = s.W * SPILL.homeX;
       s.pilot.x += (home - s.pilot.x) * Math.min(1, dt * 3);
     } else autopilot(s, dt);
-    // the ore still drifts: a stream that was mid-screen is still there
-    for (const n of s.nuts) { n.x += n.vx * dt; n.bob += dt * 4; }
-    s.nuts = s.nuts.filter((n) => !n.got && n.x > -40);
+    // the ore still drifts: a stream that was mid-screen is still there,
+    // and the ship COLLECTS it (owner, 30 Sep 2026: "coins show up but
+    // can't collect in between waves"): the same step the wave runs, so a
+    // coin under the ship in the countdown pays like any other
+    stepNuts(s, dt);
     const before = Math.ceil(SPILL.countdown - (s.phaseT - dt));
     const now = Math.ceil(SPILL.countdown - s.phaseT);
     if (now !== before && now > 0) cue(s, "count");
@@ -1597,54 +1653,7 @@ function stepSpillBody(s: SpillState, dt: number) {
   }
   s.rocks = s.rocks.filter((r) => !r.dead && r.x > -r.r - 60 && r.y > -r.r - 80 && r.y < s.H + r.r + 80);
 
-  // ---- ore and the drifts
-  if (s.comboT > 0) {
-    s.comboT = Math.max(0, s.comboT - dt);
-    if (s.comboT === 0) s.combo = 0;
-  }
-  for (const n of s.nuts) {
-    if (n.got) continue;
-    if (spillHas(s, "magnet") && n.kind !== "hull") {
-      const dx = s.pilot.x - n.x, dy = s.pilot.y - n.y, distance = Math.hypot(dx, dy);
-      if (distance > 1 && distance < 100 * Math.sqrt(lane(s))) {
-        const pull = Math.min(distance, 420 * dt);
-        n.x += dx / distance * pull; n.y += dy / distance * pull;
-      }
-    }
-    n.x += n.vx * dt;
-    n.y += n.vy * dt;
-    n.bob += dt * 4;
-    const dx = n.x - s.pilot.x;
-    const dy = n.y + Math.sin(n.bob) * 3 - s.pilot.y;
-    if (dx * dx + dy * dy < 30 * 30) {
-      n.got = true;
-      if (n.kind === "hull") {
-        s.hull = Math.min(s.maxHull, s.hull + 1);
-        say(s, "HEALTH RESTORED", 1.3);
-        burst(s, n.x, n.y, 14, "hull", 0.9);
-        cue(s, "hull");
-      } else {
-        const worth = n.kind === "gold" ? 5 : 1;
-        s.ore += worth;
-        s.oreMined += worth;
-        s.repairOre += worth;
-        if (s.specialties.plating === "salvage" && s.repairOre >= 30 && s.repairsThisWave < 2 && s.hull < s.maxHull) {
-          s.repairOre -= 30; s.repairsThisWave++; s.hull++; cue(s, "hull"); say(s, "SALVAGE ARMOR · +1 HEALTH", 1.2);
-        }
-        s.repairOre = Math.min(30, s.repairOre);
-        s.combo = Math.min(9, s.combo + 1);
-        s.comboT = 2.6;
-        s.score += 25 * s.combo * (n.kind === "gold" ? 2 : 1);
-        if (n.kind === "gold") {
-          s.charge = Math.min(spillChargeCap(s), s.charge + (s.specialties.pulse === "efficient" ? 0.65 : 0.5));
-          say(s, s.up.pulse >= 1 ? (s.charge >= 1 ? "PULSE ARMED" : "CHARGED COIN · CHARGING") : "CHARGED COIN", 1);
-          cue(s, "gold");
-        } else cue(s, "ore");
-        burst(s, n.x, n.y, n.kind === "gold" ? 14 : 7, n.kind === "gold" ? "gold" : "ore", 0.8);
-      }
-    }
-  }
-  s.nuts = s.nuts.filter((n) => !n.got && n.x > -40 && n.y > -40 && n.y < s.H + 40);
+  stepNuts(s, dt);
 
   // surviving is worth points on its own, so a cautious run still scores
   s.score += dt * 10 * (1 + climb);

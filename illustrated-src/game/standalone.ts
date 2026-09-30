@@ -199,10 +199,12 @@ export async function bootStandalone(root: HTMLElement) {
     // Field keeps its "spill" id everywhere below the label: saves, the
     // leaderboard, the Star Chart rows.
     { id: "spill", label: "DEBRIS FIELD", short: "DEBRIS", blurb: "Wave survival. Upgrade your ship. Survive the dangers of space." },
+    // ARCADE IS THIRD (owner, 30 Sep 2026: "move arcade mode to the third
+    // mode option in the mode list")
+    { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
     { id: "race", label: "HYPER RUN", short: "HYPER", blurb: "Thread gates. Center the wormhole rings." },
     { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
     { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
-    { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
     { id: "tunnel", label: "WORMHOLE RUN", short: "WORMHOLE", blurb: "Hold to thrust down the corridor." },
   ];
   const MODES = ALL_MODES.filter((m) => m.id !== "tunnel" || WORMHOLE_RUN_ON_SHEET);
@@ -4166,10 +4168,12 @@ export async function bootStandalone(root: HTMLElement) {
       // sticker is only the web page's placeholder. A shell that has not
       // answered yet shows no price and cannot be tapped: a USD sticker in
       // front of a non-US reviewer is a rejection, not a fallback.
-      // THE CASH PACK (owner, 15 Sep 2026: "Restore a single IAP for 2500
-      // star dust @$3.99") only where a store can sell it: a shell with its
-      // store, the beta (sticker, granted), or the store switch for review.
-      if (dp.cash && !platform.storeReady && !IS_BETA && !IAP_LIVE) continue;
+      // THE CASH PACKS (owner, 15 Sep 2026: "Restore a single IAP for 2500
+      // star dust @$3.99"; 30 Sep 2026: "the iap is not in the store at
+      // 1.99 as mentioned") are listed on every page. Where a store answers
+      // it sells them; the beta grants them; a page with neither shows the
+      // sticker and a tap says the packs are sold in the app (buyDust
+      // answers "unavailable", and DENY_TEXT carries the line).
       if (!dp.cash) {
         // ACORNS BUY STAR DUST (owner, 13 Sep 2026: "leave the packs in,
         // they just cost acorns ... 1000 acorn = 500 star dust"; 15 Sep
@@ -4180,7 +4184,8 @@ export async function bootStandalone(root: HTMLElement) {
         row.setAttribute("aria-label", `${(dp.dust + dp.bonus).toLocaleString()} Star Dust for ${dp.acorns.toLocaleString()} acorns`);
         // the acorn rows wait with the rest while the store's sheet is up
         if (inFlight) row.disabled = true;
-        row.onclick = () => { if (inFlight) return; tx(row, () => engine.buyDust(dp.id), dp.acorns, "acorns"); render(); };
+        // a refusal stays on the status line: only a purchase redraws
+        row.onclick = () => { if (inFlight) return; if (tx(row, () => engine.buyDust(dp.id), dp.acorns, "acorns")) render(); };
         scroll.append(row);
         continue;
       }
@@ -4191,7 +4196,7 @@ export async function bootStandalone(root: HTMLElement) {
       row.append(t, el("span", `ac-modprice ac-cashprice${waiting ? " ac-waiting" : ""}`, label));
       if (!priced) { row.disabled = true; row.setAttribute("aria-label", "Price loading"); }
       if (inFlight) { row.disabled = true; if (waiting) row.setAttribute("aria-label", "Purchase in progress"); }
-      row.onclick = () => { if (!priced || inFlight) return; tx(row, () => engine.buyDust(dp.id)); render(); };
+      row.onclick = () => { if (!priced || inFlight) return; if (tx(row, () => engine.buyDust(dp.id))) render(); };
       scroll.append(row);
     }
     // the store answered while we were away from this list, or just now:
@@ -4215,7 +4220,7 @@ export async function bootStandalone(root: HTMLElement) {
     // the app's.
     if (!platform.storeReady) scroll.append(el("p", "ac-fine", IS_BETA
       ? `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The payment rail is not connected yet, so the ${CASH_PACKS.map((p) => p.dust.toLocaleString()).join(" and ")} packs are granted during the beta.`
-      : `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500.`));
+      : `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The ${CASH_PACKS.map((p) => p.price).join(" and ")} packs are sold in the app.`));
 
     box.append(scroll);
     // THE CYCLE INSPECTOR SHIPS ON BOTH PAGES. It was gated on beta while
