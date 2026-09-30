@@ -1,4 +1,7 @@
-import { LEVELS, STAR_REWARDS, CHART_MAX_STARS, countBits, missionProgressId } from "./campaign.js?v=295";
+import { LEVELS, CHART_LEVELS, STAR_REWARDS, CHART_MAX_STARS, countBits, missionProgressId } from "./campaign.js?v=295";
+/** the missions this page's chart shows: a beta save's stars past the
+ *  production road do not count toward its total (audit, 30 Sep 2026) */
+const chartIds = new Set(CHART_LEVELS.map((d) => d.id));
 import { ENVS } from "./catalog.js?v=295";
 export const barrierId = (after) => ({ 33: "hyper-barrier-1", 66: "hyper-barrier-2", 99: "hyper-barrier-3" }[after]);
 export const rewardId = (r) => r.kind === "dust" || r.kind === "acorns"
@@ -11,8 +14,9 @@ const prepared = new WeakMap();
  * Import their extra credit conservatively when this bundle next loads. */
 function carryCompatibilityWrites(save, p) {
     let oldTotal = 0;
-    for (const value of Object.values(save.stars ?? {}))
-        oldTotal += countBits(clampMask(value));
+    for (const [id, value] of Object.entries(save.stars ?? {}))
+        if (chartIds.has(id))
+            oldTotal += countBits(clampMask(value));
     p.legacyEntitlementFloor = Math.max(p.legacyEntitlementFloor, Math.min(CHART_MAX_STARS, oldTotal));
     for (const def of LEVELS) {
         const mask = clampMask(save.stars?.[def.id]);
@@ -71,7 +75,7 @@ export function migrateCampaign(save, existing = true, legacyPageUnknown = false
         return save.campaignProgress;
     }
     const raw = save.stars ?? {};
-    const rawTotal = Object.values(raw).reduce((n, m) => n + countBits(clampMask(m)), 0);
+    const rawTotal = Object.entries(raw).reduce((n, [id, m]) => n + (chartIds.has(id) ? countBits(clampMask(m)) : 0), 0);
     const p = {
         version: 1, missions: {}, barriers: (save.raceGates ?? []).map(barrierId).filter(Boolean),
         paidRewards: STAR_REWARDS.filter(r => r.kind === "dust" && r.stars <= (save.dustPaidTo || 0)).map(rewardId),

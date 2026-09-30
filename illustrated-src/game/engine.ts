@@ -76,7 +76,7 @@ import { raceViewport } from "./race-viewport";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract,
   spillCheckpoint, restoreSpill, type SpillBuyable, type SpillCue } from "./spill";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor, type SpillEngineColor, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
-import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save";
+import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards, sealSave } from "./save";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "ship";
 
@@ -355,6 +355,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     startOver() {
       eraseSave();
+      sealSave();
       window.location.reload();
     },
     redeemAccessCode(code) {
@@ -425,6 +426,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // Actual mission passage opens the road; reward eligibility cannot skip it.
       if (!def.standalone && !levelUnlocked(def, routeMasks(save), starsOf(save), save.raceGates)) return false;
       unlockAudio();
+      // a chained NEXT never reaches open(): bank what the last finish earned
+      settleDust();
       // levels never run the tutorial: the chart itself is gated behind
       // having a save, and a first-timer meets the tutorial in endless.
       // A Wormhole mission flies a FIXED corridor: the seed is the level's
@@ -437,7 +440,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (def.base === "spill") void loadSpillScene(engine.art, save.equippedSuit).then(notify);
       resetInputTracking();
       raceAccumulator = 0;
-      guideStep("level");
+      // flying a road mission graduates the guided start wherever it was
+      // left: a pilot who went straight to the chart is not nagged to fly
+      // Mission 1 after flying it (audit, 30 Sep 2026)
+      if (save.guide === "levels") guideStep("level");
+      else if (save.guide === "reward" || save.guide === "hangar" || save.guide === "helmet") { save.guide = "done"; writeSave(save); }
       platform.gameplayStart();
       notify();
       return true;
@@ -472,6 +479,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       }
       world.screen = s;
       if (s === "title") world.tut = null;
+      // the graduation gift is collected on the crash sheet; leaving that
+      // sheet any other way still moves the guide on
+      if (save.guide === "reward" && s !== "dead" && s !== "pause") { save.guide = "hangar"; writeSave(save); }
       if (s === "title" || s === "log" || s === "hangar" || s === "shop" || s === "profile" || s === "help" || s === "scores") {
         // an aborted Debris Field run still banks its waves and records
         if (world.spill && (world.screen === "play" || world.screen === "pause")) { bankSpill(save, world.spill, true); writeSave(save); }

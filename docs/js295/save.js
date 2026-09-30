@@ -155,18 +155,58 @@ function readRaw(key) {
         // it. Anything that is not a plain object is not a save; say so, and the
         // next key in the list gets its turn.
         const value = JSON.parse(raw);
-        if (typeof value !== "object" || value === null || Array.isArray(value))
+        if (typeof value !== "object" || value === null || Array.isArray(value)) {
+            stashCorrupt(key, raw);
             return null;
+        }
         return value;
     }
     catch {
+        try {
+            stashCorrupt(key, platform.storage.get(key));
+        }
+        catch { /* the stash is best effort */ }
         return null;
     }
+}
+/** A blob that is not a save is kept, once, under its own key before the
+ *  fresh save overwrites the slot - so a hand edit gone wrong is recoverable
+ *  from devtools rather than gone (audit, 30 Sep 2026). */
+function stashCorrupt(key, raw) {
+    if (!raw)
+        return;
+    const slot = `${key}:corrupt`;
+    try {
+        if (!platform.storage.get(slot))
+            platform.storage.set(slot, raw);
+    }
+    catch { /* best effort */ }
 }
 export function loadSave() {
     const source = [SAVE_KEY, ...LEGACY_KEYS].map(key => ({ key, value: readRaw(key) })).find(x => x.value);
     const parsed = source?.value ?? null;
     const s = { ...defaultSave(), ...parsed };
+    // EVERY LIST IS A LIST (audit, 30 Sep 2026): a hand-edited `unlockedSuits: 5`
+    // used to throw at the first .includes below, and a thrown loadSave is a
+    // blank page with no Start Over to reach
+    const bag = s;
+    for (const k of ["unlocked", "unlockedSuits", "unlockedTrails", "unlockedPals", "purchased", "keyUnlocks", "boostedRewards", "zonesSeen", "favorites"]) {
+        const v = bag[k];
+        bag[k] = Array.isArray(v) ? v.filter((x) => typeof x === "string") : [];
+    }
+    bag.raceGates = Array.isArray(bag.raceGates) ? bag.raceGates.filter((x) => typeof x === "number") : [];
+    // a ledger that is not a ledger is rebuilt from `stars` by migrateCampaign
+    const cp = bag.campaignProgress;
+    if (cp && (typeof cp !== "object" || !cp.missions || typeof cp.missions !== "object" || !Array.isArray(cp.paidRewards)))
+        delete bag.campaignProgress;
+    else if (cp) {
+        if (!Array.isArray(cp.barriers))
+            cp.barriers = [];
+        if (!Array.isArray(cp.zoneVisits))
+            cp.zoneVisits = [];
+        if (typeof cp.legacyEntitlementFloor !== "number" || !isFinite(cp.legacyEntitlementFloor))
+            cp.legacyEntitlementFloor = 0;
+    }
     if (!s.unlocked?.includes("clear"))
         s.unlocked = ["clear", ...(s.unlocked || [])];
     if (!s.unlockedSuits?.includes("flight"))
@@ -230,6 +270,12 @@ export function loadSave() {
     // backlog on next load instead of silently losing it.
     if (typeof s.starDust !== "number" || !isFinite(s.starDust))
         s.starDust = 0;
+    // the counters are whole, finite and never negative: a string here
+    // concatenated its way to "5006860" acorns on the first payout
+    for (const k of ["acorns", "xp", "highScore", "deepBest", "lostBest", "arcadeBest", "tunnelBest", "lifetimeAcorns", "runs", "spillBest", "starDust"]) {
+        const v = s[k];
+        s[k] = typeof v === "number" && isFinite(v) ? Math.max(0, Math.floor(v)) : 0;
+    }
     if (!Array.isArray(s.receipts))
         s.receipts = [];
     s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
@@ -406,7 +452,7 @@ export function loadSave() {
         s.stars = {};
     // saves written before the guided path existed have already seen the
     // game — never walk a veteran to the hangar
-    if (typeof s.guide !== "string")
+    if (!["pending", "reward", "hangar", "helmet", "levels", "done"].includes(s.guide))
         s.guide = s.tutorialDone ? "done" : "pending";
     if (typeof s.allStars !== "boolean")
         s.allStars = false;
@@ -534,14 +580,15 @@ export function loadSave() {
  *  as a name typed into the box. */
 export const PILOT_NAME_MAX = 18;
 export function cleanPilotName(raw) {
-    return (raw || "")
+    // by character, not UTF-16 unit: a run of emoji used to end on a lone
+    // surrogate that rendered as a broken glyph (audit, 30 Sep 2026)
+    return Array.from((raw || "")
         // eslint-disable-next-line no-control-regex
         // to a SPACE, not to nothing: a pasted name carrying a line break
         // should read as two words, not silently become one
         .replace(/[\u0000-\u001f\u007f-\u009f]/g, " ")
         .replace(/\s+/g, " ")
-        .trim()
-        .slice(0, PILOT_NAME_MAX);
+        .trim()).slice(0, PILOT_NAME_MAX).join("");
 }
 /** THE TUTORIAL'S KIT. The guided path points at the Ion suit and helmet
  *  and the coach calls them "your new ION SUIT" - but nothing ever granted
@@ -568,17 +615,33 @@ export function grantTutorialKit(s) {
 export function writeSave(s) {
     // through the bridge: localStorage on the web, the shell's durable
     // store in an app - the ONE place the save is written
+    if (sealed)
+        return;
     platform.storage.set(SAVE_KEY, JSON.stringify(s));
 }
 // The one deliberate way to start over. Writes a FRESH save into this
 // build's own slot — never a bare delete, because the beta slot would
 // quietly re-seed itself from the production save on the next load.
 export function eraseSave() {
-    writeSave(defaultSave());
+    // WHAT MONEY BOUGHT STAYS (audit, 30 Sep 2026). The reset erases the
+    // pilot - stars, acorns, records, settings - and keeps the shop items,
+    // the Star Dust and the boosts, because the receipt vault stops the
+    // store from ever re-granting a consumed pack: a reset that took them
+    // took real money with no way back.
+    const old = loadSave();
+    const fresh = defaultSave();
+    fresh.purchased = [...new Set(old.purchased || [])];
+    fresh.starDust = Math.max(0, old.starDust || 0);
+    fresh.boosts = { ...fresh.boosts, ...(old.boosts || {}) };
+    writeSave(fresh);
 }
+/** after Start Over the page reloads; nothing that resolves in between
+ *  (a store answer, a late settle) may write the old save back */
+let sealed = false;
+export function sealSave() { sealed = true; }
 export function starsOf(s) {
     const p = migrateCampaign(s);
-    return Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? CHART_MAX_STARS : 0);
+    return Math.min(CHART_MAX_STARS, Math.max(earnedCampaignStars(s, CHART_LEVELS), p.legacyEntitlementFloor, s.allStars ? CHART_MAX_STARS : 0));
 }
 // Progression is EARNED BY STARS now — the Star Chart is the one ladder.
 // The old XP thresholds are retired for good with the production split:
@@ -806,7 +869,11 @@ export function unlockReward(s, r) {
         add(s.unlockedTrails);
     else if (r.kind === "pal")
         add(s.unlockedPals);
-    add(s.boostedRewards);
+    // by RUNG (kind:id:stars), not by bare id: five suit/helmet pairs share
+    // one id across two rungs, and a bare id paid a phantom substitute on the
+    // half the boost never touched (audit, 30 Sep 2026)
+    if (!s.boostedRewards.includes(rewardId(r)))
+        s.boostedRewards.push(rewardId(r));
     return "ok";
 }
 /** DOES THE PILOT HAVE THIS PREMIUM ID, by any route: bought, opened with
@@ -835,6 +902,9 @@ export function ownsPremium(s, id) {
  *  total paid. */
 export function settleStarRewards(s) {
     const have = starsOf(s);
+    // a total that is not a number pays nothing (it used to pay every rung)
+    if (!Number.isFinite(have))
+        return 0;
     const ledger = migrateCampaign(s);
     let dust = 0, acorns = 0, high = s.dustPaidTo;
     for (const r of STAR_REWARDS) {
@@ -859,7 +929,10 @@ export function settleStarRewards(s) {
             continue;
         // already yours, by Star Unlock or by purchase: the rung pays the one
         // flat substitute either way
-        if ((s.boostedRewards || []).includes(r.id) || (s.purchased || []).includes(r.id)) {
+        // older saves hold bare ids: honour one only where the id names a single rung
+        const boosted = (s.boostedRewards || []).includes(key)
+            || ((s.boostedRewards || []).includes(r.id) && STAR_REWARDS.filter((x) => x.id === r.id).length === 1);
+        if (boosted || (s.purchased || []).includes(r.id)) {
             const sub = substituteFor(r.stars);
             if (sub.kind === "dust")
                 dust += sub.amount;

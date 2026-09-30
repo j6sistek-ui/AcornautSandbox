@@ -2772,6 +2772,9 @@ export async function bootStandalone(root: HTMLElement) {
     "COMET CHASER":  { ring: ["#ffc48a", "#d1621f"], face: "#4c2208", mark: "comet" },
     "EVENT HORIZON": { ring: ["#d0a8ff", "#4a1f8a"], face: "#120424", mark: "hole" },
     ACORNAUT:        { ring: ["#fff0b0", "#b8860b"], face: "#3d2a06", mark: "acorn" },
+    // the two titles above ACORNAUT drew the CADET chevron (audit, 30 Sep 2026)
+    GATECRASHER:     { ring: ["#a8f5e0", "#1f9a7c"], face: "#063128", mark: "star" },
+    STARLORD:        { ring: ["#ffe9a8", "#d9a11a"], face: "#3a2604", mark: "acorn" },
   };
 
   function drawRankBadge(ctx: CanvasRenderingContext2D, name: string, px: number) {
@@ -3198,7 +3201,7 @@ export async function bootStandalone(root: HTMLElement) {
     }
 
     const end = el("p", "ac-chart-end", current < 0 && levels.every(l => stars[l.id] & 1)
-      ? "CURRENT CHART COMPLETE · MORE SKY AHEAD" : "THE ROAD CONTINUES");
+      ? (IS_BETA ? "CURRENT CHART COMPLETE · MORE SKY AHEAD" : "CHART COMPLETE · REPLAY FOR EVERY STAR") : "THE ROAD CONTINUES");
     end.style.top = "0px"; map.append(end);
     disposeChart = addChartScenery(map, levels, pos, step, engine.art);
     const wrap = el("div", "ac-chartmapwrap");
@@ -3365,7 +3368,11 @@ export async function bootStandalone(root: HTMLElement) {
       ? `Already yours — this rung paid ${paidInstead.amount.toLocaleString()} ${paidInstead.kind === "dust" ? "Star Dust" : "acorns"} instead.`
       : owned ? (have >= r.stars
           ? (due > 0 ? `Open in the Loadout — ${due.toLocaleString()} acorns.` : "Yours.")
-          : `Yours already. When the road reaches ${r.stars} stars this rung pays ${SUB_ACORNS} acorns instead.`)
+          // the substitute is paid for a Star Unlock or a purchase; an item
+          // from an older save is simply yours (audit, 30 Sep 2026)
+          : ((s.boostedRewards || []).includes(key) || (s.purchased || []).includes(r.id ?? "")
+            ? `Yours already. When the road reaches ${r.stars} stars this rung pays ${SUB_ACORNS} acorns instead.`
+            : "Yours already."))
       : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
     const item = r.kind !== "acorns" && r.kind !== "dust" && !!r.id;
     if (!owned && item) {
@@ -3711,7 +3718,10 @@ export async function bootStandalone(root: HTMLElement) {
     for (const r of STAR_REWARDS) {
       if (r.kind !== "stage" && r.stars > last.totalBefore && r.stars <= last.totalAfter) {
         const due = rewardDue(r);
-        sheet.append(el("p", "ac-gold", due > 0
+        const sub = engine.save.rewardSubs?.[rewardId(r)];
+        sheet.append(el("p", "ac-gold", sub
+          ? `ALREADY YOURS \u2014 ${r.name} \u00b7 PAID ${sub.amount.toLocaleString()} ${sub.kind === "dust" ? "STAR DUST" : "ACORNS"} INSTEAD`
+          : due > 0
           ? `OPEN IN THE LOADOUT \u2014 ${r.name} \u00b7 ${due.toLocaleString()} ACORNS`
           : `UNLOCKED \u2014 ${r.name}`));
       }

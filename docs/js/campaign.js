@@ -314,7 +314,7 @@ export function goalText(g, def) {
             : def.base === "spill" ? `Clear ${def.gates} waves of the Debris Field`
                 : def.base === "race" ? "Finish the course"
                     : `Reach the portal — ${def.gates} gates`;
-        case "acorns": return `Collect ${g.n} acorns`;
+        case "acorns": return `Collect ${g.n} acorn${g.n === 1 ? "" : "s"}`;
         case "gold": return g.n === 1 ? "Catch a golden acorn" : `Catch ${g.n} golden acorns`;
         case "noBounce": return "Touch no planet";
         case "noShield": return "Spend no shield";
@@ -359,9 +359,11 @@ export function fxText(fx) {
         out.push("GENTLE PACE");
     if (fx.gapScale && fx.gapScale < 0.98)
         out.push("NARROW GATES");
-    if (fx.driftScale && fx.driftScale >= 1.4)
+    // Nightglider holds the gates still, whatever the sway dial says
+    const sways = fx.pal !== "nightglider";
+    if (sways && fx.driftScale && fx.driftScale >= 1.4)
         out.push("HEAVY SWAY");
-    else if (fx.driftScale && fx.driftScale > 1.05)
+    else if (sways && fx.driftScale && fx.driftScale > 1.05)
         out.push("SWAYING GATES");
     return out;
 }
