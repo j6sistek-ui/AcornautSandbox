@@ -9,7 +9,7 @@ import { reachedGate } from "./campaign";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks, type ArtBank } from "./art";
 import { vanguardDepotEligible } from "./spill-depot-gag";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
-import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, PALS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { wearsOwnHead, GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, PALS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld, setSpillBackplateHost } from "./draw";
 import { setVanguardPitchTrim } from "./vanguard";
 import {
@@ -1006,7 +1006,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function transactHelmet(id: string) {
     const item = HELMETS.find((h) => h.id === id);
     if (!item) return "missing";
-    if (isPremiumSuit(save.equippedSuit)) return "fixedHead";
+    // the Loadout's rule, not the premium list's: every own-head suit
+    // (Arcflash, AcorNut, Alien, the critters) keeps its head
+    const worn = SUITS.find((u) => u.id === save.equippedSuit);
+    if (isPremiumSuit(save.equippedSuit) || (worn && wearsOwnHead(worn))) return "fixedHead";
     // a matched-set helmet only goes on its own suit
     if (item.suitOnly && save.equippedSuit !== item.suitOnly) return "suitOnly";
     if (!helmetRevealed(save, id)) return "locked";
@@ -1407,7 +1410,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // climbs back: a renderer that renegotiates its own resolution mid-run
   // would be visible every time it changed its mind.
   const RENDER_CAP_HIGH = 3;
-  const RENDER_CAP_SAFE = 2.5;
+  // 2, not 2.5: the race and the Debris Field already cap there, and a 30%
+  // pixel cut was not enough of a step for a phone that fired the probe
+  const RENDER_CAP_SAFE = 2;
   let renderCap = RENDER_CAP_HIGH;
   let capProbe: number[] | null = [];
 
@@ -1955,7 +1960,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       void loadZoneArt(bank, world.envB).then(notify);
       if (world.spill) void loadSpillScene(bank, save.equippedSuit).then(notify);
       notify();
-      prefetchArtBanks(bank);
+      prefetchArtBanks(bank, () => world.screen !== "play" && world.screen !== "pause");
     })
     .catch(() => {});
   notify();

@@ -1378,6 +1378,13 @@
       display: flex; align-items: center; justify-content: center; border-radius: 999px;
       background: rgba(10,16,32,.55); color: #7d869f; font-size: 13px; line-height: 1; cursor: pointer; }
     .ac-favbtn.on { color: #ffd76a; background: rgba(255,215,106,.14); }
+    /* 44px HIT AREAS (audit, 30 Sep 2026): the small controls keep their size
+       and grow an invisible touch target around them */
+    .ac-viewbtn, .ac-helpdot, .ac-backbtn, .ac-platebtn { position: relative; }
+    .ac-favbtn::after, .ac-casefold::after, .ac-viewbtn::after, .ac-helpdot::after, .ac-backbtn::after, .ac-platebtn::after {
+      content: ""; position: absolute; inset: -9px; }
+    .ac-shelfempty { flex: 1 0 100%; margin: 6px 4px; color: #b9c0d8; font-size: 12px; }
+    .ac-profile .ac-labnote a { display: inline-block; padding: 12px 8px; margin: -12px -8px; }
     .ac-favhead { color: #ffd76a; }
     /* the next-run shield, armed from the case plate */
     .ac-platebtn { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;

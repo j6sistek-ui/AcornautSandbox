@@ -3950,6 +3950,7 @@ export async function bootStandalone(root) {
     let confirmBuy = false; // the pack sheet is asking "are you sure"
     /** set by the engine's arrival-claim so the shop can announce it once */
     let dailyToast = null;
+    let startOverAsk = false; // the Profile's erase confirmation sheet
     let editingName = false; // the Profile name is in edit mode
     const PILOT_FALLBACK = "Nutcracker"; // shown until a pilot picks one
     // ==================================================== THE STOREFRONT
@@ -4278,6 +4279,9 @@ export async function bootStandalone(root) {
         shelf("suit", cy.suits);
         shelf("helm", cy.helms);
         shelf("pal", cy.pals);
+        if (!cy.suits.length && !cy.helms.length && !cy.pals.length) {
+            itemRail.append(el("p", "ac-sub ac-shelfempty", "You own everything on the shelf. New looks land here when they are painted."));
+        }
         // ---- THE DAILY FEATURE AND ALWAYS-AVAILABLE PACKS.
         for (const bn of [...(cy.feature ? [cy.feature] : []), ...cy.always]) {
             const quote = bundleQuote(bn, cy.owns), due = quote.due;
@@ -4413,6 +4417,10 @@ export async function bootStandalone(root) {
             // it sells them; the beta grants them; a page with neither shows the
             // sticker and a tap says the packs are sold in the app (buyDust
             // answers "unavailable", and DENY_TEXT carries the line).
+            // a shell with no store yet lists no cash rows: a disabled "…" row is
+            // a dead control in front of a reviewer (audit, 30 Sep 2026)
+            if (dp.cash && platform.native && !platform.storeReady)
+                continue;
             if (!dp.cash) {
                 // ACORNS BUY STAR DUST (owner, 13 Sep 2026: "leave the packs in,
                 // they just cost acorns ... 1000 acorn = 500 star dust"; 15 Sep
@@ -5079,31 +5087,50 @@ export async function bootStandalone(root) {
         // pilot, so it belongs on the pilot's own screen, at the bottom, after
         // everything it would destroy. Two taps, and the armed state disarms on
         // any re-render.
+        // A SHEET, NOT A SECOND TAP (audit, 30 Sep 2026): the armed button
+        // erased on a double-tap, and its copy left out what money had bought.
         const reset = el("button", "ac-ghost ac-reset", "START OVER");
-        let armed = false;
-        reset.onclick = () => {
-            if (!armed) {
-                armed = true;
-                reset.textContent = "ERASE SAVE AND START OVER?";
-                reset.classList.add("ac-resetarmed");
-                return;
-            }
-            engine.startOver();
-        };
-        scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
+        reset.onclick = () => { startOverAsk = true; render(); };
+        scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this pilot's stars, acorns, records and settings. Shop purchases, Star Dust and boosts stay."));
         // The privacy policy follows it for the same reason: this screen is
         // where a pilot's own data is shown, named and deleted. App Store
         // Connect takes the URL, but Apple expects it reachable in the app.
         const policy = el("p", "ac-fine ac-labnote");
         const link = document.createElement("a");
-        link.href = "privacy.html";
+        // absolute: the beta lives one folder down and the app's own origin
+        // cannot open a relative page in the system browser (audit, 30 Sep 2026)
+        link.href = "https://acornaut.app/privacy.html";
         link.target = "_blank";
         link.rel = "noopener";
         link.textContent = "Privacy policy";
         policy.append(link);
         scroll.append(policy, el("p", "ac-fine ac-mid", BUILD));
         box.append(scroll);
+        if (startOverAsk)
+            box.append(drawStartOverSheet());
         return box;
+    }
+    function drawStartOverSheet() {
+        const close = () => { startOverAsk = false; render(); };
+        const wrap = el("div", "ac-lvlsheet ac-spendsheet");
+        wrap.onclick = (e) => { if (e.target === wrap)
+            close(); };
+        const sheet = el("div", "ac-lvlcard ac-spendcard");
+        sheet.setAttribute("role", "dialog");
+        sheet.setAttribute("aria-label", "Erase this pilot and start over?");
+        sheet.append(el("p", "ac-kicker", "START OVER"));
+        sheet.append(el("p", "ac-spendask", "Erase this pilot and start over?"));
+        sheet.append(el("p", "ac-sub ac-spendbal", "Stars, acorns, records, settings and the pilot name go. Shop purchases, Star Dust and boosts stay with you."));
+        const row = el("div", "ac-spendrow");
+        const no = el("button", "ac-ghost", "NOT NOW");
+        no.onclick = close;
+        const yes = el("button", "ac-primary ac-resetarmed", "ERASE");
+        yes.dataset.startOver = "confirm";
+        yes.onclick = () => engine.startOver();
+        row.append(no, yes);
+        sheet.append(row);
+        wrap.append(sheet);
+        return wrap;
     }
     /** THE BOARD. Every mode's best, ranked against each other, with the top
      *  three on the podium the art is already drawing.
@@ -5309,7 +5336,9 @@ export async function bootStandalone(root) {
         }
         else if (spendAsk)
             spendAsk = null;
-        else if (dailyToast)
+        else if (startOverAsk)
+            startOverAsk = false;
+        else if (dailyToast && engine.world.screen === "title")
             dailyToast = null;
         else if (featureOpen) {
             const back = overlay.querySelector(featureReview ? ".ac-feature-reviewback" : "[data-feature-close]");
