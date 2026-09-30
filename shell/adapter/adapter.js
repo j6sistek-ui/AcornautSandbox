@@ -123,7 +123,12 @@ function storeOf(platformName) {
         const id = await recallTransactionId(res, sid, seen);
         return id ? { result: "ok", transactionId: id } : { result: "failed" };
       } catch (e) {
-        return { result: e?.userCancelled || /cancel/i.test(String(e?.message)) ? "cancelled" : "failed" };
+        // the iOS plugin rejects with only a message and a code: PURCHASE_CANCELLED
+        // is code 1; PAYMENT_PENDING (Ask to Buy) is code 11 and is paid by
+        // deliverPending() once approved, so it is not a failure
+        const code = String(e?.code ?? "");
+        if (code === "11" || /pending/i.test(String(e?.message))) return { result: "pending" };
+        return { result: e?.userCancelled || code === "1" || /cancel/i.test(String(e?.message)) ? "cancelled" : "failed" };
       }
     },
     async restore() { await ready; try { await Purchases.restorePurchases(); } catch (e) { console.warn("[acornaut shell] restore:", e?.message || e); } },
@@ -152,7 +157,12 @@ function boardsOf() {
     submit(board, score) {
       const leaderboardId = live(board);
       if (!leaderboardId) return;
-      void signIn.then(() => signedIn && Boards.submitScore({ leaderboardId, score: Math.round(score) })).catch(() => {});
+      // THE HYPER RUN BOARD TAKES HUNDREDTHS OF A SECOND (audit, 30 Sep 2026).
+      // The game posts finish ticks at 60 Hz; Game Center's and Play's
+      // elapsed-time formats read hundredths, so 5,760 ticks (1:36.000) is
+      // posted as 9600, not shown as 57.60 s. The board is sorted low to high.
+      const value = board === "hyper" ? Math.round(score * 100 / 60) : Math.round(score);
+      void signIn.then(() => signedIn && Boards.submitScore({ leaderboardId, score: value })).catch(() => {});
     },
     show(board) {
       const leaderboardId = board ? live(board) : null;
@@ -180,6 +190,16 @@ function adsOf(platformName) {
   const opts = (adId) => ({ adId, isTesting: testing, npa: true });
   let rewardedLoaded = false, interstitialLoaded = false;
   const ready = (async () => {
+    // CONSENT FIRST (audit, 30 Sep 2026). Google's User Messaging Platform
+    // decides, by region, whether a consent form is required; where it is,
+    // the form is shown once before the SDK starts, and the answer is
+    // Google's to keep. A pilot who declines still gets the game - the SDK
+    // serves what the answer allows, and every request here is already
+    // non-personalised. A consent failure never blocks the ads or the game.
+    try {
+      const info = await AdMob.requestConsentInfo({});
+      if (info?.isConsentFormAvailable && info.status === "REQUIRED") await AdMob.showConsentForm();
+    } catch (e) { console.warn("[acornaut shell] ad consent:", e?.message || e); }
     await AdMob.initialize({ initializeForTesting: testing });
   })().catch((e) => console.warn("[acornaut shell] ads not ready:", e?.message || e));
   const loadRewarded = async () => {
@@ -242,7 +262,12 @@ async function boot() {
     window.__acornautPlatform = adapter;
     // Android's hardware back button: the game has its own back arrows;
     // the system button should never kill the app mid-run
-    App.addListener("backButton", () => { document.querySelector(".ac-backbtn")?.click(); });
+    App.addListener("backButton", () => {
+      const back = document.querySelector(".ac-backbtn");
+      // on the hub there is no back arrow: the system button backgrounds the
+      // app, as Android expects, instead of doing nothing (audit, 30 Sep 2026)
+      if (back) back.click(); else void App.minimizeApp().catch(() => {});
+    });
   }
   const m = await import(bundleSrc);
   booted = true;

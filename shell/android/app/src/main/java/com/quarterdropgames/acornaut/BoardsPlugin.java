@@ -23,7 +23,17 @@ public class BoardsPlugin extends Plugin {
 
     @Override
     public void load() {
-        PlayGamesSdk.initialize(getContext());
+        // a placeholder project id ("0", stamped until the Play Games project
+        // exists) must not initialise the SDK: it logs a fatal developer
+        // error at launch. Every board call then fails softly, as designed.
+        try {
+            int id = getContext().getResources().getIdentifier("game_services_project_id", "string", getContext().getPackageName());
+            String value = id == 0 ? "" : getContext().getString(id);
+            if (value.isEmpty() || "0".equals(value)) return;
+            PlayGamesSdk.initialize(getContext());
+        } catch (Exception e) {
+            // no boards is a fine outcome; a crash at launch is not
+        }
     }
 
     @PluginMethod

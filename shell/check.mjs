@@ -32,12 +32,16 @@ const rows = [
       "AdMob → Apps → the app → App ID (~) / Ad units → the unit id (/); test ids do not count once testing is off"]) : []),
   ...Object.entries(cfg.leaderboards).filter(([, v]) => v !== "").map(([k, v]) => [`leaderboards.${k}`, v,
     "App Store Connect → Game Center → Leaderboards → Leaderboard ID; Play Console → Play Games Services → Leaderboards → ID"
-    + (k === "hyper" ? "  ** sort LOW TO HIGH, format elapsed time: this board is posted finish ticks **" : "")]),
+    + (k === "hyper" ? "  ** sort LOW TO HIGH, format elapsed time in HUNDREDTHS of a second: the adapter posts finish ticks x 100 / 60 **" : "")]),
 ];
 let missing = 0;
 for (const [k, v, from] of rows) { const ok = !unset(v); if (!ok) missing++; console.log(`${ok ? "  set    " : "  MISSING"} ${k.padEnd(28)} ${ok ? "" : "← " + from}`); }
 console.log(`\n${missing} value(s) still to fill in app.config.json, then \`npm run configure\`.`);
 if (cfg.admob?.testing !== false) console.log("ads:            TEST ads (admob.testing is true) - set it to false and fill admob.* before the store build");
+// THE EXIT CODE SAYS SO TOO (audit, 30 Sep 2026): a missing value or test ads
+// is a build that must not be archived, and a script that exits 0 over it
+// cannot gate one
+if (missing > 0 || cfg.admob?.testing !== false) process.exitCode = 1;
 const pb = join(here, "ios", "App", "App.xcodeproj", "project.pbxproj");
 // "STAMPED" MUST MEAN THE PLUGIN IS REACHABLE (audit, 8 Sep 2026). The pbxproj
 // alone only proves BoardsPlugin compiles. The window SceneDelegate builds is

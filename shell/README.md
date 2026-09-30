@@ -132,7 +132,9 @@ afternoon on the Mac.
    **$3.99** for dust-2500 (owner, 15 and 23 Sep 2026); the strings in
    `DUST_PACKS` are only the web sticker, the store tier is the real price. They can sit in "Ready to Submit" until the app's first review.
 4. Game Center → Leaderboards → + → Classic. ID `acornaut.normal`, score
-   format integer, sort high to low. Repeat for `acornaut.hyper` and
+   format integer, sort high to low. Repeat for `acornaut.hyper` (score
+   format **elapsed time, to the hundredth**, sort **low to high**: the
+   adapter posts finish ticks × 100 / 60) and
    `acornaut.spill`. For a monthly board add a **Recurring** leaderboard with
    a one-month period beside each; Apple shows both in the same sheet.
 5. Agreements, Tax, and Banking: accept the Paid Apps agreement and fill in
