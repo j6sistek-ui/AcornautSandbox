@@ -917,7 +917,7 @@ export function raceGrade(finishTicks: number | null) {
 
 export function formatRaceTicks(ticks: number | null) {
   if (ticks == null) return "—:——.———";
-  const ms = Math.floor((ticks * 1000) / RACE_HZ);
+  const ms = Math.floor((Math.max(0, ticks) * 1000) / RACE_HZ);
   const minutes = Math.floor(ms / 60_000);
   const seconds = Math.floor((ms % 60_000) / 1000);
   return `${minutes}:${String(seconds).padStart(2, "0")}.${String(ms % 1000).padStart(3, "0")}`;

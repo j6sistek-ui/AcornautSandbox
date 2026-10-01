@@ -80,6 +80,10 @@ if (existsSync(ios)) {
   plist = plist.replace(/<key>UISupportedInterfaceOrientations~ipad<\/key>\s*<array>[\s\S]*?<\/array>/,
     `<key>UISupportedInterfaceOrientations~ipad</key>\n\t<array>\n\t\t<string>UIInterfaceOrientationPortrait</string>\n\t</array>`);
   if (!plist.includes("UIRequiresFullScreen")) plist = plist.replace("\t<key>UIViewControllerBasedStatusBarAppearance</key>", "\t<key>UIRequiresFullScreen</key>\n\t<true/>\n\t<key>UIViewControllerBasedStatusBarAppearance</key>");
+  // a light status bar over the dark hub (PACKAGING_PLAN F97), and the export
+  // compliance answer so every upload does not ask it (audit, 30 Sep 2026)
+  if (!plist.includes("UIStatusBarStyle")) plist = plist.replace("\t<key>UIRequiresFullScreen</key>", "\t<key>UIStatusBarStyle</key>\n\t<string>UIStatusBarStyleLightContent</string>\n\t<key>UIRequiresFullScreen</key>");
+  if (!plist.includes("ITSAppUsesNonExemptEncryption")) plist = plist.replace("\t<key>UIRequiresFullScreen</key>", "\t<key>ITSAppUsesNonExemptEncryption</key>\n\t<false/>\n\t<key>UIRequiresFullScreen</key>");
   // ADS (13 Sep 2026): the AdMob app id the SDK reads at launch, and
   // Google's own SKAdNetwork id so iOS attributes installs from its ads
   const gad = cfg.admob?.iosAppId;

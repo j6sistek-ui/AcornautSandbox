@@ -334,8 +334,8 @@ const dock = (seed) => {
   ok(S.stepSpill(s, DT).includes("shield"), "the shield's break is reported");
   ok(s.shield === 0 && s.hull === 3, `a shield absorbs the hit (shield ${s.shield}, hull ${s.hull})`);
   let drifts = 0;
-  until(s, (x) => x.wave >= 4, 200, (x) => { immune(x); for (const n of x.nuts) if (n.kind === "shield") drifts++; });
-  ok(drifts === 0, `no shield ever drifts past in the field (${drifts})`);
+  until(s, (x) => x.wave >= 4, 200, (x) => { immune(x); for (const n of x.nuts) if (n.kind !== "ore" && n.kind !== "gold" && n.kind !== "hull") drifts++; });
+  ok(drifts === 0, `only ore, charged coins and hull kits drift in the field (${drifts})`);
 }
 {
   // the floor: brushing is free, sustained contact costs one pip and recovers

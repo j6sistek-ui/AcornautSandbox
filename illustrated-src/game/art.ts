@@ -119,7 +119,13 @@ function loadImg(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
+    // DECODED BEFORE IT IS HANDED OVER (audit, 30 Sep 2026): a 6 MP sky that
+    // resolves on onload is decoded synchronously on its first drawImage,
+    // which was the 100-200 ms hitch when a zone's panorama arrived mid-run
+    img.onload = () => {
+      const done = () => resolve(img);
+      if (typeof img.decode === "function") img.decode().then(done, done); else done();
+    };
     img.onerror = () => reject(new Error(src));
     img.src = url;
   });
@@ -290,13 +296,25 @@ export function emptyArt(): ArtBank {
 // environments it flies through, so the first paint is never held up by
 // two megabytes of panorama. Until one arrives the gradient stands in.
 const skyCache = new Map<string, HTMLImageElement | null>();
+// a handful of skies stay decoded; the rest are let go (each is ~6 MP, and
+// the cache never shrank - audit, 30 Sep 2026). Most recently used last.
+const SKY_KEEP = 4;
+function rememberSky(id: string, img: HTMLImageElement | null) {
+  skyCache.delete(id);
+  skyCache.set(id, img);
+  while (skyCache.size > SKY_KEEP) {
+    const oldest = skyCache.keys().next().value;
+    if (oldest === undefined) break;
+    skyCache.delete(oldest);
+  }
+}
 export function skyImage(id: string): HTMLImageElement | null {
   const hit = skyCache.get(id);
-  if (hit !== undefined) return hit;
-  skyCache.set(id, null);
+  if (hit !== undefined) { if (hit) rememberSky(id, hit); return hit; }
+  rememberSky(id, null);
   loadImg(artUrl(`skies/${id}.jpg`))
-    .then((img) => skyCache.set(id, img))
-    .catch(() => skyCache.set(id, null));
+    .then((img) => rememberSky(id, img))
+    .catch(() => rememberSky(id, null));
   return null;
 }
 
@@ -630,18 +648,22 @@ export function loadPalBank(bank: ArtBank, id: string): Promise<void> {
  *  loadout, most of it is already home. Pals lead - there are fewer of
  *  them, they are what the menus animate, and one is on screen the moment
  *  the hub paints. */
-export function prefetchArtBanks(bank: ArtBank) {
+export function prefetchArtBanks(bank: ArtBank, idle: () => boolean = () => true) {
   let chain: Promise<unknown> = Promise.resolve();
   const breathe = () => new Promise((r) => setTimeout(r, 300));
+  // NOT WHILE FLYING (audit, 30 Sep 2026): the sweep was pulling 10 MB
+  // through a 10-second run and doubling its frame times. It waits, a
+  // second at a time, until the pilot is back on a menu.
+  const whenIdle = () => new Promise<void>((r) => { const tick = () => { if (idle()) r(); else setTimeout(tick, 1000); }; tick(); });
   for (const id of Object.keys(PAL_ANIM)) {
     if (palBankLoads.has(id)) continue;
-    chain = chain.then(() => loadPalBank(bank, id)).then(breathe);
+    chain = chain.then(whenIdle).then(() => loadPalBank(bank, id)).then(breathe);
   }
   for (const id of LAZY_SUIT_IDS) {
     // Flagship is 32 MiB decoded: load only on equip/explicit preview.
     if (id === "vanguard") continue;
     if (suitBankLoads.has(id)) continue;
-    chain = chain.then(() => loadSuitBank(bank, id)).then(breathe);
+    chain = chain.then(whenIdle).then(() => loadSuitBank(bank, id)).then(breathe);
   }
   void chain;
 }

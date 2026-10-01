@@ -519,12 +519,19 @@ try{
     // acorns ... 1000 acorn = 500 star dust"): the pack is priced in acorns on
     // web and beta alike, and buys with them
     const row=app.querySelector(`[data-dust-pack-id="${pack.id}"]`);assert(row);
-    // the cash packs are store items: the beta previews them with their stickers, the web page does not show them
+    // the cash packs are listed on every page with their stickers (owner, 30 Sep
+    // 2026: "the iap is not in the store at 1.99 as mentioned"): the beta grants
+    // them, the web page says they are sold in the app and grants nothing
     for(const cash of C.CASH_PACKS){
-      const cashRow=app.querySelector(`[data-dust-pack-id="${cash.id}"]`);
-      if(mode==='production')assert(!cashRow,cash.id+' is not shown on a page with no store');else assert.equal(cashRow?.querySelector('.ac-cashprice')?.textContent,cash.price,cash.id+' is previewed on the beta with its sticker');
+      const cashRow=app.querySelector(`[data-dust-pack-id="${cash.id}"]`);assert(cashRow,cash.id+' is listed');
+      assert.equal(cashRow.querySelector('.ac-cashprice')?.textContent,cash.price,cash.id+' shows its sticker');assert(!cashRow.disabled,cash.id+' can be tapped');
+      if(mode==='production'){
+        const dust=e.save.starDust;cashRow.click();
+        assert.equal(e.save.starDust,dust,cash.id+' grants nothing where no store answers');
+        assert.equal(app.querySelector('.ac-deny')?.textContent,'Star Dust packs are sold in the app.',cash.id+' says where it is sold');
+      }
     }
-    assert.equal(app.querySelectorAll('.ac-dustrow[data-dust-pack-id]').length,mode==='production'?C.ACORN_PACKS.length:C.DUST_PACKS.length,'the web page lists the acorn packs only');
+    assert.equal(app.querySelectorAll('.ac-dustrow[data-dust-pack-id]').length,C.DUST_PACKS.length,'every pack is listed on every page');
     assert.equal(row.querySelector('.ac-acornprice')?.textContent.replace(/\D/g,''),String(pack.acorns),'the pack shows its acorn price');assert(!row.querySelector('.ac-cashprice'),'no cash sticker while the store is off');
     e.save.acorns=pack.acorns-1;row.click();assert.equal(e.save.starDust,dustBefore,'short of acorns buys nothing');
     e.save.acorns=pack.acorns;e.open('shop');await tick();app.querySelector(`[data-dust-pack-id="${pack.id}"]`).click();

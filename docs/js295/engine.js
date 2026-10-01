@@ -9,7 +9,7 @@ import { reachedGate } from "./campaign.js?v=295";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks } from "./art.js?v=295";
 import { vanguardDepotEligible } from "./spill-depot-gag.js?v=295";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=295";
-import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, PALS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=295";
+import { wearsOwnHead, GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, PALS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=295";
 import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=295";
 import { setVanguardPitchTrim } from "./vanguard.js?v=295";
 import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=295";
@@ -19,7 +19,7 @@ import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGest
 import { raceViewport } from "./race-viewport.js?v=295";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=295";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=295";
-import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save.js?v=295";
+import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards, sealSave } from "./save.js?v=295";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -146,6 +146,7 @@ export async function createEngine(canvas) {
         },
         startOver() {
             eraseSave();
+            sealSave();
             window.location.reload();
         },
         redeemAccessCode(code) {
@@ -226,6 +227,8 @@ export async function createEngine(canvas) {
             if (!def.standalone && !levelUnlocked(def, routeMasks(save), starsOf(save), save.raceGates))
                 return false;
             unlockAudio();
+            // a chained NEXT never reaches open(): bank what the last finish earned
+            settleDust();
             // levels never run the tutorial: the chart itself is gated behind
             // having a save, and a first-timer meets the tutorial in endless.
             // A Wormhole mission flies a FIXED corridor: the seed is the level's
@@ -238,7 +241,15 @@ export async function createEngine(canvas) {
                 void loadSpillScene(engine.art, save.equippedSuit).then(notify);
             resetInputTracking();
             raceAccumulator = 0;
-            guideStep("level");
+            // flying a road mission graduates the guided start wherever it was
+            // left: a pilot who went straight to the chart is not nagged to fly
+            // Mission 1 after flying it (audit, 30 Sep 2026)
+            if (save.guide === "levels")
+                guideStep("level");
+            else if (save.guide === "reward" || save.guide === "hangar" || save.guide === "helmet") {
+                save.guide = "done";
+                writeSave(save);
+            }
             platform.gameplayStart();
             notify();
             return true;
@@ -281,7 +292,18 @@ export async function createEngine(canvas) {
             world.screen = s;
             if (s === "title")
                 world.tut = null;
-            if (s === "title" || s === "log") {
+            // the graduation gift is collected on the crash sheet; leaving that
+            // sheet any other way still moves the guide on
+            if (save.guide === "reward" && s !== "dead" && s !== "pause") {
+                save.guide = "hangar";
+                writeSave(save);
+            }
+            if (s === "title" || s === "log" || s === "hangar" || s === "shop" || s === "profile" || s === "help" || s === "scores") {
+                // an aborted Debris Field run still banks its waves and records
+                if (world.spill && (world.screen === "play" || world.screen === "pause")) {
+                    bankSpill(save, world.spill, true);
+                    writeSave(save);
+                }
                 world.race = null;
                 world.spill = null;
                 raceAccumulator = 0;
@@ -944,7 +966,10 @@ export async function createEngine(canvas) {
         const item = HELMETS.find((h) => h.id === id);
         if (!item)
             return "missing";
-        if (isPremiumSuit(save.equippedSuit))
+        // the Loadout's rule, not the premium list's: every own-head suit
+        // (Arcflash, AcorNut, Alien, the critters) keeps its head
+        const worn = SUITS.find((u) => u.id === save.equippedSuit);
+        if (isPremiumSuit(save.equippedSuit) || (worn && wearsOwnHead(worn)))
             return "fixedHead";
         // a matched-set helmet only goes on its own suit
         if (item.suitOnly && save.equippedSuit !== item.suitOnly)
@@ -1395,7 +1420,9 @@ export async function createEngine(canvas) {
     // climbs back: a renderer that renegotiates its own resolution mid-run
     // would be visible every time it changed its mind.
     const RENDER_CAP_HIGH = 3;
-    const RENDER_CAP_SAFE = 2.5;
+    // 2, not 2.5: the race and the Debris Field already cap there, and a 30%
+    // pixel cut was not enough of a step for a phone that fired the probe
+    const RENDER_CAP_SAFE = 2;
     let renderCap = RENDER_CAP_HIGH;
     let capProbe = [];
     function noteFrameCost(ms) {
@@ -1744,7 +1771,7 @@ export async function createEngine(canvas) {
         }
     });
     window.addEventListener("blur", () => {
-        if ((world.race || world.spill) && world.screen === "play") {
+        if (world.screen === "play") {
             engine.pause();
             return;
         }
@@ -1753,7 +1780,7 @@ export async function createEngine(canvas) {
     });
     document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
-            if ((world.race || world.spill) && world.screen === "play") {
+            if (world.screen === "play") {
                 engine.pause();
                 return;
             }
@@ -1784,7 +1811,7 @@ export async function createEngine(canvas) {
             sfx.bounce();
         if (ev === "die") {
             // the interstitial cadence counts every crash; afterCrash spends it
-            if (!world.lvl && !world.race && !world.spill)
+            if (!world.lvl && !world.race && !world.spill && !world.continued)
                 save.crashesSinceAd = (save.crashesSinceAd ?? 0) + 1;
             writeSave(save);
             sfx.die();
@@ -1833,7 +1860,8 @@ export async function createEngine(canvas) {
             // reached submitScore (sim.ts). Waves cleared is the Debris Field's
             // own number - it is what the mode is scored on and what spillBest
             // already keeps - and higher is better, so it needs no special board.
-            if (spill.cleared > 0)
+            // a mission is not a board run (the same rule the sim keeps)
+            if (spill.cleared > 0 && !spill.target)
                 platform.submitScore("spill", spill.cleared);
             if (!spill.target)
                 save.spillSuspended = null;
@@ -2018,7 +2046,7 @@ export async function createEngine(canvas) {
         if (world.spill)
             void loadSpillScene(bank, save.equippedSuit).then(notify);
         notify();
-        prefetchArtBanks(bank);
+        prefetchArtBanks(bank, () => world.screen !== "play" && world.screen !== "pause");
     })
         .catch(() => { });
     notify();

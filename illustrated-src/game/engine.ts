@@ -9,7 +9,7 @@ import { reachedGate } from "./campaign";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks, type ArtBank } from "./art";
 import { vanguardDepotEligible } from "./spill-depot-gag";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
-import { GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, PALS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { wearsOwnHead, GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld, setSpillBackplateHost } from "./draw";
 import { setVanguardPitchTrim } from "./vanguard";
 import {
@@ -76,7 +76,7 @@ import { raceViewport } from "./race-viewport";
 import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract,
   spillCheckpoint, restoreSpill, type SpillBuyable, type SpillCue } from "./spill";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor, type SpillEngineColor, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
-import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards } from "./save";
+import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards, sealSave } from "./save";
 
 export type ShopTab = "helmets" | "suits" | "trails" | "pals" | "ship";
 
@@ -96,7 +96,6 @@ export type Engine = {
   /** wipe this build's save slot and reboot into a fresh game */
   startOver: () => void;
   /** the Founder's Pack door — and one more code that is a love letter */
-  redeemAccessCode: (code: string) => "ok" | "love" | "denied";
   /** rename the pilot. Returns the name that was actually stored, which
    *  may differ from what was passed - it is sanitised on the way in. */
   setPilotName: (name: string) => string;
@@ -343,6 +342,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // mode the save has not earned.
       if (mode === "deep" && !deepUnlocked(save)) return;
       if (mode === "lost" && !lostUnlocked(save)) return;
+      // NORMAL IS THE FIRST AND ONLY MODE UNTIL THE FIRST FLIGHT IS DONE
+      // (owner, 1 Oct 2026). Every other mode assumes the controls the
+      // tutorial teaches, and a pilot who picked ARCADE first used to skip
+      // the lesson entirely. The mode sheet locks the rows; this is the
+      // gate behind the sheet.
+      if (!save.tutorialDone && mode !== "fly") return;
       unlockAudio();
       const needTut = !save.tutorialDone && mode === "fly";
       resetRun(world, save, mode, needTut);
@@ -355,61 +360,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     },
     startOver() {
       eraseSave();
+      sealSave();
       window.location.reload();
-    },
-    redeemAccessCode(code) {
-      // A DEV DOOR, not a store feature. Both codes hand out content for
-      // free, which a store build must never do (App Store 3.1.1), so a
-      // shell that closes the dev doors closes this one too.
-      if (!platform.devDoors) return "denied";
-      const entered = code.trim();
-      // BOTH CODES OPEN THE WHOLE LOADOUT. They used to open different
-      // halves of it, which is why each read as a partial unlock: 120189
-      // granted IAP_ITEMS and left every STAR-gated suit, helmet, trail
-      // and pal locked, while 033018 granted stars and so left the
-      // PURCHASED items locked. Every loadout gate in save.ts takes a
-      // purchase, a star count, or the id sitting in its own unlocked
-      // list, so filling the lists opens all five tabs without touching
-      // stars or chart progress.
-      const openWholeLoadout = () => {
-        const add = (list: string[], ids: readonly string[]) => {
-          for (const id of ids) if (!list.includes(id)) list.push(id);
-          return list;
-        };
-        save.purchased = add(save.purchased || [], IAP_ITEMS);
-        // AcorNut is the one that made this look half-finished even with
-        // the lists filled: migrate strips TUTORIAL_SUIT back out of
-        // unlockedSuits unless tutorialSuitEarned says otherwise, and that
-        // reads `purchased`, never the list. Without this entry the next
-        // save quietly takes him away again.
-        add(save.purchased, [TUTORIAL_SUIT]);
-        add(save.unlockedSuits, SUITS.map((x) => x.id));
-        add(save.unlocked, HELMETS.map((x) => x.id));
-        add(save.unlockedTrails, TRAILS.map((x) => x.id));
-        add(save.unlockedPals, PALS.map((x) => x.id));
-        // The SHIP tab is loadout too; these four read keyUnlocks beside
-        // their star gate. `deep` and `lost` are flight MODES rather than
-        // loadout, so they stay on the chart where they were put.
-        add(save.keyUnlocks, ["flightmods", "startShield", "battery", "dualpal"]);
-      };
-      if (entered === "120189") {
-        openWholeLoadout();
-        writeSave(save);
-        notify();
-        return "ok";
-      }
-      // Briella's code. Everything the code above opens, plus the stars:
-      // the game believes it has every star on the road, all the gates
-      // open, and Dad gets to watch her fly whatever she wants. The only
-      // difference from 120189 is that this one says so.
-      if (entered === "033018") {
-        openWholeLoadout();
-        save.allStars = true;
-        writeSave(save);
-        notify();
-        return "love";
-      }
-      return "denied";
     },
     setSpillAppearance(kind, id) {
       if (!STAR_MAP_PREVIEW || !["finish", "trail"].includes(kind)) return false;
@@ -425,6 +377,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // Actual mission passage opens the road; reward eligibility cannot skip it.
       if (!def.standalone && !levelUnlocked(def, routeMasks(save), starsOf(save), save.raceGates)) return false;
       unlockAudio();
+      // a chained NEXT never reaches open(): bank what the last finish earned
+      settleDust();
       // levels never run the tutorial: the chart itself is gated behind
       // having a save, and a first-timer meets the tutorial in endless.
       // A Wormhole mission flies a FIXED corridor: the seed is the level's
@@ -437,7 +391,11 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (def.base === "spill") void loadSpillScene(engine.art, save.equippedSuit).then(notify);
       resetInputTracking();
       raceAccumulator = 0;
-      guideStep("level");
+      // flying a road mission graduates the guided start wherever it was
+      // left: a pilot who went straight to the chart is not nagged to fly
+      // Mission 1 after flying it (audit, 30 Sep 2026)
+      if (save.guide === "levels") guideStep("level");
+      else if (save.guide === "reward" || save.guide === "hangar" || save.guide === "helmet") { save.guide = "done"; writeSave(save); }
       platform.gameplayStart();
       notify();
       return true;
@@ -472,7 +430,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       }
       world.screen = s;
       if (s === "title") world.tut = null;
-      if (s === "title" || s === "log") {
+      // the graduation gift is collected on the crash sheet; leaving that
+      // sheet any other way still moves the guide on
+      if (save.guide === "reward" && s !== "dead" && s !== "pause") { save.guide = "hangar"; writeSave(save); }
+      if (s === "title" || s === "log" || s === "hangar" || s === "shop" || s === "profile" || s === "help" || s === "scores") {
+        // an aborted Debris Field run still banks its waves and records
+        if (world.spill && (world.screen === "play" || world.screen === "pause")) { bankSpill(save, world.spill, true); writeSave(save); }
         world.race = null;
         world.spill = null;
         raceAccumulator = 0;
@@ -994,7 +957,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function transactHelmet(id: string) {
     const item = HELMETS.find((h) => h.id === id);
     if (!item) return "missing";
-    if (isPremiumSuit(save.equippedSuit)) return "fixedHead";
+    // the Loadout's rule, not the premium list's: every own-head suit
+    // (Arcflash, AcorNut, Alien, the critters) keeps its head
+    const worn = SUITS.find((u) => u.id === save.equippedSuit);
+    if (isPremiumSuit(save.equippedSuit) || (worn && wearsOwnHead(worn))) return "fixedHead";
     // a matched-set helmet only goes on its own suit
     if (item.suitOnly && save.equippedSuit !== item.suitOnly) return "suitOnly";
     if (!helmetRevealed(save, id)) return "locked";
@@ -1395,7 +1361,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // climbs back: a renderer that renegotiates its own resolution mid-run
   // would be visible every time it changed its mind.
   const RENDER_CAP_HIGH = 3;
-  const RENDER_CAP_SAFE = 2.5;
+  // 2, not 2.5: the race and the Debris Field already cap there, and a 30%
+  // pixel cut was not enough of a step for a phone that fired the probe
+  const RENDER_CAP_SAFE = 2;
   let renderCap = RENDER_CAP_HIGH;
   let capProbe: number[] | null = [];
 
@@ -1712,7 +1680,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     }
   });
   window.addEventListener("blur", () => {
-    if ((world.race || world.spill) && world.screen === "play") {
+    if (world.screen === "play") {
       engine.pause();
       return;
     }
@@ -1721,7 +1689,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
-      if ((world.race || world.spill) && world.screen === "play") {
+      if (world.screen === "play") {
         engine.pause();
         return;
       }
@@ -1742,7 +1710,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     if (ev === "debris") sfx.bounce();
     if (ev === "die") {
       // the interstitial cadence counts every crash; afterCrash spends it
-      if (!world.lvl && !world.race && !world.spill) save.crashesSinceAd = (save.crashesSinceAd ?? 0) + 1;
+      if (!world.lvl && !world.race && !world.spill && !world.continued) save.crashesSinceAd = (save.crashesSinceAd ?? 0) + 1;
       writeSave(save);
       sfx.die();
       platform.gameplayStop();
@@ -1783,7 +1751,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // reached submitScore (sim.ts). Waves cleared is the Debris Field's
       // own number - it is what the mode is scored on and what spillBest
       // already keeps - and higher is better, so it needs no special board.
-      if (spill.cleared > 0) platform.submitScore("spill", spill.cleared);
+      // a mission is not a board run (the same rule the sim keeps)
+      if (spill.cleared > 0 && !spill.target) platform.submitScore("spill", spill.cleared);
       if (!spill.target) save.spillSuspended = null;
       writeSave(save);
     } else if (cues.includes("depot")) checkpointSpill();
@@ -1942,7 +1911,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       void loadZoneArt(bank, world.envB).then(notify);
       if (world.spill) void loadSpillScene(bank, save.equippedSuit).then(notify);
       notify();
-      prefetchArtBanks(bank);
+      // ...and once the engine is stopped the sweep stops waiting too, or its
+      // one-second poll would keep a headless test's process alive forever
+      prefetchArtBanks(bank, () => !running || (world.screen !== "play" && world.screen !== "pause"));
     })
     .catch(() => {});
   notify();

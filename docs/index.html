@@ -662,12 +662,6 @@
     .ac-daily .ac-pip.big.on, .ac-dailycard .ac-pip.big.on { background: linear-gradient(180deg, #ffe9a8, #e0a02a);
       box-shadow: 0 0 9px rgba(255,200,90,.9); }
 
-    /* ---- the access-code row, now behind a disclosure ---- */
-    .ac-coderow-wrap { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; }
-    .ac-codeopen { min-height: 44px; border-radius: 12px; color: #9aa6c4; font-size: 11px;
-      font-weight: 800; letter-spacing: .1em; background: transparent;
-      border: 1px dashed #2a3454; }
-
     /* what happened when you tapped. A refused transaction used to change
        nothing at all - no toast, no shake, no re-render - which is what made
        the screen feel dead on a fresh save. (Two generations of this rule
@@ -759,23 +753,6 @@
     /* the premium star tucks into the corner so it clears a long name */
     .ac-palcard.ac-premium::after { top: 2px; right: 4px; font-size: 10px; }
     @media (max-width: 349px) { .ac-palcard .ac-palname { font-size: 9px; } }
-    .ac-coderow { grid-column: 1 / -1; display: flex; gap: 8px; align-items: stretch; }
-    .ac-codein { flex: 1; min-width: 0; background: #0d1326; border: 1px solid #2a3454; border-radius: 12px;
-      color: #f3efe4; padding: 10px 14px; font-size: 15px; font-weight: 700; letter-spacing: .25em; }
-    .ac-codein::placeholder { color: #566180; letter-spacing: .1em; }
-    .ac-codego { width: auto; padding: 10px 18px; }
-    .ac-codemsg { grid-column: 1 / -1; color: #ff8a8a; }
-    .ac-love { position: fixed; inset: 0; z-index: 200; background: rgba(9,6,20,.86); display: flex;
-      align-items: center; justify-content: center; overflow: hidden; }
-    .ac-lovemsg { font-family: Fraunces, serif; font-size: 22px; font-weight: 800; color: #ffd7e8;
-      text-align: center; padding: 0 28px; line-height: 1.5; text-shadow: 0 2px 18px rgba(255,80,150,.55);
-      animation: acLoveIn .6s ease; }
-    .ac-lovehint { position: absolute; bottom: 48px; left: 0; right: 0; text-align: center;
-      color: #d8a8c0; font-size: 12px; letter-spacing: .18em; animation: acLoveIn .4s ease; }
-    .ac-loveheart { position: absolute; bottom: -40px; animation: acHeart 2s ease-in forwards; }
-    @keyframes acLoveIn { from { opacity: 0; transform: scale(.9); } }
-    @keyframes acHeart { 0% { transform: translateY(0) scale(.6) rotate(-8deg); opacity: 0; }
-      12% { opacity: 1; } 100% { transform: translateY(-92vh) scale(1.15) rotate(10deg); opacity: 0; } }
     /* WHILE A GUIDED STEP IS LIVE, ONLY THE STEP IS BRIGHT.
        Two other cards on the same shelf say COLLECT REWARD, which reads far
        more like the thing to press than the one the instruction sent you
@@ -1244,7 +1221,6 @@
     body.ac-beta .ac-lvlcard { background: #191036; border-top-color: rgba(170,140,240,.4); }
     body.ac-beta .ac-rows .ac-row { border-bottom-color: rgba(170,140,240,.16); }
     body.ac-beta .ac-switch { background: #241740; border-color: rgba(170,140,240,.3); }
-    body.ac-beta .ac-codein { background: #1a1136; border-color: rgba(170,140,240,.3); }
     /* hub-and-spoke: the beta menus' way home, and room where the bar was */
     /* the same purple as the MODES back button, so it reads as a button and
        not a blend-in glyph (owner, 7 Sep 2026) */
@@ -1378,6 +1354,13 @@
       display: flex; align-items: center; justify-content: center; border-radius: 999px;
       background: rgba(10,16,32,.55); color: #7d869f; font-size: 13px; line-height: 1; cursor: pointer; }
     .ac-favbtn.on { color: #ffd76a; background: rgba(255,215,106,.14); }
+    /* 44px HIT AREAS (audit, 30 Sep 2026): the small controls keep their size
+       and grow an invisible touch target around them */
+    .ac-viewbtn, .ac-helpdot, .ac-backbtn, .ac-platebtn { position: relative; }
+    .ac-favbtn::after, .ac-casefold::after, .ac-viewbtn::after, .ac-helpdot::after, .ac-backbtn::after, .ac-platebtn::after {
+      content: ""; position: absolute; inset: -9px; }
+    .ac-shelfempty { flex: 1 0 100%; margin: 6px 4px; color: #b9c0d8; font-size: 12px; }
+    .ac-profile .ac-labnote a { display: inline-block; padding: 12px 8px; margin: -12px -8px; }
     .ac-favhead { color: #ffd76a; }
     /* the next-run shield, armed from the case plate */
     .ac-platebtn { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px;
@@ -1628,7 +1611,7 @@
       text-shadow: 0 1px 2px #3e1555; }
     .ac-shopvisual .ac-combobuy svg { fill: #edcaff; }
     .ac-shopvisual .ac-featurebuy { display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 15px; }
-    .ac-shopvisual button.ac-ghost, .ac-shopvisual button.ac-codeopen { min-height: 44px;
+    .ac-shopvisual button.ac-ghost { min-height: 44px;
       background: linear-gradient(rgba(64,34,91,.75), rgba(20,9,43,.92)); border: 1px solid rgba(207,175,115,.6); color: #e9ddfa; }
     .ac-shopvisual .ac-combobar, .ac-shopvisual .ac-daily { border-color: rgba(207,175,115,.38);
       background: linear-gradient(120deg, rgba(80,42,115,.48), rgba(14,6,32,.9)); }
@@ -1877,7 +1860,7 @@ body .ac-depotwrap.ac-workshop .ac-depotcard{width:min(680px,100%);max-height:10
 .ac-workshop-coin{width:18px;height:18px;object-fit:contain;display:inline-block;flex:none}
 .ac-utility-art{width:48px;height:48px;object-fit:contain;display:block;flex:none;filter:drop-shadow(0 3px 2px #0006)}
 .ac-workshop-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 14px 10px;background:radial-gradient(ellipse at 0 0,#6a35a866,transparent 55%),linear-gradient(120deg,#2b1652cc,#0d0820a6)}
-.ac-workshop-head .ac-kicker,.ac-depotguidecard .ac-kicker{line-height:1.4;margin:0 0 4px}
+.ac-workshop-head .ac-kicker,.ac-depotguidecard .ac-kicker{line-height:1.4;margin:0 0 4px;white-space:nowrap}
 .ac-workshop-headtools{display:flex;align-items:center;gap:10px;flex:none}
 /* the balance wears the Loadout's acorn pill */
 .ac-workshop-wallet{display:flex;align-items:center;gap:4px;min-height:30px;padding:0 9px 0 5px;border-radius:999px;color:#ffdf9a;background:rgba(120,90,20,.28);border:1px solid rgba(255,206,92,.4);font:800 13px/1 Figtree,sans-serif;font-variant-numeric:tabular-nums}
@@ -1978,7 +1961,7 @@ body .ac-spillprep.ac-spillsetup{width:min(560px,calc(100% - 20px));bottom:max(1
 .ac-engine-swatch{display:block;width:31px;height:15px;border-radius:90% 25% 25% 90%;background:linear-gradient(90deg,transparent,var(--engine-color),#e2f4ff);filter:drop-shadow(0 0 3px var(--engine-color))}.ac-engine-color:disabled .ac-engine-swatch{opacity:.55;filter:none}
 .ac-launch-controls{padding:10px 0 2px;margin:0}.ac-spillsetup .ac-workshop-actions{margin-top:11px}
 @media(min-width:700px){.ac-workshop-stage .ac-workshop-preview{width:430px;max-width:100%;margin:auto}.ac-workshop-system{width:132px;min-height:62px;font-size:14px}.ac-workshop-system[data-system=plating],.ac-workshop-system[data-system=thrusters]{left:25px}.ac-workshop-system[data-system=shield],.ac-workshop-system[data-system=pulse]{right:25px}.ac-workshop-links{width:430px;left:50%;transform:translateX(-50%)}.ac-workshop-utility{display:grid;grid-template-columns:70px 1fr;column-gap:10px;padding:11px}.ac-workshop-utilityname{display:contents}.ac-workshop-utilityname .ac-utility-art{grid-column:1;grid-row:1 / 4;width:70px;height:86px;align-self:center}.ac-workshop-utility h4,.ac-workshop-utility p,.ac-workshop-utility .ac-workshop-buy,.ac-workshop-requirement{grid-column:2}.ac-workshop-health{flex-direction:row;align-items:center;gap:10px}.ac-workshop-status{font-size:14px}.ac-workshop-status .ac-workshop-buy{font-size:13px}}
-@media(max-width:360px){body .ac-depotwrap.ac-workshop{padding:5px}.ac-workshop-head{padding:11px 10px 8px}.ac-workshop-head h2{font-size:24px}.ac-workshop-status{padding:8px 9px;gap:7px;font-size:11px}.ac-workshop-status .ac-workshop-icon{display:none}.ac-workshop-buy{min-width:54px;padding-inline:8px}.ac-workshop-system{width:94px;font-size:11px;padding:6px;min-height:52px}.ac-workshop-systemname{gap:4px}.ac-workshop-systemname .ac-workshop-icon{width:15px;height:15px}.ac-workshop-selection{gap:7px;padding:9px}.ac-workshop-selectiontext h3{font-size:13px}.ac-workshop-utilities{padding:10px 9px 0}.ac-workshop-utility{padding:8px 7px;gap:5px}.ac-workshop-utilityname{gap:4px}.ac-workshop-utilityname .ac-utility-art{width:35px;height:38px}.ac-workshop-utility h4{font-size:12px}.ac-workshop-utility p{font-size:11px}.ac-workshop-utility .ac-workshop-buy{font-size:11px}.ac-starter-option{flex-direction:column;align-items:flex-start}.ac-starter-option .ac-utility-art{width:36px;height:36px}.ac-engine-color{font-size:10px}.ac-engine-color small{font-size:9px}.ac-guide-carry{gap:10px}.ac-depotguidecard h2{font-size:25px}}
+@media(max-width:360px){body .ac-depotwrap.ac-workshop{padding:5px}.ac-workshop-head{padding:11px 10px 8px}.ac-workshop-head .ac-kicker{font-size:9px;letter-spacing:.14em}.ac-workshop-head h2{font-size:24px}.ac-workshop-status{padding:8px 9px;gap:7px;font-size:11px}.ac-workshop-status .ac-workshop-icon{display:none}.ac-workshop-buy{min-width:54px;padding-inline:8px}.ac-workshop-system{width:94px;font-size:11px;padding:6px;min-height:52px}.ac-workshop-systemname{gap:4px}.ac-workshop-systemname .ac-workshop-icon{width:15px;height:15px}.ac-workshop-selection{gap:7px;padding:9px}.ac-workshop-selectiontext h3{font-size:13px}.ac-workshop-utilities{padding:10px 9px 0}.ac-workshop-utility{padding:8px 7px;gap:5px}.ac-workshop-utilityname{gap:4px}.ac-workshop-utilityname .ac-utility-art{width:35px;height:38px}.ac-workshop-utility h4{font-size:12px}.ac-workshop-utility p{font-size:11px}.ac-workshop-utility .ac-workshop-buy{font-size:11px}.ac-starter-option{flex-direction:column;align-items:flex-start}.ac-starter-option .ac-utility-art{width:36px;height:36px}.ac-engine-color{font-size:10px}.ac-engine-color small{font-size:9px}.ac-guide-carry{gap:10px}.ac-depotguidecard h2{font-size:25px}}
 @media(pointer:coarse){.ac-workshop .ac-helpdot,.ac-spillsetup .ac-helpdot{width:44px;height:44px}.ac-starter-none{min-height:44px}.ac-workshop-utility .ac-workshop-buy{min-height:44px}}
 @media(prefers-reduced-motion:reduce){.ac-workshop button{transition:none}.ac-workshop-system.selected{box-shadow:none}}
 
@@ -2356,7 +2339,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js295/standalone.js")
+    import("./js297/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

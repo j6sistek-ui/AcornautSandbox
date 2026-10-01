@@ -136,9 +136,12 @@ const memory = new Map<string, string>();
 /** localStorage when the browser allows it, an in-memory map when it does
  *  not (private mode, restricted storage) so the game still runs */
 const webStorage: Platform["storage"] = {
-  get(key) { try { return localStorage.getItem(key); } catch { return memory.get(key) ?? null; } },
-  set(key, value) { try { localStorage.setItem(key, value); } catch { memory.set(key, value); } },
-  remove(key) { try { localStorage.removeItem(key); } catch { memory.delete(key); } },
+  // a value that fell back to memory (quota, private mode) is the newest
+  // one: read it first, or a failed write reads back as the stale slot
+  // (audit, 30 Sep 2026)
+  get(key) { const m = memory.get(key); if (m !== undefined) return m; try { return localStorage.getItem(key); } catch { return null; } },
+  set(key, value) { try { localStorage.setItem(key, value); memory.delete(key); } catch { memory.set(key, value); } },
+  remove(key) { memory.delete(key); try { localStorage.removeItem(key); } catch { /* nothing to remove */ } },
 };
 
 function adapterOf(): PlatformAdapter | null {

@@ -50,8 +50,9 @@ In order, because each one hands the next its value.
    the stores. `"iap": false` in the shell config
    drops the value from the check until the account exists.
 5. **Three leaderboards** in Game Center: `acornaut.normal` (high to low),
-   `acornaut.hyper` (**low to high, elapsed time** — it is posted finish
-   ticks), `acornaut.spill` (high to low) → `leaderboards.*`.
+   `acornaut.hyper` (**low to high, elapsed time in hundredths of a
+   second** — the adapter posts finish ticks × 100 / 60), `acornaut.spill`
+   (high to low, waves cleared) → `leaderboards.*`.
 6. ~~RevenueCat~~ — not for v1, same reason. The project you created can
    sit idle until the store comes back.
 6a. **AdMob** (13 Sep, "just ad revenue for now"): create the iOS and

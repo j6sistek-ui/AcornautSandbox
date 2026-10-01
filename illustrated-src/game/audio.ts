@@ -19,7 +19,8 @@ function ac() {
     ctx = new C();
     build(ctx);
   }
-  if (ctx.state === "suspended") void ctx.resume();
+  // "interrupted" (WebKit, after a call or Siri) needs the same nudge as "suspended"
+  if (ctx.state !== "running") ctx.resume().catch(() => { /* a closed context stays closed */ });
   return ctx;
 }
 
@@ -218,7 +219,8 @@ function armLifecycle() {
   };
   const wake = () => {
     if (!ctx) return;
-    if (ctx.state === "suspended") void ctx.resume();
+    // "interrupted" (WebKit, after a call or Siri) needs the same nudge as "suspended"
+  if (ctx.state !== "running") ctx.resume().catch(() => { /* a closed context stays closed */ });
     if (sleptTrack && sleptTrack === musicWanted && !musicMuted) playWanted(300);
     sleptTrack = null;
   };

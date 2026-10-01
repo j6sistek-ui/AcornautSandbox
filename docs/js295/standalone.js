@@ -12,7 +12,7 @@ import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=295";
 import { repeatTapMode, FLIGHT_TEST_PATTERNS } from "./sim.js?v=295";
 import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=295";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=295";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, IAP_LIVE, ACORNS_PER_DUST } from "./catalog.js?v=295";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, ACORNS_PER_DUST } from "./catalog.js?v=295";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=295";
 import { bundleQuote } from "./catalog.js?v=295";
 import { drawSprite as drawSpriteOn } from "./art.js?v=295";
@@ -195,10 +195,12 @@ export async function bootStandalone(root) {
         // Field keeps its "spill" id everywhere below the label: saves, the
         // leaderboard, the Star Chart rows.
         { id: "spill", label: "DEBRIS FIELD", short: "DEBRIS", blurb: "Wave survival. Upgrade your ship. Survive the dangers of space." },
-        { id: "race", label: "HYPER RUN", short: "HYPER", blurb: "Thread gates. Center the wormhole rings." },
-        { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Endless back-to-back black holes." },
-        { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
+        // ARCADE IS THIRD (owner, 30 Sep 2026: "move arcade mode to the third
+        // mode option in the mode list")
         { id: "arcade", label: "ARCADE", short: "ARCADE", blurb: "2x power-ups, arcade graphics." },
+        { id: "race", label: "HYPER RUN", short: "HYPER", blurb: "Thread gates. Center the wormhole rings." },
+        { id: "deep", label: "DEEP SPACE", short: "DEEP", blurb: "Space shifts every 10 seconds." },
+        { id: "lost", label: "LOST IN SPACE", short: "LOST", blurb: "Space is in control here." },
         { id: "tunnel", label: "WORMHOLE RUN", short: "WORMHOLE", blurb: "Hold to thrust down the corridor." },
     ];
     const MODES = ALL_MODES.filter((m) => m.id !== "tunnel" || WORMHOLE_RUN_ON_SHEET);
@@ -698,12 +700,14 @@ export async function bootStandalone(root) {
                         sheet.append(el("p", "ac-sub ac-continue-short", `Continue costs ${cost} acorns — you have ${funds}`));
                     }
                 }
-                const again = el("button", engine.save.guide !== "reward" && ((engine.save.acorns ?? 0) >= engine.continueCost() || engine.adOffer()) ? "ac-ghost" : "ac-primary", "TRY AGAIN");
+                const graduating = engine.save.guide === "reward";
+                const again = el("button", graduating || (engine.save.acorns ?? 0) >= engine.continueCost() || engine.adOffer() ? "ac-ghost" : "ac-primary", "TRY AGAIN");
                 // leaving the crash sheet is where a full-screen ad may play (engine.afterCrash)
                 again.onclick = () => engine.afterCrash(() => engine.fly(snap.flight));
-                const menu = el("button", "ac-ghost", engine.save.guide === "reward" ? "COLLECT" : "MAIN MENU");
+                // the gift leads on graduation, as it does on the Debris Field sheet
+                const menu = el("button", graduating ? "ac-primary" : "ac-ghost", graduating ? "COLLECT" : "MAIN MENU");
                 menu.onclick = () => engine.afterCrash(() => engine.dismissDead());
-                sheet.append(again, menu);
+                sheet.append(graduating ? menu : again, graduating ? again : menu);
             }
             overlay.append(sheet);
             return;
@@ -1636,7 +1640,7 @@ export async function bootStandalone(root) {
         // ONE WORD (owner, 7 Sep 2026: "instead of free flight, just Launch...
         // large and in charge"). The ribbon above names the mode; the line
         // under says what the tap does in it.
-        ltxt.append(el("b", "", suspended ? "RESUME" : "LAUNCH"), el("span", "ac-hubsub", suspended ? `Saved at Depot ${suspended.state.wave}` : spillSelected ? "Survive the dangers of space" : "Begin your flight"));
+        ltxt.append(el("b", "", suspended ? "RESUME" : "LAUNCH"), el("span", "ac-hubsub", suspended ? (suspended.state.wave ? `Saved at Depot ${suspended.state.wave}` : "Saved at pre-flight") : spillSelected ? "Survive the dangers of space" : "Begin your flight"));
         // WHAT IS ACTUALLY ON. Mods and a pal's effect change how the run plays
         // and were previously invisible from here - you had to remember. One
         // line, named plainly, so nobody launches wondering why the gates are
@@ -1655,7 +1659,7 @@ export async function bootStandalone(root) {
                     if (palOn)
                         on.push(`${palOn.name} \u00b7 ${palOn.desc}`);
                 }
-            if (on.length && !spillSelected) {
+            if (on.length && !spillSelected && MODES[selectedMode].id !== "race") {
                 // prefixed, because an unlabelled green line beneath a launch button
                 // reads as a slogan rather than as the state of the run. One CHIP
                 // per effect, so a long description wraps to its own row instead
@@ -1769,7 +1773,7 @@ export async function bootStandalone(root) {
         back.onclick = () => { modesOpen = false; render(); };
         sheet.append(modeHead);
         if (s.spillSuspended) {
-            const resume = el("button", "ac-primary", `RESUME DEBRIS FIELD · DEPOT ${s.spillSuspended.state.wave}`);
+            const resume = el("button", "ac-primary", `RESUME DEBRIS FIELD · ${s.spillSuspended.state.wave ? `DEPOT ${s.spillSuspended.state.wave}` : "PRE-FLIGHT"}`);
             resume.onclick = () => { modesOpen = false; engine.spillResume(); };
             sheet.append(resume);
         }
@@ -1845,11 +1849,11 @@ export async function bootStandalone(root) {
                     // a locked Hyper Run still answers: it shows the chart where the
                     // field that unlocks it actually is
                     if (!open) {
-                        if (m.id === "race") {
-                            modesOpen = false;
-                            engine.open("log");
-                            render();
-                        }
+                        // every locked row answers with the chart: that is where the field
+                        // or the stars that open it live
+                        modesOpen = false;
+                        engine.open("log");
+                        render();
                         return;
                     }
                     selectedMode = i;
@@ -2908,6 +2912,9 @@ export async function bootStandalone(root) {
         "COMET CHASER": { ring: ["#ffc48a", "#d1621f"], face: "#4c2208", mark: "comet" },
         "EVENT HORIZON": { ring: ["#d0a8ff", "#4a1f8a"], face: "#120424", mark: "hole" },
         ACORNAUT: { ring: ["#fff0b0", "#b8860b"], face: "#3d2a06", mark: "acorn" },
+        // the two titles above ACORNAUT drew the CADET chevron (audit, 30 Sep 2026)
+        GATECRASHER: { ring: ["#a8f5e0", "#1f9a7c"], face: "#063128", mark: "star" },
+        STARLORD: { ring: ["#ffe9a8", "#d9a11a"], face: "#3a2604", mark: "acorn" },
     };
     function drawRankBadge(ctx, name, px) {
         const spec = RANKS[name] ?? RANKS.CADET;
@@ -3350,7 +3357,7 @@ export async function bootStandalone(root) {
             map.append(tag);
         }
         const end = el("p", "ac-chart-end", current < 0 && levels.every(l => stars[l.id] & 1)
-            ? "CURRENT CHART COMPLETE · MORE SKY AHEAD" : "THE ROAD CONTINUES");
+            ? (IS_BETA ? "CURRENT CHART COMPLETE · MORE SKY AHEAD" : "CHART COMPLETE · REPLAY FOR EVERY STAR") : "THE ROAD CONTINUES");
         end.style.top = "0px";
         map.append(end);
         disposeChart = addChartScenery(map, levels, pos, step, engine.art);
@@ -3531,7 +3538,11 @@ export async function bootStandalone(root) {
             ? `Already yours — this rung paid ${paidInstead.amount.toLocaleString()} ${paidInstead.kind === "dust" ? "Star Dust" : "acorns"} instead.`
             : owned ? (have >= r.stars
                 ? (due > 0 ? `Open in the Loadout — ${due.toLocaleString()} acorns.` : "Yours.")
-                : `Yours already. When the road reaches ${r.stars} stars this rung pays ${SUB_ACORNS} acorns instead.`)
+                // the substitute is paid for a Star Unlock or a purchase; an item
+                // from an older save is simply yours (audit, 30 Sep 2026)
+                : ((s.boostedRewards || []).includes(key) || (s.purchased || []).includes(r.id ?? "")
+                    ? `Yours already. When the road reaches ${r.stars} stars this rung pays ${SUB_ACORNS} acorns instead.`
+                    : "Yours already."))
                 : `${have} of ${r.stars} stars — ${r.stars - have} to go.`));
         const item = r.kind !== "acorns" && r.kind !== "dust" && !!r.id;
         if (!owned && item) {
@@ -3820,14 +3831,15 @@ export async function bootStandalone(root) {
         if (last.def.standalone && last.def.base === "race" && last.raceRecord) {
             const r = last.raceRecord;
             const sheet = el("div", "ac-sheet ac-center");
-            sheet.append(el("p", "ac-kicker", "HYPER RUN"));
+            sheet.append(el("p", "ac-kicker", "TIME TRIAL"));
             sheet.append(el("h2", "", "HYPER RUN"));
             sheet.append(el("p", "ac-kicker", "FINISH"));
             sheet.append(el("h2", "", formatRaceTicks(r.finishTicks)));
+            // the best is a time, said as one, with the gap to it (audit, 30 Sep 2026)
             if (r.newBestTime)
                 sheet.append(el("p", "ac-gold", "NEW BEST"));
             else
-                sheet.append(el("p", "ac-sub", `+${((r.finishTicks - r.bestFinishTicks) / 60).toFixed(3)}`));
+                sheet.append(el("p", "ac-sub", `BEST ${formatRaceTicks(r.bestFinishTicks)} \u00b7 +${formatRaceTicks(r.finishTicks - r.bestFinishTicks)}`));
             // A cleared field outranks a personal best on this screen: the best
             // is a number, the field is a road that just opened.
             if (r.clearedGate) {
@@ -3853,7 +3865,7 @@ export async function bootStandalone(root) {
             });
             sheet.append(labels);
             sheet.append(el("p", "", `ACORNS  ${r.acorns} / ${HYPER_RUN_MAX_ACORNS}`));
-            sheet.append(el("p", "", `BEST  ${r.bestAcorns}`));
+            sheet.append(el("p", "", `BEST ACORNS  ${r.bestAcorns}`));
             if (r.newBestAcorns)
                 sheet.append(el("p", "ac-gold", "NEW ACORN BEST"));
             sheet.append(el("p", "ac-sub", "OWN RECORD — CAMPAIGN STARS UNCHANGED"));
@@ -3901,9 +3913,12 @@ export async function bootStandalone(root) {
         for (const r of STAR_REWARDS) {
             if (r.kind !== "stage" && r.stars > last.totalBefore && r.stars <= last.totalAfter) {
                 const due = rewardDue(r);
-                sheet.append(el("p", "ac-gold", due > 0
-                    ? `OPEN IN THE LOADOUT \u2014 ${r.name} \u00b7 ${due.toLocaleString()} ACORNS`
-                    : `UNLOCKED \u2014 ${r.name}`));
+                const sub = engine.save.rewardSubs?.[rewardId(r)];
+                sheet.append(el("p", "ac-gold", sub
+                    ? `ALREADY YOURS \u2014 ${r.name} \u00b7 PAID ${sub.amount.toLocaleString()} ${sub.kind === "dust" ? "STAR DUST" : "ACORNS"} INSTEAD`
+                    : due > 0
+                        ? `OPEN IN THE LOADOUT \u2014 ${r.name} \u00b7 ${due.toLocaleString()} ACORNS`
+                        : `UNLOCKED \u2014 ${r.name}`));
             }
         }
         // the next level, if the finish just opened it
@@ -3935,6 +3950,7 @@ export async function bootStandalone(root) {
     let confirmBuy = false; // the pack sheet is asking "are you sure"
     /** set by the engine's arrival-claim so the shop can announce it once */
     let dailyToast = null;
+    let startOverAsk = false; // the Profile's erase confirmation sheet
     let editingName = false; // the Profile name is in edit mode
     const PILOT_FALLBACK = "Nutcracker"; // shown until a pilot picks one
     // ==================================================== THE STOREFRONT
@@ -4263,6 +4279,9 @@ export async function bootStandalone(root) {
         shelf("suit", cy.suits);
         shelf("helm", cy.helms);
         shelf("pal", cy.pals);
+        if (!cy.suits.length && !cy.helms.length && !cy.pals.length) {
+            itemRail.append(el("p", "ac-sub ac-shelfempty", "You own everything on the shelf. New looks land here when they are painted."));
+        }
         // ---- THE DAILY FEATURE AND ALWAYS-AVAILABLE PACKS.
         for (const bn of [...(cy.feature ? [cy.feature] : []), ...cy.always]) {
             const quote = bundleQuote(bn, cy.owns), due = quote.due;
@@ -4392,10 +4411,15 @@ export async function bootStandalone(root) {
             // sticker is only the web page's placeholder. A shell that has not
             // answered yet shows no price and cannot be tapped: a USD sticker in
             // front of a non-US reviewer is a rejection, not a fallback.
-            // THE CASH PACK (owner, 15 Sep 2026: "Restore a single IAP for 2500
-            // star dust @$3.99") only where a store can sell it: a shell with its
-            // store, the beta (sticker, granted), or the store switch for review.
-            if (dp.cash && !platform.storeReady && !IS_BETA && !IAP_LIVE)
+            // THE CASH PACKS (owner, 15 Sep 2026: "Restore a single IAP for 2500
+            // star dust @$3.99"; 30 Sep 2026: "the iap is not in the store at
+            // 1.99 as mentioned") are listed on every page. Where a store answers
+            // it sells them; the beta grants them; a page with neither shows the
+            // sticker and a tap says the packs are sold in the app (buyDust
+            // answers "unavailable", and DENY_TEXT carries the line).
+            // a shell with no store yet lists no cash rows: a disabled "…" row is
+            // a dead control in front of a reviewer (audit, 30 Sep 2026)
+            if (dp.cash && platform.native && !platform.storeReady)
                 continue;
             if (!dp.cash) {
                 // ACORNS BUY STAR DUST (owner, 13 Sep 2026: "leave the packs in,
@@ -4408,8 +4432,10 @@ export async function bootStandalone(root) {
                 // the acorn rows wait with the rest while the store's sheet is up
                 if (inFlight)
                     row.disabled = true;
+                // a refusal stays on the status line: only a purchase redraws
                 row.onclick = () => { if (inFlight)
-                    return; tx(row, () => engine.buyDust(dp.id), dp.acorns, "acorns"); render(); };
+                    return; if (tx(row, () => engine.buyDust(dp.id), dp.acorns, "acorns"))
+                    render(); };
                 scroll.append(row);
                 continue;
             }
@@ -4428,7 +4454,8 @@ export async function bootStandalone(root) {
                     row.setAttribute("aria-label", "Purchase in progress");
             }
             row.onclick = () => { if (!priced || inFlight)
-                return; tx(row, () => engine.buyDust(dp.id)); render(); };
+                return; if (tx(row, () => engine.buyDust(dp.id)))
+                render(); };
             scroll.append(row);
         }
         // the store answered while we were away from this list, or just now:
@@ -4457,7 +4484,7 @@ export async function bootStandalone(root) {
         if (!platform.storeReady)
             scroll.append(el("p", "ac-fine", IS_BETA
                 ? `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The payment rail is not connected yet, so the ${CASH_PACKS.map((p) => p.dust.toLocaleString()).join(" and ")} packs are granted during the beta.`
-                : `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500.`));
+                : `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The ${CASH_PACKS.map((p) => p.price).join(" and ")} packs are sold in the app.`));
         box.append(scroll);
         // THE CYCLE INSPECTOR SHIPS ON BOTH PAGES. It was gated on beta while
         // the storefront was, but the storefront is the shop on both pages now
@@ -5060,31 +5087,50 @@ export async function bootStandalone(root) {
         // pilot, so it belongs on the pilot's own screen, at the bottom, after
         // everything it would destroy. Two taps, and the armed state disarms on
         // any re-render.
+        // A SHEET, NOT A SECOND TAP (audit, 30 Sep 2026): the armed button
+        // erased on a double-tap, and its copy left out what money had bought.
         const reset = el("button", "ac-ghost ac-reset", "START OVER");
-        let armed = false;
-        reset.onclick = () => {
-            if (!armed) {
-                armed = true;
-                reset.textContent = "ERASE SAVE AND START OVER?";
-                reset.classList.add("ac-resetarmed");
-                return;
-            }
-            engine.startOver();
-        };
-        scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this version's pilot, stars and acorns."));
+        reset.onclick = () => { startOverAsk = true; render(); };
+        scroll.append(reset, el("p", "ac-fine ac-labnote ac-resetnote", "Erases this pilot's stars, acorns, records and settings. Shop purchases, Star Dust and boosts stay."));
         // The privacy policy follows it for the same reason: this screen is
         // where a pilot's own data is shown, named and deleted. App Store
         // Connect takes the URL, but Apple expects it reachable in the app.
         const policy = el("p", "ac-fine ac-labnote");
         const link = document.createElement("a");
-        link.href = "privacy.html";
+        // absolute: the beta lives one folder down and the app's own origin
+        // cannot open a relative page in the system browser (audit, 30 Sep 2026)
+        link.href = "https://acornaut.app/privacy.html";
         link.target = "_blank";
         link.rel = "noopener";
         link.textContent = "Privacy policy";
         policy.append(link);
         scroll.append(policy, el("p", "ac-fine ac-mid", BUILD));
         box.append(scroll);
+        if (startOverAsk)
+            box.append(drawStartOverSheet());
         return box;
+    }
+    function drawStartOverSheet() {
+        const close = () => { startOverAsk = false; render(); };
+        const wrap = el("div", "ac-lvlsheet ac-spendsheet");
+        wrap.onclick = (e) => { if (e.target === wrap)
+            close(); };
+        const sheet = el("div", "ac-lvlcard ac-spendcard");
+        sheet.setAttribute("role", "dialog");
+        sheet.setAttribute("aria-label", "Erase this pilot and start over?");
+        sheet.append(el("p", "ac-kicker", "START OVER"));
+        sheet.append(el("p", "ac-spendask", "Erase this pilot and start over?"));
+        sheet.append(el("p", "ac-sub ac-spendbal", "Stars, acorns, records, settings and the pilot name go. Shop purchases, Star Dust and boosts stay with you."));
+        const row = el("div", "ac-spendrow");
+        const no = el("button", "ac-ghost", "NOT NOW");
+        no.onclick = close;
+        const yes = el("button", "ac-primary ac-resetarmed", "ERASE");
+        yes.dataset.startOver = "confirm";
+        yes.onclick = () => engine.startOver();
+        row.append(no, yes);
+        sheet.append(row);
+        wrap.append(sheet);
+        return wrap;
     }
     /** THE BOARD. Every mode's best, ranked against each other, with the top
      *  three on the podium the art is already drawing.
@@ -5104,7 +5150,7 @@ export async function bootStandalone(root) {
             { id: "arcade", name: "Arcade", best: s.arcadeBest || 0, unit: "gates" },
             { id: "tunnel", name: "Wormhole Run", best: s.tunnelBest || 0, unit: "score" },
             { id: "spill", name: "Debris Field", best: s.spillBest || 0, unit: "waves" },
-        ].sort((a, b) => b.best - a.best);
+        ].filter((r) => r.id !== "tunnel" || WORMHOLE_RUN_ON_SHEET || r.best > 0).sort((a, b) => b.best - a.best);
         const box = el("div", "ac-menu");
         box.append(header("Your bests", "Leaderboard", headAside(s.acorns)));
         const scroll = el("div", "ac-sheet-scroll");
@@ -5290,7 +5336,9 @@ export async function bootStandalone(root) {
         }
         else if (spendAsk)
             spendAsk = null;
-        else if (dailyToast)
+        else if (startOverAsk)
+            startOverAsk = false;
+        else if (dailyToast && engine.world.screen === "title")
             dailyToast = null;
         else if (featureOpen) {
             const back = overlay.querySelector(featureReview ? ".ac-feature-reviewback" : "[data-feature-close]");
