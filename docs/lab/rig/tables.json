@@ -12,6 +12,7 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -26,6 +27,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -40,6 +42,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -54,6 +57,7 @@
     84,
     35.3465
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -68,6 +72,7 @@
     84,
     32.0492
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -82,6 +87,7 @@
     84,
     35
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -96,6 +102,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -112,6 +124,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -126,6 +144,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -142,6 +166,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -156,6 +186,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -172,6 +208,7 @@
     36.12,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -186,6 +223,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -200,6 +238,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -216,6 +260,7 @@
     28,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -230,6 +275,7 @@
     86,
     50
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -244,6 +290,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -258,6 +305,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -272,6 +320,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -286,6 +335,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -302,6 +357,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -317,6 +378,7 @@
     32.68,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -331,6 +393,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -347,6 +415,7 @@
     41,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -362,6 +431,7 @@
     41,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -377,6 +447,7 @@
     46.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -391,6 +462,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -405,6 +477,7 @@
     88,
     36
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -419,6 +492,7 @@
     88,
     36
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -433,6 +507,7 @@
     88,
     36
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -447,6 +522,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -461,6 +537,7 @@
     88,
     36
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -475,6 +552,7 @@
     88,
     36
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -489,6 +567,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": false
@@ -504,6 +583,7 @@
     30.8,
     7.22
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -519,6 +599,7 @@
     30.8,
     7.36
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -534,6 +615,7 @@
     30.8,
     4.34
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -549,6 +631,7 @@
     30.8,
     7.77
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -564,6 +647,7 @@
     30.8,
     0.16
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -579,6 +663,7 @@
     30.8,
     -6.79
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -594,6 +679,7 @@
     30.8,
     -11.57
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -609,6 +695,7 @@
     30.8,
     -8.27
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -624,6 +711,7 @@
     30.8,
     7.22
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -639,6 +727,7 @@
     30.8,
     16.16
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -654,6 +743,7 @@
     30.8,
     27.23
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -669,6 +759,7 @@
     30.8,
     37.23
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -684,6 +775,7 @@
     30.8,
     43.71
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -699,6 +791,7 @@
     30.8,
     47.05
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -714,6 +807,7 @@
     30.8,
     61.64
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -729,6 +823,7 @@
     30.8,
     70.44
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -744,6 +839,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -759,6 +855,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -774,6 +871,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -789,6 +887,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -804,6 +903,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -819,6 +919,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -834,6 +935,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -849,6 +951,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -864,6 +967,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -879,6 +983,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -894,6 +999,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -909,6 +1015,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -924,6 +1031,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -939,6 +1047,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -954,6 +1063,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -969,6 +1079,7 @@
     32.8,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -984,6 +1095,7 @@
     30.8,
     13.45
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -999,6 +1111,7 @@
     30.8,
     12.32
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1014,6 +1127,7 @@
     30.8,
     16.51
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1029,6 +1143,7 @@
     30.8,
     17.33
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1044,6 +1159,7 @@
     30.8,
     1.61
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1059,6 +1175,7 @@
     30.8,
     9.49
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1074,6 +1191,7 @@
     30.8,
     4.87
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1089,6 +1207,7 @@
     30.8,
     17.28
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1104,6 +1223,7 @@
     30.8,
     13.45
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1119,6 +1239,7 @@
     30.8,
     10.81
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1134,6 +1255,7 @@
     30.8,
     3.92
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1149,6 +1271,7 @@
     30.8,
     7.56
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1164,6 +1287,7 @@
     30.8,
     36.98
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1179,6 +1303,7 @@
     30.8,
     36.08
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1194,6 +1319,7 @@
     30.8,
     41.04
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1209,6 +1335,7 @@
     30.8,
     43.9
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1223,6 +1350,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1239,6 +1372,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1253,6 +1392,12 @@
     104.5,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1269,6 +1414,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1283,6 +1434,12 @@
     102.5,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1299,6 +1456,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1313,6 +1476,12 @@
     100,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1329,6 +1498,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1343,6 +1518,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1359,6 +1540,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1373,6 +1560,12 @@
     107.8,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1389,6 +1582,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1403,6 +1602,12 @@
     110.2,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1419,6 +1624,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1433,6 +1644,12 @@
     113,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -1449,6 +1666,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1464,6 +1687,7 @@
     30.8,
     11.19
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1479,6 +1703,7 @@
     30.8,
     5.83
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1494,6 +1719,7 @@
     30.8,
     8.42
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1509,6 +1735,7 @@
     30.8,
     21.33
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1524,6 +1751,7 @@
     30.8,
     0.84
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1539,6 +1767,7 @@
     30.8,
     -4.27
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1554,6 +1783,7 @@
     30.8,
     4.56
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1569,6 +1799,7 @@
     30.8,
     13.32
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1584,6 +1815,7 @@
     30.8,
     11.19
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1599,6 +1831,7 @@
     30.8,
     27.3
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1614,6 +1847,7 @@
     30.8,
     22.96
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1629,6 +1863,7 @@
     30.8,
     11.65
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1644,6 +1879,7 @@
     30.8,
     29.25
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1659,6 +1895,7 @@
     30.8,
     29.96
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1674,6 +1911,7 @@
     30.8,
     33.78
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1689,6 +1927,7 @@
     30.8,
     34.1
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1704,6 +1943,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1719,6 +1959,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1734,6 +1975,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1749,6 +1991,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1764,6 +2007,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1779,6 +2023,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1794,6 +2039,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1809,6 +2055,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1824,6 +2071,7 @@
     44.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1839,6 +2087,7 @@
     44.8,
     5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1854,6 +2103,7 @@
     44.8,
     15
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1869,6 +2119,7 @@
     44.8,
     20
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1884,6 +2135,7 @@
     44.8,
     25
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1899,6 +2151,7 @@
     44.8,
     30
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1914,6 +2167,7 @@
     44.8,
     35
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1929,6 +2183,7 @@
     44.8,
     35
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1944,6 +2199,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1959,6 +2215,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1974,6 +2231,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1989,6 +2247,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2004,6 +2263,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2019,6 +2279,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2034,6 +2295,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2049,6 +2311,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2064,6 +2327,7 @@
     44.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2079,6 +2343,7 @@
     44.8,
     5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2094,6 +2359,7 @@
     44.8,
     15
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2109,6 +2375,7 @@
     44.8,
     20
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2124,6 +2391,7 @@
     44.8,
     25
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2139,6 +2407,7 @@
     44.8,
     30
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2154,6 +2423,7 @@
     44.8,
     35
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2169,6 +2439,7 @@
     44.8,
     35
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2184,6 +2455,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2199,6 +2471,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2214,6 +2487,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2229,6 +2503,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2244,6 +2519,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2259,6 +2535,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2274,6 +2551,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2289,6 +2567,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2304,6 +2583,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2319,6 +2599,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2334,6 +2615,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2349,6 +2631,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2364,6 +2647,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2379,6 +2663,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2394,6 +2679,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2409,6 +2695,7 @@
     42.4,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2423,6 +2710,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2439,6 +2732,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2453,6 +2752,12 @@
     104.5,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2469,6 +2774,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2483,6 +2794,12 @@
     102.5,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2499,6 +2816,12 @@
     36,
     -10
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2513,6 +2836,12 @@
     100,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2529,6 +2858,12 @@
     36,
     -10
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2543,6 +2878,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2559,6 +2900,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2573,6 +2920,12 @@
     107.8,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2589,6 +2942,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2603,6 +2962,12 @@
     110.2,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2619,6 +2984,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2633,6 +3004,12 @@
     113,
     36,
     5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2649,6 +3026,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2664,6 +3047,7 @@
     35.28,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2679,6 +3063,7 @@
     35.28,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2694,6 +3079,7 @@
     35.28,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2709,6 +3095,7 @@
     35.28,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2724,6 +3111,7 @@
     35.28,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2739,6 +3127,7 @@
     35.28,
     3
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2754,6 +3143,7 @@
     35.28,
     3
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2769,6 +3159,7 @@
     35.28,
     12
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2783,6 +3174,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2799,6 +3196,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2813,6 +3216,12 @@
     104.5,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2829,6 +3238,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2843,6 +3258,12 @@
     102.5,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2859,6 +3280,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2873,6 +3300,12 @@
     100,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2889,6 +3322,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2903,6 +3342,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2919,6 +3364,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2933,6 +3384,12 @@
     107.8,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2949,6 +3406,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2963,6 +3426,12 @@
     110.2,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -2979,6 +3448,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -2993,6 +3468,12 @@
     113,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3009,6 +3490,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3023,6 +3510,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3039,6 +3532,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3053,6 +3552,12 @@
     104.5,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3069,6 +3574,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3083,6 +3594,12 @@
     102.5,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3099,6 +3616,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3113,6 +3636,12 @@
     100,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3129,6 +3658,12 @@
     36,
     -15
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3143,6 +3678,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3159,6 +3700,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3173,6 +3720,12 @@
     107.8,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3189,6 +3742,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3203,6 +3762,12 @@
     110.2,
     36,
     5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3219,6 +3784,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3233,6 +3804,12 @@
     113,
     36,
     5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3249,6 +3826,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3263,6 +3846,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3279,6 +3868,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3293,6 +3888,12 @@
     104.5,
     36,
     -10
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3309,6 +3910,12 @@
     36,
     -10
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3323,6 +3930,12 @@
     102.5,
     36,
     -10
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3339,6 +3952,12 @@
     36,
     -10
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3353,6 +3972,12 @@
     100,
     36,
     -15
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3369,6 +3994,12 @@
     36,
     -20
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3383,6 +4014,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3399,6 +4036,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3413,6 +4056,12 @@
     107.8,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3429,6 +4078,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3443,6 +4098,12 @@
     110.2,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3459,6 +4120,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3473,6 +4140,12 @@
     113,
     36,
     5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3489,6 +4162,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3504,6 +4183,7 @@
     30.8,
     17.37
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3519,6 +4199,7 @@
     30.8,
     31.35
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3534,6 +4215,7 @@
     30.8,
     5.28
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3549,6 +4231,7 @@
     30.8,
     13.06
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3564,6 +4247,7 @@
     30.8,
     -0.69
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3579,6 +4263,7 @@
     30.8,
     -8.76
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3594,6 +4279,7 @@
     30.8,
     -22.61
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3609,6 +4295,7 @@
     30.8,
     -14.15
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3624,6 +4311,7 @@
     30.8,
     17.37
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3639,6 +4327,7 @@
     30.8,
     7.93
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3654,6 +4343,7 @@
     30.8,
     -7.72
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3669,6 +4359,7 @@
     30.8,
     -2.75
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3684,6 +4375,7 @@
     30.8,
     24.89
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3699,6 +4391,7 @@
     30.8,
     28.98
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3714,6 +4407,7 @@
     30.8,
     35.05
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3729,6 +4423,7 @@
     30.8,
     49.26
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3743,6 +4438,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3759,6 +4460,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3773,6 +4480,12 @@
     104.5,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3789,6 +4502,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3803,6 +4522,12 @@
     102.5,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3819,6 +4544,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3833,6 +4564,12 @@
     100,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3849,6 +4586,12 @@
     36,
     -10
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3863,6 +4606,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3879,6 +4628,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3893,6 +4648,12 @@
     107.8,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3909,6 +4670,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3923,6 +4690,12 @@
     110.2,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3939,6 +4712,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3953,6 +4732,12 @@
     113,
     36,
     5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3969,6 +4754,12 @@
     36,
     10
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -3983,6 +4774,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -3999,6 +4796,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4013,6 +4816,12 @@
     104.5,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4029,6 +4838,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4043,6 +4858,12 @@
     102.5,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4059,6 +4880,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4073,6 +4900,12 @@
     100,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4089,6 +4922,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4103,6 +4942,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4119,6 +4964,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4133,6 +4984,12 @@
     107.8,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4149,6 +5006,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4163,6 +5026,12 @@
     110.2,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4179,6 +5048,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4193,6 +5068,12 @@
     113,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4209,6 +5090,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4224,6 +5111,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4239,6 +5127,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4254,6 +5143,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4269,6 +5159,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4284,6 +5175,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4299,6 +5191,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4314,6 +5207,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4329,6 +5223,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4344,6 +5239,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4359,6 +5255,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4374,6 +5271,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4389,6 +5287,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4404,6 +5303,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4419,6 +5319,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4434,6 +5335,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4449,6 +5351,7 @@
     37.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4463,6 +5366,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4479,6 +5388,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4493,6 +5408,12 @@
     104.5,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4509,6 +5430,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4523,6 +5450,12 @@
     102.5,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4539,6 +5472,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4553,6 +5492,12 @@
     100,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4569,6 +5514,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4583,6 +5534,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4599,6 +5556,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4613,6 +5576,12 @@
     107.8,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4629,6 +5598,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4643,6 +5618,12 @@
     110.2,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4659,6 +5640,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4673,6 +5660,12 @@
     113,
     36,
     5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -4689,6 +5682,12 @@
     36,
     5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4704,6 +5703,7 @@
     32.68,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4719,6 +5719,7 @@
     32.68,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4734,6 +5735,7 @@
     32.68,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4749,6 +5751,7 @@
     32.68,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4764,6 +5767,7 @@
     32.68,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4779,6 +5783,7 @@
     32.68,
     -3
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4794,6 +5799,7 @@
     32.68,
     -6
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4809,6 +5815,7 @@
     32.68,
     -10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4824,6 +5831,7 @@
     32.68,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4839,6 +5847,7 @@
     32.68,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4854,6 +5863,7 @@
     32.68,
     2
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4869,6 +5879,7 @@
     32.68,
     10
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4884,6 +5895,7 @@
     32.68,
     17
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4899,6 +5911,7 @@
     32.68,
     21
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4914,6 +5927,7 @@
     32.68,
     52
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4929,6 +5943,7 @@
     32.68,
     60
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4944,6 +5959,7 @@
     29.4,
     15.64
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4959,6 +5975,7 @@
     29.4,
     13.37
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4974,6 +5991,7 @@
     29.4,
     21.61
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4989,6 +6007,7 @@
     29.4,
     28.47
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5004,6 +6023,7 @@
     29.4,
     17
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5019,6 +6039,7 @@
     29.4,
     11.48
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5034,6 +6055,7 @@
     29.4,
     15
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5049,6 +6071,7 @@
     29.4,
     15.93
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5064,6 +6087,7 @@
     29.4,
     15.64
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5079,6 +6103,7 @@
     29.4,
     27.97
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5094,6 +6119,7 @@
     29.4,
     24.72
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5109,6 +6135,7 @@
     29.4,
     36.86
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5124,6 +6151,7 @@
     29.4,
     42.41
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5139,6 +6167,7 @@
     29.4,
     51.15
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5154,6 +6183,7 @@
     29.4,
     52.72
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5169,6 +6199,7 @@
     29.4,
     58.01
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5184,6 +6215,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5199,6 +6231,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5214,6 +6247,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5229,6 +6263,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5244,6 +6279,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5259,6 +6295,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5274,6 +6311,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5289,6 +6327,7 @@
     44.8,
     -5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5304,6 +6343,7 @@
     44.8,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5319,6 +6359,7 @@
     44.8,
     5
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5334,6 +6375,7 @@
     44.8,
     15
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5349,6 +6391,7 @@
     44.8,
     20
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5364,6 +6407,7 @@
     44.8,
     25
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5379,6 +6423,7 @@
     44.8,
     30
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5394,6 +6439,7 @@
     44.8,
     35
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5409,6 +6455,7 @@
     44.8,
     35
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5423,6 +6470,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -5439,6 +6492,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5453,6 +6512,12 @@
     104.5,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -5469,6 +6534,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5483,6 +6554,12 @@
     102.5,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -5499,6 +6576,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5513,6 +6596,12 @@
     100,
     36,
     -5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -5529,6 +6618,12 @@
     36,
     -5
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5543,6 +6638,12 @@
     106,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -5559,6 +6660,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5573,6 +6680,12 @@
     107.8,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -5589,6 +6702,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5603,6 +6722,12 @@
     110.2,
     36,
     0
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -5619,6 +6744,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5633,6 +6764,12 @@
     113,
     36,
     5
+   ],
+   "box": [
+    32,
+    32,
+    192,
+    192
    ],
    "ownHead": false,
    "bakedDome": false,
@@ -5649,6 +6786,12 @@
     36,
     0
    ],
+   "box": [
+    32,
+    32,
+    192,
+    192
+   ],
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5663,6 +6806,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5677,6 +6821,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5691,6 +6836,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5705,6 +6851,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5719,6 +6866,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5733,6 +6881,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5747,6 +6896,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5761,6 +6911,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5775,6 +6926,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5789,6 +6941,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5803,6 +6956,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5817,6 +6971,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5831,6 +6986,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5845,6 +7001,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5859,6 +7016,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5873,6 +7031,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5887,6 +7046,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5901,6 +7061,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5915,6 +7076,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5929,6 +7091,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5943,6 +7106,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5957,6 +7121,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5971,6 +7136,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5985,6 +7151,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -5999,6 +7166,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6013,6 +7181,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6027,6 +7196,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6041,6 +7211,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6055,6 +7226,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6069,6 +7241,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6083,6 +7256,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6097,6 +7271,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6111,6 +7286,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6125,6 +7301,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6139,6 +7316,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6153,6 +7331,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6167,6 +7346,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6181,6 +7361,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6195,6 +7376,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6209,6 +7391,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6223,6 +7406,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6237,6 +7421,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6251,6 +7436,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6265,6 +7451,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6279,6 +7466,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6293,6 +7481,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6307,6 +7496,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6321,6 +7511,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6335,6 +7526,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6349,6 +7541,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6363,6 +7556,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6377,6 +7571,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6391,6 +7586,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6405,6 +7601,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6419,6 +7616,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6433,6 +7631,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6447,6 +7646,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6461,6 +7661,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6475,6 +7676,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6489,6 +7691,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6503,6 +7706,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6517,6 +7721,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6531,6 +7736,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6545,6 +7751,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6559,6 +7766,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6573,6 +7781,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6587,6 +7796,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6601,6 +7811,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6615,6 +7826,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6629,6 +7841,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6643,6 +7856,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6657,6 +7871,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6671,6 +7886,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6685,6 +7901,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6699,6 +7916,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6713,6 +7931,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6727,6 +7946,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6741,6 +7961,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6755,6 +7976,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6769,6 +7991,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6783,6 +8006,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6797,6 +8021,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6811,6 +8036,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6825,6 +8051,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6839,6 +8066,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6853,6 +8081,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6867,6 +8096,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6881,6 +8111,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6895,6 +8126,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6909,6 +8141,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6923,6 +8156,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6937,6 +8171,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6951,6 +8186,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6965,6 +8201,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6979,6 +8216,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -6993,6 +8231,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7007,6 +8246,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7021,6 +8261,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7035,6 +8276,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7049,6 +8291,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7063,6 +8306,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7077,6 +8321,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7091,6 +8336,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7105,6 +8351,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7119,6 +8366,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7133,6 +8381,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7147,6 +8396,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7161,6 +8411,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7175,6 +8426,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7189,6 +8441,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7203,6 +8456,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7217,6 +8471,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7231,6 +8486,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7245,6 +8501,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7259,6 +8516,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7273,6 +8531,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7287,6 +8546,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7301,6 +8561,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7315,6 +8576,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7329,6 +8591,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7343,6 +8606,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7357,6 +8621,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7371,6 +8636,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7385,6 +8651,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7399,6 +8666,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7413,6 +8681,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7427,6 +8696,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7441,6 +8711,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7455,6 +8726,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7469,6 +8741,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7483,6 +8756,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7497,6 +8771,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7511,6 +8786,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7525,6 +8801,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7539,6 +8816,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7553,6 +8831,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7567,6 +8846,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7581,6 +8861,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7595,6 +8876,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7609,6 +8891,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7623,6 +8906,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7637,6 +8921,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7651,6 +8936,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7665,6 +8951,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7679,6 +8966,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7693,6 +8981,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7707,6 +8996,7 @@
     128,
     40
    ],
+   "box": null,
    "ownHead": true,
    "bakedDome": false,
    "frame": true
@@ -7722,9 +9012,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-2",
@@ -7737,9 +9029,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-3",
@@ -7752,9 +9046,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-4",
@@ -7767,9 +9063,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-5",
@@ -7782,9 +9080,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-6",
@@ -7797,9 +9097,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-7",
@@ -7812,9 +9114,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-8",
@@ -7827,9 +9131,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-9",
@@ -7842,9 +9148,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-10",
@@ -7857,9 +9165,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-11",
@@ -7872,9 +9182,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-12",
@@ -7887,9 +9199,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-13",
@@ -7902,9 +9216,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-14",
@@ -7917,9 +9233,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-15",
@@ -7932,9 +9250,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   },
   {
    "id": "flight-tap-16",
@@ -7947,9 +9267,11 @@
     40.32,
     0
    ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "seeded": true
   }
  ],
  "helmets": [

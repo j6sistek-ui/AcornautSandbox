@@ -48,6 +48,21 @@ export function buildTables(root) {
 
   const artVer = (cat.match(/ART_VER\s*=\s*"([^"]+)"/) || [, "1"])[1];
 
+  // THE GAME DOES NOT MEASURE EVERY SUIT. The regenerated standard series
+  // (NATURAL_FLIGHT_SUITS in draw.ts) is drawn in one fixed presentation
+  // box - the painted skull is one size across the series, and an alpha
+  // box would undo that whenever a tail ran longer. The bench used to
+  // measure those nine like everything else, so for them it seated the
+  // helmet somewhere the Loadout does not. The set and the box are read
+  // out of draw.ts so the bench can never disagree with the game again.
+  const natM = draw.match(/NATURAL_FLIGHT_SUITS\s*=\s*new Set\(\[([^\]]*)\]/);
+  if (!natM) throw new Error("missing NATURAL_FLIGHT_SUITS in draw.ts");
+  const natural = new Set([...natM[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]));
+  const boxM = draw.match(/NATURAL_FLIGHT_BOX\s*=\s*\{\s*x:\s*(\d+),\s*y:\s*(\d+),\s*w:\s*(\d+),\s*h:\s*(\d+)/);
+  if (!boxM) throw new Error("missing NATURAL_FLIGHT_BOX in draw.ts");
+  const naturalBox = boxM.slice(1, 5).map(Number);
+  const boxOf = (sid) => (natural.has(sid) ? naturalBox : null);
+
   // one object literal per line in both arrays, so a line scan is exact
   function rows(headerRe) {
     const text = block(cat, headerRe);
@@ -88,6 +103,7 @@ export function buildTables(root) {
       key,
       file: `suits/${r.id}.png`,
       dome: dome[key] ? dome[key].slice(0, 4) : [128, 128, 40],
+      box: boxOf(r.id),
       ownHead: r.ownHead,
       bakedDome: r.bakedDome,
       frame: false,
@@ -122,6 +138,7 @@ export function buildTables(root) {
       file: `suits/${key}.png`,
       // frames keep their 4th value: the pose's helmet rotation
       dome: dome[key].slice(0, 4),
+      box: boxOf(sid),
       ownHead: false,
       bakedDome: false,
       frame: true,
@@ -152,6 +169,7 @@ export function buildTables(root) {
     key: `${sid}-${kind}-${i}`,
     file: `suits/${sid}-${kind}-${i}.png`,
     dome: [128, 128, 40],
+    box: boxOf(sid),
     ownHead: true,
     bakedDome: false,
     frame: true,
@@ -191,9 +209,13 @@ export function buildTables(root) {
         key: `${sid}-tap-${i}`,
         file: `suits/${sid}-tap-${i}.png`,
         dome: seat.slice(0, 4),
+        box: boxOf(sid),
         ownHead: false,
         bakedDome: false,
         frame: true,
+        // seeded from the still, not a row of its own: the report prints it
+        // only once it differs from the still it was seeded from
+        seeded: true,
       });
     }
   }
