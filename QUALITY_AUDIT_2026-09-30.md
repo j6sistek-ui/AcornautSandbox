@@ -204,6 +204,18 @@ Each of these was confirmed by a reviewer and left as it is because it
 changes how the game plays or what it sells. The proposed change is
 written out so a yes is enough.
 
+**Decided 1 October 2026 (stamp 297):** 1 stays as it is ("ok that's
+fine"). 2: NORMAL is the first and only mode until the tutorial is done,
+on the sheet and in the engine (`test-first-flight-lock.mjs`). 3: ARCADE
+is 2x NORMAL and no more (`test-arcade-specials.mjs`). 4 and 5 stay as
+they are ("early success for very bad players"). 6: every access code is
+gone, with its row, its note and its CSS; `allStars` stays readable so an
+old save that redeemed one keeps what it had. 7: the cycle inspector is
+beta-only again (`verify-art.py` table updated). 8: the real icon and
+splash are cut from `art-src/app-icon-master.jpg` by
+`shell/make-app-assets.py`, and the launch screen is navy. 9 and 10 are
+still open.
+
 1. **Stopwatch's tap toggle works only in NORMAL** (`sim.ts:3170-3179`,
    `w.flight === "fly"`). The catalog says "Tap Toggles Scroll Speed" with
    no mode named, and a Lost-based mission carrying Stopwatch cannot
@@ -334,7 +346,7 @@ written out so a yes is enough.
 - [ ] AdMob app ids and four unit ids; `admob.testing: false`.
 - [ ] RevenueCat keys, the two consumables at the $1.99 / $3.99 tiers,
       `iap: true`, Paid Apps agreement and banking.
-- [ ] Real icon and splash (item 8 above), then `npx cap sync` and commit.
+- [x] Real icon and splash (item 8 above, `shell/make-app-assets.py`); run `npx cap sync` on the Mac before archiving.
 - [ ] Screenshots: 6.9", 6.7", 6.5" (5.5" if asked); Android phone and
       7"/10" tablet or opt out.
 - [ ] App Privacy answers: AdMob → Identifiers (device id), Usage Data,

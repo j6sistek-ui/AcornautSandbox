@@ -1554,10 +1554,12 @@ function spawnPair(w: World, save: SaveData, x: number) {
       slotUsed = true;
     }
   }
-  // Arcade is the generous mode: power-ups spawn twice as often by
-  // default. Free Flight is the opposite — at the old rate a run was
-  // carrying a freeze or a shield almost continuously, which is not a
-  // power-up any more, it is the baseline. Halved there, and there only.
+  // Arcade is the generous mode: power-ups spawn TWICE as often as NORMAL,
+  // and no more (owner, 1 Oct 2026: "2x max"). NORMAL runs at half the
+  // base rate — at the old rate a run was carrying a freeze or a shield
+  // almost continuously, which is not a power-up any more, it is the
+  // baseline — so Arcade sits at the base rate, which is exactly 2x NORMAL.
+  // It used to double on top of the base rate as well, which made it 4x.
   // The pal bonus still multiplies on top of whichever mode you are in.
   // NOTE: this scales the three power-ups (freeze, golden, shield). The
   // black hole is a hazard and the 8-bit acorn is the door to the other
@@ -1566,7 +1568,6 @@ function spawnPair(w: World, save: SaveData, x: number) {
     // Astrolobee's veto beats Meteor Core's bonus (owner): no pickups at
     // all, so there is nothing to double
     (hasPal(save, w, "meteorcore") && !bee ? 2 : 1) *
-    (w.flight === "arcade" ? 2 : 1) *
     (w.flight === "fly" ? 0.5 : 1);
   const noShield = hasPal(save, w, "nutsack") || hasPal(save, w, "tinbot");
   const noHoles = hasPal(save, w, "tinbot") || w.bounceHouse;

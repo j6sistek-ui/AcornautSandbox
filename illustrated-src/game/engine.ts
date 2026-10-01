@@ -9,7 +9,7 @@ import { reachedGate } from "./campaign";
 import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks, type ArtBank } from "./art";
 import { vanguardDepotEligible } from "./spill-depot-gag";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
-import { wearsOwnHead, GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, PALS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
+import { wearsOwnHead, GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
 import { drawHud, drawWorld, setSpillBackplateHost } from "./draw";
 import { setVanguardPitchTrim } from "./vanguard";
 import {
@@ -96,7 +96,6 @@ export type Engine = {
   /** wipe this build's save slot and reboot into a fresh game */
   startOver: () => void;
   /** the Founder's Pack door — and one more code that is a love letter */
-  redeemAccessCode: (code: string) => "ok" | "love" | "denied";
   /** rename the pilot. Returns the name that was actually stored, which
    *  may differ from what was passed - it is sanitised on the way in. */
   setPilotName: (name: string) => string;
@@ -343,6 +342,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // mode the save has not earned.
       if (mode === "deep" && !deepUnlocked(save)) return;
       if (mode === "lost" && !lostUnlocked(save)) return;
+      // NORMAL IS THE FIRST AND ONLY MODE UNTIL THE FIRST FLIGHT IS DONE
+      // (owner, 1 Oct 2026). Every other mode assumes the controls the
+      // tutorial teaches, and a pilot who picked ARCADE first used to skip
+      // the lesson entirely. The mode sheet locks the rows; this is the
+      // gate behind the sheet.
+      if (!save.tutorialDone && mode !== "fly") return;
       unlockAudio();
       const needTut = !save.tutorialDone && mode === "fly";
       resetRun(world, save, mode, needTut);
@@ -357,60 +362,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       eraseSave();
       sealSave();
       window.location.reload();
-    },
-    redeemAccessCode(code) {
-      // A DEV DOOR, not a store feature. Both codes hand out content for
-      // free, which a store build must never do (App Store 3.1.1), so a
-      // shell that closes the dev doors closes this one too.
-      if (!platform.devDoors) return "denied";
-      const entered = code.trim();
-      // BOTH CODES OPEN THE WHOLE LOADOUT. They used to open different
-      // halves of it, which is why each read as a partial unlock: 120189
-      // granted IAP_ITEMS and left every STAR-gated suit, helmet, trail
-      // and pal locked, while 033018 granted stars and so left the
-      // PURCHASED items locked. Every loadout gate in save.ts takes a
-      // purchase, a star count, or the id sitting in its own unlocked
-      // list, so filling the lists opens all five tabs without touching
-      // stars or chart progress.
-      const openWholeLoadout = () => {
-        const add = (list: string[], ids: readonly string[]) => {
-          for (const id of ids) if (!list.includes(id)) list.push(id);
-          return list;
-        };
-        save.purchased = add(save.purchased || [], IAP_ITEMS);
-        // AcorNut is the one that made this look half-finished even with
-        // the lists filled: migrate strips TUTORIAL_SUIT back out of
-        // unlockedSuits unless tutorialSuitEarned says otherwise, and that
-        // reads `purchased`, never the list. Without this entry the next
-        // save quietly takes him away again.
-        add(save.purchased, [TUTORIAL_SUIT]);
-        add(save.unlockedSuits, SUITS.map((x) => x.id));
-        add(save.unlocked, HELMETS.map((x) => x.id));
-        add(save.unlockedTrails, TRAILS.map((x) => x.id));
-        add(save.unlockedPals, PALS.map((x) => x.id));
-        // The SHIP tab is loadout too; these four read keyUnlocks beside
-        // their star gate. `deep` and `lost` are flight MODES rather than
-        // loadout, so they stay on the chart where they were put.
-        add(save.keyUnlocks, ["flightmods", "startShield", "battery", "dualpal"]);
-      };
-      if (entered === "120189") {
-        openWholeLoadout();
-        writeSave(save);
-        notify();
-        return "ok";
-      }
-      // Briella's code. Everything the code above opens, plus the stars:
-      // the game believes it has every star on the road, all the gates
-      // open, and Dad gets to watch her fly whatever she wants. The only
-      // difference from 120189 is that this one says so.
-      if (entered === "033018") {
-        openWholeLoadout();
-        save.allStars = true;
-        writeSave(save);
-        notify();
-        return "love";
-      }
-      return "denied";
     },
     setSpillAppearance(kind, id) {
       if (!STAR_MAP_PREVIEW || !["finish", "trail"].includes(kind)) return false;

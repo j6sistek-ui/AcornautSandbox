@@ -1720,7 +1720,12 @@ export async function bootStandalone(root: HTMLElement) {
       fly: s.highScore, deep: s.deepBest, lost: s.lostBest, arcade: s.arcadeBest ?? 0,
       spill: s.spillBest ?? 0,
     };
+    // NORMAL is the first and only mode until the first flight is done
+    // (owner, 1 Oct 2026): every other row waits on the tutorial, and the
+    // star-priced ones wait on their stars after that.
+    const firstFlightDue = !s.tutorialDone;
     const modeOpen = (id: string) =>
+      id === "fly" ? true : firstFlightDue ? false :
       id === "deep" ? deepUnlocked(s) : id === "lost" ? lostUnlocked(s) : true;
     const modePrice = (id: string) =>
       id === "deep" ? STAR_UNLOCKS.deep : id === "lost" ? STAR_UNLOCKS.lost : 0;
@@ -1738,6 +1743,11 @@ export async function bootStandalone(root: HTMLElement) {
     const lockChip = (n: number) => {
       const c = el("span", "ac-modelock");
       c.append(icon(I_LOCK, 12), el("b", "", `\u2605 ${n}`));
+      return c;
+    };
+    const firstFlightChip = () => {
+      const c = el("span", "ac-modelock");
+      c.append(icon(I_LOCK, 12), el("b", "", "1ST FLIGHT"));
       return c;
     };
 
@@ -1765,13 +1775,15 @@ export async function bootStandalone(root: HTMLElement) {
     };
 
     const firstGate = RACE_GATES[0];
-    const raceEarned = IS_BETA || (s.raceGates || []).includes(firstGate.after);
+    const raceEarned = !firstFlightDue && (IS_BETA || (s.raceGates || []).includes(firstGate.after));
     const raceRec = s.raceRecords?.[HYPER_RUN_MISSION.id];
 
     MODES.forEach((m, i) => {
       const open = m.id === "race" ? raceEarned : modeOpen(m.id);
       // each mode's chip is its own record, in its own units
-      const aside = m.id === "race"
+      const aside = !open && firstFlightDue
+        ? firstFlightChip()
+        : m.id === "race"
         ? (raceEarned
             ? (raceRec?.bestFinishTicks ? bestChip(formatRaceTicks(raceRec.bestFinishTicks)) : null)
             : gateLockChip(firstGate.after))
@@ -1782,7 +1794,9 @@ export async function bootStandalone(root: HTMLElement) {
         cls: `m-${m.id === "tunnel" ? "tunnel" : m.id}`,
         face: MODE_FACE[m.id],
         label: m.label,
-        blurb: m.id === "race" && !raceEarned
+        blurb: !open && firstFlightDue
+          ? "Finish your first flight in NORMAL to unlock."
+          : m.id === "race" && !raceEarned
           ? `Clear the debris field after level ${firstGate.after} to unlock.`
           : m.blurb,
         aside,
@@ -1792,8 +1806,11 @@ export async function bootStandalone(root: HTMLElement) {
           // a locked Hyper Run still answers: it shows the chart where the
           // field that unlocks it actually is
           if (!open) {
-            // every locked row answers with the chart: that is where the field
-            // or the stars that open it live
+            // before the first flight the answer is NORMAL itself: select it
+            // and close the sheet, so the next tap on LAUNCH is the lesson.
+            // After that every locked row answers with the chart: that is
+            // where the field or the stars that open it live
+            if (firstFlightDue) { selectedMode = MODES.findIndex((x) => x.id === "fly"); modesOpen = false; render(); return; }
             modesOpen = false; engine.open("log"); render();
             return;
           }
@@ -2150,35 +2167,6 @@ export async function bootStandalone(root: HTMLElement) {
     return b;
   }
 
-  // Briella's screen. Five seconds of hearts, then a tap sends it away.
-  function showLoveNote() {
-    const wrap = document.createElement("div");
-    wrap.className = "ac-love";
-    const msg = document.createElement("p");
-    msg.className = "ac-lovemsg";
-    msg.textContent = "\u2764\uFE0F\u2764\uFE0F\u2764\uFE0F I love you Briella -Dad \u2764\uFE0F\u2764\uFE0F\u2764\uFE0F";
-    wrap.append(msg);
-    for (let i = 0; i < 26; i++) {
-      const h = document.createElement("span");
-      h.className = "ac-loveheart";
-      h.textContent = ["\u2764\uFE0F", "\u{1F496}", "\u{1F49E}", "\u{1F497}"][i % 4];
-      h.style.left = `${4 + Math.random() * 92}%`;
-      h.style.animationDelay = `${(Math.random() * 3.4).toFixed(2)}s`;
-      h.style.animationDuration = `${(1.6 + Math.random() * 1.4).toFixed(2)}s`;
-      h.style.fontSize = `${18 + Math.round(Math.random() * 26)}px`;
-      wrap.append(h);
-    }
-    let armed = false;
-    setTimeout(() => {
-      armed = true;
-      const hint = document.createElement("p");
-      hint.className = "ac-lovehint";
-      hint.textContent = "tap to continue";
-      wrap.append(hint);
-    }, 5000);
-    wrap.addEventListener("pointerdown", () => { if (armed) wrap.remove(); });
-    document.body.append(wrap);
-  }
 
   // WHAT HAPPENED WHEN YOU TAPPED. The engine has always returned a reason -
   // "poor", "locked", "suitOnly", "missing" - and every call site used to
@@ -3750,9 +3738,6 @@ export async function bootStandalone(root: HTMLElement) {
   // for acquiring. Premium items still appear in the Hangar so a loadout
   // reads complete, but the pitch lives here.
 
-  let foundersOpen = false;
-  let foundersMsg = "";
-
   // what the PREVIEW page is currently wearing. Not the save: you are
   // trying premium on, not equipping it, and nothing here is owned.
   let tryOn: { suit: string; helm: string; pal: string } = { suit: "", helm: "", pal: "" };
@@ -4235,8 +4220,6 @@ export async function bootStandalone(root: HTMLElement) {
       restore.onclick = () => { void engine.restorePurchases(); };
       scroll.append(restore);
     }
-    // the access-code door is a dev door: gone wherever the shell closes them
-    if (platform.devDoors) scroll.append(codeRow());
     // Say where the money goes. A shell with a store says nothing; the
     // beta says dust is granted; the live web page says the store is
     // the app's.
@@ -4245,12 +4228,11 @@ export async function bootStandalone(root: HTMLElement) {
       : `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The ${CASH_PACKS.map((p) => p.price).join(" and ")} packs are sold in the app.`));
 
     box.append(scroll);
-    // THE CYCLE INSPECTOR SHIPS ON BOTH PAGES. It was gated on beta while
-    // the storefront was, but the storefront is the shop on both pages now
-    // and the cycle is tuned by watching a real shelf - which is the live
-    // one. It stays rolled up to a single line until it is asked for, so
-    // it costs a player who never opens it nothing but a row of small type.
-    box.append(drawCycleRoll(cy));
+    // THE CYCLE INSPECTOR IS A BETA TOOL (owner, 1 Oct 2026: "inspector
+    // remove from non beta"). It shipped to both pages for a while so the
+    // cycle could be tuned against the live shelf; a store player never
+    // needs a readout of tomorrow's rotation.
+    if (IS_BETA) box.append(drawCycleRoll(cy));
     // A daily feature closes when it rotates out. Always-available packs
     // keep their sheet and sticker price across the date boundary.
     if (featureOpen && featureOpen !== cy.feature?.id && !BUNDLES.find((b) => b.id === featureOpen)?.alwaysAvailable) { featureOpen = null; confirmBuy = false; }
@@ -4515,34 +4497,6 @@ export async function bootStandalone(root: HTMLElement) {
     seg.append(mk(false, "\u2261", "Side-scrolling rows"), mk(true, "\u25a6", "Grid"));
     row.append(seg);
     return row;
-  }
-
-  /** the access-code redeem row, unchanged in behaviour, lifted out so the
-   *  pack page reads as a list of packs rather than a list plus a form */
-  function codeRow() {
-    const wrap = el("div", "ac-coderow-wrap");
-    const open = el("button", "ac-codeopen", foundersOpen ? "HIDE ACCESS CODE" : "HAVE AN ACCESS CODE?");
-    open.onclick = () => { foundersOpen = !foundersOpen; foundersMsg = ""; render(); };
-    wrap.append(open);
-    if (foundersOpen) {
-      const row = el("div", "ac-coderow");
-      const input = document.createElement("input");
-      input.type = "tel";
-      input.inputMode = "numeric";
-      input.placeholder = "ACCESS CODE";
-      input.className = "ac-codein";
-      const go = el("button", "ac-primary ac-codego", "REDEEM");
-      go.onclick = () => {
-        const res = engine.redeemAccessCode(input.value);
-        if (res === "ok") { foundersOpen = false; foundersMsg = ""; }
-        else if (res === "love") { foundersOpen = false; foundersMsg = ""; showLoveNote(); render(); }
-        else { foundersMsg = "That code doesn't open this door."; render(); }
-      };
-      row.append(input, go);
-      wrap.append(row);
-      if (foundersMsg) wrap.append(el("p", "ac-fine ac-codemsg", foundersMsg));
-    }
-    return wrap;
   }
 
   /** THE BADGE TURNS. The daily disc arrived as a 6s render whose badge

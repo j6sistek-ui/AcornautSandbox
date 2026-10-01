@@ -1073,10 +1073,11 @@ def verify_pose_domes(qa: QA) -> None:
 # listed as "beta", each fails until this table is updated on purpose.
 DEV_INSTRUMENTS = {
     # builder            where     why
-    "drawCycleRoll":     "both",   # the shop's cycle inspector. Deliberately
-                                   # live: the cycle is tuned by watching a
-                                   # real shelf, and the real shelf is the
-                                   # live one. Rolled up to one line unopened.
+    "drawCycleRoll":     "beta",   # the shop's cycle inspector. It shipped
+                                   # live for a while so the cycle could be
+                                   # tuned against the real shelf; the owner
+                                   # pulled it from the store page on 1 Oct
+                                   # 2026 ("inspector remove from non beta").
 }
 
 
