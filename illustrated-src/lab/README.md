@@ -98,9 +98,17 @@ honours it - before 1 Oct 2026 it measured those nine like the rest and
 seated their helmets somewhere the Loadout does not.
 
 Drafts live in `localStorage` under `acornaut.rig.v2`, tagged with the
-art build they were dialled against; a newer build sets a draft aside and
-opens on the shipping numbers, and says so. Nothing here can write to the
-repo or touch a game save.
+art build they were dialled against. **A draft is never thrown away**: the
+old editor set aside any draft from another build, and that is how a whole
+session came out of COPY as "nothing changed yet" on 1 Oct 2026 (the
+stamp moved from 296 to 297 under the page). Now a draft from another
+build is worn, the toast says which build it came from, and the COPY
+sheet repeats it on its first line. The old editor's draft is picked up
+once on first load; its THIS PAIR overrides come out as comments. Nothing
+here can write to the repo or touch a game save.
+
+Every control carries `touch-action: manipulation`, which is what stops
+iOS zooming the page on a double-tap of + or −.
 
 ## What it does not do
 

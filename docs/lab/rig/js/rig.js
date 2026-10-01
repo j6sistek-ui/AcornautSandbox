@@ -28,6 +28,7 @@
 // per-suit measurements); THIS FRAME is the fine pass. Nothing here writes
 // to the repo: COPY hands back paste-ready table rows.
 const STORE = "acornaut.rig.v2";
+const OLD_STORE = "acornaut.rig.v1"; // the old editor's draft, picked up once
 const ART = () => window.__ACORNAUT_ART__ || "../../art";
 const FRAME_RE = /-(asc|desc|tap|bounce)-(\d+)$/;
 const KIND_ORDER = ["asc", "desc", "tap", "bounce"];
@@ -125,7 +126,8 @@ const S = {
     view: "frames",
     rings: true,
     fade: false,
-    staleDraft: "",
+    draftVer: "", // the art build a restored draft was dialled on, if not this one
+    legacy: {}, // THIS PAIR overrides from the old editor, reported, never applied
 };
 const baseOf = (rowId) => rowId.replace(FRAME_RE, "");
 const rowOf = (key) => S.tables.suits.find((s) => s.key === key);
@@ -207,8 +209,16 @@ function restoreLocal() {
     if (!S.tables)
         return;
     let raw = null;
+    let fromOld = false;
     try {
         raw = localStorage.getItem(STORE);
+        // The old editor's draft is picked up once, so a session dialled in
+        // before the rebuild is not lost. Its THIS PAIR overrides have no home
+        // here; they ride along into the COPY sheet as comments.
+        if (!raw) {
+            raw = localStorage.getItem(OLD_STORE);
+            fromOld = !!raw;
+        }
     }
     catch {
         return;
@@ -217,16 +227,15 @@ function restoreLocal() {
         return;
     try {
         const d = JSON.parse(raw);
-        // A draft dialled against another art build is set aside, not worn:
-        // its numbers would put every helmet somewhere the Loadout does not.
-        if (d.artVer !== S.tables.artVer) {
-            S.staleDraft = String(d.artVer || "an older build");
-            try {
-                localStorage.removeItem(STORE);
-            }
-            catch { /* nothing to clear */ }
-            return;
-        }
+        // A DRAFT IS NEVER THROWN AWAY. The old editor set aside any draft
+        // dialled on another art build, and that is exactly how a session of
+        // fitting came out as "nothing changed yet" (owner, 1 Oct 2026: "made
+        // tons of changes, went to export and it was a single line"): the
+        // build moved under the page and the reload wiped the work. Now the
+        // draft is worn and the toast says which build it came from, so you
+        // can check it against the art before you copy it out.
+        if (d.artVer && d.artVer !== S.tables.artVer)
+            S.draftVer = String(d.artVer);
         for (const s of S.tables.suits)
             if (d.suits?.[s.key])
                 s.dome = d.suits[s.key].slice(0, 4);
@@ -248,6 +257,15 @@ function restoreLocal() {
                 S.reach = "frame";
             if (d.at.view === "suits")
                 S.view = "suits";
+        }
+        if (d.over && typeof d.over === "object")
+            S.legacy = d.over;
+        if (fromOld) {
+            saveLocal();
+            try {
+                localStorage.removeItem(OLD_STORE);
+            }
+            catch { /* read once is enough */ }
         }
     }
     catch { /* a corrupt draft is not worth a broken page */ }
@@ -433,6 +451,14 @@ function reportTS() {
             out.push(`  ${h.id}: [${h.seat.slice(0, n).map((v) => round(v, 1)).join(",")}],`);
         }
     }
+    const legacy = Object.entries(S.legacy);
+    if (legacy.length) {
+        out.push(`// ${legacy.length} THIS PAIR override(s) from the old editor — not values to paste:`);
+        for (const [k, v] of legacy)
+            out.push(`//   ${k}  dx ${round(v[0], 1)}  dy ${round(v[1], 1)}  size ${round((v[2] || 0) * 100, 1)}%  rot ${round(v[3] || 0, 1)}°`);
+    }
+    if (out.length && S.draftVer)
+        out.unshift(`// dialled on art v${S.draftVer}; the page is on v${S.tables.artVer}`);
     return out.length ? out.join("\n") : "// nothing changed yet";
 }
 function reportJSON() {
@@ -600,8 +626,13 @@ export async function bootRig(root) {
         clearTimeout(toastT);
         toastT = window.setTimeout(() => toast.classList.remove("on"), 2200);
     }
-    if (S.staleDraft) {
-        window.setTimeout(() => flash(`draft from art v${S.staleDraft} set aside — opened on the shipping numbers (v${tables.artVer})`), 400);
+    {
+        const c = changes();
+        const n = c.suits.length + c.helmets.length;
+        if (S.draftVer)
+            window.setTimeout(() => flash(`wearing your draft from art v${S.draftVer} (${n} changed) — the page is on v${tables.artVer}, so check it against the art`), 400);
+        else if (n)
+            window.setTimeout(() => flash(`picked up your draft: ${n} changed row${n > 1 ? "s" : ""}`), 400);
     }
     // ---- selection
     function selectSuit(sid) {
@@ -939,6 +970,8 @@ export async function bootRig(root) {
             for (const h of tables.helmets)
                 h.seat = fresh.helmets.find((x) => x.id === h.id).seat;
             undoStack.length = 0;
+            S.legacy = {};
+            S.draftVer = "";
             try {
                 localStorage.removeItem(STORE);
             }
@@ -973,4 +1006,8 @@ export async function bootRig(root) {
     }
     build();
     window.__rig = { S, build, refresh, selectRow, selectSuit, move, size, tilt, reportTS, reportJSON, changes, geometry, bank };
+}
+/** the pure half of the bench, for the node test: no DOM, no art */
+export function _rigInternals() {
+    return { S, changes, reportTS, reportJSON, moveHead, sizeHead, tiltHead, moveCavity, sizeCavity, resetTarget, restoreLocal, rowsOfSuit, reachRows };
 }

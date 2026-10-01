@@ -11,7 +11,10 @@
 <link rel="stylesheet" href="../../fonts/fonts.css" />
 <!-- self-hosted, like the game pages: no lab page reaches a font CDN (App Store prep audit, section 2) -->
 <style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  /* touch-action: manipulation is what actually stops iOS zooming on a
+     double-tap of + or − (the viewport's user-scalable=no has not since
+     iOS 10). Every control gets it; only the big canvas takes `none`. */
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
   html, body { margin: 0; height: 100%; background: #0a0d16; overflow: hidden;
     font-family: Figtree, system-ui, -apple-system, sans-serif; color: #eef2fa; }
   button, select, input { font-family: inherit; }
@@ -50,7 +53,8 @@
     display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 10px 12px; }
   .rg-focus { position: relative; flex: 0 0 auto; border: 1px solid rgba(255,255,255,.09); border-radius: 14px;
     background: radial-gradient(circle at 50% 40%, #182038, #0c1120 70%); overflow: hidden; }
-  .rg-fcv { display: block; touch-action: none; cursor: grab; }
+  .rg-fcv { display: block; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+  .rg-pb, .rg-act, .rg-segb, .rg-tog, .rg-chip, .rg-thumb { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   .rg-fcv:active { cursor: grabbing; }
   .rg-fcap { position: absolute; left: 10px; top: 8px; font: 800 10px/1 Figtree, sans-serif;
     letter-spacing: .1em; color: #9aa6c4; text-transform: uppercase; pointer-events: none; }
