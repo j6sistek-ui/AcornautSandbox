@@ -14,101 +14,130 @@
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; height: 100%; background: #0a0d16; overflow: hidden;
     font-family: Figtree, system-ui, -apple-system, sans-serif; color: #eef2fa; }
+  button, select, input { font-family: inherit; }
   #app { position: fixed; inset: 0; display: flex; flex-direction: column;
     padding-top: env(safe-area-inset-top); }
 
   .rg-boot { padding: 40px 20px; text-align: center; color: #8b97b8; font-size: 13px; }
 
-  .rg-bar { display: flex; gap: 8px; align-items: center; padding: 8px 10px 0; flex: 0 0 auto; }
-  .rg-sub { padding-top: 6px; flex-wrap: wrap; }
+  /* ---- header: suit, helmet, view ---- */
+  .rg-head { display: flex; gap: 8px; align-items: stretch; padding: 8px 10px 0; flex: 0 0 auto; }
   .rg-sel { flex: 1 1 0; min-width: 0; appearance: none; background: #141a2b;
-    border: 1px solid rgba(255,255,255,.12); color: #dfe6f5; border-radius: 9px;
-    padding: 9px 10px; font: 600 12px/1.2 Figtree, sans-serif; }
+    border: 1px solid rgba(255,255,255,.12); color: #dfe6f5; border-radius: 10px;
+    padding: 10px 12px; font: 700 13px/1.2 Figtree, sans-serif; }
+  .rg-chip { flex: 0 0 auto; background: #141a2b; border: 1px solid rgba(255,255,255,.12);
+    color: #9fe6ff; border-radius: 10px; padding: 0 12px; font: 800 10px/1 Figtree, sans-serif;
+    letter-spacing: .1em; min-width: 64px; }
 
-  .rg-seg { display: flex; border: 1px solid rgba(255,255,255,.12); border-radius: 9px; overflow: hidden; }
-  .rg-segb { background: transparent; border: 0; color: #8b97b8; padding: 8px 10px;
-    font: 800 10px/1 Figtree, sans-serif; letter-spacing: .08em; }
+  /* ---- the switch ---- */
+  .rg-tbar { display: flex; gap: 8px; align-items: center; padding: 8px 10px 0; flex: 0 0 auto; flex-wrap: wrap; }
+  .rg-seg { display: flex; border: 1px solid rgba(255,255,255,.12); border-radius: 10px; overflow: hidden; flex: 1 1 auto; }
+  .rg-segb { flex: 1 1 0; background: transparent; border: 0; color: #8b97b8; padding: 10px 8px;
+    font: 800 10px/1 Figtree, sans-serif; letter-spacing: .08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rg-segb.on { background: #2a6df0; color: #fff; }
-  .rg-tog { background: #141a2b; border: 1px solid rgba(255,255,255,.12); color: #8b97b8;
-    border-radius: 9px; padding: 8px 10px; font: 800 10px/1 Figtree, sans-serif; letter-spacing: .08em; }
+  .rg-reach { flex: 0 0 auto; }
+  .rg-reach .rg-segb { flex: 0 0 auto; overflow: visible; text-overflow: clip; padding: 10px 14px; }
+  .rg-reach .rg-segb.on { background: #1d4fae; }
+  .rg-reach.off { opacity: .3; pointer-events: none; }
+  .rg-hint { margin: 6px 12px 0; font-size: 11px; line-height: 1.4; color: #7f8bab; flex: 0 0 auto;
+    min-height: 1.4em; display: flex; gap: 10px; align-items: baseline; }
+  .rg-hint span { flex: 1 1 auto; }
+  .rg-links { flex: 0 0 auto; font: 700 9px/1 Figtree, sans-serif; letter-spacing: .14em; color: #5f6b8c; white-space: nowrap; }
+  .rg-links a { color: #8b9bc4; padding: 4px 2px; }
+
+  /* ---- the stage: big canvas, then the strip ---- */
+  .rg-main { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 10px 12px; }
+  .rg-focus { position: relative; flex: 0 0 auto; border: 1px solid rgba(255,255,255,.09); border-radius: 14px;
+    background: radial-gradient(circle at 50% 40%, #182038, #0c1120 70%); overflow: hidden; }
+  .rg-fcv { display: block; touch-action: none; cursor: grab; }
+  .rg-fcv:active { cursor: grabbing; }
+  .rg-fcap { position: absolute; left: 10px; top: 8px; font: 800 10px/1 Figtree, sans-serif;
+    letter-spacing: .1em; color: #9aa6c4; text-transform: uppercase; pointer-events: none; }
+  .rg-toggles { position: absolute; right: 8px; top: 6px; display: flex; gap: 4px; }
+  .rg-tog { background: rgba(20,26,43,.85); border: 1px solid rgba(255,255,255,.12); color: #6f7b9c;
+    border-radius: 8px; padding: 6px 8px; font: 800 9px/1 Figtree, sans-serif; letter-spacing: .08em; }
   .rg-tog.on { color: #9fe6ff; border-color: rgba(120,200,255,.5); }
+  .rg-strip { width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 6px; }
+  .rg-thumb { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 3px 3px 4px; background: #10152280; border: 1px solid rgba(255,255,255,.07); border-radius: 10px; color: inherit; }
+  .rg-thumb.on { border-color: #2a6df0; background: #16203a; }
+  .rg-thumb.ch::after { content: ""; position: absolute; top: 5px; right: 6px; width: 6px; height: 6px;
+    border-radius: 50%; background: #ffbe5a; }
+  .rg-tcv { display: block; }
+  .rg-tcap { font: 700 9px/1 Figtree, sans-serif; color: #8b97b8; letter-spacing: .06em; text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
-  .rg-hint { margin: 6px 12px 0; font-size: 11px; line-height: 1.4; color: #7f8bab; flex: 0 0 auto; }
-
-  .rg-stage { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain;
-    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
-    align-content: flex-start; padding: 10px; }
-  .rg-stage.rg-solo { align-content: center; }
-  .rg-tile { border: 1px solid rgba(255,255,255,.07); border-radius: 10px; padding: 4px 4px 0;
-    background: #10152280; }
-  .rg-tile.on { border-color: #2a6df0; background: #16203a; }
-  .rg-tile.ov { box-shadow: inset 0 0 0 1px rgba(255,190,90,.55); }
-  /* a locked number reads as locked on EVERY tile it reaches, not just the
-     one that happened to be selected when the padlock went on */
-  .rg-tile.lk { border-color: rgba(120,220,170,.5); }
-  .rg-tile.lk::after { content: "\1F512"; position: absolute; top: 3px; right: 5px;
-    font-size: 11px; line-height: 1; opacity: .85; pointer-events: none; }
-  .rg-tile { position: relative; }
-  .rg-cv { display: block; touch-action: none; }
-  .rg-cap { text-align: center; font: 700 9px/1.8 Figtree, sans-serif; color: #8b97b8;
-    letter-spacing: .06em; text-transform: uppercase; }
-
-  .rg-stat { flex: 0 0 auto; padding: 6px 12px; font: 600 10px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
-    color: #93a2c4; border-top: 1px solid rgba(255,255,255,.07); }
-
-  .rg-foot { flex: 0 0 auto; display: flex; gap: 10px; align-items: center;
+  /* ---- footer: pad, dials, numbers, actions ---- */
+  .rg-foot { flex: 0 0 auto; display: grid; grid-template-columns: auto auto 1fr; grid-template-areas: "pad dials acts" "nums nums nums";
+    gap: 8px 12px; align-items: center;
     padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
     border-top: 1px solid rgba(255,255,255,.07); background: #0d1220; }
-  .rg-pad { display: grid; grid-template-columns: repeat(3, 30px); grid-auto-rows: 30px; gap: 3px; }
+  .rg-pad { grid-area: pad; }
+  .rg-dials { grid-area: dials; }
+  .rg-nums { grid-area: nums; }
+  .rg-acts { grid-area: acts; }
+  .rg-pad { display: grid; grid-template-columns: repeat(3, 32px); grid-auto-rows: 32px; gap: 3px; }
   .rg-pc { border-radius: 50%; background: rgba(255,255,255,.06); }
   .rg-pb { background: #1a2136; border: 1px solid rgba(255,255,255,.12); color: #dfe6f5;
-    border-radius: 8px; font: 700 14px/1 Figtree, sans-serif; min-width: 30px; min-height: 30px; }
+    border-radius: 8px; font: 700 15px/1 Figtree, sans-serif; min-width: 32px; min-height: 32px; }
   .rg-pb:active { background: #2a6df0; }
-  .rg-dials { display: flex; flex-direction: column; gap: 3px; }
-  /* the scope switch rides directly above the two dials it governs */
-  .rg-scope { display: flex; gap: 3px; margin-bottom: 2px; }
-  .rg-sc { flex: 1; background: #1a2136; border: 1px solid rgba(255,255,255,.14);
-    color: #8b97b8; border-radius: 6px; padding: 5px 6px;
-    font: 800 8px/1 Figtree, sans-serif; letter-spacing: .08em; }
-  .rg-sc.on { background: #2a6df0; border-color: #7fb8ff; color: #fff; }
+  .rg-dials { display: flex; flex-direction: column; gap: 4px; }
   .rg-dial { display: flex; align-items: center; gap: 4px; }
-  .rg-dl { font: 800 9px/1 Figtree, sans-serif; letter-spacing: .1em; color: #7f8bab; width: 30px; text-align: center; }
-  .rg-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-left: auto; justify-content: flex-end; }
+  .rg-dl { font: 800 9px/1 Figtree, sans-serif; letter-spacing: .1em; color: #7f8bab; width: 32px; text-align: center; }
+  .rg-nums { display: flex; gap: 4px 10px; flex-wrap: wrap; }
+  .rg-num { display: flex; align-items: center; gap: 5px; font: 800 9px/1 Figtree, sans-serif; letter-spacing: .1em; color: #6edcff; }
+  .rg-nums.rg-cav .rg-num { color: #ff78d2; }
+  .rg-num span { text-align: right; }
+  .rg-numin { width: 68px; background: #070b15; border: 1px solid rgba(255,255,255,.12); color: #eef2fa;
+    border-radius: 7px; padding: 5px 6px; font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .rg-numin:focus { outline: none; border-color: #2a6df0; }
+  .rg-acts { display: flex; flex-direction: column; gap: 5px; margin-left: auto; align-items: stretch; }
+  .rg-acts .rg-act { padding: 7px 12px; text-align: center; }
   .rg-act { background: #1a2136; border: 1px solid rgba(255,255,255,.14); color: #dfe6f5;
     border-radius: 999px; padding: 9px 13px; font: 800 10px/1 Figtree, sans-serif; letter-spacing: .1em; }
   .rg-go { background: linear-gradient(180deg, #4d9bff, #2a6df0); border-color: #7fb8ff; color: #fff; }
-  .rg-fold { border-color: rgba(255,190,90,.6); color: #ffd76a; }
-  .rg-lock.on { border-color: rgba(120,220,170,.65); color: #7ce0ad; background: #16281f; }
   .rg-danger { border-color: rgba(255,120,120,.5); color: #ff9d9d; }
   .rg-danger.on { background: rgba(255,120,120,.28); border-color: #ff9d9d; color: #fff; }
 
-  .rg-sheet { position: fixed; inset: 0; z-index: 40; background: rgba(6,9,17,.9);
-    display: flex; align-items: flex-end; }
+  /* ---- desktop: the big canvas on the left, the strip beside it ---- */
+  @media (max-width: 560px) {
+    .rg-tbar { flex-direction: column; align-items: stretch; }
+    .rg-reach .rg-segb { flex: 1 1 0; }
+  }
+  @media (min-width: 820px) {
+    .rg-main { flex-direction: row; align-items: flex-start; }
+    .rg-strip { flex: 1 1 auto; width: auto; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+    .rg-foot { grid-template-columns: auto auto auto 1fr; grid-template-areas: "pad dials nums acts"; }
+    .rg-acts { flex-direction: row; justify-content: flex-end; }
+    .rg-acts .rg-act { padding: 9px 13px; }
+  }
+
+  /* ---- the report sheet ---- */
+  .rg-sheet { position: fixed; inset: 0; z-index: 40; background: rgba(6,9,17,.9); display: flex; align-items: flex-end; }
   .rg-sheetin { width: 100%; max-height: 88vh; overflow-y: auto; background: #10152a;
     border-top: 1px solid rgba(255,255,255,.12); border-radius: 16px 16px 0 0;
     padding: 18px 16px calc(18px + env(safe-area-inset-bottom)); }
-  .rg-sheetin h2 { font-family: Fraunces, Georgia, serif; font-size: 20px; margin: 0 0 10px; letter-spacing: .04em; }
+  .rg-sheetin h2 { font-family: Fraunces, Georgia, serif; font-size: 20px; margin: 0 0 6px; letter-spacing: .04em; }
+  .rg-fine { margin: 0 0 10px; font-size: 11px; line-height: 1.45; color: #7f8bab; }
   .rg-pre { white-space: pre-wrap; word-break: break-word; background: #070b15;
     border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 12px;
     font: 500 11px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; color: #cfe0ff;
     max-height: 46vh; overflow: auto; user-select: text; -webkit-user-select: text; }
+  .rg-sheetacts { margin-top: 12px; margin-left: 0; justify-content: flex-start; }
   .rg-ta { position: fixed; left: -9999px; top: 0; }
 
   .rg-toast { position: fixed; left: 50%; transform: translateX(-50%);
-    bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 50;
+    bottom: calc(110px + env(safe-area-inset-bottom)); z-index: 50;
     background: #1c2740; border: 1px solid rgba(255,255,255,.16); border-radius: 999px;
-    padding: 9px 15px; font: 700 11px/1 Figtree, sans-serif; color: #dfe6f5;
+    padding: 9px 15px; font: 700 11px/1 Figtree, sans-serif; color: #dfe6f5; max-width: 90vw; text-align: center;
     opacity: 0; pointer-events: none; transition: opacity .2s; }
   .rg-toast.on { opacity: 1; }
 
-  .rg-back { position: fixed; right: 12px; top: calc(10px + env(safe-area-inset-top)); z-index: 30;
-    font: 700 9px/1 Figtree, sans-serif; letter-spacing: .16em; color: #6b7799; }
-  .rg-back a { color: #8b9bc4; padding: 8px 4px; }
 </style>
 </head>
 <body>
 <div id="app"></div>
-<div class="rg-back">LAB · <a href="../ship/">ship</a> · <a href="../../">back</a></div>
 <script>
   // the lab sits two folders below the site root, so the art lives up there
   window.__ACORNAUT_ART__ = "../../art";

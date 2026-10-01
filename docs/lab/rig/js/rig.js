@@ -1,38 +1,41 @@
-// THE RIG EDITOR — a lab tool, not part of the game.
+// THE RIG EDITOR — a fitting bench, not part of the game.
 //
-// The game seats a helmet on a head with two numbers tables and one line of
-// arithmetic. DOME says where each suit's head is and how big, in that
-// suit's own 256px canvas. HELMET_SEATS says where each helmet's head cavity
-// is and how big, in the helmet's own canvas. Everything else follows:
+// The game seats a helmet on a head with two tables and one line of
+// arithmetic. DOME (draw.ts) says where each suit's head is and how big,
+// in that suit's own 256px canvas - one row per still and one per
+// animation frame. HELMET_SEATS (helmet-fit.ts) says where each helmet's
+// head cavity is and how big, in the helmet's own canvas. Then:
 //
-//   scale = size / max(box.w, box.h)          // suit sprite, trimmed
+//   scale = size / max(box.w, box.h)          // the suit's presentation box
 //   hx    = x - box.w*scale/2 + (a[0]-box.x)*scale
 //   r     = a[2] * scale
-//   s2    = r / g[2]
-//   helmet drawn at (hx - g[0]*s2, hy - g[1]*s2)
+//   s2    = r / seat[2]
+//   helmet drawn at (hx - seat[0]*s2, hy - seat[1]*s2), turned seat[3]+a[3]
 //
-// Two tables — one triple per suit and one per helmet, not one per
-// pairing. That is deliberate and this editor protects it: you edit the
-// SUIT's head or the HELMET's head cavity, and the fix lands everywhere at once.
-// Per-pair overrides exist, but as a DIAGNOSTIC (see foldable() below) —
-// if one helmet needs the same nudge on twelve suits, the helmet's number
-// is wrong, and the editor says so.
+// `box` is the trimmed alpha box for most suits and a FIXED 192px box for
+// the regenerated standard series (NATURAL_FLIGHT_SUITS in draw.ts); the
+// table generator reads both out of the source so the bench draws exactly
+// what the Loadout draws.
 //
-// Nothing here writes to the repo. Work is kept in localStorage and comes
-// back out as JSON or as paste-ready TypeScript.
-const STORE = "acornaut.rig.v1";
-// A draft saved on an older art build is not restored over the shipping
-// numbers (owner, 12 Sep 2026: helmets sat off the head in the bench and
-// on the head in the Loadout - the bench was wearing days-old drags).
-// Set aside on load; the bench says so once it is up.
-let staleDraft = "";
+// ONE SCREEN, ONE JOB (owner, 1 Oct 2026: "clean up the rig editor, it's
+// so massively messy it's hard to use"). Pick a suit and a helmet. The big
+// canvas is the frame you are fitting; the strip under it is every frame
+// of that suit (or, flipped, this helmet on every suit). Two things can be
+// edited and the switch says which in plain words: this suit's HEAD, or
+// this helmet's CAVITY. A head edit reaches every frame of the suit by
+// default, because a suit that is wrong is wrong by the same amount on
+// all of them (the shipping tables were built from family templates, not
+// per-suit measurements); THIS FRAME is the fine pass. Nothing here writes
+// to the repo: COPY hands back paste-ready table rows.
+const STORE = "acornaut.rig.v2";
 const ART = () => window.__ACORNAUT_ART__ || "../../art";
+const FRAME_RE = /-(asc|desc|tap|bounce)-(\d+)$/;
+const KIND_ORDER = ["asc", "desc", "tap", "bounce"];
 // ---------------------------------------------------------------- loading
 const bank = new Map();
 function measure(img) {
-    // measureSprite from art.ts, to the letter. The trimmed box is what the
-    // whole contract is expressed in — measure it differently here and the
-    // editor would be a very convincing lie.
+    // measureSprite from art.ts, to the letter: the trimmed box is what the
+    // whole contract is expressed in for every suit the game measures.
     const w = img.naturalWidth || img.width;
     const h = img.naturalHeight || img.height;
     const c = document.createElement("canvas");
@@ -85,15 +88,11 @@ function load(file, ver) {
     });
 }
 // The helmet with its glass punched translucent, exactly as the game does
-// it — otherwise a solid visor hides the very misalignment you are here to
-// see, and Clear (which is fully opaque by design) would tell you nothing.
+// it - a solid visor would hide the very misalignment you are here to see.
 const punched = new Map();
-const LIGHT_OPAQUE_VISORS = new Set([
-    "gemmie", "phoenix", "sammie", "seraph",
-    "chronarch", "princess",
-]);
-function punch(rec, id, g, opaque = false) {
-    const memo = `${id}:${g[2].toFixed(2)}:${g[0].toFixed(1)}:${g[1].toFixed(1)}`;
+const LIGHT_OPAQUE_VISORS = new Set(["gemmie", "phoenix", "sammie", "seraph", "chronarch", "princess"]);
+function punch(rec, id, g, opaque) {
+    const memo = `${id}:${opaque ? 1 : 0}`;
     const hit = punched.get(memo);
     if (hit)
         return hit;
@@ -102,46 +101,65 @@ function punch(rec, id, g, opaque = false) {
     c.height = rec.img.naturalHeight;
     const cc = c.getContext("2d");
     cc.drawImage(rec.img, 0, 0);
-    // an opaqueVisor helmet is never punched in the game — punching it here
-    // would let you fit a face the player never sees
-    if (opaque) {
-        punched.set(memo, c);
-        while (punched.size > 48)
-            punched.delete(punched.keys().next().value);
-        return c;
+    if (!opaque) {
+        const strong = LIGHT_OPAQUE_VISORS.has(id);
+        const grad = cc.createRadialGradient(g[0], g[1], g[2] * 0.1, g[0], g[1], g[2] * (strong ? 0.88 : 0.82));
+        grad.addColorStop(0, `rgba(0,0,0,${strong ? 0.88 : 0.55})`);
+        grad.addColorStop(0.7, `rgba(0,0,0,${strong ? 0.62 : 0.3})`);
+        grad.addColorStop(1, "rgba(0,0,0,0)");
+        cc.globalCompositeOperation = "destination-out";
+        cc.fillStyle = grad;
+        cc.fillRect(0, 0, c.width, c.height);
     }
-    const strong = LIGHT_OPAQUE_VISORS.has(id);
-    const grad = cc.createRadialGradient(g[0], g[1], g[2] * 0.1, g[0], g[1], g[2] * (strong ? 0.88 : 0.82));
-    grad.addColorStop(0, `rgba(0,0,0,${strong ? 0.88 : 0.55})`);
-    grad.addColorStop(0.7, `rgba(0,0,0,${strong ? 0.62 : 0.3})`);
-    grad.addColorStop(1, "rgba(0,0,0,0)");
-    cc.globalCompositeOperation = "destination-out";
-    cc.fillStyle = grad;
-    cc.fillRect(0, 0, c.width, c.height);
     punched.set(memo, c);
-    // each entry is a full-size canvas — a drag mints one per frame, so the
-    // cache has to be bounded or a phone runs out of memory mid-fit
-    while (punched.size > 48)
-        punched.delete(punched.keys().next().value);
     return c;
 }
 const S = {
     tables: null,
-    base: null, // pristine copy, for diffing
-    over: {},
-    mode: "suit",
-    suit: "flight",
+    base: null, // the shipping numbers, for diffing and reset
+    suit: "flight", // the suit whose frames the strip shows
+    row: "suit:flight", // the DOME key on the big canvas
     helm: "clear",
-    target: "helm",
+    target: "head",
+    reach: "suit",
+    view: "frames",
     rings: true,
-    ghost: false,
-    active: "", // "suitId|helmId" of the tile being edited
-    scope: "one", // what SIZE and ROT reach
-    locks: {},
+    fade: false,
+    staleDraft: "",
 };
-// One snapshot per GESTURE (drag, pad press, wheel burst, pinch), so an
-// accidental swipe-that-edited is one UNDO away instead of a hand re-fit.
-// Whole-table snapshots are a few KB; thirty of them is nothing.
+const baseOf = (rowId) => rowId.replace(FRAME_RE, "");
+const rowOf = (key) => S.tables.suits.find((s) => s.key === key);
+const stillOf = (sid) => S.tables.suits.find((s) => !s.frame && s.id === sid);
+const helmOf = (id) => S.tables.helmets.find((h) => h.id === id);
+const wears = (s, h) => !h.suitOnly || h.suitOnly === baseOf(s.id);
+/** every row of one suit: the still first, then its banks in bank order */
+function rowsOfSuit(sid) {
+    const rows = S.tables.suits.filter((s) => (s.frame ? baseOf(s.id) === sid : s.id === sid));
+    const rank = (s) => {
+        if (!s.frame)
+            return -1;
+        const m = FRAME_RE.exec(s.id);
+        return KIND_ORDER.indexOf(m[1]) * 1000 + Number(m[2]);
+    };
+    return rows.sort((a, b) => rank(a) - rank(b));
+}
+function frameLabel(s) {
+    if (!s.frame)
+        return "STILL";
+    const m = FRAME_RE.exec(s.id);
+    return `${m[1].toUpperCase()} ${m[2]}`;
+}
+/** the rows a head edit lands on */
+function reachRows() {
+    const sel = rowOf(S.row);
+    if (S.reach === "frame")
+        return [sel];
+    return rowsOfSuit(baseOf(sel.id)).filter((s) => !s.ownHead);
+}
+function boxOf(s, rec) {
+    return s.box ? { x: s.box[0], y: s.box[1], w: s.box[2], h: s.box[3] } : rec.box;
+}
+// One snapshot per gesture, thirty deep.
 const undoStack = [];
 function checkpoint() {
     if (!S.tables)
@@ -149,7 +167,6 @@ function checkpoint() {
     undoStack.push(JSON.stringify({
         suits: S.tables.suits.map((s) => [s.key, s.dome]),
         helmets: S.tables.helmets.map((h) => [h.id, h.seat]),
-        over: S.over,
     }));
     if (undoStack.length > 30)
         undoStack.shift();
@@ -160,66 +177,31 @@ function undo() {
         return false;
     const d = JSON.parse(raw);
     const domes = new Map(d.suits);
-    const glasses = new Map(d.helmets);
+    const seats = new Map(d.helmets);
     for (const s of S.tables.suits) {
         const v = domes.get(s.key);
         if (v)
             s.dome = v;
     }
     for (const h of S.tables.helmets) {
-        const v = glasses.get(h.id);
+        const v = seats.get(h.id);
         if (v)
             h.seat = v;
     }
-    S.over = d.over || {};
-    punched.clear();
     return true;
-}
-const pairKey = (s, h) => `${s}|${h}`;
-const suitOf = (id) => S.tables.suits.find((s) => s.id === id);
-const helmOf = (id) => S.tables.helmets.find((h) => h.id === id);
-// WHAT A LOCK PROTECTS IS THE NUMBER, NOT THE TILE. A suit's head is one
-// number shown under thirty helmets; locking the tile you happen to be
-// looking at would leave the same number wide open on the other
-// twenty-nine, which is exactly the accident being guarded against - a
-// stray drag on the everything page, or a bulk press aimed at the rest of
-// the view. So the key names the record the current target writes to, and
-// the lock holds wherever that record is reachable.
-function lockKey(s, h) {
-    return S.target === "suit"
-        ? "suit:" + s.key
-        : S.target === "pair"
-            ? "pair:" + pairKey(s.id, h.id)
-            : "helm:" + h.id;
-}
-const isLocked = (s, h) => !!S.locks[lockKey(s, h)];
-function effective(s, h) {
-    const ov = S.over[pairKey(s.id, h.id)];
-    const a = ov
-        ? [s.dome[0] + ov[0], s.dome[1] + ov[1], s.dome[2] * (1 + ov[2])]
-        : [s.dome[0], s.dome[1], s.dome[2]];
-    // a motion frame's dome carries its own pose rotation as a 4th value -
-    // the game adds it to the seat rotation, so the editor previews the same sum
-    const rot = h.seat[3] + (s.dome[3] || 0) + (ov ? ov[3] : 0);
-    return { a, g: h.seat, rot };
 }
 function saveLocal() {
     if (!S.tables)
         return;
     try {
         localStorage.setItem(STORE, JSON.stringify({
-            // the build these numbers were dialled against; a later build
-            // sets the draft aside instead of wearing it (restoreLocal)
             artVer: S.tables.artVer,
             suits: Object.fromEntries(S.tables.suits.map((s) => [s.key, s.dome])),
             helmets: Object.fromEntries(S.tables.helmets.map((h) => [h.id, h.seat])),
-            over: S.over,
-            locks: S.locks,
+            at: { suit: S.suit, row: S.row, helm: S.helm, target: S.target, reach: S.reach, view: S.view },
         }));
     }
-    catch {
-        /* private mode; the copy button still works */
-    }
+    catch { /* private mode; COPY still works */ }
 }
 function restoreLocal() {
     if (!S.tables)
@@ -235,21 +217,16 @@ function restoreLocal() {
         return;
     try {
         const d = JSON.parse(raw);
-        // A DRAFT FROM ANOTHER BUILD IS NOT THE GAME. The tables it was dialled
-        // against have moved on, so wearing it here puts every helmet somewhere
-        // the Loadout does not - and no amount of dragging fixes that, because
-        // the bench never writes to the game. Set it aside and open clean.
+        // A draft dialled against another art build is set aside, not worn:
+        // its numbers would put every helmet somewhere the Loadout does not.
         if (d.artVer !== S.tables.artVer) {
-            staleDraft = String(d.artVer || "an older build");
+            S.staleDraft = String(d.artVer || "an older build");
             try {
                 localStorage.removeItem(STORE);
             }
             catch { /* nothing to clear */ }
             return;
         }
-        // slice(0, 4), not 3: a frame's fourth number is its pose rotation, and
-        // truncating here quietly threw away every rotation dialled in the last
-        // session the moment the page reloaded.
         for (const s of S.tables.suits)
             if (d.suits?.[s.key])
                 s.dome = d.suits[s.key].slice(0, 4);
@@ -258,15 +235,31 @@ function restoreLocal() {
             if (g)
                 h.seat = [g[0], g[1], g[2], g[3] || 0];
         }
-        S.over = d.over || {};
-        S.locks = d.locks || {};
+        if (d.at) {
+            if (S.tables.suits.some((s) => s.key === d.at.row)) {
+                S.row = d.at.row;
+                S.suit = d.at.suit;
+            }
+            if (S.tables.helmets.some((h) => h.id === d.at.helm))
+                S.helm = d.at.helm;
+            if (d.at.target === "cavity")
+                S.target = "cavity";
+            if (d.at.reach === "frame")
+                S.reach = "frame";
+            if (d.at.view === "suits")
+                S.view = "suits";
+        }
     }
-    catch {
-        /* a corrupt draft is not worth a broken page */
-    }
+    catch { /* a corrupt draft is not worth a broken page */ }
 }
-// ------------------------------------------------------------------ paint
-function paintTile(cv, s, h, size) {
+function geometry(s, rec, size, draw) {
+    const box = boxOf(s, rec);
+    const scale = draw / Math.max(1, Math.max(box.w, box.h));
+    const ox = size / 2 - (box.w * scale) / 2 - box.x * scale;
+    const oy = size / 2 - (box.h * scale) / 2 - box.y * scale;
+    return { ox, oy, scale, hx: ox + s.dome[0] * scale, hy: oy + s.dome[1] * scale, r: s.dome[2] * scale };
+}
+function paint(cv, s, h, size, focus) {
     const ctx = cv.getContext("2d");
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     if (cv.width !== Math.round(size * dpr)) {
@@ -275,259 +268,188 @@ function paintTile(cv, s, h, size) {
     }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, size, size);
-    const body = bank.get(s.file);
-    if (!body)
+    const rec = bank.get(s.file);
+    if (!rec)
         return;
-    const draw = size * 0.82;
-    const x = size / 2;
-    const y = size / 2;
-    const box = body.box;
-    const scale = draw / Math.max(1, Math.max(box.w, box.h));
-    ctx.drawImage(body.img, box.x, box.y, box.w, box.h, x - (box.w * scale) / 2, y - (box.h * scale) / 2, box.w * scale, box.h * scale);
-    // catsuit brings its own head; the game never paints a dome on it
+    const g = geometry(s, rec, size, size * (focus ? 0.8 : 0.84));
+    ctx.drawImage(rec.img, g.ox, g.oy, rec.img.naturalWidth * g.scale, rec.img.naturalHeight * g.scale);
     if (s.ownHead) {
-        label(ctx, "own head — no helmet", size);
+        note(ctx, "own head · no helmet", size);
         return;
     }
-    // Being an animation frame does not imply a painted dome: every suit
-    // motion bank is bare-headed and wears Clear through the same seat as
-    // other helmets. Only genuinely baked artwork skips the overlay.
+    if (!wears(s, h)) {
+        note(ctx, `${h.name} is ${h.suitOnly}-only · game wears Clear`, size);
+        return;
+    }
     const skip = h.id === "clear" && s.bakedDome;
-    const { a, g, rot } = effective(s, h);
-    const hx = x - (box.w * scale) / 2 + (a[0] - box.x) * scale;
-    const hy = y - (box.h * scale) / 2 + (a[1] - box.y) * scale;
-    const r = a[2] * scale;
-    // a suit-locked helmet on the wrong suit is a pairing the game refuses —
-    // it snaps back to Clear — so there is nothing here to fit
-    if (h.suitOnly && h.suitOnly !== s.id.replace(/-(asc|desc|tap|bounce)-\d+$/, "")) {
-        label(ctx, `locked to ${h.suitOnly} — game falls back to Clear`, size);
-        return;
-    }
     const helm = bank.get(h.file);
+    const seat = h.seat;
+    const rot = seat[3] + (s.dome[3] || 0);
     if (helm && !skip) {
-        const s2 = r / g[2];
+        const s2 = g.r / seat[2];
         const p = punch(helm, h.id, h.glass, h.opaqueVisor === true);
         ctx.save();
-        ctx.globalAlpha = S.ghost ? 0.45 : 1;
+        ctx.globalAlpha = S.fade ? 0.4 : 1;
         if (rot) {
-            ctx.translate(hx, hy);
+            ctx.translate(g.hx, g.hy);
             ctx.rotate((rot * Math.PI) / 180);
-            ctx.translate(-hx, -hy);
+            ctx.translate(-g.hx, -g.hy);
         }
-        ctx.drawImage(p, hx - g[0] * s2, hy - g[1] * s2, p.width * s2, p.height * s2);
+        ctx.drawImage(p, g.hx - seat[0] * s2, g.hy - seat[1] * s2, p.width * s2, p.height * s2);
         ctx.restore();
     }
-    if (S.rings) {
-        // The head and helmet cavity share this circle.
-        ctx.save();
-        ctx.strokeStyle = "rgba(110,220,255,.85)";
-        ctx.lineWidth = 1.25;
-        ctx.beginPath();
-        ctx.arc(hx, hy, r, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.fillStyle = "rgba(110,220,255,.9)";
-        ctx.fillRect(hx - 3, hy - 0.5, 6, 1);
-        ctx.fillRect(hx - 0.5, hy - 3, 1, 6);
-        ctx.restore();
-    }
-}
-function label(ctx, text, size) {
+    if (!S.rings)
+        return;
     ctx.save();
-    ctx.fillStyle = "rgba(150,165,200,.75)";
-    ctx.font = "600 9px Figtree, system-ui, sans-serif";
+    // where the number USED to be, so a move reads as a move
+    const b = S.base.suits.find((x) => x.key === s.key);
+    if (focus && b && (b.dome[0] !== s.dome[0] || b.dome[1] !== s.dome[1] || b.dome[2] !== s.dome[2])) {
+        ctx.strokeStyle = "rgba(255,190,90,.6)";
+        ctx.setLineDash([4, 4]);
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(g.ox + b.dome[0] * g.scale, g.oy + b.dome[1] * g.scale, b.dome[2] * g.scale, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+    // the head circle: the helmet's cavity is scaled onto exactly this ring
+    ctx.strokeStyle = S.target === "head" ? "rgba(110,220,255,.9)" : "rgba(255,120,210,.9)";
+    ctx.lineWidth = focus ? 1.5 : 1;
+    ctx.beginPath();
+    ctx.arc(g.hx, g.hy, g.r, 0, Math.PI * 2);
+    ctx.stroke();
+    if (focus) {
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.fillRect(g.hx - 5, g.hy - 0.5, 10, 1);
+        ctx.fillRect(g.hx - 0.5, g.hy - 5, 1, 10);
+    }
+    ctx.restore();
+}
+function note(ctx, text, size) {
+    ctx.save();
+    ctx.fillStyle = "rgba(150,165,200,.8)";
+    ctx.font = `600 ${size > 200 ? 12 : 9}px Figtree, system-ui, sans-serif`;
     ctx.textAlign = "center";
-    ctx.fillText(text, size / 2, size - 6);
+    ctx.fillText(text, size / 2, size - 8);
     ctx.restore();
 }
 // ------------------------------------------------------------------- edit
-function nudge(dxScreen, dyScreen, s, h, scale) {
-    var _a;
-    if (S.target === "suit") {
-        s.dome[0] += dxScreen / scale;
-        s.dome[1] += dyScreen / scale;
-    }
-    else if (S.target === "pair") {
-        const k = pairKey(s.id, h.id);
-        const ov = ((_a = S.over)[k] || (_a[k] = [0, 0, 0, 0]));
-        ov[0] += dxScreen / scale;
-        ov[1] += dyScreen / scale;
-    }
-    else {
-        // moving the helmet right means its head cavity centre sits further LEFT
-        // inside its own frame — the drawn origin is (hx - g[0]*s2)
-        const { a, g } = effective(s, h);
-        const s2 = (a[2] * scale) / g[2];
-        h.seat[0] -= dxScreen / s2;
-        h.seat[1] -= dyScreen / s2;
-    }
-}
-// The D-pad and the arrow keys work in TABLE units, not screen pixels. A
-// drag has to follow your finger, which on a 110px tile means one pixel of
-// travel is five units of the helmet seat — fine for finding the fix, useless for
-// landing it. This is the other half of that: one press, one unit, whatever
-// the tile is.
-function nudgeUnits(dx, dy, s, h) {
-    var _a;
-    if (S.target === "suit") {
+// Every edit is a DELTA applied through the reach, so a typed number, a
+// drag and a pad press all do the same thing to the same rows.
+function moveHead(dx, dy) {
+    for (const s of reachRows()) {
         s.dome[0] += dx;
         s.dome[1] += dy;
     }
-    else if (S.target === "pair") {
-        const k = pairKey(s.id, h.id);
-        const ov = ((_a = S.over)[k] || (_a[k] = [0, 0, 0, 0]));
-        ov[0] += dx;
-        ov[1] += dy;
-    }
-    else {
-        h.seat[0] -= dx;
-        h.seat[1] -= dy;
-    }
 }
-function resize(k, s, h) {
-    var _a;
-    if (S.target === "suit") {
+function sizeHead(k) {
+    for (const s of reachRows())
         s.dome[2] *= k;
-    }
-    else if (S.target === "pair") {
-        const key = pairKey(s.id, h.id);
-        const ov = ((_a = S.over)[key] || (_a[key] = [0, 0, 0, 0]));
-        ov[2] = (1 + ov[2]) * k - 1;
-    }
-    else {
-        // a bigger helmet on the same head means a smaller cavity radius
-        h.seat[2] /= k;
-    }
 }
-function spin(deg, s, h) {
-    var _a;
-    if (S.target === "pair") {
-        const key = pairKey(s.id, h.id);
-        const ov = ((_a = S.over)[key] || (_a[key] = [0, 0, 0, 0]));
-        ov[3] += deg;
-    }
-    else if (s.frame) {
-        // in the frames view ROT dials THIS FRAME's pose rotation, not the
-        // helmet art's - one frame's dive angle must never re-tilt the helmet
-        // under every suit on the roster
+function tiltHead(deg) {
+    for (const s of reachRows())
         s.dome[3] = (s.dome[3] || 0) + deg;
-    }
-    else {
-        h.seat[3] += deg;
-    }
 }
-function resetTile(s, h) {
+function moveCavity(dx, dy) {
+    // moving the helmet right on screen means its cavity sits further LEFT
+    // in its own frame: the drawn origin is (hx - seat[0]*s2)
+    const h = helmOf(S.helm);
+    h.seat[0] -= dx;
+    h.seat[1] -= dy;
+}
+function sizeCavity(k) {
+    // a bigger helmet on the same head means a smaller cavity radius
+    helmOf(S.helm).seat[2] /= k;
+}
+function tiltCavity(deg) {
+    helmOf(S.helm).seat[3] += deg;
+}
+// the three verbs, routed by target. dx/dy in TABLE units of the target.
+function move(dx, dy) { if (S.target === "head")
+    moveHead(dx, dy);
+else
+    moveCavity(dx, dy); }
+function size(k) { if (S.target === "head")
+    sizeHead(k);
+else
+    sizeCavity(k); }
+function tilt(deg) { if (S.target === "head")
+    tiltHead(deg);
+else
+    tiltCavity(deg); }
+function resetTarget() {
     const b = S.base;
-    if (S.target === "suit") {
-        s.dome = b.suits.find((x) => x.key === s.key).dome.slice(0, 4);
-    }
-    else if (S.target === "pair") {
-        delete S.over[pairKey(s.id, h.id)];
-    }
-    else {
+    if (S.target === "cavity") {
+        const h = helmOf(S.helm);
         h.seat = b.helmets.find((x) => x.id === h.id).seat.slice(0, 4);
+        return `${h.name}'s cavity back to shipping`;
     }
-}
-// A helmet carrying the same override on many suits is not twenty local
-// problems; it is one wrong seat number. Folding the median of its
-// overrides into the helmet and clearing them is the fix, and the count is
-// the evidence.
-function foldable(h) {
-    const ds = Object.entries(S.over).filter(([k]) => k.endsWith("|" + h.id));
-    return ds.length >= 3 ? ds : null;
-}
-function fold(h) {
-    const ds = foldable(h);
-    if (!ds)
-        return 0;
-    const med = (xs) => {
-        const a = xs.slice().sort((p, q) => p - q);
-        return a[Math.floor(a.length / 2)];
-    };
-    const dx = med(ds.map(([, v]) => v[0]));
-    const dy = med(ds.map(([, v]) => v[1]));
-    const dk = med(ds.map(([, v]) => v[2]));
-    const dr = med(ds.map(([, v]) => v[3]));
-    // An override says "on this suit the helmet wanted to be elsewhere".
-    // Re-expressed on the helmet: the seat scale is s2 = r/g[2], so
-    // growing the head by (1+dk) and shrinking the cavity by the same factor
-    // are the same drawing. The offset converts through that scale —
-    // Δorigin = -Δg*s2, so a head nudge of +dx becomes a seat nudge of
-    // -dx*g[2]/(r). r differs per suit, which is precisely why the fold
-    // is an ESTIMATE: it uses the median head radius of the suits involved
-    // and leaves the residue for you to see in the grid.
-    h.seat[2] /= 1 + dk;
-    const rMed = med(ds.map(([k]) => suitOf(k.split("|")[0]).dome[2]));
-    const conv = h.seat[2] / (rMed);
-    h.seat[0] -= dx * conv;
-    h.seat[1] -= dy * conv;
-    h.seat[3] += dr;
-    for (const [k] of ds)
-        delete S.over[k];
-    punched.clear();
-    return ds.length;
+    const rows = reachRows();
+    for (const s of rows)
+        s.dome = b.suits.find((x) => x.key === s.key).dome.slice(0, 4);
+    return rows.length === 1 ? `${frameLabel(rows[0])} back to shipping` : `${rows.length} frames back to shipping`;
 }
 // -------------------------------------------------------------- reporting
-function round(n, p = 0) {
-    const f = Math.pow(10, p);
-    return Math.round(n * f) / f;
-}
+const round = (n, p = 1) => Math.round(n * Math.pow(10, p)) / Math.pow(10, p);
+const differs = (a, b) => [0, 1, 2, 3].some((i) => Math.abs((a[i] || 0) - (b[i] || 0)) > 0.05);
+const rowChanged = (s) => {
+    const o = S.base.suits.find((x) => x.key === s.key);
+    if (!differs(s.dome, o.dome))
+        return false;
+    // A seeded tap frame has no row in draw.ts: the game seats it on the
+    // still's anchor. While it still matches the still it is not a change,
+    // just the still's number seen on another frame; printing it would mint
+    // sixteen identical rows for every suit whose head moved.
+    if (s.seeded)
+        return differs(s.dome, stillOf(baseOf(s.id)).dome);
+    return true;
+};
+const helmChanged = (h) => {
+    const o = S.base.helmets.find((x) => x.id === h.id);
+    return [0, 1, 2, 3].some((i) => Math.abs(h.seat[i] - o.seat[i]) > 0.05);
+};
 function changes() {
-    const b = S.base;
-    const suits = S.tables.suits.filter((s) => {
-        const o = b.suits.find((x) => x.key === s.key);
-        return s.dome.some((v, i) => Math.abs(v - o.dome[i]) > 0.5);
-    });
-    const helmets = S.tables.helmets.filter((h) => {
-        const o = b.helmets.find((x) => x.id === h.id);
-        return h.seat.some((v, i) => Math.abs(v - o.seat[i]) > 0.5);
-    });
-    return { suits, helmets, over: S.over };
+    return {
+        suits: S.tables.suits.filter(rowChanged),
+        helmets: S.tables.helmets.filter(helmChanged),
+    };
 }
-function reportJSON() {
-    const c = changes();
-    const b = S.base;
-    return JSON.stringify({
-        note: "acornaut rig editor — changed values only",
-        DOME: Object.fromEntries(c.suits.map((s) => [
-            s.key,
-            {
-                was: b.suits.find((x) => x.key === s.key).dome,
-                now: s.dome.map((v) => round(v)),
-            },
-        ])),
-        HELMET_SEATS: Object.fromEntries(c.helmets.map((h) => [
-            h.id,
-            {
-                was: b.helmets.find((x) => x.id === h.id).seat.slice(0, h.seat[3] ? 4 : 3),
-                now: h.seat.slice(0, h.seat[3] ? 4 : 3).map((v) => round(v, 1)),
-            },
-        ])),
-        pairOverrides: Object.fromEntries(Object.entries(c.over).map(([k, v]) => [k, v.map((n) => round(n, 2))])),
-    }, null, 1);
+function fmtDome(d) {
+    const n = d[3] ? 4 : 3;
+    return `[${d.slice(0, n).map((v) => round(v, 2)).join(", ")}]`;
 }
 function reportTS() {
     const c = changes();
     const out = [];
     if (c.suits.length) {
         out.push("// draw.ts — DOME");
-        for (const s of c.suits) {
-            out.push(`  "${s.key}": [${s.dome.map((v) => round(v)).join(", ")}],`);
-        }
+        for (const s of c.suits)
+            out.push(`  "${s.key}": ${fmtDome(s.dome)},`);
     }
     if (c.helmets.length) {
         out.push("// helmet-fit.ts — HELMET_SEATS");
         for (const h of c.helmets) {
             const n = h.seat[3] ? 4 : 3;
-            out.push(`  "${h.id}": [${h.seat.slice(0, n).map((v) => round(v, 1)).join(", ")}],`);
+            out.push(`  ${h.id}: [${h.seat.slice(0, n).map((v) => round(v, 1)).join(",")}],`);
         }
     }
-    const ov = Object.entries(c.over);
-    if (ov.length) {
-        out.push(`// ${ov.length} per-pair override(s) — diagnostics, not values to paste:`);
-        for (const [k, v] of ov)
-            out.push(`//   ${k}  dx ${round(v[0], 1)}  dy ${round(v[1], 1)}  size ${round(v[2] * 100, 1)}%  rot ${round(v[3], 1)}°`);
-    }
     return out.length ? out.join("\n") : "// nothing changed yet";
+}
+function reportJSON() {
+    const c = changes();
+    const b = S.base;
+    return JSON.stringify({
+        note: "acornaut rig editor — changed values only",
+        artVer: S.tables.artVer,
+        DOME: Object.fromEntries(c.suits.map((s) => [s.key, {
+                was: b.suits.find((x) => x.key === s.key).dome,
+                now: s.dome.map((v) => round(v, 2)),
+            }])),
+        HELMET_SEATS: Object.fromEntries(c.helmets.map((h) => [h.id, {
+                was: b.helmets.find((x) => x.id === h.id).seat,
+                now: h.seat.map((v) => round(v, 1)),
+            }])),
+    }, null, 1);
 }
 // --------------------------------------------------------------------- UI
 function el(tag, cls = "", text = "") {
@@ -538,26 +460,18 @@ function el(tag, cls = "", text = "") {
         n.textContent = text;
     return n;
 }
-// press-and-hold repeat: forty taps to move a helmet four pixels is not a
-// control, it is a punishment
+// press-and-hold repeat: one checkpoint per press, then a steady repeat
 function hold(btn, fn) {
-    let t1 = 0;
-    let t2 = 0;
-    const stop = () => {
-        clearTimeout(t1);
-        clearInterval(t2);
-    };
+    let t1 = 0, t2 = 0;
+    const stop = () => { clearTimeout(t1); clearInterval(t2); };
     btn.addEventListener("pointerdown", (e) => {
         e.preventDefault();
         checkpoint();
         fn();
-        t1 = window.setTimeout(() => {
-            t2 = window.setInterval(fn, 55);
-        }, 380);
+        t1 = window.setTimeout(() => { t2 = window.setInterval(fn, 60); }, 380);
     });
-    for (const ev of ["pointerup", "pointerleave", "pointercancel"]) {
+    for (const ev of ["pointerup", "pointerleave", "pointercancel"])
         btn.addEventListener(ev, stop);
-    }
 }
 export async function bootRig(root) {
     root.innerHTML = "";
@@ -568,8 +482,6 @@ export async function bootRig(root) {
     S.tables = tables;
     S.base = JSON.parse(JSON.stringify(tables));
     restoreLocal();
-    // one pass over every sprite up front: measuring is the expensive part
-    // and every tile needs the same trimmed boxes
     const files = new Set();
     tables.suits.forEach((s) => files.add(s.file));
     tables.helmets.forEach((h) => files.add(h.file));
@@ -579,178 +491,108 @@ export async function bootRig(root) {
         loading.textContent = `loading art… ${done}/${files.size}`;
     })));
     loading.remove();
-    // ---- chrome
-    const bar = el("div", "rg-bar");
-    const mkSel = (opts, val, on) => {
-        const s = el("select", "rg-sel");
-        for (const o of opts) {
-            const op = el("option", "", o.t);
-            op.value = o.v;
-            s.append(op);
-        }
-        s.value = val;
-        s.onchange = () => on(s.value);
-        return s;
+    // ---- header: who, wearing what, seen how
+    const head = el("div", "rg-head");
+    const mkSel = (cls) => el("select", `rg-sel ${cls}`);
+    const suitSel = mkSel("rg-suit");
+    const helmSel = mkSel("rg-helm");
+    const viewB = el("button", "rg-chip", "");
+    head.append(suitSel, helmSel, viewB);
+    suitSel.onchange = () => { selectSuit(suitSel.value); };
+    helmSel.onchange = () => { S.helm = helmSel.value; build(); };
+    viewB.onclick = () => { S.view = S.view === "frames" ? "suits" : "frames"; build(); };
+    // ---- the switch: what a drag edits, and how far it reaches
+    const tbar = el("div", "rg-tbar");
+    const tSeg = el("div", "rg-seg");
+    const tBtn = {
+        head: el("button", "rg-segb", ""),
+        cavity: el("button", "rg-segb", ""),
     };
-    const modeSel = mkSel([
-        { v: "suit", t: "one suit × all helmets" },
-        { v: "helm", t: "one helmet × all suits" },
-        { v: "frames", t: "one helmet × animation frames" },
-        { v: "one", t: "one × one" },
-        { v: "all", t: "everything" },
-    ], S.mode, (v) => {
-        S.mode = v;
-        // A FITTING PASS OVER FRAMES EDITS FRAMES. In the frames view the
-        // whole point is per-frame numbers, and the HELMET target would make
-        // one drag move every tile at once - the owner hit exactly that. So
-        // entering the view snaps the target to the frame's own head.
-        if (v === "frames")
-            S.target = "suit";
-        build();
-    });
-    const suitSel = mkSel(tables.suits.filter((s) => !s.frame).map((s) => ({ v: s.id, t: s.name })), S.suit, (v) => {
-        S.suit = v;
-        build();
-    });
-    const helmSel = mkSel(tables.helmets.map((h) => ({ v: h.id, t: h.suitOnly ? `${h.name} (${h.suitOnly} only)` : h.name })), S.helm, (v) => {
-        S.helm = v;
-        build();
-    });
-    bar.append(modeSel, suitSel, helmSel);
-    const tbar = el("div", "rg-bar rg-sub");
-    const tWrap = el("div", "rg-seg");
-    const tBtns = {};
-    [
-        ["helm", "HELMET"],
-        ["suit", "SUIT HEAD"],
-        ["pair", "THIS PAIR"],
-    ].forEach(([v, t]) => {
-        const b = el("button", "rg-segb", t);
-        b.onclick = () => {
-            S.target = v;
-            syncTarget();
-            paintAll();
-        };
-        tBtns[v] = b;
-        tWrap.append(b);
-    });
-    const ringsB = el("button", "rg-tog", "RINGS");
-    ringsB.onclick = () => {
-        S.rings = !S.rings;
-        ringsB.classList.toggle("on", S.rings);
-        paintAll();
+    tBtn.head.onclick = () => { S.target = "head"; sync(); };
+    tBtn.cavity.onclick = () => { S.target = "cavity"; sync(); };
+    tSeg.append(tBtn.head, tBtn.cavity);
+    const rSeg = el("div", "rg-seg rg-reach");
+    const rBtn = {
+        suit: el("button", "rg-segb", "ALL FRAMES"),
+        frame: el("button", "rg-segb", "THIS FRAME"),
     };
-    const ghostB = el("button", "rg-tog", "FADE");
-    ghostB.onclick = () => {
-        S.ghost = !S.ghost;
-        ghostB.classList.toggle("on", S.ghost);
-        paintAll();
-    };
-    tbar.append(tWrap, ringsB, ghostB);
+    rBtn.suit.onclick = () => { S.reach = "suit"; sync(); };
+    rBtn.frame.onclick = () => { S.reach = "frame"; sync(); };
+    rSeg.append(rBtn.suit, rBtn.frame);
+    tbar.append(tSeg, rSeg);
     const hint = el("p", "rg-hint");
-    const stage = el("div", "rg-stage");
-    // ---- footer: everything the phone needs, because a pinch on a 110px
-    // tile is not a control surface
+    const hintText = el("span", "");
+    const links = el("span", "rg-links", "LAB · ");
+    const shipA = el("a", "", "ship");
+    shipA.href = "../ship/";
+    const backA = el("a", "", "back");
+    backA.href = "../../";
+    links.append(shipA, " · ", backA);
+    hint.append(hintText, links);
+    // ---- the stage: one big canvas and the strip
+    const main = el("div", "rg-main");
+    const focusWrap = el("div", "rg-focus");
+    const focus = el("canvas", "rg-fcv");
+    const focusCap = el("div", "rg-fcap");
+    const toggles = el("div", "rg-toggles");
+    const ringsB = el("button", "rg-tog", "RINGS");
+    const fadeB = el("button", "rg-tog", "FADE");
+    ringsB.onclick = () => { S.rings = !S.rings; sync(); };
+    fadeB.onclick = () => { S.fade = !S.fade; sync(); };
+    toggles.append(ringsB, fadeB);
+    focusWrap.append(focus, focusCap, toggles);
+    const strip = el("div", "rg-strip");
+    main.append(focusWrap, strip);
+    // ---- numbers: the row under the target, typed or nudged
+    const nums = el("div", "rg-nums");
+    const numIn = {};
+    for (const [k, label] of [["x", "X"], ["y", "Y"], ["r", "R"], ["t", "TILT"]]) {
+        const w = el("label", "rg-num");
+        const i = el("input", "rg-numin");
+        i.type = "number";
+        i.step = k === "t" ? "0.5" : "0.1";
+        i.inputMode = "decimal";
+        w.append(el("span", "", label), i);
+        nums.append(w);
+        numIn[k] = i;
+        i.onchange = () => typed(k, Number(i.value));
+    }
+    // ---- footer: pad, dials, actions
     const foot = el("div", "rg-foot");
     const pad = el("div", "rg-pad");
     const mkPad = (t, dx, dy) => {
         const b = el("button", "rg-pb", t);
-        const go = () => withActive((s, h) => nudgeUnits(dx, dy, s, h));
-        hold(b, go);
+        hold(b, () => { move(dx, dy); refresh(); });
         return b;
     };
     pad.append(el("span", ""), mkPad("↑", 0, -1), el("span", ""), mkPad("←", -1, 0), el("span", "rg-pc"), mkPad("→", 1, 0), el("span", ""), mkPad("↓", 0, 1), el("span", ""));
-    // THE SCOPE SWITCH SITS ON TOP OF THE DIALS IT GOVERNS, so there is no
-    // guessing what a press is about to reach.
-    const scopeB = {};
-    const scopeWrap = el("div", "rg-scope");
-    for (const [v, t] of [["one", "SELECTED"], ["view", "ALL IN VIEW"]]) {
-        const b = el("button", "rg-sc", t);
-        b.onclick = () => {
-            S.scope = v;
-            syncScope();
-        };
-        scopeB[v] = b;
-        scopeWrap.append(b);
-    }
     const dials = el("div", "rg-dials");
     const mkDial = (name, minus, plus) => {
         const w = el("div", "rg-dial");
         const a = el("button", "rg-pb", "−");
         const b = el("button", "rg-pb", "+");
-        hold(a, minus);
-        hold(b, plus);
+        hold(a, () => { minus(); refresh(); });
+        hold(b, () => { plus(); refresh(); });
         w.append(a, el("span", "rg-dl", name), b);
         return w;
     };
-    dials.append(scopeWrap, mkDial("SIZE", () => withScope((s, h) => resize(1 / 1.02, s, h)), () => withScope((s, h) => resize(1.02, s, h))), mkDial("ROT", () => withScope((s, h) => spin(-2, s, h)), () => withScope((s, h) => spin(2, s, h))));
+    dials.append(mkDial("SIZE", () => size(1 / 1.02), () => size(1.02)), mkDial("TILT", () => tilt(-1), () => tilt(1)));
     const acts = el("div", "rg-acts");
     const undoB = el("button", "rg-act", "UNDO");
-    undoB.onclick = () => {
-        if (undo()) {
-            paintAll();
-            flash("undone");
-        }
-        else
-            flash("nothing to undo");
-    };
+    undoB.onclick = () => { if (undo()) {
+        refresh();
+        flash("undone");
+    }
+    else
+        flash("nothing to undo"); };
     const resetB = el("button", "rg-act", "RESET");
-    resetB.onclick = () => withActive((s, h) => resetTile(s, h));
-    // RESET ALL (owner, 12 Sep 2026: "i need a reset all, the reset seems to
-    // only reset the one i'm selecting"). Every number back to the shipping
-    // tables, every override and lock gone, and the saved draft cleared so a
-    // reload cannot bring it back. Two taps, because it is everything.
-    let resetArmedT = 0;
-    const resetAllB = el("button", "rg-act rg-danger", "RESET ALL");
-    const disarm = () => { resetAllB.textContent = "RESET ALL"; resetAllB.classList.remove("on"); };
-    resetAllB.onclick = () => {
-        if (!resetArmedT) {
-            resetAllB.textContent = "SURE? RESET ALL";
-            resetAllB.classList.add("on");
-            resetArmedT = window.setTimeout(() => { resetArmedT = 0; disarm(); }, 3000);
-            return;
-        }
-        clearTimeout(resetArmedT);
-        resetArmedT = 0;
-        disarm();
-        resetAll();
-        flash("every number back to the shipping values; draft cleared");
-    };
-    const foldB = el("button", "rg-act rg-fold", "FOLD");
-    foldB.onclick = () => {
-        const h = helmOf(activeHelm());
-        const n = fold(h);
-        if (n)
-            flash(`folded ${n} overrides into ${h.name}`);
-        build();
-    };
-    const lockB = el("button", "rg-act rg-lock", "LOCK");
-    lockB.onclick = () => {
-        const t = activeTile();
-        if (!t)
-            return;
-        const k = lockKey(t.s, t.h);
-        const what = S.target === "suit" ? `${t.s.name}'s head`
-            : S.target === "pair" ? `${t.s.name} × ${t.h.name}`
-                : `${t.h.name}'s head cavity`;
-        if (S.locks[k]) {
-            delete S.locks[k];
-            flash(`unlocked ${what}`);
-        }
-        else {
-            S.locks[k] = true;
-            flash(`locked ${what}`);
-        }
-        saveLocal();
-        paintAll();
-    };
+    resetB.onclick = () => { checkpoint(); flash(resetTarget()); refresh(); };
     const copyB = el("button", "rg-act rg-go", "COPY");
     copyB.onclick = () => showReport();
-    acts.append(undoB, resetB, resetAllB, lockB, foldB, copyB);
-    foot.append(pad, dials, acts);
-    const stat = el("div", "rg-stat");
+    acts.append(undoB, resetB, copyB);
+    foot.append(pad, dials, nums, acts);
     const toast = el("div", "rg-toast");
-    root.append(bar, tbar, hint, stage, stat, foot, toast);
+    root.append(head, tbar, hint, main, foot, toast);
     let toastT = 0;
     function flash(msg) {
         toast.textContent = msg;
@@ -758,244 +600,178 @@ export async function bootRig(root) {
         clearTimeout(toastT);
         toastT = window.setTimeout(() => toast.classList.remove("on"), 2200);
     }
-    /** everything back to the shipping tables, and the saved draft gone */
-    function resetAll() {
-        S.tables = JSON.parse(JSON.stringify(S.base));
-        S.over = {};
-        S.locks = {};
-        punched.clear();
-        undoStack.length = 0;
-        try {
-            localStorage.removeItem(STORE);
-        }
-        catch { /* private mode */ }
+    if (S.staleDraft) {
+        window.setTimeout(() => flash(`draft from art v${S.staleDraft} set aside — opened on the shipping numbers (v${tables.artVer})`), 400);
+    }
+    // ---- selection
+    function selectSuit(sid) {
+        S.suit = sid;
+        const rows = rowsOfSuit(sid);
+        // keep the same frame position if the new suit has it, else the still
+        const want = rowOf(S.row);
+        const same = rows.find((r) => frameLabel(r) === frameLabel(want));
+        S.row = (same ?? rows[0]).key;
+        // a helmet this suit does not wear snaps to Clear, as the game does
+        if (!wears(stillOf(sid), helmOf(S.helm)))
+            S.helm = "clear";
         build();
     }
-    if (staleDraft) {
-        window.setTimeout(() => flash(`draft from art v${staleDraft} set aside - opened on the shipping numbers (v${S.tables.artVer})`), 400);
+    function selectRow(key) {
+        S.row = key;
+        S.suit = baseOf(rowOf(key).id);
+        refresh();
     }
-    function syncTarget() {
-        for (const k of Object.keys(tBtns))
-            tBtns[k].classList.toggle("on", S.target === k);
-        // On screen BOTH targets move the helmet — the suit's painting never
-        // moves, the helmet is the only thing seated on a number. What differs
-        // is WHICH number you are editing and how far the fix travels.
-        hint.textContent =
-            S.target === "helm"
-                ? "Tap a tile to select it, then drag. HELMET edits this helmet's own head cavity — the fix lands on every suit that wears it."
-                : S.target === "suit"
-                    ? "Tap a tile to select it, then drag. SUIT HEAD edits where this suit's head is — the helmet follows here and under every other helmet. The suit's painting itself never moves; the blue ring is what you are placing."
-                    : "Tap a tile to select it, then drag. THIS PAIR writes a local override — evidence, not a fix. Three on one helmet and FOLD turns them into the helmet's own number.";
-    }
-    let tiles = [];
-    function pairs() {
-        const wearable = tables.suits.filter((s) => !s.ownHead);
-        // a suit-locked helmet exists on exactly one suit — every other pairing
-        // is one the game refuses, and a grid of refusals is noise, not evidence
-        const wears = (s, h) => !h.suitOnly || h.suitOnly === s.id;
-        if (S.mode === "one")
-            return [[suitOf(S.suit), helmOf(S.helm)]];
-        if (S.mode === "suit")
-            return tables.helmets
-                .filter((h) => wears(suitOf(S.suit), h))
-                .map((h) => [suitOf(S.suit), h]);
-        if (S.mode === "helm")
-            return wearable
-                .filter((s) => wears(s, helmOf(S.helm)))
-                .map((s) => [s, helmOf(S.helm)]);
-        // the fitting pass the frame entries exist for: every animation frame
-        // in one screen under one helmet, no statics between them. OWN-HEAD
-        // frames (Alien, Alien 2, Cyber) join this view too - not to seat a
-        // helmet, but because it is the one place every frame of a bank sits
-        // side by side for review; their tiles draw the art and the own-head
-        // label, nothing to drag.
-        // ONE SUIT AT A TIME (owner, 2 Sep 2026: "load one suit, then pick
-        // helmet, toggle apply-to-all or just that one, move it, next
-        // helmet"). Every frame of every bank in one grid was 528 tiles and
-        // unreadable; the suit selector now picks whose frames are shown, and
-        // the helmet selector walks the helmets over them. SUIT HEAD writes
-        // the frame's own anchor (every helmet follows); THIS PAIR writes an
-        // override for this helmet on this frame only.
-        if (S.mode === "frames")
-            return tables.suits
-                .filter((s) => s.frame && s.id.startsWith(S.suit + "-")
-                && (s.ownHead || wears(s, helmOf(S.helm))))
-                .map((s) => [s, helmOf(S.helm)]);
-        const out = [];
-        for (const s of wearable)
-            for (const h of tables.helmets)
-                if (wears(s, h))
-                    out.push([s, h]);
-        return out;
+    let thumbs = [];
+    let focusSize = 320;
+    function stripRows() {
+        if (S.view === "suits") {
+            return tables.suits.filter((s) => !s.frame && !s.ownHead && wears(s, helmOf(S.helm)));
+        }
+        return rowsOfSuit(S.suit);
     }
     function build() {
-        modeSel.value = S.mode;
+        // pickers
+        suitSel.innerHTML = "";
+        for (const s of tables.suits.filter((x) => !x.frame)) {
+            const o = el("option", "", s.ownHead ? `${s.name} (own head)` : s.name);
+            o.value = s.id;
+            suitSel.append(o);
+        }
         suitSel.value = S.suit;
+        helmSel.innerHTML = "";
+        const still = stillOf(S.suit);
+        for (const h of tables.helmets.filter((x) => wears(still, x))) {
+            const o = el("option", "", h.suitOnly ? `${h.name} (${h.suitOnly} only)` : h.name);
+            o.value = h.id;
+            helmSel.append(o);
+        }
         helmSel.value = S.helm;
-        suitSel.style.display = S.mode === "helm" ? "none" : "";
-        helmSel.style.display = S.mode === "suit" ? "none" : "";
-        stage.innerHTML = "";
-        tiles = [];
-        const list = pairs();
-        // fit whole columns to the phone rather than letting a fixed tile size
-        // leave half a column of dead margin down the side
-        const avail = Math.max(240, stage.clientWidth) - 20;
-        const cols = S.mode === "all" ? Math.max(3, Math.floor(avail / 110)) : 3;
-        const size = S.mode === "one" ? Math.min(340, avail) : Math.floor((avail - 8 * (cols - 1)) / cols) - 10;
-        stage.className = "rg-stage" + (S.mode === "one" ? " rg-solo" : "");
-        stage.style.setProperty("--tile", size + "px");
-        for (const [s, h] of list) {
-            const wrap = el("div", "rg-tile");
-            const cv = el("canvas", "rg-cv");
-            cv.style.width = size + "px";
-            cv.style.height = size + "px";
-            const cap = el("div", "rg-cap", S.mode === "suit" ? h.name : S.mode === "helm" ? s.name : `${s.name} · ${h.name}`);
-            wrap.append(cv, cap);
-            if (S.over[pairKey(s.id, h.id)])
-                wrap.classList.add("ov");
-            stage.append(wrap);
-            const t = { cv, s, h, size, wrap };
-            tiles.push(t);
-            wire(t);
+        viewB.textContent = S.view === "frames" ? "FRAMES" : "SUITS";
+        viewB.title = S.view === "frames" ? "showing every frame of this suit — tap for this helmet on every suit" : "showing this helmet on every suit — tap for every frame of this suit";
+        // sizes: the big canvas fills the width on a phone, a column on desktop
+        const wide = main.clientWidth >= 820;
+        focusSize = wide
+            ? Math.max(280, Math.min(560, main.clientHeight - 24))
+            : Math.max(220, Math.min(460, main.clientWidth - 24, Math.floor(main.clientHeight * 0.55)));
+        focus.style.width = focus.style.height = focusSize + "px";
+        strip.innerHTML = "";
+        thumbs = [];
+        const rows = stripRows();
+        if (!rows.some((r) => r.key === S.row))
+            S.row = rows[0]?.key ?? S.row;
+        const tsize = wide ? 104 : 86;
+        for (const s of rows) {
+            const wrap = el("button", "rg-thumb");
+            const cv = el("canvas", "rg-tcv");
+            cv.style.width = cv.style.height = tsize + "px";
+            wrap.append(cv, el("span", "rg-tcap", S.view === "suits" ? s.name : frameLabel(s)));
+            wrap.onclick = () => selectRow(s.key);
+            strip.append(wrap);
+            thumbs.push({ cv, s, wrap, size: tsize });
         }
-        if (!list.some(([s, h]) => pairKey(s.id, h.id) === S.active)) {
-            S.active = list.length ? pairKey(list[0][0].id, list[0][1].id) : "";
-        }
-        syncTarget();
-        syncScope();
-        paintAll();
+        sync();
     }
-    function paintAll() {
-        for (const t of tiles) {
-            paintTile(t.cv, t.s, t.h, t.size);
-            t.wrap.classList.toggle("on", pairKey(t.s.id, t.h.id) === S.active);
-            t.wrap.classList.toggle("ov", !!S.over[pairKey(t.s.id, t.h.id)]);
-            t.wrap.classList.toggle("lk", isLocked(t.s, t.h));
-            t.touchSync?.();
+    function sync() {
+        tBtn.head.textContent = `HEAD · ${stillOf(S.suit).name}`;
+        tBtn.cavity.textContent = `CAVITY · ${helmOf(S.helm).name}`;
+        tBtn.head.classList.toggle("on", S.target === "head");
+        tBtn.cavity.classList.toggle("on", S.target === "cavity");
+        rSeg.classList.toggle("off", S.target !== "head");
+        rBtn.suit.classList.toggle("on", S.reach === "suit");
+        rBtn.frame.classList.toggle("on", S.reach === "frame");
+        ringsB.classList.toggle("on", S.rings);
+        fadeB.classList.toggle("on", S.fade);
+        hintText.textContent = S.target === "head"
+            ? (S.reach === "suit"
+                ? "Drag the big canvas: this suit's head moves on every frame in the strip."
+                : "Drag the big canvas: this frame's head only. The other frames stay put.")
+            : "Drag the big canvas: this helmet's cavity moves on every suit that wears it.";
+        refresh();
+    }
+    function refresh() {
+        const sel = rowOf(S.row);
+        const h = helmOf(S.helm);
+        paint(focus, sel, h, focusSize, true);
+        focusCap.textContent = `${stillOf(baseOf(sel.id)).name} · ${frameLabel(sel)} · ${h.name}`;
+        for (const t of thumbs) {
+            paint(t.cv, t.s, h, t.size, false);
+            t.wrap.classList.toggle("on", t.s.key === S.row);
+            t.wrap.classList.toggle("ch", !t.s.ownHead && (S.target === "cavity" ? helmChanged(h) : rowChanged(t.s)));
         }
-        const s = suitOf(activeSuit());
-        const h = helmOf(activeHelm());
-        const nOver = Object.keys(S.over).length;
-        stat.textContent =
-            `${s.name} head [${round(s.dome[0])}, ${round(s.dome[1])}, ${round(s.dome[2])}]   ·   ` +
-                `${h.name} seat [${round(h.seat[0], 1)}, ${round(h.seat[1], 1)}, ${round(h.seat[2], 1)}` +
-                (h.seat[3] ? `, ${round(h.seat[3], 1)}°` : "") + "]" +
-                (nOver ? `   ·   ${nOver} override${nOver > 1 ? "s" : ""}` : "");
-        const at = activeTile();
-        const held = at ? isLocked(at.s, at.h) : false;
-        lockB.textContent = held ? "UNLOCK" : "LOCK";
-        lockB.classList.toggle("on", held);
-        const fh = foldable(h);
-        foldB.style.display = fh ? "" : "none";
-        if (fh)
-            foldB.textContent = `FOLD ${fh.length}`;
+        // numbers under the target
+        const v = S.target === "head" ? sel.dome : h.seat;
+        const act = document.activeElement;
+        const set = (k, n, p) => { if (act !== numIn[k])
+            numIn[k].value = String(round(n, p)); };
+        set("x", v[0], 2);
+        set("y", v[1], 2);
+        set("r", v[2], 2);
+        set("t", v[3] || 0, 1);
+        nums.classList.toggle("rg-cav", S.target === "cavity");
+        const c = changes();
+        const n = c.suits.length + c.helmets.length;
+        copyB.textContent = n ? `COPY ${n}` : "COPY";
         saveLocal();
     }
-    const activeSuit = () => (S.active ? S.active.split("|")[0] : S.suit);
-    const activeHelm = () => (S.active ? S.active.split("|")[1] : S.helm);
-    function syncScope() {
-        for (const k of ["one", "view"])
-            scopeB[k].classList.toggle("on", S.scope === k);
-    }
-    const activeTile = () => tiles.find((x) => pairKey(x.s.id, x.h.id) === S.active) || tiles[0];
-    function withActive(fn) {
-        const t = activeTile();
-        if (!t)
-            return;
-        if (isLocked(t.s, t.h)) {
-            flash("locked — unlock to edit");
+    function typed(k, n) {
+        if (!isFinite(n)) {
+            refresh();
             return;
         }
-        const body = bank.get(t.s.file);
-        if (!body)
-            return;
-        const scale = (t.size * 0.82) / Math.max(1, Math.max(body.box.w, body.box.h));
-        fn(t.s, t.h, scale);
-        paintAll();
-    }
-    /** SIZE and ROT answer to the scope switch. ONE WRITE PER NUMBER is the
-     *  whole trick: in the one-suit view all thirty tiles share a single suit
-     *  row, so a naive loop would scale that one head once per helmet on the
-     *  roster - thirty compounding multiplies from a single tap. Dedupe by
-     *  the record each write lands on, skip what is locked, and say how many
-     *  of each actually moved. */
-    function withScope(fn) {
-        if (S.scope === "one") {
-            withActive(fn);
-            return;
-        }
-        const seen = new Set();
-        let moved = 0;
-        let held = 0;
-        for (const t of tiles) {
-            // an own-head tile wears no helmet, so a glass edit would write nothing
-            if (S.target !== "suit" && t.s.ownHead)
-                continue;
-            const k = lockKey(t.s, t.h);
-            if (seen.has(k))
-                continue;
-            seen.add(k);
-            if (S.locks[k]) {
-                held++;
-                continue;
+        const sel = rowOf(S.row);
+        const h = helmOf(S.helm);
+        const cur = S.target === "head" ? sel.dome : h.seat;
+        checkpoint();
+        if (S.target === "head") {
+            if (k === "x")
+                moveHead(n - cur[0], 0);
+            else if (k === "y")
+                moveHead(0, n - cur[1]);
+            else if (k === "r") {
+                if (n > 0)
+                    sizeHead(n / cur[2]);
             }
-            fn(t.s, t.h);
-            moved++;
+            else
+                tiltHead(n - (cur[3] || 0));
         }
-        paintAll();
-        flash(`${moved} in view${held ? `, ${held} locked` : ""}`);
+        else {
+            if (k === "x")
+                h.seat[0] = n;
+            else if (k === "y")
+                h.seat[1] = n;
+            else if (k === "r") {
+                if (n > 0)
+                    h.seat[2] = n;
+            }
+            else
+                h.seat[3] = n;
+        }
+        refresh();
     }
-    // ---- pointer: drag to move, wheel/pinch to size
-    function wire(t) {
-        let id = -1;
-        let lx = 0;
-        let ly = 0;
+    // ---- the big canvas: drag to move, pinch or wheel to size
+    {
+        let id = -1, lx = 0, ly = 0, pinch = 0;
         const pts = new Map();
-        let pinch = 0;
-        const scaleOf = () => {
-            const body = bank.get(t.s.file);
-            return (t.size * 0.82) / Math.max(1, Math.max(body.box.w, body.box.h));
+        const unitsPerPx = () => {
+            const sel = rowOf(S.row);
+            const rec = bank.get(sel.file);
+            const g = geometry(sel, rec, focusSize, focusSize * 0.8);
+            // head: table units per screen pixel; cavity: helmet units per pixel
+            return S.target === "head" ? 1 / g.scale : helmOf(S.helm).seat[2] / g.r;
         };
-        // TAP TO SELECT, DRAG THE SELECTED TILE TO EDIT. The first build let
-        // every tile capture every touch (touch-action: none across the board),
-        // which on a phone meant a swipe over the grid EDITED instead of
-        // scrolling — the list only moved if your finger landed in the 8px gaps.
-        // With 24 heads in the one-helmet view, everything below the fold was
-        // effectively unreachable, and it read as "there are only 9 suits."
-        // Now only the ACTIVE tile owns the gesture; every other tile lets the
-        // page scroll straight through it (pan-y), and its first tap selects.
-        const syncTouch = () => {
-            t.cv.style.touchAction =
-                pairKey(t.s.id, t.h.id) === S.active && !isLocked(t.s, t.h) ? "none" : "pan-y";
-        };
-        t.touchSync = syncTouch;
-        syncTouch();
-        t.cv.addEventListener("pointerdown", (e) => {
-            const wasActive = pairKey(t.s.id, t.h.id) === S.active;
-            S.active = pairKey(t.s.id, t.h.id);
-            // the tile you touched becomes the selection, so switching view keeps
-            // your place instead of dropping you back on Flight × Clear
-            if (!t.s.frame)
-                S.suit = t.s.id;
-            S.helm = t.h.id;
-            suitSel.value = S.suit;
-            helmSel.value = S.helm;
-            if (!wasActive) {
-                // first tap only selects — the browser keeps the gesture, so a
-                // swipe that began on an unselected tile scrolls the grid
-                paintAll();
+        focus.addEventListener("pointerdown", (e) => {
+            const sel = rowOf(S.row);
+            if (sel.ownHead) {
+                flash("own head — nothing to seat");
                 return;
             }
-            // A LOCKED NUMBER STILL SELECTS, so you can read it, copy it and
-            // unlock it — it just refuses to move.
-            if (isLocked(t.s, t.h)) {
-                flash("locked — unlock to edit");
-                paintAll();
+            if (!wears(sel, helmOf(S.helm))) {
+                flash("this suit does not wear that helmet");
                 return;
             }
             pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
             if (pts.size === 1)
-                checkpoint(); // one undo step per gesture
+                checkpoint();
             if (pts.size === 2) {
                 const [a, b] = [...pts.values()];
                 pinch = Math.hypot(a.x - b.x, a.y - b.y);
@@ -1005,10 +781,9 @@ export async function bootRig(root) {
                 lx = e.clientX;
                 ly = e.clientY;
             }
-            t.cv.setPointerCapture(e.pointerId);
-            paintAll();
+            focus.setPointerCapture(e.pointerId);
         });
-        t.cv.addEventListener("pointermove", (e) => {
+        focus.addEventListener("pointermove", (e) => {
             if (!pts.has(e.pointerId))
                 return;
             pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -1016,122 +791,159 @@ export async function bootRig(root) {
                 const [a, b] = [...pts.values()];
                 const d = Math.hypot(a.x - b.x, a.y - b.y);
                 if (pinch > 8 && d > 8) {
-                    resize(d / pinch, t.s, t.h);
+                    size(d / pinch);
                     pinch = d;
-                    paintAll();
+                    refresh();
                 }
                 return;
             }
             if (e.pointerId !== id)
                 return;
-            const dx = e.clientX - lx;
-            const dy = e.clientY - ly;
+            const dx = e.clientX - lx, dy = e.clientY - ly;
             lx = e.clientX;
             ly = e.clientY;
             if (dx || dy) {
-                nudge(dx, dy, t.s, t.h, scaleOf());
-                paintAll();
+                const u = unitsPerPx();
+                move(dx * u, dy * u);
+                refresh();
             }
         });
-        const up = (e) => {
-            pts.delete(e.pointerId);
-            if (e.pointerId === id)
-                id = -1;
-            if (pts.size < 2)
-                pinch = 0;
-        };
-        t.cv.addEventListener("pointerup", up);
-        t.cv.addEventListener("pointercancel", up);
+        const up = (e) => { pts.delete(e.pointerId); if (e.pointerId === id)
+            id = -1; if (pts.size < 2)
+            pinch = 0; };
+        focus.addEventListener("pointerup", up);
+        focus.addEventListener("pointercancel", up);
         let wheelAt = 0;
-        t.cv.addEventListener("wheel", (e) => {
-            // the wheel only sizes the SELECTED tile; over anything else it
-            // scrolls the grid like a normal page
-            if (pairKey(t.s.id, t.h.id) !== S.active)
-                return;
+        focus.addEventListener("wheel", (e) => {
             e.preventDefault();
             const now = performance.now();
             if (now - wheelAt > 500)
-                checkpoint(); // a burst is one gesture
+                checkpoint();
             wheelAt = now;
-            resize(e.deltaY < 0 ? 1.03 : 1 / 1.03, t.s, t.h);
-            paintAll();
+            size(e.deltaY < 0 ? 1.02 : 1 / 1.02);
+            refresh();
         }, { passive: false });
     }
     // ---- keyboard, for the desktop pass
-    let keyEditAt = 0;
+    let keyAt = 0;
     window.addEventListener("keydown", (e) => {
+        const tag = e.target?.tagName;
+        if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA")
+            return;
         const step = e.shiftKey ? 5 : 1;
-        // a held key repeats — one checkpoint per burst, not per repeat
-        const editKeys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "=", "+", "-", "_", "[", "]"];
-        if (editKeys.includes(e.key)) {
+        const edit = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "=", "+", "-", "_", "[", "]"];
+        if (edit.includes(e.key)) {
             const now = performance.now();
-            if (now - keyEditAt > 500)
+            if (now - keyAt > 500)
                 checkpoint();
-            keyEditAt = now;
+            keyAt = now;
+            e.preventDefault();
         }
-        const map = {
+        const arrows = {
             ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step],
         };
-        if (map[e.key]) {
-            e.preventDefault();
-            withActive((s, h) => nudgeUnits(map[e.key][0], map[e.key][1], s, h));
+        if (arrows[e.key]) {
+            move(arrows[e.key][0], arrows[e.key][1]);
+            refresh();
         }
         else if (e.key === "=" || e.key === "+") {
-            withActive((s, h) => resize(1.02, s, h));
+            size(1.02);
+            refresh();
         }
         else if (e.key === "-" || e.key === "_") {
-            withActive((s, h) => resize(1 / 1.02, s, h));
+            size(1 / 1.02);
+            refresh();
         }
         else if (e.key === "[") {
-            withActive((s, h) => spin(-2, s, h));
+            tilt(-1);
+            refresh();
         }
         else if (e.key === "]") {
-            withActive((s, h) => spin(2, s, h));
+            tilt(1);
+            refresh();
         }
-        else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
-            e.preventDefault();
-            if (undo())
-                withActive(() => { });
+        else if (e.key.toLowerCase() === "z") {
+            if (undo()) {
+                refresh();
+                flash("undone");
+            }
         }
-        else if (e.key === "1" || e.key === "2" || e.key === "3") {
-            S.target = ["helm", "suit", "pair"][+e.key - 1];
-            syncTarget();
+        else if (e.key === "," || e.key === ".") {
+            const rows = stripRows();
+            const i = rows.findIndex((r) => r.key === S.row);
+            const j = (i + (e.key === "," ? -1 : 1) + rows.length) % rows.length;
+            selectRow(rows[j].key);
+        }
+        else if (e.key.toLowerCase() === "h") {
+            S.target = "head";
+            sync();
+        }
+        else if (e.key.toLowerCase() === "c") {
+            S.target = "cavity";
+            sync();
+        }
+        else if (e.key.toLowerCase() === "a") {
+            S.reach = S.reach === "suit" ? "frame" : "suit";
+            sync();
+        }
+        else if (e.key.toLowerCase() === "r") {
+            S.rings = !S.rings;
+            sync();
+        }
+        else if (e.key.toLowerCase() === "f") {
+            S.fade = !S.fade;
+            sync();
         }
     });
-    // ---- the report sheet: this is the "save for review" step, and on a
-    // phone the realistic route out is the clipboard
+    let resizeT = 0;
+    window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = window.setTimeout(build, 120); });
+    // ---- the report sheet: what changed, ready to paste
     function showReport() {
         const sheet = el("div", "rg-sheet");
         const inner = el("div", "rg-sheetin");
         const ts = reportTS();
         const json = reportJSON();
-        inner.append(el("h2", "", "CHANGES"));
-        const pre = el("pre", "rg-pre", ts);
-        inner.append(pre);
-        const row = el("div", "rg-acts");
-        const cp = el("button", "rg-act rg-go", "COPY VALUES");
-        cp.onclick = async () => {
-            await copy(ts);
-            flash("copied — paste it into the chat");
-        };
+        const c = changes();
+        inner.append(el("h2", "", c.suits.length + c.helmets.length ? "CHANGES" : "NOTHING CHANGED YET"));
+        inner.append(el("p", "rg-fine", "Paste these rows over the same keys in draw.ts (DOME) and helmet-fit.ts (HELMET_SEATS), or hand them to the chat."));
+        inner.append(el("pre", "rg-pre", ts));
+        const row = el("div", "rg-acts rg-sheetacts");
+        const cp = el("button", "rg-act rg-go", "COPY ROWS");
+        cp.onclick = async () => { await copy(ts); flash("copied — paste into the chat"); };
         const cj = el("button", "rg-act", "COPY JSON");
-        cj.onclick = async () => {
-            await copy(json);
-            flash("copied JSON");
-        };
+        cj.onclick = async () => { await copy(json); flash("copied JSON"); };
         const dl = el("button", "rg-act", "DOWNLOAD");
         dl.onclick = () => {
             const b = new Blob([json], { type: "application/json" });
             const a = document.createElement("a");
             a.href = URL.createObjectURL(b);
-            a.download = "acornaut-rig.json";
+            a.download = `acornaut-rig-v${tables.artVer}.json`;
             a.click();
             setTimeout(() => URL.revokeObjectURL(a.href), 4000);
         };
+        // RESET ALL lives here and only here, behind two taps: it is everything
+        let armed = 0;
         const clr = el("button", "rg-act rg-danger", "RESET ALL");
         clr.onclick = () => {
+            if (!armed) {
+                clr.textContent = "SURE? RESET ALL";
+                clr.classList.add("on");
+                armed = window.setTimeout(() => { armed = 0; clr.textContent = "RESET ALL"; clr.classList.remove("on"); }, 3000);
+                return;
+            }
+            clearTimeout(armed);
             sheet.remove();
-            resetAll();
+            const fresh = JSON.parse(JSON.stringify(S.base));
+            for (const s of tables.suits)
+                s.dome = fresh.suits.find((x) => x.key === s.key).dome;
+            for (const h of tables.helmets)
+                h.seat = fresh.helmets.find((x) => x.id === h.id).seat;
+            undoStack.length = 0;
+            try {
+                localStorage.removeItem(STORE);
+            }
+            catch { /* private mode */ }
+            refresh();
             flash("every number back to the shipping values; draft cleared");
         };
         const close = el("button", "rg-act", "CLOSE");
@@ -1139,6 +951,8 @@ export async function bootRig(root) {
         row.append(cp, cj, dl, clr, close);
         inner.append(row);
         sheet.append(inner);
+        sheet.onclick = (e) => { if (e.target === sheet)
+            sheet.remove(); };
         root.append(sheet);
     }
     async function copy(text) {
@@ -1146,8 +960,6 @@ export async function bootRig(root) {
             await navigator.clipboard.writeText(text);
         }
         catch {
-            // clipboard needs a secure context and a gesture; a selectable
-            // textarea is the fallback that works everywhere
             const ta = el("textarea", "rg-ta");
             ta.value = text;
             root.append(ta);
@@ -1155,12 +967,10 @@ export async function bootRig(root) {
             try {
                 document.execCommand("copy");
             }
-            catch {
-                /* leave it selected; the user can copy by hand */
-            }
+            catch { /* left selected */ }
             setTimeout(() => ta.remove(), 200);
         }
     }
     build();
-    window.__rig = { S, build, paintAll, reportTS, reportJSON };
+    window.__rig = { S, build, refresh, selectRow, selectSuit, move, size, tilt, reportTS, reportJSON, changes, geometry, bank };
 }
