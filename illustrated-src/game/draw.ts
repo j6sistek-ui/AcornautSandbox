@@ -3519,8 +3519,8 @@ function hexRgb(hex: string) {
 // Flight's still, climb and dive rows were refitted by the owner's eye on
 // the rig editor, 5 Oct 2026 (the old still was 14% larger than its own
 // frames and both were well over the painted skull: "it's helmet is huge").
-// Ion's seventeen rows followed the same day, off the 206/106/36 family
-// template and onto its own painted skull.
+// Ion's and Copper's seventeen rows each followed the same day, off the
+// 206/106/36 family template and onto their own painted skulls.
 // Refitted 28 Sep 2026 with independent helmet cavities; see
 // design/helmet-fit-all/REVIEW.md. The socket follows ears and muzzle, and
 // its neck ring follows the painted collar instead of the body's lean.
@@ -3622,7 +3622,7 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "abyssal-desc-8": [176.51, 173.4, 30.8, 70.44],
   "suit:flight": [184, 91, 31.17, 5],
   "suit:iontrim": [206, 109, 28.95, 6],
-  "suit:copper": [206, 106, 36, 0],
+  "suit:copper": [207, 108, 31.97, 3],
   "suit:frost": [206, 106, 36, 0],
   "suit:voidsuit": [206, 106, 36, 0],
   "suit:ember": [206, 106, 36, 0],
@@ -3757,22 +3757,22 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "iontrim-desc-7": [206, 116, 28.95, 11],
   "iontrim-desc-8": [206, 117, 28.95, 16],
   // copper — pose-specific head and collar registration.
-  "copper-asc-1": [206, 106, 36, 0],
-  "copper-asc-2": [206, 105.3, 36, 0],
-  "copper-asc-3": [206, 104.5, 36, -5],
-  "copper-asc-4": [206, 103.6, 36, 0],
-  "copper-asc-5": [206, 102.5, 36, 0],
-  "copper-asc-6": [206, 101.3, 36, 0],
-  "copper-asc-7": [206, 100, 36, -5],
-  "copper-asc-8": [206, 99, 36, 0],
-  "copper-desc-1": [206, 106, 36, 0],
-  "copper-desc-2": [206, 106.8, 36, 0],
-  "copper-desc-3": [206, 107.8, 36, 0],
-  "copper-desc-4": [206, 109, 36, 5],
-  "copper-desc-5": [206, 110.2, 36, 0],
-  "copper-desc-6": [206, 111.6, 36, 0],
-  "copper-desc-7": [206, 113, 36, 0],
-  "copper-desc-8": [206, 114, 36, 0],
+  "copper-asc-1": [207, 108, 31.97, 3],
+  "copper-asc-2": [207, 107.3, 31.97, 3],
+  "copper-asc-3": [207, 106.5, 31.97, -2],
+  "copper-asc-4": [207, 105.6, 31.97, 3],
+  "copper-asc-5": [207, 104.5, 31.97, 3],
+  "copper-asc-6": [207, 103.3, 31.97, 3],
+  "copper-asc-7": [207, 102, 31.97, -2],
+  "copper-asc-8": [207, 101, 31.97, 3],
+  "copper-desc-1": [207, 108, 31.97, 3],
+  "copper-desc-2": [207, 108.8, 31.97, 3],
+  "copper-desc-3": [207, 109.8, 31.97, 3],
+  "copper-desc-4": [207, 111, 31.97, 8],
+  "copper-desc-5": [207, 112.2, 31.97, 3],
+  "copper-desc-6": [207, 113.6, 31.97, 3],
+  "copper-desc-7": [207, 115, 31.97, 3],
+  "copper-desc-8": [207, 116, 31.97, 3],
   // voidsuit — pose-specific head and collar registration.
   "voidsuit-asc-1": [206, 106, 36, 0],
   "voidsuit-asc-2": [206, 105.3, 36, 0],

@@ -1,5 +1,5 @@
 {
- "artVer": "299",
+ "artVer": "300",
  "suits": [
   {
    "id": "flight",
@@ -119,10 +119,10 @@
    "key": "suit:copper",
    "file": "suits/copper.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    207,
+    108,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1395,10 +1395,10 @@
    "key": "copper-asc-1",
    "file": "suits/copper-asc-1.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    207,
+    108,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1417,10 +1417,10 @@
    "key": "copper-asc-2",
    "file": "suits/copper-asc-2.png",
    "dome": [
-    206,
-    105.3,
-    36,
-    0
+    207,
+    107.3,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1439,10 +1439,10 @@
    "key": "copper-asc-3",
    "file": "suits/copper-asc-3.png",
    "dome": [
-    206,
-    104.5,
-    36,
-    -5
+    207,
+    106.5,
+    31.97,
+    -2
    ],
    "box": [
     32,
@@ -1461,10 +1461,10 @@
    "key": "copper-asc-4",
    "file": "suits/copper-asc-4.png",
    "dome": [
-    206,
-    103.6,
-    36,
-    0
+    207,
+    105.6,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1483,10 +1483,10 @@
    "key": "copper-asc-5",
    "file": "suits/copper-asc-5.png",
    "dome": [
-    206,
-    102.5,
-    36,
-    0
+    207,
+    104.5,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1505,10 +1505,10 @@
    "key": "copper-asc-6",
    "file": "suits/copper-asc-6.png",
    "dome": [
-    206,
-    101.3,
-    36,
-    0
+    207,
+    103.3,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1527,10 +1527,10 @@
    "key": "copper-asc-7",
    "file": "suits/copper-asc-7.png",
    "dome": [
-    206,
-    100,
-    36,
-    -5
+    207,
+    102,
+    31.97,
+    -2
    ],
    "box": [
     32,
@@ -1549,10 +1549,10 @@
    "key": "copper-asc-8",
    "file": "suits/copper-asc-8.png",
    "dome": [
-    206,
-    99,
-    36,
-    0
+    207,
+    101,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1571,10 +1571,10 @@
    "key": "copper-desc-1",
    "file": "suits/copper-desc-1.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    207,
+    108,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1593,10 +1593,10 @@
    "key": "copper-desc-2",
    "file": "suits/copper-desc-2.png",
    "dome": [
-    206,
-    106.8,
-    36,
-    0
+    207,
+    108.8,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1615,10 +1615,10 @@
    "key": "copper-desc-3",
    "file": "suits/copper-desc-3.png",
    "dome": [
-    206,
-    107.8,
-    36,
-    0
+    207,
+    109.8,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1637,10 +1637,10 @@
    "key": "copper-desc-4",
    "file": "suits/copper-desc-4.png",
    "dome": [
-    206,
-    109,
-    36,
-    5
+    207,
+    111,
+    31.97,
+    8
    ],
    "box": [
     32,
@@ -1659,10 +1659,10 @@
    "key": "copper-desc-5",
    "file": "suits/copper-desc-5.png",
    "dome": [
-    206,
-    110.2,
-    36,
-    0
+    207,
+    112.2,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1681,10 +1681,10 @@
    "key": "copper-desc-6",
    "file": "suits/copper-desc-6.png",
    "dome": [
-    206,
-    111.6,
-    36,
-    0
+    207,
+    113.6,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1703,10 +1703,10 @@
    "key": "copper-desc-7",
    "file": "suits/copper-desc-7.png",
    "dome": [
-    206,
-    113,
-    36,
-    0
+    207,
+    115,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1725,10 +1725,10 @@
    "key": "copper-desc-8",
    "file": "suits/copper-desc-8.png",
    "dome": [
-    206,
-    114,
-    36,
-    0
+    207,
+    116,
+    31.97,
+    3
    ],
    "box": [
     32,

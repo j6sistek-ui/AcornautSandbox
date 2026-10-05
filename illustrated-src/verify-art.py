@@ -96,6 +96,7 @@ CALIBRATED_HELMET_SCALES.update({suit: 36 / 192 for suit in NATURAL_FLIGHT_SUITS
 # Suits the owner has refitted by eye on the rig editor leave the shared
 # 36px template; each row below is the owner's number.
 CALIBRATED_HELMET_SCALES["iontrim"] = 28.95 / 192   # 5 Oct 2026
+CALIBRATED_HELMET_SCALES["copper"] = 31.97 / 192    # 5 Oct 2026
 PAL_ALPHA = 15
 PAL_MIN_STRAY_AREA = 4
 PAL_MAX_DETACHED_GAP = 16
