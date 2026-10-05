@@ -122,6 +122,36 @@ export function buildTables(root) {
   // draw.ts uses, so a fitting session pastes straight back into the
   // table. Not hardcoded to a roster: any `<suit>-asc/desc/tap/bounce-N`
   // anchor in DOME earns its tile the moment it lands.
+  // the bank registries first: which frames a suit PLAYS decides which rows exist
+  const art = readFileSync(join(root, "illustrated-src/game/art.ts"), "utf8");
+  const bankCounts = (name) => {
+    const m = art.match(new RegExp(name + "[^{]*\\{([^}]*)\\}"));
+    const out = {};
+    if (m) for (const b of m[1].matchAll(/(\w+):\s*(\d+)/g)) out[b[1]] = Number(b[2]);
+    return out;
+  };
+  const ascN = bankCounts("ASC_BANKS");
+  const descN = bankCounts("DESC_BANKS");
+  const tapN = bankCounts("TAP_BANKS");
+  const bounceN = bankCounts("BOUNCE_BANKS");
+  // ONLY THE FRAMES THE GAME PLAYS (owner, 5 Oct 2026: "there are ascend
+  // and tap banks on flight, but he only uses one ... make sure only used
+  // frames per suit are shown"). draw.ts ranks a suit's banks: a full
+  // bounce bank, then a climb/dive ramp (both halves present), then a
+  // loop, then a sixteen-frame tap bank. A suit with a ramp never draws
+  // its tap bank - Flight and Eclipse both carry one the game ignores -
+  // and a tap frame on the skip list never draws either. Rows for those
+  // frames are not emitted, so nothing can be fitted that no one sees.
+  const skipM = draw.match(/const TAP_FRAME_SKIP[^=]*=\s*\{([\s\S]*?)\n\};/);
+  const skips = {};
+  if (skipM) for (const m of skipM[1].matchAll(/(\w+):\s*\[([^\]]*)\]/g)) skips[m[1]] = m[2].split(",").map((n) => Number(n.trim())).filter(Number.isFinite);
+  const played = (sid, kind, n) => {
+    if (kind === "bounce") return !!bounceN[sid];
+    const ramp = !!(ascN[sid] && descN[sid]);
+    if (kind === "asc" || kind === "desc") return ramp;
+    if (kind === "tap") return !ramp && tapN[sid] === 16 && !(skips[sid] || []).includes(Number(n));
+    return false;
+  };
   const KIND_ORDER = ["asc", "desc", "tap", "bounce"];
   const label = (r, sid) => (r ? r.name : sid[0].toUpperCase() + sid.slice(1));
   const frameTiles = Object.keys(dome)
@@ -132,6 +162,9 @@ export function buildTables(root) {
       || Number(a[3]) - Number(b[3]));
   for (const [key, sid, kind, n] of frameTiles) {
     suits.push({
+      // an unplayed frame keeps its row (Flight Studio and the game both
+      // read every anchor) but the bench hides it: played: false
+      played: played(sid, kind, n),
       id: key,
       name: `${label(suitRows.find((r) => r.id === sid), sid)} ${kind} ${n}`,
       key,
@@ -151,17 +184,6 @@ export function buildTables(root) {
   // Their tiles come from the bank REGISTRIES instead (ASC/DESC_BANKS in
   // art.ts), with a dummy dome the editor never uses: an ownHead tile
   // draws the art and the "own head" label and skips the helmet entirely.
-  const art = readFileSync(join(root, "illustrated-src/game/art.ts"), "utf8");
-  const bankCounts = (name) => {
-    const m = art.match(new RegExp(name + "[^{]*\\{([^}]*)\\}"));
-    const out = {};
-    if (m) for (const b of m[1].matchAll(/(\w+):\s*(\d+)/g)) out[b[1]] = Number(b[2]);
-    return out;
-  };
-  const ascN = bankCounts("ASC_BANKS");
-  const descN = bankCounts("DESC_BANKS");
-  const tapN = bankCounts("TAP_BANKS");
-  const bounceN = bankCounts("BOUNCE_BANKS");
   const ownHeadIds = new Set(suitRows.filter((r) => r.ownHead).map((r) => r.id));
   const ownHeadTile = (sid, kind, i) => ({
     id: `${sid}-${kind}-${i}`,
@@ -185,7 +207,7 @@ export function buildTables(root) {
   for (const [reg, kind] of [[tapN, "tap"], [bounceN, "bounce"]]) {
     for (const sid of Object.keys(reg).sort()) {
       if (!ownHeadIds.has(sid)) continue;
-      for (let i = 1; i <= reg[sid]; i++) suits.push(ownHeadTile(sid, kind, i));
+      for (let i = 1; i <= reg[sid]; i++) suits.push({ ...ownHeadTile(sid, kind, i), played: played(sid, kind, i) });
     }
   }
 
@@ -203,6 +225,7 @@ export function buildTables(root) {
     const seat = dome["suit:" + sid];
     if (!seat) continue; // no measured head to seed from
     for (let i = 1; i <= tapN[sid]; i++) {
+      if (!played(sid, "tap", i)) continue;
       suits.push({
         id: `${sid}-tap-${i}`,
         name: `${label(suitRows.find((r) => r.id === sid), sid)} tap ${i}`,

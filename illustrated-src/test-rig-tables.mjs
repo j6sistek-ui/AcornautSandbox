@@ -17,10 +17,17 @@ for(const s of t.suits){
   else assert.equal(s.box,null,`${s.id} is measured like the game measures it`);
 }
 const still=t.suits.find(s=>s.key==='suit:flight');assert(still&&!still.frame);
-const tap=t.suits.filter(s=>s.id.startsWith('flight-tap-'));
-assert.equal(tap.length,16,'Flight taps are seeded for review');
-assert(tap.every(s=>s.seeded&&s.dome.join()===still.dome.join()),'seeded tap rows start on the still');
+// only the frames the game plays: a ramp outranks a tap bank, so Flight's
+// and Eclipse's tap frames never draw and get no row; Robo's tap bank is
+// what Robo flies, so its sixteen are there
+const ids=t.suits.filter(s=>s.played!==false).map(s=>s.id);
+assert.deepEqual(ids.filter(i=>i.startsWith('flight-')),['flight-asc-1','flight-asc-2','flight-asc-3','flight-desc-1','flight-desc-2','flight-desc-3','flight-desc-4','flight-desc-5'],'Flight shows its 3/5 ramp and nothing else');
+assert.equal(ids.filter(i=>i.startsWith('eclipse-tap-')).length,0,'Eclipse flies its ramp, not its tap bank');
+assert.equal(t.suits.filter(s=>s.id.startsWith('eclipse-tap-')&&s.played===false).length,16,'but its tap anchors stay in the table for the Studio and the game');
+assert.equal(ids.filter(i=>i.startsWith('robo-tap-')).length,16,'Robo flies its tap bank');
 assert(t.suits.filter(s=>s.id.startsWith('flight-asc-')).every(s=>!s.seeded),'real DOME rows are not seeded');
+const seeded=t.suits.filter(s=>s.seeded);
+assert(seeded.every(s=>{const st=t.suits.find(x=>!x.frame&&x.id===s.id.replace(/-tap-\d+$/,''));return st&&s.dome.join()===st.dome.join();}),'seeded tap rows start on their still');
 assert(t.helmets.find(h=>h.id==='clear').seat[2]===95,'HELMET_SEATS parsed');
 assert(t.suits.filter(s=>!s.frame).length>=30&&t.helmets.length>=30);
-console.log(`rig tables: ${t.suits.length} rows, ${t.helmets.length} helmets, ${natural.length} fixed-box suits, seeded taps flagged passed`);
+console.log(`rig tables: ${t.suits.length} rows (${ids.length} played), ${t.helmets.length} helmets, ${natural.length} fixed-box suits, ${seeded.length} seeded taps passed`);

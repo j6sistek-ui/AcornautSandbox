@@ -49,20 +49,28 @@
   .rg-links a { color: #8b9bc4; padding: 4px 2px; }
 
   /* ---- the stage: big canvas, then the strip ---- */
-  .rg-main { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
-    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 10px 12px; }
+  /* THE CANVAS IS PINNED. Only the strip scrolls, so the preview never
+     leaves the screen while you walk the list, and a swipe over the strip
+     can only scroll it - a thumbnail is a tap target, not a drag surface. */
+  .rg-main { flex: 1 1 auto; min-height: 0; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 10px 0; }
   .rg-focus { position: relative; flex: 0 0 auto; border: 1px solid rgba(255,255,255,.09); border-radius: 14px;
     background: radial-gradient(circle at 50% 40%, #182038, #0c1120 70%); overflow: hidden; }
   .rg-fcv { display: block; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
   .rg-pb, .rg-act, .rg-segb, .rg-tog, .rg-chip, .rg-thumb { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
   .rg-fcv:active { cursor: grabbing; }
-  .rg-fcap { position: absolute; left: 10px; top: 8px; font: 800 10px/1 Figtree, sans-serif;
-    letter-spacing: .1em; color: #9aa6c4; text-transform: uppercase; pointer-events: none; }
+  .rg-fcap { position: absolute; left: 10px; top: 8px; right: 118px; font: 800 10px/1 Figtree, sans-serif;
+    letter-spacing: .1em; color: #9aa6c4; text-transform: uppercase; pointer-events: none;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rg-toggles { position: absolute; right: 8px; top: 6px; display: flex; gap: 4px; }
   .rg-tog { background: rgba(20,26,43,.85); border: 1px solid rgba(255,255,255,.12); color: #6f7b9c;
     border-radius: 8px; padding: 6px 8px; font: 800 9px/1 Figtree, sans-serif; letter-spacing: .08em; }
   .rg-tog.on { color: #9fe6ff; border-color: rgba(120,200,255,.5); }
-  .rg-strip { width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 6px; }
+  .rg-step { position: absolute; left: 8px; bottom: 8px; display: flex; gap: 4px; }
+  .rg-stepb { font-size: 11px; padding: 7px 11px; color: #9fe6ff; }
+  .rg-strip { width: 100%; flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 6px; align-content: start;
+    padding-bottom: 12px; }
   .rg-thumb { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px;
     padding: 3px 3px 4px; background: #10152280; border: 1px solid rgba(255,255,255,.07); border-radius: 10px; color: inherit; }
   .rg-thumb.on { border-color: #2a6df0; background: #16203a; }
@@ -111,7 +119,7 @@
   }
   @media (min-width: 820px) {
     .rg-main { flex-direction: row; align-items: flex-start; }
-    .rg-strip { flex: 1 1 auto; width: auto; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
+    .rg-strip { width: auto; align-self: stretch; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); }
     .rg-foot { grid-template-columns: auto auto auto 1fr; grid-template-areas: "pad dials nums acts"; }
     .rg-acts { flex-direction: row; justify-content: flex-end; }
     .rg-acts .rg-act { padding: 9px 13px; }

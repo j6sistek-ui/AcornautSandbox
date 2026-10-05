@@ -76,7 +76,10 @@ BASE_SUIT_IDS = (
 # the existing +/-5% typo guard for every suit, now including Flight.
 # Values are fitted DOME radius / runtime alpha-trimmed content span.
 CALIBRATED_HELMET_SCALES = {
-    "flight": 40.32 / 184,
+    # Flight refitted by the owner's eye on the rig editor, 5 Oct 2026: the
+    # 40.32 still sat 14% over its own frames and well over the painted
+    # skull ("it's helmet is huge"). This row follows the owner's number.
+    "flight": 31.17 / 184,
     "iontrim": 0.2304,    # 44 / 191
     "copper": 0.2538,     # 50 / 197
     "frost": 0.2308,      # 39 / 169

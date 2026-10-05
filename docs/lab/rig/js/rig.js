@@ -115,6 +115,7 @@ function punch(rec, id, g, opaque) {
     punched.set(memo, c);
     return c;
 }
+const VIEWS = ["frames", "suits", "helms"];
 const S = {
     tables: null,
     base: null, // the shipping numbers, for diffing and reset
@@ -136,7 +137,9 @@ const helmOf = (id) => S.tables.helmets.find((h) => h.id === id);
 const wears = (s, h) => !h.suitOnly || h.suitOnly === baseOf(s.id);
 /** every row of one suit: the still first, then its banks in bank order */
 function rowsOfSuit(sid) {
-    const rows = S.tables.suits.filter((s) => (s.frame ? baseOf(s.id) === sid : s.id === sid));
+    // only the frames the game plays: a tap bank under a ramp has rows the
+    // Studio reads, but nothing a player sees, so the bench does not show them
+    const rows = S.tables.suits.filter((s) => s.played !== false && (s.frame ? baseOf(s.id) === sid : s.id === sid));
     const rank = (s) => {
         if (!s.frame)
             return -1;
@@ -255,8 +258,8 @@ function restoreLocal() {
                 S.target = "cavity";
             if (d.at.reach === "frame")
                 S.reach = "frame";
-            if (d.at.view === "suits")
-                S.view = "suits";
+            if (VIEWS.includes(d.at.view))
+                S.view = d.at.view;
         }
         if (d.over && typeof d.over === "object")
             S.legacy = d.over;
@@ -526,7 +529,7 @@ export async function bootRig(root) {
     head.append(suitSel, helmSel, viewB);
     suitSel.onchange = () => { selectSuit(suitSel.value); };
     helmSel.onchange = () => { S.helm = helmSel.value; build(); };
-    viewB.onclick = () => { S.view = S.view === "frames" ? "suits" : "frames"; build(); };
+    viewB.onclick = () => { S.view = VIEWS[(VIEWS.indexOf(S.view) + 1) % VIEWS.length]; build(); };
     // ---- the switch: what a drag edits, and how far it reaches
     const tbar = el("div", "rg-tbar");
     const tSeg = el("div", "rg-seg");
@@ -566,7 +569,18 @@ export async function bootRig(root) {
     ringsB.onclick = () => { S.rings = !S.rings; sync(); };
     fadeB.onclick = () => { S.fade = !S.fade; sync(); };
     toggles.append(ringsB, fadeB);
-    focusWrap.append(focus, focusCap, toggles);
+    // PREV / NEXT walk the strip without leaving the canvas (owner, 5 Oct
+    // 2026: "i scroll down sometimes and accidentally drag a helmet off,
+    // can't see preview ... a way to cycle or even just hit next frame").
+    // The canvas itself is pinned above the strip, so the strip scrolling
+    // can never move it off screen either.
+    const stepper = el("div", "rg-step");
+    const prevB = el("button", "rg-tog rg-stepb", "◀");
+    const nextB = el("button", "rg-tog rg-stepb", "▶");
+    prevB.onclick = () => stepStrip(-1);
+    nextB.onclick = () => stepStrip(1);
+    stepper.append(prevB, nextB);
+    focusWrap.append(focus, focusCap, toggles, stepper);
     const strip = el("div", "rg-strip");
     main.append(focusWrap, strip);
     // ---- numbers: the row under the target, typed or nudged
@@ -654,11 +668,38 @@ export async function bootRig(root) {
     }
     let thumbs = [];
     let focusSize = 320;
-    function stripRows() {
+    function stripItems() {
+        const h = helmOf(S.helm);
         if (S.view === "suits") {
-            return tables.suits.filter((s) => !s.frame && !s.ownHead && wears(s, helmOf(S.helm)));
+            return tables.suits.filter((s) => !s.frame && !s.ownHead && wears(s, h)).map((s) => ({ s, h }));
         }
-        return rowsOfSuit(S.suit);
+        if (S.view === "helms") {
+            const s = rowOf(S.row);
+            return tables.helmets.filter((x) => wears(s, x)).map((x) => ({ s, h: x }));
+        }
+        return rowsOfSuit(S.suit).map((s) => ({ s, h }));
+    }
+    const isCurrent = (it) => it.s.key === S.row && it.h.id === S.helm;
+    function pick(it) {
+        S.row = it.s.key;
+        S.suit = baseOf(it.s.id);
+        if (it.h.id !== S.helm) {
+            S.helm = it.h.id;
+            helmSel.value = S.helm;
+            sync();
+            return;
+        }
+        refresh();
+    }
+    /** the ◀ ▶ buttons and the , . keys: one step along whatever the strip shows */
+    function stepStrip(dir) {
+        const items = stripItems();
+        if (!items.length)
+            return;
+        const i = items.findIndex(isCurrent);
+        const next = items[(i + dir + items.length) % items.length];
+        pick(next);
+        thumbs.find((t) => t.s.key === next.s.key && t.h.id === next.h.id)?.wrap.scrollIntoView({ block: "nearest", inline: "nearest" });
     }
     function build() {
         // pickers
@@ -677,28 +718,35 @@ export async function bootRig(root) {
             helmSel.append(o);
         }
         helmSel.value = S.helm;
-        viewB.textContent = S.view === "frames" ? "FRAMES" : "SUITS";
-        viewB.title = S.view === "frames" ? "showing every frame of this suit — tap for this helmet on every suit" : "showing this helmet on every suit — tap for every frame of this suit";
-        // sizes: the big canvas fills the width on a phone, a column on desktop
+        viewB.textContent = S.view === "frames" ? "FRAMES" : S.view === "suits" ? "SUITS" : "HELMETS";
+        viewB.title = S.view === "frames" ? "every played frame of this suit — tap for this helmet on every suit"
+            : S.view === "suits" ? "this helmet on every suit — tap for every helmet on this frame"
+                : "every helmet on this frame — tap for every frame of this suit";
+        // sizes: the canvas is PINNED above the strip, so on a phone it takes
+        // under half the height and the strip scrolls beneath it; on desktop
+        // it is a column beside the strip
         const wide = main.clientWidth >= 820;
         focusSize = wide
             ? Math.max(280, Math.min(560, main.clientHeight - 24))
-            : Math.max(220, Math.min(460, main.clientWidth - 24, Math.floor(main.clientHeight * 0.55)));
+            : Math.max(180, Math.min(420, main.clientWidth - 24, Math.floor(main.clientHeight * 0.44)));
         focus.style.width = focus.style.height = focusSize + "px";
         strip.innerHTML = "";
         thumbs = [];
-        const rows = stripRows();
-        if (!rows.some((r) => r.key === S.row))
-            S.row = rows[0]?.key ?? S.row;
-        const tsize = wide ? 104 : 86;
-        for (const s of rows) {
+        const items = stripItems();
+        if (items.length && !items.some(isCurrent)) {
+            S.row = items[0].s.key;
+            S.helm = items[0].h.id;
+            helmSel.value = S.helm;
+        }
+        const tsize = wide ? 104 : 78;
+        for (const it of items) {
             const wrap = el("button", "rg-thumb");
             const cv = el("canvas", "rg-tcv");
             cv.style.width = cv.style.height = tsize + "px";
-            wrap.append(cv, el("span", "rg-tcap", S.view === "suits" ? s.name : frameLabel(s)));
-            wrap.onclick = () => selectRow(s.key);
+            wrap.append(cv, el("span", "rg-tcap", S.view === "suits" ? it.s.name : S.view === "helms" ? it.h.name : frameLabel(it.s)));
+            wrap.onclick = () => pick(it);
             strip.append(wrap);
-            thumbs.push({ cv, s, wrap, size: tsize });
+            thumbs.push({ ...it, cv, wrap, size: tsize });
         }
         sync();
     }
@@ -725,9 +773,9 @@ export async function bootRig(root) {
         paint(focus, sel, h, focusSize, true);
         focusCap.textContent = `${stillOf(baseOf(sel.id)).name} · ${frameLabel(sel)} · ${h.name}`;
         for (const t of thumbs) {
-            paint(t.cv, t.s, h, t.size, false);
-            t.wrap.classList.toggle("on", t.s.key === S.row);
-            t.wrap.classList.toggle("ch", !t.s.ownHead && (S.target === "cavity" ? helmChanged(h) : rowChanged(t.s)));
+            paint(t.cv, t.s, t.h, t.size, false);
+            t.wrap.classList.toggle("on", isCurrent(t));
+            t.wrap.classList.toggle("ch", !t.s.ownHead && (S.view === "helms" ? helmChanged(t.h) : S.target === "cavity" ? helmChanged(t.h) : rowChanged(t.s)));
         }
         // numbers under the target
         const v = S.target === "head" ? sel.dome : h.seat;
@@ -899,12 +947,8 @@ export async function bootRig(root) {
                 flash("undone");
             }
         }
-        else if (e.key === "," || e.key === ".") {
-            const rows = stripRows();
-            const i = rows.findIndex((r) => r.key === S.row);
-            const j = (i + (e.key === "," ? -1 : 1) + rows.length) % rows.length;
-            selectRow(rows[j].key);
-        }
+        else if (e.key === "," || e.key === ".")
+            stepStrip(e.key === "," ? -1 : 1);
         else if (e.key.toLowerCase() === "h") {
             S.target = "head";
             sync();

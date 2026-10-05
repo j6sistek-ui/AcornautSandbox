@@ -25,7 +25,10 @@ assert.equal(ts.split('\n').length,1+flightRows.length,'one header, one line per
 R.S.reach='frame';R.S.row='flight-asc-2';R.moveHead(0,5);
 assert(R.reportTS().includes('"flight-asc-2"'));
 R.S.row='suit:flight';R.moveHead(1,0);
-assert.equal(R.changes().suits.filter(s=>s.seeded).length,16,'taps now differ from the still and are printed as their own rows');
+assert.equal(R.changes().suits.length,flightRows.length,'still the same rows: Flight has no tap rows because the game never plays its tap bank');
+// a suit whose tap bank IS what it flies lists those frames, and they move with the suit
+R.S.row='suit:robo';R.S.suit='robo';R.S.reach='suit';R.moveHead(0,1);
+assert.equal(R.changes().suits.filter(s=>s.key.startsWith('robo-tap-')).length,16,'Robo tap frames move with the still');
 // the cavity prints under its own header
 R.S.target='cavity';R.moveCavity(2,0);
 assert(/HELMET_SEATS\n  clear: \[132,128,95\]/.test(R.reportTS()),'cavity row printed');
