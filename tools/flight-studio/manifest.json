@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "297",
-  "sourceCommit": "2691cf5d60bde64458ac7f9c4e0273e040780f72",
+  "artVer": "298",
+  "sourceCommit": "4f1d03d3d93f1abaa10f8edec9003ac998c21c1c",
   "models": [
     {
       "id": "flight",
@@ -9,11 +9,12 @@
       "key": "suit:flight",
       "file": "suits/flight.png",
       "dome": [
-        182,
-        88,
-        40.32,
-        0
+        184,
+        91,
+        31.17,
+        5
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -90,6 +91,7 @@
         128,
         40
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -116,6 +118,7 @@
         128,
         40
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -142,6 +145,7 @@
         84,
         35.3465
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -224,6 +228,7 @@
         84,
         32.0492
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -306,6 +311,7 @@
         84,
         35
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -389,6 +395,12 @@
         36,
         0
       ],
+      "box": [
+        32,
+        32,
+        192,
+        192
+      ],
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -448,6 +460,12 @@
         106,
         36,
         0
+      ],
+      "box": [
+        32,
+        32,
+        192,
+        192
       ],
       "ownHead": false,
       "bakedDome": false,
@@ -509,6 +527,12 @@
         36,
         0
       ],
+      "box": [
+        32,
+        32,
+        192,
+        192
+      ],
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -568,6 +592,12 @@
         106,
         36,
         0
+      ],
+      "box": [
+        32,
+        32,
+        192,
+        192
       ],
       "ownHead": false,
       "bakedDome": false,
@@ -629,6 +659,12 @@
         36,
         0
       ],
+      "box": [
+        32,
+        32,
+        192,
+        192
+      ],
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -689,6 +725,7 @@
         36.12,
         0
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -747,6 +784,7 @@
         128,
         40
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -806,6 +844,12 @@
         106,
         36,
         0
+      ],
+      "box": [
+        32,
+        32,
+        192,
+        192
       ],
       "ownHead": false,
       "bakedDome": false,
@@ -867,6 +911,7 @@
         28,
         10
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -925,6 +970,7 @@
         86,
         50
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -983,6 +1029,7 @@
         128,
         40
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -1041,6 +1088,7 @@
         128,
         40
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -1099,6 +1147,7 @@
         128,
         40
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -1157,6 +1206,12 @@
         106,
         36,
         0
+      ],
+      "box": [
+        32,
+        32,
+        192,
+        192
       ],
       "ownHead": false,
       "bakedDome": false,
@@ -1218,6 +1273,12 @@
         36,
         0
       ],
+      "box": [
+        32,
+        32,
+        192,
+        192
+      ],
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -1278,6 +1339,7 @@
         32.68,
         0
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -1337,6 +1399,12 @@
         106,
         36,
         0
+      ],
+      "box": [
+        32,
+        32,
+        192,
+        192
       ],
       "ownHead": false,
       "bakedDome": false,
@@ -1398,6 +1466,7 @@
         41,
         0
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -1458,6 +1527,7 @@
         41,
         0
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -1518,6 +1588,7 @@
         46.4,
         -5
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -1610,6 +1681,7 @@
         128,
         40
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -1668,6 +1740,7 @@
         88,
         36
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -1694,6 +1767,7 @@
         88,
         36
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -1720,6 +1794,7 @@
         88,
         36
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -1746,6 +1821,7 @@
         128,
         40
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -1795,6 +1871,7 @@
         88,
         36
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -1821,6 +1898,7 @@
         88,
         36
       ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
@@ -1847,6 +1925,7 @@
         128,
         40
       ],
+      "box": null,
       "ownHead": true,
       "bakedDome": false,
       "frame": false,
@@ -2431,10 +2510,10 @@
   ],
   "anchors": {
     "suit:flight": [
-      182,
-      88,
-      40.32,
-      0
+      184,
+      91,
+      31.17,
+      5
     ],
     "suit:vanguard": [
       128,
@@ -3481,52 +3560,51 @@
       5
     ],
     "flight-asc-1": [
-      171.1,
-      94.5,
-      35.28,
-      0
+      175.1,
+      97.5,
+      26.21,
+      -7
     ],
     "flight-asc-2": [
-      171.6,
-      96.6,
-      35.28,
-      0
+      176.6,
+      99.6,
+      26.21,
+      -5
     ],
     "flight-asc-3": [
-      171.1,
-      95.1,
-      35.28,
-      0
+      175.1,
+      98.1,
+      26.21,
+      -7
     ],
     "flight-desc-1": [
-      176,
-      99,
-      35.28,
-      0
+      180,
+      102,
+      26.21
     ],
     "flight-desc-2": [
-      175.4,
-      101.6,
-      35.28,
-      0
+      179.4,
+      104.6,
+      26.21,
+      3
     ],
     "flight-desc-3": [
-      170.9,
-      116.8,
-      35.28,
-      3
+      174.9,
+      119.8,
+      26.21,
+      2
     ],
     "flight-desc-4": [
-      168.8,
-      119.7,
-      35.28,
-      3
+      172.8,
+      122.7,
+      26.21,
+      4
     ],
     "flight-desc-5": [
-      161.2,
-      144.4,
-      35.28,
-      12
+      166.2,
+      147.4,
+      26.21,
+      11
     ],
     "frost-asc-1": [
       206,
@@ -5414,102 +5492,6 @@
       128,
       128,
       40
-    ],
-    "flight-tap-1": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-2": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-3": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-4": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-5": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-6": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-7": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-8": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-9": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-10": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-11": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-12": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-13": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-14": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-15": [
-      182,
-      88,
-      40.32,
-      0
-    ],
-    "flight-tap-16": [
-      182,
-      88,
-      40.32,
-      0
     ]
   },
   "painterHashes": {

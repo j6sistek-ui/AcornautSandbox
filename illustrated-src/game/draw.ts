@@ -3516,6 +3516,9 @@ function hexRgb(hex: string) {
 }
 
 // Head sockets measured against the unchanged 256px suit paintings.
+// Flight's still, climb and dive rows were refitted by the owner's eye on
+// the rig editor, 5 Oct 2026 (the old still was 14% larger than its own
+// frames and both were well over the painted skull: "it's helmet is huge").
 // Refitted 28 Sep 2026 with independent helmet cavities; see
 // design/helmet-fit-all/REVIEW.md. The socket follows ears and muzzle, and
 // its neck ring follows the painted collar instead of the body's lean.
@@ -3615,7 +3618,7 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "abyssal-desc-6": [184.79, 154.82, 30.8, 47.05],
   "abyssal-desc-7": [181.38, 164.44, 30.8, 61.64],
   "abyssal-desc-8": [176.51, 173.4, 30.8, 70.44],
-  "suit:flight": [182, 88, 40.32, 0],
+  "suit:flight": [184, 91, 31.17, 5],
   "suit:iontrim": [206, 106, 36, 0],
   "suit:copper": [206, 106, 36, 0],
   "suit:frost": [206, 106, 36, 0],
@@ -3709,14 +3712,14 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "eclipse-desc-7": [189, 162, 44.8, 35],
   "eclipse-desc-8": [189, 162, 44.8, 35],
   // flight — pose-specific head and collar registration.
-  "flight-asc-1": [171.1, 94.5, 35.28, 0],
-  "flight-asc-2": [171.6, 96.6, 35.28, 0],
-  "flight-asc-3": [171.1, 95.1, 35.28, 0],
-  "flight-desc-1": [176, 99, 35.28, 0],
-  "flight-desc-2": [175.4, 101.6, 35.28, 0],
-  "flight-desc-3": [170.9, 116.8, 35.28, 3],
-  "flight-desc-4": [168.8, 119.7, 35.28, 3],
-  "flight-desc-5": [161.2, 144.4, 35.28, 12],
+  "flight-asc-1": [175.1, 97.5, 26.21, -7],
+  "flight-asc-2": [176.6, 99.6, 26.21, -5],
+  "flight-asc-3": [175.1, 98.1, 26.21, -7],
+  "flight-desc-1": [180, 102, 26.21],
+  "flight-desc-2": [179.4, 104.6, 26.21, 3],
+  "flight-desc-3": [174.9, 119.8, 26.21, 2],
+  "flight-desc-4": [172.8, 122.7, 26.21, 4],
+  "flight-desc-5": [166.2, 147.4, 26.21, 11],
   // seraph — pose-specific head and collar registration.
   "seraph-asc-1": [203, 127, 32.68, 0],
   "seraph-asc-2": [203, 125, 32.68, 0],

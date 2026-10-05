@@ -1,5 +1,5 @@
 {
- "artVer": "297",
+ "artVer": "298",
  "suits": [
   {
    "id": "flight",
@@ -7,10 +7,10 @@
    "key": "suit:flight",
    "file": "suits/flight.png",
    "dome": [
-    182,
-    88,
-    40.32,
-    0
+    184,
+    91,
+    31.17,
+    5
    ],
    "box": null,
    "ownHead": false,
@@ -573,6 +573,7 @@
    "frame": false
   },
   {
+   "played": false,
    "id": "abyssal-asc-1",
    "name": "Abyssal asc 1",
    "key": "abyssal-asc-1",
@@ -589,6 +590,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-asc-2",
    "name": "Abyssal asc 2",
    "key": "abyssal-asc-2",
@@ -605,6 +607,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-asc-3",
    "name": "Abyssal asc 3",
    "key": "abyssal-asc-3",
@@ -621,6 +624,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-asc-4",
    "name": "Abyssal asc 4",
    "key": "abyssal-asc-4",
@@ -637,6 +641,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-asc-5",
    "name": "Abyssal asc 5",
    "key": "abyssal-asc-5",
@@ -653,6 +658,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-asc-6",
    "name": "Abyssal asc 6",
    "key": "abyssal-asc-6",
@@ -669,6 +675,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-asc-7",
    "name": "Abyssal asc 7",
    "key": "abyssal-asc-7",
@@ -685,6 +692,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-asc-8",
    "name": "Abyssal asc 8",
    "key": "abyssal-asc-8",
@@ -701,6 +709,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-desc-1",
    "name": "Abyssal desc 1",
    "key": "abyssal-desc-1",
@@ -717,6 +726,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-desc-2",
    "name": "Abyssal desc 2",
    "key": "abyssal-desc-2",
@@ -733,6 +743,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-desc-3",
    "name": "Abyssal desc 3",
    "key": "abyssal-desc-3",
@@ -749,6 +760,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-desc-4",
    "name": "Abyssal desc 4",
    "key": "abyssal-desc-4",
@@ -765,6 +777,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-desc-5",
    "name": "Abyssal desc 5",
    "key": "abyssal-desc-5",
@@ -781,6 +794,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-desc-6",
    "name": "Abyssal desc 6",
    "key": "abyssal-desc-6",
@@ -797,6 +811,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-desc-7",
    "name": "Abyssal desc 7",
    "key": "abyssal-desc-7",
@@ -813,6 +828,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "abyssal-desc-8",
    "name": "Abyssal desc 8",
    "key": "abyssal-desc-8",
@@ -829,6 +845,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-1",
    "name": "Big Booty tap 1",
    "key": "bigbooty-tap-1",
@@ -845,6 +862,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-2",
    "name": "Big Booty tap 2",
    "key": "bigbooty-tap-2",
@@ -861,6 +879,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-3",
    "name": "Big Booty tap 3",
    "key": "bigbooty-tap-3",
@@ -877,6 +896,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-4",
    "name": "Big Booty tap 4",
    "key": "bigbooty-tap-4",
@@ -893,6 +913,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-5",
    "name": "Big Booty tap 5",
    "key": "bigbooty-tap-5",
@@ -909,6 +930,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-6",
    "name": "Big Booty tap 6",
    "key": "bigbooty-tap-6",
@@ -925,6 +947,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-7",
    "name": "Big Booty tap 7",
    "key": "bigbooty-tap-7",
@@ -941,6 +964,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-8",
    "name": "Big Booty tap 8",
    "key": "bigbooty-tap-8",
@@ -957,6 +981,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-9",
    "name": "Big Booty tap 9",
    "key": "bigbooty-tap-9",
@@ -973,6 +998,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-10",
    "name": "Big Booty tap 10",
    "key": "bigbooty-tap-10",
@@ -989,6 +1015,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-11",
    "name": "Big Booty tap 11",
    "key": "bigbooty-tap-11",
@@ -1005,6 +1032,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-12",
    "name": "Big Booty tap 12",
    "key": "bigbooty-tap-12",
@@ -1021,6 +1049,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-13",
    "name": "Big Booty tap 13",
    "key": "bigbooty-tap-13",
@@ -1037,6 +1066,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-14",
    "name": "Big Booty tap 14",
    "key": "bigbooty-tap-14",
@@ -1053,6 +1083,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-15",
    "name": "Big Booty tap 15",
    "key": "bigbooty-tap-15",
@@ -1069,6 +1100,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "bigbooty-tap-16",
    "name": "Big Booty tap 16",
    "key": "bigbooty-tap-16",
@@ -1085,6 +1117,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-asc-1",
    "name": "Cinderforge asc 1",
    "key": "cinderforge-asc-1",
@@ -1101,6 +1134,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-asc-2",
    "name": "Cinderforge asc 2",
    "key": "cinderforge-asc-2",
@@ -1117,6 +1151,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-asc-3",
    "name": "Cinderforge asc 3",
    "key": "cinderforge-asc-3",
@@ -1133,6 +1168,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-asc-4",
    "name": "Cinderforge asc 4",
    "key": "cinderforge-asc-4",
@@ -1149,6 +1185,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-asc-5",
    "name": "Cinderforge asc 5",
    "key": "cinderforge-asc-5",
@@ -1165,6 +1202,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-asc-6",
    "name": "Cinderforge asc 6",
    "key": "cinderforge-asc-6",
@@ -1181,6 +1219,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-asc-7",
    "name": "Cinderforge asc 7",
    "key": "cinderforge-asc-7",
@@ -1197,6 +1236,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-asc-8",
    "name": "Cinderforge asc 8",
    "key": "cinderforge-asc-8",
@@ -1213,6 +1253,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-desc-1",
    "name": "Cinderforge desc 1",
    "key": "cinderforge-desc-1",
@@ -1229,6 +1270,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-desc-2",
    "name": "Cinderforge desc 2",
    "key": "cinderforge-desc-2",
@@ -1245,6 +1287,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-desc-3",
    "name": "Cinderforge desc 3",
    "key": "cinderforge-desc-3",
@@ -1261,6 +1304,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-desc-4",
    "name": "Cinderforge desc 4",
    "key": "cinderforge-desc-4",
@@ -1277,6 +1321,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-desc-5",
    "name": "Cinderforge desc 5",
    "key": "cinderforge-desc-5",
@@ -1293,6 +1338,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-desc-6",
    "name": "Cinderforge desc 6",
    "key": "cinderforge-desc-6",
@@ -1309,6 +1355,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-desc-7",
    "name": "Cinderforge desc 7",
    "key": "cinderforge-desc-7",
@@ -1325,6 +1372,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cinderforge-desc-8",
    "name": "Cinderforge desc 8",
    "key": "cinderforge-desc-8",
@@ -1341,6 +1389,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-asc-1",
    "name": "Copper asc 1",
    "key": "copper-asc-1",
@@ -1362,6 +1411,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-asc-2",
    "name": "Copper asc 2",
    "key": "copper-asc-2",
@@ -1383,6 +1433,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-asc-3",
    "name": "Copper asc 3",
    "key": "copper-asc-3",
@@ -1404,6 +1455,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-asc-4",
    "name": "Copper asc 4",
    "key": "copper-asc-4",
@@ -1425,6 +1477,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-asc-5",
    "name": "Copper asc 5",
    "key": "copper-asc-5",
@@ -1446,6 +1499,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-asc-6",
    "name": "Copper asc 6",
    "key": "copper-asc-6",
@@ -1467,6 +1521,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-asc-7",
    "name": "Copper asc 7",
    "key": "copper-asc-7",
@@ -1488,6 +1543,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-asc-8",
    "name": "Copper asc 8",
    "key": "copper-asc-8",
@@ -1509,6 +1565,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-desc-1",
    "name": "Copper desc 1",
    "key": "copper-desc-1",
@@ -1530,6 +1587,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-desc-2",
    "name": "Copper desc 2",
    "key": "copper-desc-2",
@@ -1551,6 +1609,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-desc-3",
    "name": "Copper desc 3",
    "key": "copper-desc-3",
@@ -1572,6 +1631,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-desc-4",
    "name": "Copper desc 4",
    "key": "copper-desc-4",
@@ -1593,6 +1653,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-desc-5",
    "name": "Copper desc 5",
    "key": "copper-desc-5",
@@ -1614,6 +1675,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-desc-6",
    "name": "Copper desc 6",
    "key": "copper-desc-6",
@@ -1635,6 +1697,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-desc-7",
    "name": "Copper desc 7",
    "key": "copper-desc-7",
@@ -1656,6 +1719,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "copper-desc-8",
    "name": "Copper desc 8",
    "key": "copper-desc-8",
@@ -1677,6 +1741,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-asc-1",
    "name": "Cosmic asc 1",
    "key": "cosmic-asc-1",
@@ -1693,6 +1758,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-asc-2",
    "name": "Cosmic asc 2",
    "key": "cosmic-asc-2",
@@ -1709,6 +1775,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-asc-3",
    "name": "Cosmic asc 3",
    "key": "cosmic-asc-3",
@@ -1725,6 +1792,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-asc-4",
    "name": "Cosmic asc 4",
    "key": "cosmic-asc-4",
@@ -1741,6 +1809,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-asc-5",
    "name": "Cosmic asc 5",
    "key": "cosmic-asc-5",
@@ -1757,6 +1826,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-asc-6",
    "name": "Cosmic asc 6",
    "key": "cosmic-asc-6",
@@ -1773,6 +1843,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-asc-7",
    "name": "Cosmic asc 7",
    "key": "cosmic-asc-7",
@@ -1789,6 +1860,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-asc-8",
    "name": "Cosmic asc 8",
    "key": "cosmic-asc-8",
@@ -1805,6 +1877,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-desc-1",
    "name": "Cosmic desc 1",
    "key": "cosmic-desc-1",
@@ -1821,6 +1894,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-desc-2",
    "name": "Cosmic desc 2",
    "key": "cosmic-desc-2",
@@ -1837,6 +1911,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-desc-3",
    "name": "Cosmic desc 3",
    "key": "cosmic-desc-3",
@@ -1853,6 +1928,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-desc-4",
    "name": "Cosmic desc 4",
    "key": "cosmic-desc-4",
@@ -1869,6 +1945,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-desc-5",
    "name": "Cosmic desc 5",
    "key": "cosmic-desc-5",
@@ -1885,6 +1962,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-desc-6",
    "name": "Cosmic desc 6",
    "key": "cosmic-desc-6",
@@ -1901,6 +1979,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-desc-7",
    "name": "Cosmic desc 7",
    "key": "cosmic-desc-7",
@@ -1917,6 +1996,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "cosmic-desc-8",
    "name": "Cosmic desc 8",
    "key": "cosmic-desc-8",
@@ -1933,6 +2013,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-asc-1",
    "name": "Cryostar asc 1",
    "key": "cryostar-asc-1",
@@ -1949,6 +2030,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-asc-2",
    "name": "Cryostar asc 2",
    "key": "cryostar-asc-2",
@@ -1965,6 +2047,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-asc-3",
    "name": "Cryostar asc 3",
    "key": "cryostar-asc-3",
@@ -1981,6 +2064,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-asc-4",
    "name": "Cryostar asc 4",
    "key": "cryostar-asc-4",
@@ -1997,6 +2081,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-asc-5",
    "name": "Cryostar asc 5",
    "key": "cryostar-asc-5",
@@ -2013,6 +2098,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-asc-6",
    "name": "Cryostar asc 6",
    "key": "cryostar-asc-6",
@@ -2029,6 +2115,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-asc-7",
    "name": "Cryostar asc 7",
    "key": "cryostar-asc-7",
@@ -2045,6 +2132,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-asc-8",
    "name": "Cryostar asc 8",
    "key": "cryostar-asc-8",
@@ -2061,6 +2149,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-desc-1",
    "name": "Cryostar desc 1",
    "key": "cryostar-desc-1",
@@ -2077,6 +2166,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-desc-2",
    "name": "Cryostar desc 2",
    "key": "cryostar-desc-2",
@@ -2093,6 +2183,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-desc-3",
    "name": "Cryostar desc 3",
    "key": "cryostar-desc-3",
@@ -2109,6 +2200,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-desc-4",
    "name": "Cryostar desc 4",
    "key": "cryostar-desc-4",
@@ -2125,6 +2217,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-desc-5",
    "name": "Cryostar desc 5",
    "key": "cryostar-desc-5",
@@ -2141,6 +2234,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-desc-6",
    "name": "Cryostar desc 6",
    "key": "cryostar-desc-6",
@@ -2157,6 +2251,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-desc-7",
    "name": "Cryostar desc 7",
    "key": "cryostar-desc-7",
@@ -2173,6 +2268,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "cryostar-desc-8",
    "name": "Cryostar desc 8",
    "key": "cryostar-desc-8",
@@ -2189,6 +2285,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-asc-1",
    "name": "Eclipse asc 1",
    "key": "eclipse-asc-1",
@@ -2205,6 +2302,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-asc-2",
    "name": "Eclipse asc 2",
    "key": "eclipse-asc-2",
@@ -2221,6 +2319,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-asc-3",
    "name": "Eclipse asc 3",
    "key": "eclipse-asc-3",
@@ -2237,6 +2336,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-asc-4",
    "name": "Eclipse asc 4",
    "key": "eclipse-asc-4",
@@ -2253,6 +2353,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-asc-5",
    "name": "Eclipse asc 5",
    "key": "eclipse-asc-5",
@@ -2269,6 +2370,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-asc-6",
    "name": "Eclipse asc 6",
    "key": "eclipse-asc-6",
@@ -2285,6 +2387,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-asc-7",
    "name": "Eclipse asc 7",
    "key": "eclipse-asc-7",
@@ -2301,6 +2404,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-asc-8",
    "name": "Eclipse asc 8",
    "key": "eclipse-asc-8",
@@ -2317,6 +2421,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-desc-1",
    "name": "Eclipse desc 1",
    "key": "eclipse-desc-1",
@@ -2333,6 +2438,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-desc-2",
    "name": "Eclipse desc 2",
    "key": "eclipse-desc-2",
@@ -2349,6 +2455,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-desc-3",
    "name": "Eclipse desc 3",
    "key": "eclipse-desc-3",
@@ -2365,6 +2472,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-desc-4",
    "name": "Eclipse desc 4",
    "key": "eclipse-desc-4",
@@ -2381,6 +2489,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-desc-5",
    "name": "Eclipse desc 5",
    "key": "eclipse-desc-5",
@@ -2397,6 +2506,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-desc-6",
    "name": "Eclipse desc 6",
    "key": "eclipse-desc-6",
@@ -2413,6 +2523,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-desc-7",
    "name": "Eclipse desc 7",
    "key": "eclipse-desc-7",
@@ -2429,6 +2540,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "eclipse-desc-8",
    "name": "Eclipse desc 8",
    "key": "eclipse-desc-8",
@@ -2445,6 +2557,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-1",
    "name": "Eclipse tap 1",
    "key": "eclipse-tap-1",
@@ -2461,6 +2574,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-2",
    "name": "Eclipse tap 2",
    "key": "eclipse-tap-2",
@@ -2477,6 +2591,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-3",
    "name": "Eclipse tap 3",
    "key": "eclipse-tap-3",
@@ -2493,6 +2608,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-4",
    "name": "Eclipse tap 4",
    "key": "eclipse-tap-4",
@@ -2509,6 +2625,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-5",
    "name": "Eclipse tap 5",
    "key": "eclipse-tap-5",
@@ -2525,6 +2642,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-6",
    "name": "Eclipse tap 6",
    "key": "eclipse-tap-6",
@@ -2541,6 +2659,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-7",
    "name": "Eclipse tap 7",
    "key": "eclipse-tap-7",
@@ -2557,6 +2676,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-8",
    "name": "Eclipse tap 8",
    "key": "eclipse-tap-8",
@@ -2573,6 +2693,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-9",
    "name": "Eclipse tap 9",
    "key": "eclipse-tap-9",
@@ -2589,6 +2710,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-10",
    "name": "Eclipse tap 10",
    "key": "eclipse-tap-10",
@@ -2605,6 +2727,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-11",
    "name": "Eclipse tap 11",
    "key": "eclipse-tap-11",
@@ -2621,6 +2744,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-12",
    "name": "Eclipse tap 12",
    "key": "eclipse-tap-12",
@@ -2637,6 +2761,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-13",
    "name": "Eclipse tap 13",
    "key": "eclipse-tap-13",
@@ -2653,6 +2778,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-14",
    "name": "Eclipse tap 14",
    "key": "eclipse-tap-14",
@@ -2669,6 +2795,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-15",
    "name": "Eclipse tap 15",
    "key": "eclipse-tap-15",
@@ -2685,6 +2812,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "eclipse-tap-16",
    "name": "Eclipse tap 16",
    "key": "eclipse-tap-16",
@@ -2701,6 +2829,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-asc-1",
    "name": "Ember asc 1",
    "key": "ember-asc-1",
@@ -2722,6 +2851,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-asc-2",
    "name": "Ember asc 2",
    "key": "ember-asc-2",
@@ -2743,6 +2873,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-asc-3",
    "name": "Ember asc 3",
    "key": "ember-asc-3",
@@ -2764,6 +2895,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-asc-4",
    "name": "Ember asc 4",
    "key": "ember-asc-4",
@@ -2785,6 +2917,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-asc-5",
    "name": "Ember asc 5",
    "key": "ember-asc-5",
@@ -2806,6 +2939,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-asc-6",
    "name": "Ember asc 6",
    "key": "ember-asc-6",
@@ -2827,6 +2961,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-asc-7",
    "name": "Ember asc 7",
    "key": "ember-asc-7",
@@ -2848,6 +2983,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-asc-8",
    "name": "Ember asc 8",
    "key": "ember-asc-8",
@@ -2869,6 +3005,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-desc-1",
    "name": "Ember desc 1",
    "key": "ember-desc-1",
@@ -2890,6 +3027,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-desc-2",
    "name": "Ember desc 2",
    "key": "ember-desc-2",
@@ -2911,6 +3049,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-desc-3",
    "name": "Ember desc 3",
    "key": "ember-desc-3",
@@ -2932,6 +3071,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-desc-4",
    "name": "Ember desc 4",
    "key": "ember-desc-4",
@@ -2953,6 +3093,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-desc-5",
    "name": "Ember desc 5",
    "key": "ember-desc-5",
@@ -2974,6 +3115,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-desc-6",
    "name": "Ember desc 6",
    "key": "ember-desc-6",
@@ -2995,6 +3137,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-desc-7",
    "name": "Ember desc 7",
    "key": "ember-desc-7",
@@ -3016,6 +3159,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ember-desc-8",
    "name": "Ember desc 8",
    "key": "ember-desc-8",
@@ -3037,15 +3181,16 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "flight-asc-1",
    "name": "Flight asc 1",
    "key": "flight-asc-1",
    "file": "suits/flight-asc-1.png",
    "dome": [
-    171.1,
-    94.5,
-    35.28,
-    0
+    175.1,
+    97.5,
+    26.21,
+    -7
    ],
    "box": null,
    "ownHead": false,
@@ -3053,15 +3198,16 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "flight-asc-2",
    "name": "Flight asc 2",
    "key": "flight-asc-2",
    "file": "suits/flight-asc-2.png",
    "dome": [
-    171.6,
-    96.6,
-    35.28,
-    0
+    176.6,
+    99.6,
+    26.21,
+    -5
    ],
    "box": null,
    "ownHead": false,
@@ -3069,15 +3215,16 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "flight-asc-3",
    "name": "Flight asc 3",
    "key": "flight-asc-3",
    "file": "suits/flight-asc-3.png",
    "dome": [
-    171.1,
-    95.1,
-    35.28,
-    0
+    175.1,
+    98.1,
+    26.21,
+    -7
    ],
    "box": null,
    "ownHead": false,
@@ -3085,15 +3232,15 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "flight-desc-1",
    "name": "Flight desc 1",
    "key": "flight-desc-1",
    "file": "suits/flight-desc-1.png",
    "dome": [
-    176,
-    99,
-    35.28,
-    0
+    180,
+    102,
+    26.21
    ],
    "box": null,
    "ownHead": false,
@@ -3101,15 +3248,16 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "flight-desc-2",
    "name": "Flight desc 2",
    "key": "flight-desc-2",
    "file": "suits/flight-desc-2.png",
    "dome": [
-    175.4,
-    101.6,
-    35.28,
-    0
+    179.4,
+    104.6,
+    26.21,
+    3
    ],
    "box": null,
    "ownHead": false,
@@ -3117,15 +3265,16 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "flight-desc-3",
    "name": "Flight desc 3",
    "key": "flight-desc-3",
    "file": "suits/flight-desc-3.png",
    "dome": [
-    170.9,
-    116.8,
-    35.28,
-    3
+    174.9,
+    119.8,
+    26.21,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -3133,15 +3282,16 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "flight-desc-4",
    "name": "Flight desc 4",
    "key": "flight-desc-4",
    "file": "suits/flight-desc-4.png",
    "dome": [
-    168.8,
-    119.7,
-    35.28,
-    3
+    172.8,
+    122.7,
+    26.21,
+    4
    ],
    "box": null,
    "ownHead": false,
@@ -3149,15 +3299,16 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "flight-desc-5",
    "name": "Flight desc 5",
    "key": "flight-desc-5",
    "file": "suits/flight-desc-5.png",
    "dome": [
-    161.2,
-    144.4,
-    35.28,
-    12
+    166.2,
+    147.4,
+    26.21,
+    11
    ],
    "box": null,
    "ownHead": false,
@@ -3165,6 +3316,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-asc-1",
    "name": "Frost asc 1",
    "key": "frost-asc-1",
@@ -3186,6 +3338,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-asc-2",
    "name": "Frost asc 2",
    "key": "frost-asc-2",
@@ -3207,6 +3360,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-asc-3",
    "name": "Frost asc 3",
    "key": "frost-asc-3",
@@ -3228,6 +3382,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-asc-4",
    "name": "Frost asc 4",
    "key": "frost-asc-4",
@@ -3249,6 +3404,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-asc-5",
    "name": "Frost asc 5",
    "key": "frost-asc-5",
@@ -3270,6 +3426,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-asc-6",
    "name": "Frost asc 6",
    "key": "frost-asc-6",
@@ -3291,6 +3448,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-asc-7",
    "name": "Frost asc 7",
    "key": "frost-asc-7",
@@ -3312,6 +3470,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-asc-8",
    "name": "Frost asc 8",
    "key": "frost-asc-8",
@@ -3333,6 +3492,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-desc-1",
    "name": "Frost desc 1",
    "key": "frost-desc-1",
@@ -3354,6 +3514,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-desc-2",
    "name": "Frost desc 2",
    "key": "frost-desc-2",
@@ -3375,6 +3536,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-desc-3",
    "name": "Frost desc 3",
    "key": "frost-desc-3",
@@ -3396,6 +3558,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-desc-4",
    "name": "Frost desc 4",
    "key": "frost-desc-4",
@@ -3417,6 +3580,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-desc-5",
    "name": "Frost desc 5",
    "key": "frost-desc-5",
@@ -3438,6 +3602,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-desc-6",
    "name": "Frost desc 6",
    "key": "frost-desc-6",
@@ -3459,6 +3624,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-desc-7",
    "name": "Frost desc 7",
    "key": "frost-desc-7",
@@ -3480,6 +3646,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "frost-desc-8",
    "name": "Frost desc 8",
    "key": "frost-desc-8",
@@ -3501,6 +3668,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-asc-1",
    "name": "Gemmie asc 1",
    "key": "gemmie-asc-1",
@@ -3522,6 +3690,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-asc-2",
    "name": "Gemmie asc 2",
    "key": "gemmie-asc-2",
@@ -3543,6 +3712,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-asc-3",
    "name": "Gemmie asc 3",
    "key": "gemmie-asc-3",
@@ -3564,6 +3734,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-asc-4",
    "name": "Gemmie asc 4",
    "key": "gemmie-asc-4",
@@ -3585,6 +3756,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-asc-5",
    "name": "Gemmie asc 5",
    "key": "gemmie-asc-5",
@@ -3606,6 +3778,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-asc-6",
    "name": "Gemmie asc 6",
    "key": "gemmie-asc-6",
@@ -3627,6 +3800,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-asc-7",
    "name": "Gemmie asc 7",
    "key": "gemmie-asc-7",
@@ -3648,6 +3822,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-asc-8",
    "name": "Gemmie asc 8",
    "key": "gemmie-asc-8",
@@ -3669,6 +3844,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-desc-1",
    "name": "Gemmie desc 1",
    "key": "gemmie-desc-1",
@@ -3690,6 +3866,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-desc-2",
    "name": "Gemmie desc 2",
    "key": "gemmie-desc-2",
@@ -3711,6 +3888,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-desc-3",
    "name": "Gemmie desc 3",
    "key": "gemmie-desc-3",
@@ -3732,6 +3910,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-desc-4",
    "name": "Gemmie desc 4",
    "key": "gemmie-desc-4",
@@ -3753,6 +3932,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-desc-5",
    "name": "Gemmie desc 5",
    "key": "gemmie-desc-5",
@@ -3774,6 +3954,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-desc-6",
    "name": "Gemmie desc 6",
    "key": "gemmie-desc-6",
@@ -3795,6 +3976,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-desc-7",
    "name": "Gemmie desc 7",
    "key": "gemmie-desc-7",
@@ -3816,6 +3998,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "gemmie-desc-8",
    "name": "Gemmie desc 8",
    "key": "gemmie-desc-8",
@@ -3837,6 +4020,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-asc-1",
    "name": "Ghost asc 1",
    "key": "ghost-asc-1",
@@ -3858,6 +4042,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-asc-2",
    "name": "Ghost asc 2",
    "key": "ghost-asc-2",
@@ -3879,6 +4064,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-asc-3",
    "name": "Ghost asc 3",
    "key": "ghost-asc-3",
@@ -3900,6 +4086,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-asc-4",
    "name": "Ghost asc 4",
    "key": "ghost-asc-4",
@@ -3921,6 +4108,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-asc-5",
    "name": "Ghost asc 5",
    "key": "ghost-asc-5",
@@ -3942,6 +4130,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-asc-6",
    "name": "Ghost asc 6",
    "key": "ghost-asc-6",
@@ -3963,6 +4152,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-asc-7",
    "name": "Ghost asc 7",
    "key": "ghost-asc-7",
@@ -3984,6 +4174,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-asc-8",
    "name": "Ghost asc 8",
    "key": "ghost-asc-8",
@@ -4005,6 +4196,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-desc-1",
    "name": "Ghost desc 1",
    "key": "ghost-desc-1",
@@ -4026,6 +4218,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-desc-2",
    "name": "Ghost desc 2",
    "key": "ghost-desc-2",
@@ -4047,6 +4240,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-desc-3",
    "name": "Ghost desc 3",
    "key": "ghost-desc-3",
@@ -4068,6 +4262,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-desc-4",
    "name": "Ghost desc 4",
    "key": "ghost-desc-4",
@@ -4089,6 +4284,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-desc-5",
    "name": "Ghost desc 5",
    "key": "ghost-desc-5",
@@ -4110,6 +4306,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-desc-6",
    "name": "Ghost desc 6",
    "key": "ghost-desc-6",
@@ -4131,6 +4328,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-desc-7",
    "name": "Ghost desc 7",
    "key": "ghost-desc-7",
@@ -4152,6 +4350,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "ghost-desc-8",
    "name": "Ghost desc 8",
    "key": "ghost-desc-8",
@@ -4173,6 +4372,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-asc-1",
    "name": "Groveguard asc 1",
    "key": "groveguard-asc-1",
@@ -4189,6 +4389,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-asc-2",
    "name": "Groveguard asc 2",
    "key": "groveguard-asc-2",
@@ -4205,6 +4406,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-asc-3",
    "name": "Groveguard asc 3",
    "key": "groveguard-asc-3",
@@ -4221,6 +4423,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-asc-4",
    "name": "Groveguard asc 4",
    "key": "groveguard-asc-4",
@@ -4237,6 +4440,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-asc-5",
    "name": "Groveguard asc 5",
    "key": "groveguard-asc-5",
@@ -4253,6 +4457,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-asc-6",
    "name": "Groveguard asc 6",
    "key": "groveguard-asc-6",
@@ -4269,6 +4474,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-asc-7",
    "name": "Groveguard asc 7",
    "key": "groveguard-asc-7",
@@ -4285,6 +4491,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-asc-8",
    "name": "Groveguard asc 8",
    "key": "groveguard-asc-8",
@@ -4301,6 +4508,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-desc-1",
    "name": "Groveguard desc 1",
    "key": "groveguard-desc-1",
@@ -4317,6 +4525,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-desc-2",
    "name": "Groveguard desc 2",
    "key": "groveguard-desc-2",
@@ -4333,6 +4542,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-desc-3",
    "name": "Groveguard desc 3",
    "key": "groveguard-desc-3",
@@ -4349,6 +4559,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-desc-4",
    "name": "Groveguard desc 4",
    "key": "groveguard-desc-4",
@@ -4365,6 +4576,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-desc-5",
    "name": "Groveguard desc 5",
    "key": "groveguard-desc-5",
@@ -4381,6 +4593,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-desc-6",
    "name": "Groveguard desc 6",
    "key": "groveguard-desc-6",
@@ -4397,6 +4610,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-desc-7",
    "name": "Groveguard desc 7",
    "key": "groveguard-desc-7",
@@ -4413,6 +4627,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "groveguard-desc-8",
    "name": "Groveguard desc 8",
    "key": "groveguard-desc-8",
@@ -4429,6 +4644,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-asc-1",
    "name": "Ion asc 1",
    "key": "iontrim-asc-1",
@@ -4450,6 +4666,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-asc-2",
    "name": "Ion asc 2",
    "key": "iontrim-asc-2",
@@ -4471,6 +4688,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-asc-3",
    "name": "Ion asc 3",
    "key": "iontrim-asc-3",
@@ -4492,6 +4710,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-asc-4",
    "name": "Ion asc 4",
    "key": "iontrim-asc-4",
@@ -4513,6 +4732,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-asc-5",
    "name": "Ion asc 5",
    "key": "iontrim-asc-5",
@@ -4534,6 +4754,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-asc-6",
    "name": "Ion asc 6",
    "key": "iontrim-asc-6",
@@ -4555,6 +4776,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-asc-7",
    "name": "Ion asc 7",
    "key": "iontrim-asc-7",
@@ -4576,6 +4798,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-asc-8",
    "name": "Ion asc 8",
    "key": "iontrim-asc-8",
@@ -4597,6 +4820,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-desc-1",
    "name": "Ion desc 1",
    "key": "iontrim-desc-1",
@@ -4618,6 +4842,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-desc-2",
    "name": "Ion desc 2",
    "key": "iontrim-desc-2",
@@ -4639,6 +4864,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-desc-3",
    "name": "Ion desc 3",
    "key": "iontrim-desc-3",
@@ -4660,6 +4886,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-desc-4",
    "name": "Ion desc 4",
    "key": "iontrim-desc-4",
@@ -4681,6 +4908,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-desc-5",
    "name": "Ion desc 5",
    "key": "iontrim-desc-5",
@@ -4702,6 +4930,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-desc-6",
    "name": "Ion desc 6",
    "key": "iontrim-desc-6",
@@ -4723,6 +4952,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-desc-7",
    "name": "Ion desc 7",
    "key": "iontrim-desc-7",
@@ -4744,6 +4974,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "iontrim-desc-8",
    "name": "Ion desc 8",
    "key": "iontrim-desc-8",
@@ -4765,6 +4996,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-asc-1",
    "name": "Leviathan asc 1",
    "key": "leviathan-asc-1",
@@ -4786,6 +5018,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-asc-2",
    "name": "Leviathan asc 2",
    "key": "leviathan-asc-2",
@@ -4807,6 +5040,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-asc-3",
    "name": "Leviathan asc 3",
    "key": "leviathan-asc-3",
@@ -4828,6 +5062,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-asc-4",
    "name": "Leviathan asc 4",
    "key": "leviathan-asc-4",
@@ -4849,6 +5084,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-asc-5",
    "name": "Leviathan asc 5",
    "key": "leviathan-asc-5",
@@ -4870,6 +5106,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-asc-6",
    "name": "Leviathan asc 6",
    "key": "leviathan-asc-6",
@@ -4891,6 +5128,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-asc-7",
    "name": "Leviathan asc 7",
    "key": "leviathan-asc-7",
@@ -4912,6 +5150,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-asc-8",
    "name": "Leviathan asc 8",
    "key": "leviathan-asc-8",
@@ -4933,6 +5172,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-desc-1",
    "name": "Leviathan desc 1",
    "key": "leviathan-desc-1",
@@ -4954,6 +5194,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-desc-2",
    "name": "Leviathan desc 2",
    "key": "leviathan-desc-2",
@@ -4975,6 +5216,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-desc-3",
    "name": "Leviathan desc 3",
    "key": "leviathan-desc-3",
@@ -4996,6 +5238,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-desc-4",
    "name": "Leviathan desc 4",
    "key": "leviathan-desc-4",
@@ -5017,6 +5260,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-desc-5",
    "name": "Leviathan desc 5",
    "key": "leviathan-desc-5",
@@ -5038,6 +5282,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-desc-6",
    "name": "Leviathan desc 6",
    "key": "leviathan-desc-6",
@@ -5059,6 +5304,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-desc-7",
    "name": "Leviathan desc 7",
    "key": "leviathan-desc-7",
@@ -5080,6 +5326,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "leviathan-desc-8",
    "name": "Leviathan desc 8",
    "key": "leviathan-desc-8",
@@ -5101,6 +5348,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-1",
    "name": "Robo tap 1",
    "key": "robo-tap-1",
@@ -5117,6 +5365,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-2",
    "name": "Robo tap 2",
    "key": "robo-tap-2",
@@ -5133,6 +5382,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-3",
    "name": "Robo tap 3",
    "key": "robo-tap-3",
@@ -5149,6 +5399,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-4",
    "name": "Robo tap 4",
    "key": "robo-tap-4",
@@ -5165,6 +5416,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-5",
    "name": "Robo tap 5",
    "key": "robo-tap-5",
@@ -5181,6 +5433,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-6",
    "name": "Robo tap 6",
    "key": "robo-tap-6",
@@ -5197,6 +5450,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-7",
    "name": "Robo tap 7",
    "key": "robo-tap-7",
@@ -5213,6 +5467,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-8",
    "name": "Robo tap 8",
    "key": "robo-tap-8",
@@ -5229,6 +5484,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-9",
    "name": "Robo tap 9",
    "key": "robo-tap-9",
@@ -5245,6 +5501,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-10",
    "name": "Robo tap 10",
    "key": "robo-tap-10",
@@ -5261,6 +5518,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-11",
    "name": "Robo tap 11",
    "key": "robo-tap-11",
@@ -5277,6 +5535,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-12",
    "name": "Robo tap 12",
    "key": "robo-tap-12",
@@ -5293,6 +5552,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-13",
    "name": "Robo tap 13",
    "key": "robo-tap-13",
@@ -5309,6 +5569,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-14",
    "name": "Robo tap 14",
    "key": "robo-tap-14",
@@ -5325,6 +5586,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-15",
    "name": "Robo tap 15",
    "key": "robo-tap-15",
@@ -5341,6 +5603,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "robo-tap-16",
    "name": "Robo tap 16",
    "key": "robo-tap-16",
@@ -5357,6 +5620,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-asc-1",
    "name": "Sammie asc 1",
    "key": "sammie-asc-1",
@@ -5378,6 +5642,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-asc-2",
    "name": "Sammie asc 2",
    "key": "sammie-asc-2",
@@ -5399,6 +5664,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-asc-3",
    "name": "Sammie asc 3",
    "key": "sammie-asc-3",
@@ -5420,6 +5686,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-asc-4",
    "name": "Sammie asc 4",
    "key": "sammie-asc-4",
@@ -5441,6 +5708,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-asc-5",
    "name": "Sammie asc 5",
    "key": "sammie-asc-5",
@@ -5462,6 +5730,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-asc-6",
    "name": "Sammie asc 6",
    "key": "sammie-asc-6",
@@ -5483,6 +5752,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-asc-7",
    "name": "Sammie asc 7",
    "key": "sammie-asc-7",
@@ -5504,6 +5774,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-asc-8",
    "name": "Sammie asc 8",
    "key": "sammie-asc-8",
@@ -5525,6 +5796,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-desc-1",
    "name": "Sammie desc 1",
    "key": "sammie-desc-1",
@@ -5546,6 +5818,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-desc-2",
    "name": "Sammie desc 2",
    "key": "sammie-desc-2",
@@ -5567,6 +5840,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-desc-3",
    "name": "Sammie desc 3",
    "key": "sammie-desc-3",
@@ -5588,6 +5862,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-desc-4",
    "name": "Sammie desc 4",
    "key": "sammie-desc-4",
@@ -5609,6 +5884,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-desc-5",
    "name": "Sammie desc 5",
    "key": "sammie-desc-5",
@@ -5630,6 +5906,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-desc-6",
    "name": "Sammie desc 6",
    "key": "sammie-desc-6",
@@ -5651,6 +5928,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-desc-7",
    "name": "Sammie desc 7",
    "key": "sammie-desc-7",
@@ -5672,6 +5950,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "sammie-desc-8",
    "name": "Sammie desc 8",
    "key": "sammie-desc-8",
@@ -5693,6 +5972,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-asc-1",
    "name": "Seraph asc 1",
    "key": "seraph-asc-1",
@@ -5709,6 +5989,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-asc-2",
    "name": "Seraph asc 2",
    "key": "seraph-asc-2",
@@ -5725,6 +6006,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-asc-3",
    "name": "Seraph asc 3",
    "key": "seraph-asc-3",
@@ -5741,6 +6023,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-asc-4",
    "name": "Seraph asc 4",
    "key": "seraph-asc-4",
@@ -5757,6 +6040,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-asc-5",
    "name": "Seraph asc 5",
    "key": "seraph-asc-5",
@@ -5773,6 +6057,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-asc-6",
    "name": "Seraph asc 6",
    "key": "seraph-asc-6",
@@ -5789,6 +6074,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-asc-7",
    "name": "Seraph asc 7",
    "key": "seraph-asc-7",
@@ -5805,6 +6091,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-asc-8",
    "name": "Seraph asc 8",
    "key": "seraph-asc-8",
@@ -5821,6 +6108,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-desc-1",
    "name": "Seraph desc 1",
    "key": "seraph-desc-1",
@@ -5837,6 +6125,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-desc-2",
    "name": "Seraph desc 2",
    "key": "seraph-desc-2",
@@ -5853,6 +6142,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-desc-3",
    "name": "Seraph desc 3",
    "key": "seraph-desc-3",
@@ -5869,6 +6159,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-desc-4",
    "name": "Seraph desc 4",
    "key": "seraph-desc-4",
@@ -5885,6 +6176,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-desc-5",
    "name": "Seraph desc 5",
    "key": "seraph-desc-5",
@@ -5901,6 +6193,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-desc-6",
    "name": "Seraph desc 6",
    "key": "seraph-desc-6",
@@ -5917,6 +6210,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-desc-7",
    "name": "Seraph desc 7",
    "key": "seraph-desc-7",
@@ -5933,6 +6227,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "seraph-desc-8",
    "name": "Seraph desc 8",
    "key": "seraph-desc-8",
@@ -5949,6 +6244,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-asc-1",
    "name": "Sunforged asc 1",
    "key": "sunforged-asc-1",
@@ -5965,6 +6261,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-asc-2",
    "name": "Sunforged asc 2",
    "key": "sunforged-asc-2",
@@ -5981,6 +6278,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-asc-3",
    "name": "Sunforged asc 3",
    "key": "sunforged-asc-3",
@@ -5997,6 +6295,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-asc-4",
    "name": "Sunforged asc 4",
    "key": "sunforged-asc-4",
@@ -6013,6 +6312,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-asc-5",
    "name": "Sunforged asc 5",
    "key": "sunforged-asc-5",
@@ -6029,6 +6329,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-asc-6",
    "name": "Sunforged asc 6",
    "key": "sunforged-asc-6",
@@ -6045,6 +6346,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-asc-7",
    "name": "Sunforged asc 7",
    "key": "sunforged-asc-7",
@@ -6061,6 +6363,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-asc-8",
    "name": "Sunforged asc 8",
    "key": "sunforged-asc-8",
@@ -6077,6 +6380,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-desc-1",
    "name": "Sunforged desc 1",
    "key": "sunforged-desc-1",
@@ -6093,6 +6397,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-desc-2",
    "name": "Sunforged desc 2",
    "key": "sunforged-desc-2",
@@ -6109,6 +6414,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-desc-3",
    "name": "Sunforged desc 3",
    "key": "sunforged-desc-3",
@@ -6125,6 +6431,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-desc-4",
    "name": "Sunforged desc 4",
    "key": "sunforged-desc-4",
@@ -6141,6 +6448,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-desc-5",
    "name": "Sunforged desc 5",
    "key": "sunforged-desc-5",
@@ -6157,6 +6465,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-desc-6",
    "name": "Sunforged desc 6",
    "key": "sunforged-desc-6",
@@ -6173,6 +6482,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-desc-7",
    "name": "Sunforged desc 7",
    "key": "sunforged-desc-7",
@@ -6189,6 +6499,7 @@
    "frame": true
   },
   {
+   "played": false,
    "id": "sunforged-desc-8",
    "name": "Sunforged desc 8",
    "key": "sunforged-desc-8",
@@ -6205,6 +6516,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-asc-1",
    "name": "Verdant asc 1",
    "key": "verdant-asc-1",
@@ -6221,6 +6533,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-asc-2",
    "name": "Verdant asc 2",
    "key": "verdant-asc-2",
@@ -6237,6 +6550,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-asc-3",
    "name": "Verdant asc 3",
    "key": "verdant-asc-3",
@@ -6253,6 +6567,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-asc-4",
    "name": "Verdant asc 4",
    "key": "verdant-asc-4",
@@ -6269,6 +6584,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-asc-5",
    "name": "Verdant asc 5",
    "key": "verdant-asc-5",
@@ -6285,6 +6601,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-asc-6",
    "name": "Verdant asc 6",
    "key": "verdant-asc-6",
@@ -6301,6 +6618,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-asc-7",
    "name": "Verdant asc 7",
    "key": "verdant-asc-7",
@@ -6317,6 +6635,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-asc-8",
    "name": "Verdant asc 8",
    "key": "verdant-asc-8",
@@ -6333,6 +6652,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-desc-1",
    "name": "Verdant desc 1",
    "key": "verdant-desc-1",
@@ -6349,6 +6669,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-desc-2",
    "name": "Verdant desc 2",
    "key": "verdant-desc-2",
@@ -6365,6 +6686,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-desc-3",
    "name": "Verdant desc 3",
    "key": "verdant-desc-3",
@@ -6381,6 +6703,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-desc-4",
    "name": "Verdant desc 4",
    "key": "verdant-desc-4",
@@ -6397,6 +6720,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-desc-5",
    "name": "Verdant desc 5",
    "key": "verdant-desc-5",
@@ -6413,6 +6737,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-desc-6",
    "name": "Verdant desc 6",
    "key": "verdant-desc-6",
@@ -6429,6 +6754,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-desc-7",
    "name": "Verdant desc 7",
    "key": "verdant-desc-7",
@@ -6445,6 +6771,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "verdant-desc-8",
    "name": "Verdant desc 8",
    "key": "verdant-desc-8",
@@ -6461,6 +6788,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-asc-1",
    "name": "Void asc 1",
    "key": "voidsuit-asc-1",
@@ -6482,6 +6810,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-asc-2",
    "name": "Void asc 2",
    "key": "voidsuit-asc-2",
@@ -6503,6 +6832,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-asc-3",
    "name": "Void asc 3",
    "key": "voidsuit-asc-3",
@@ -6524,6 +6854,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-asc-4",
    "name": "Void asc 4",
    "key": "voidsuit-asc-4",
@@ -6545,6 +6876,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-asc-5",
    "name": "Void asc 5",
    "key": "voidsuit-asc-5",
@@ -6566,6 +6898,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-asc-6",
    "name": "Void asc 6",
    "key": "voidsuit-asc-6",
@@ -6587,6 +6920,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-asc-7",
    "name": "Void asc 7",
    "key": "voidsuit-asc-7",
@@ -6608,6 +6942,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-asc-8",
    "name": "Void asc 8",
    "key": "voidsuit-asc-8",
@@ -6629,6 +6964,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-desc-1",
    "name": "Void desc 1",
    "key": "voidsuit-desc-1",
@@ -6650,6 +6986,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-desc-2",
    "name": "Void desc 2",
    "key": "voidsuit-desc-2",
@@ -6671,6 +7008,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-desc-3",
    "name": "Void desc 3",
    "key": "voidsuit-desc-3",
@@ -6692,6 +7030,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-desc-4",
    "name": "Void desc 4",
    "key": "voidsuit-desc-4",
@@ -6713,6 +7052,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-desc-5",
    "name": "Void desc 5",
    "key": "voidsuit-desc-5",
@@ -6734,6 +7074,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-desc-6",
    "name": "Void desc 6",
    "key": "voidsuit-desc-6",
@@ -6755,6 +7096,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-desc-7",
    "name": "Void desc 7",
    "key": "voidsuit-desc-7",
@@ -6776,6 +7118,7 @@
    "frame": true
   },
   {
+   "played": true,
    "id": "voidsuit-desc-8",
    "name": "Void desc 8",
    "key": "voidsuit-desc-8",
@@ -8294,7 +8637,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-2",
@@ -8309,7 +8653,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-3",
@@ -8324,7 +8669,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-4",
@@ -8339,7 +8685,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-5",
@@ -8354,7 +8701,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-6",
@@ -8369,7 +8717,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-7",
@@ -8384,7 +8733,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-8",
@@ -8399,7 +8749,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-9",
@@ -8414,7 +8765,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-10",
@@ -8429,7 +8781,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-11",
@@ -8444,7 +8797,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-12",
@@ -8459,7 +8813,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-13",
@@ -8474,7 +8829,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-14",
@@ -8489,7 +8845,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-15",
@@ -8504,7 +8861,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "catsuit-tap-16",
@@ -8519,7 +8877,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-1",
@@ -8534,7 +8893,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-2",
@@ -8549,7 +8909,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-3",
@@ -8564,7 +8925,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-4",
@@ -8579,7 +8941,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-5",
@@ -8594,7 +8957,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-6",
@@ -8609,7 +8973,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-7",
@@ -8624,7 +8989,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-8",
@@ -8639,7 +9005,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-9",
@@ -8654,7 +9021,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-10",
@@ -8669,7 +9037,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-11",
@@ -8684,7 +9053,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-12",
@@ -8699,7 +9069,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-13",
@@ -8714,7 +9085,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-14",
@@ -8729,7 +9101,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-15",
@@ -8744,7 +9117,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-tap-16",
@@ -8759,7 +9133,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-1",
@@ -8774,7 +9149,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-2",
@@ -8789,7 +9165,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-3",
@@ -8804,7 +9181,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-4",
@@ -8819,7 +9197,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-5",
@@ -8834,7 +9213,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-6",
@@ -8849,7 +9229,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-7",
@@ -8864,7 +9245,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-8",
@@ -8879,7 +9261,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-9",
@@ -8894,7 +9277,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-10",
@@ -8909,7 +9293,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-11",
@@ -8924,7 +9309,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-12",
@@ -8939,7 +9325,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-13",
@@ -8954,7 +9341,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-14",
@@ -8969,7 +9357,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-15",
@@ -8984,7 +9373,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
+   "frame": true,
+   "played": true
   },
   {
    "id": "volt-bounce-16",
@@ -8999,279 +9389,8 @@
    "box": null,
    "ownHead": true,
    "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "flight-tap-1",
-   "name": "Flight tap 1",
-   "key": "flight-tap-1",
-   "file": "suits/flight-tap-1.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
    "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-2",
-   "name": "Flight tap 2",
-   "key": "flight-tap-2",
-   "file": "suits/flight-tap-2.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-3",
-   "name": "Flight tap 3",
-   "key": "flight-tap-3",
-   "file": "suits/flight-tap-3.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-4",
-   "name": "Flight tap 4",
-   "key": "flight-tap-4",
-   "file": "suits/flight-tap-4.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-5",
-   "name": "Flight tap 5",
-   "key": "flight-tap-5",
-   "file": "suits/flight-tap-5.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-6",
-   "name": "Flight tap 6",
-   "key": "flight-tap-6",
-   "file": "suits/flight-tap-6.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-7",
-   "name": "Flight tap 7",
-   "key": "flight-tap-7",
-   "file": "suits/flight-tap-7.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-8",
-   "name": "Flight tap 8",
-   "key": "flight-tap-8",
-   "file": "suits/flight-tap-8.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-9",
-   "name": "Flight tap 9",
-   "key": "flight-tap-9",
-   "file": "suits/flight-tap-9.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-10",
-   "name": "Flight tap 10",
-   "key": "flight-tap-10",
-   "file": "suits/flight-tap-10.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-11",
-   "name": "Flight tap 11",
-   "key": "flight-tap-11",
-   "file": "suits/flight-tap-11.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-12",
-   "name": "Flight tap 12",
-   "key": "flight-tap-12",
-   "file": "suits/flight-tap-12.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-13",
-   "name": "Flight tap 13",
-   "key": "flight-tap-13",
-   "file": "suits/flight-tap-13.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-14",
-   "name": "Flight tap 14",
-   "key": "flight-tap-14",
-   "file": "suits/flight-tap-14.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-15",
-   "name": "Flight tap 15",
-   "key": "flight-tap-15",
-   "file": "suits/flight-tap-15.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
-  },
-  {
-   "id": "flight-tap-16",
-   "name": "Flight tap 16",
-   "key": "flight-tap-16",
-   "file": "suits/flight-tap-16.png",
-   "dome": [
-    182,
-    88,
-    40.32,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true,
-   "seeded": true
+   "played": true
   }
  ],
  "helmets": [

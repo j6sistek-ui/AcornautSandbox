@@ -70,12 +70,22 @@ typed number all do the same thing to the same rows.
 - **Suit** and **helmet** pickers. A helmet the suit cannot wear is not
   offered (the game snaps those to Clear). Own-head suits show their art
   with no helmet to seat.
-- **FRAMES / SUITS** flips the strip between every frame of this suit and
-  this helmet on every suit. Tap a thumbnail to put it on the big canvas.
-  An amber dot marks a thumbnail whose number differs from shipping.
-- **The big canvas**: drag to move, pinch or wheel to size. **RINGS**
-  shows the head circle and, once you have moved it, a dashed amber ring
-  where it shipped. **FADE** draws the helmet at 40% so the face shows.
+- **FRAMES / SUITS / HELMETS** cycles the strip: every played frame of
+  this suit under one helmet; this helmet on every suit; every helmet on
+  this one frame (the spot check for an outlier helmet on a freshly fitted
+  head). Tap a thumbnail to put it on the big canvas. An amber dot marks
+  a thumbnail whose number differs from shipping.
+- **Only the frames the game plays are listed.** draw.ts ranks a suit's
+  banks - bounce, then a climb/dive ramp, then a loop, then a sixteen-frame
+  tap bank - so Flight shows its 3/5 ramp and not the tap bank it also
+  carries, and a tap frame on the skip list is not shown either. The table
+  generator reads the registries and the ranking out of the source.
+- **The big canvas is pinned** above the strip; only the strip scrolls,
+  so the preview never leaves the screen and a swipe over the strip can
+  only scroll it. **◀ ▶** on the canvas (and `,` `.`) step along whatever
+  the strip shows. Drag to move, pinch or wheel to size. **RINGS** shows
+  the head circle and, once you have moved it, a dashed amber ring where
+  it shipped. **FADE** draws the helmet at 40% so the face shows.
 - **D-pad** one table unit per press (hold to repeat), **SIZE** 2% a step,
   **TILT** 1° a step, and the four numbers typed directly.
 - **UNDO** one step per gesture, thirty deep. **RESET** puts back the
