@@ -56,7 +56,10 @@ for(const id of standard){
  for(const sheet of Object.values(sheets)){const g=sheet.getContext('2d');g.fillStyle='#17283b';g.fillRect(0,0,1024,1024);}
  for(let n=0;n<16;n++){
   const key=`${id}-${n<8?'asc':'desc'}-${n%8+1}`,anchor=D.DOME[key];
-  assert.equal(anchor[2],36,`${key}: common fitted head size`);
+  // one head size across the suit: every bank frame shares the still's radius
+  // (36 on the shared template; a suit the owner has refitted by eye on the
+  // rig editor carries its own number, Ion's 28.95 since 5 Oct 2026)
+  assert.equal(anchor[2],D.DOME['suit:'+id][2],`${key}: one fitted head size across the suit`);
   for(const helmet of C.HELMETS.filter(h=>art.helms[h.id]))for(const size of [52,190]){
    paint(id,n,helmet,size);assert.equal(window.__acornautPose.idx,n%8+1);
    const body=drawn.filter(x=>x.file===`suits/${key}.png`),helm=drawn.filter(x=>x.file.startsWith('helms/'));
