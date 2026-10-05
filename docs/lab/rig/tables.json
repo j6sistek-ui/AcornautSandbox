@@ -1,5 +1,5 @@
 {
- "artVer": "300",
+ "artVer": "301",
  "suits": [
   {
    "id": "flight",
@@ -140,10 +140,9 @@
    "key": "suit:frost",
    "file": "suits/frost.png",
    "dome": [
-    206,
+    210,
     106,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3322,10 +3321,9 @@
    "key": "frost-asc-1",
    "file": "suits/frost-asc-1.png",
    "dome": [
-    206,
+    210,
     106,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3344,10 +3342,9 @@
    "key": "frost-asc-2",
    "file": "suits/frost-asc-2.png",
    "dome": [
-    206,
+    210,
     105.3,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3366,10 +3363,9 @@
    "key": "frost-asc-3",
    "file": "suits/frost-asc-3.png",
    "dome": [
-    206,
+    210,
     104.5,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3388,10 +3384,9 @@
    "key": "frost-asc-4",
    "file": "suits/frost-asc-4.png",
    "dome": [
-    206,
+    210,
     103.6,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3410,10 +3405,9 @@
    "key": "frost-asc-5",
    "file": "suits/frost-asc-5.png",
    "dome": [
-    206,
+    210,
     102.5,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3432,10 +3426,9 @@
    "key": "frost-asc-6",
    "file": "suits/frost-asc-6.png",
    "dome": [
-    206,
+    210,
     101.3,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3454,9 +3447,9 @@
    "key": "frost-asc-7",
    "file": "suits/frost-asc-7.png",
    "dome": [
-    206,
+    210,
     100,
-    36,
+    30.73,
     -5
    ],
    "box": [
@@ -3476,9 +3469,9 @@
    "key": "frost-asc-8",
    "file": "suits/frost-asc-8.png",
    "dome": [
-    206,
+    210,
     99,
-    36,
+    30.73,
     -5
    ],
    "box": [
@@ -3498,10 +3491,9 @@
    "key": "frost-desc-1",
    "file": "suits/frost-desc-1.png",
    "dome": [
-    206,
+    210,
     106,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3520,10 +3512,9 @@
    "key": "frost-desc-2",
    "file": "suits/frost-desc-2.png",
    "dome": [
-    206,
+    210,
     106.8,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3542,10 +3533,9 @@
    "key": "frost-desc-3",
    "file": "suits/frost-desc-3.png",
    "dome": [
-    206,
+    210,
     107.8,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3564,10 +3554,9 @@
    "key": "frost-desc-4",
    "file": "suits/frost-desc-4.png",
    "dome": [
-    206,
+    210,
     109,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3586,10 +3575,9 @@
    "key": "frost-desc-5",
    "file": "suits/frost-desc-5.png",
    "dome": [
-    206,
+    210,
     110.2,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3608,10 +3596,9 @@
    "key": "frost-desc-6",
    "file": "suits/frost-desc-6.png",
    "dome": [
-    206,
+    210,
     111.6,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3630,10 +3617,9 @@
    "key": "frost-desc-7",
    "file": "suits/frost-desc-7.png",
    "dome": [
-    206,
+    210,
     113,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3652,10 +3638,9 @@
    "key": "frost-desc-8",
    "file": "suits/frost-desc-8.png",
    "dome": [
-    206,
+    210,
     114,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,

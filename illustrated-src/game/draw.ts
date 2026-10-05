@@ -3519,8 +3519,8 @@ function hexRgb(hex: string) {
 // Flight's still, climb and dive rows were refitted by the owner's eye on
 // the rig editor, 5 Oct 2026 (the old still was 14% larger than its own
 // frames and both were well over the painted skull: "it's helmet is huge").
-// Ion's and Copper's seventeen rows each followed the same day, off the
-// 206/106/36 family template and onto their own painted skulls.
+// Ion's, Copper's and Frost's seventeen rows each followed the same day,
+// off the 206/106/36 family template and onto their own painted skulls.
 // Refitted 28 Sep 2026 with independent helmet cavities; see
 // design/helmet-fit-all/REVIEW.md. The socket follows ears and muzzle, and
 // its neck ring follows the painted collar instead of the body's lean.
@@ -3623,7 +3623,7 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "suit:flight": [184, 91, 31.17, 5],
   "suit:iontrim": [206, 109, 28.95, 6],
   "suit:copper": [207, 108, 31.97, 3],
-  "suit:frost": [206, 106, 36, 0],
+  "suit:frost": [210, 106, 30.73],
   "suit:voidsuit": [206, 106, 36, 0],
   "suit:ember": [206, 106, 36, 0],
   "suit:robo": [179, 96, 36.12, 0],
@@ -3876,22 +3876,22 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "sammie-desc-7": [206, 113, 36, 5],
   "sammie-desc-8": [206, 114, 36, 5],
   // frost — pose-specific head and collar registration.
-  "frost-asc-1": [206, 106, 36, 0],
-  "frost-asc-2": [206, 105.3, 36, 0],
-  "frost-asc-3": [206, 104.5, 36, 0],
-  "frost-asc-4": [206, 103.6, 36, 0],
-  "frost-asc-5": [206, 102.5, 36, 0],
-  "frost-asc-6": [206, 101.3, 36, 0],
-  "frost-asc-7": [206, 100, 36, -5],
-  "frost-asc-8": [206, 99, 36, -5],
-  "frost-desc-1": [206, 106, 36, 0],
-  "frost-desc-2": [206, 106.8, 36, 0],
-  "frost-desc-3": [206, 107.8, 36, 0],
-  "frost-desc-4": [206, 109, 36, 0],
-  "frost-desc-5": [206, 110.2, 36, 0],
-  "frost-desc-6": [206, 111.6, 36, 0],
-  "frost-desc-7": [206, 113, 36, 0],
-  "frost-desc-8": [206, 114, 36, 0],
+  "frost-asc-1": [210, 106, 30.73],
+  "frost-asc-2": [210, 105.3, 30.73],
+  "frost-asc-3": [210, 104.5, 30.73],
+  "frost-asc-4": [210, 103.6, 30.73],
+  "frost-asc-5": [210, 102.5, 30.73],
+  "frost-asc-6": [210, 101.3, 30.73],
+  "frost-asc-7": [210, 100, 30.73, -5],
+  "frost-asc-8": [210, 99, 30.73, -5],
+  "frost-desc-1": [210, 106, 30.73],
+  "frost-desc-2": [210, 106.8, 30.73],
+  "frost-desc-3": [210, 107.8, 30.73],
+  "frost-desc-4": [210, 109, 30.73],
+  "frost-desc-5": [210, 110.2, 30.73],
+  "frost-desc-6": [210, 111.6, 30.73],
+  "frost-desc-7": [210, 113, 30.73],
+  "frost-desc-8": [210, 114, 30.73],
   // ghost — pose-specific head and collar registration.
   "ghost-asc-1": [206, 106, 36, 0],
   "ghost-asc-2": [206, 105.3, 36, -5],
