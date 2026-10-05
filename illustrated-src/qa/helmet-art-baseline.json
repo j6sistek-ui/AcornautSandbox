@@ -644,7 +644,7 @@
   ]
  },
  "larger_painted_heads": {
-  "note": "The nine natural-flight replacements share a 36px skull radius and a 192px runtime reference. Actual painted skull registration and pupil stability are checked by verify-natural-flight.py. Cryostar and Verdant retain the separately reviewed Eclipse transfer radius of 56px. No oversized-frame exception remains. Ion left the shared 36px radius on 5 Oct 2026: refitted by the owner's eye on the rig editor to 28.95 across its still and sixteen frames (registration.json owner_refit). Copper likewise, 5 Oct 2026: 31.97. Frost likewise, 5 Oct 2026: 30.73.",
+  "note": "The nine natural-flight replacements share a 36px skull radius and a 192px runtime reference. Actual painted skull registration and pupil stability are checked by verify-natural-flight.py. Cryostar and Verdant retain the separately reviewed Eclipse transfer radius of 56px. No oversized-frame exception remains. Ion left the shared 36px radius on 5 Oct 2026: refitted by the owner's eye on the rig editor to 28.95 across its still and sixteen frames (registration.json owner_refit). Copper likewise, 5 Oct 2026: 31.97. Frost likewise, 5 Oct 2026: 30.73. Void 29.53, Ember 33.26 and Ghost 30.73 likewise, 5 Oct 2026.",
   "bank_radii": {
    "sammie": 36,
    "gemmie": 36,
@@ -652,11 +652,11 @@
    "cryostar": 44.8,
    "verdant": 44.8,
    "iontrim": 28.95,
-   "voidsuit": 36,
+   "voidsuit": 29.53,
    "leviathan": 36,
-   "ember": 36,
+   "ember": 33.26,
    "frost": 30.73,
-   "ghost": 36
+   "ghost": 30.73
   },
   "poses": {}
  }
