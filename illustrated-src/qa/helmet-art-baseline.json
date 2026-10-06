@@ -644,20 +644,23 @@
   ]
  },
  "larger_painted_heads": {
-  "note": "The nine natural-flight replacements share a 36px skull radius and a 192px runtime reference. Actual painted skull registration and pupil stability are checked by verify-natural-flight.py. Cryostar and Verdant retain the separately reviewed Eclipse transfer radius of 56px. No oversized-frame exception remains. Ion left the shared 36px radius on 5 Oct 2026: refitted by the owner's eye on the rig editor to 28.95 across its still and sixteen frames (registration.json owner_refit). Copper likewise, 5 Oct 2026: 31.97. Frost likewise, 5 Oct 2026: 30.73. Void 29.53, Ember 33.26 and Ghost 30.73 likewise, 5 Oct 2026. Gemmie 28.39 and Sammie 28.95 likewise, 5 Oct 2026.",
+  "note": "The nine natural-flight replacements share a 36px skull radius and a 192px runtime reference. Actual painted skull registration and pupil stability are checked by verify-natural-flight.py. Cryostar and Verdant retain the separately reviewed Eclipse transfer radius of 56px. No oversized-frame exception remains. Ion left the shared 36px radius on 5 Oct 2026: refitted by the owner's eye on the rig editor to 28.95 across its still and sixteen frames (registration.json owner_refit). Copper likewise, 5 Oct 2026: 31.97. Frost likewise, 5 Oct 2026: 30.73. Void 29.53, Ember 33.26 and Ghost 30.73 likewise, 5 Oct 2026. Gemmie 28.39 and Sammie 28.95 likewise, 5 Oct 2026. Leviathan 29.53, 6 Oct 2026. Big Booty and Verdant keep a radius per frame (per_frame_radii).",
   "bank_radii": {
    "sammie": 28.95,
    "gemmie": 28.39,
    "copper": 31.97,
    "cryostar": 44.8,
-   "verdant": 44.8,
    "iontrim": 28.95,
    "voidsuit": 29.53,
-   "leviathan": 36,
+   "leviathan": 29.53,
    "ember": 33.26,
    "frost": 30.73,
    "ghost": 30.73
   },
-  "poses": {}
+  "poses": {},
+  "per_frame_radii": {
+   "bigbooty": "6 Oct 2026: the owner fitted each tap frame by eye and kept the per-frame radii (could be part of the animation)",
+   "verdant": "6 Oct 2026: the owner fitted each ramp frame by eye and kept the per-frame radii"
+  }
  }
 }

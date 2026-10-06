@@ -1,5 +1,5 @@
 {
- "artVer": "303",
+ "artVer": "304",
  "suits": [
   {
    "id": "flight",
@@ -254,9 +254,9 @@
    "key": "suit:bigbooty",
    "file": "suits/bigbooty.png",
    "dome": [
-    183,
-    106,
-    28,
+    184,
+    108,
+    25.36,
     10
    ],
    "box": null,
@@ -388,9 +388,9 @@
    "key": "suit:leviathan",
    "file": "suits/leviathan.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -409,10 +409,10 @@
    "key": "suit:verdant",
    "file": "suits/verdant.png",
    "dome": [
-    196,
-    92,
-    41,
-    0
+    204.19,
+    98.83,
+    37.88,
+    6
    ],
    "box": null,
    "ownHead": false,
@@ -850,9 +850,9 @@
    "key": "bigbooty-tap-1",
    "file": "suits/bigbooty-tap-1.png",
    "dome": [
-    206,
-    88,
-    32.8,
+    207,
+    90,
+    29.71,
     10
    ],
    "box": null,
@@ -867,9 +867,9 @@
    "key": "bigbooty-tap-2",
    "file": "suits/bigbooty-tap-2.png",
    "dome": [
-    206,
-    89,
-    32.8,
+    207,
+    91,
+    29.71,
     10
    ],
    "box": null,
@@ -884,9 +884,9 @@
    "key": "bigbooty-tap-3",
    "file": "suits/bigbooty-tap-3.png",
    "dome": [
-    206,
-    86,
-    32.8,
+    209,
+    88,
+    29.71,
     10
    ],
    "box": null,
@@ -901,9 +901,9 @@
    "key": "bigbooty-tap-4",
    "file": "suits/bigbooty-tap-4.png",
    "dome": [
-    206,
-    79,
-    32.8,
+    196,
+    81,
+    27.99,
     10
    ],
    "box": null,
@@ -918,9 +918,9 @@
    "key": "bigbooty-tap-5",
    "file": "suits/bigbooty-tap-5.png",
    "dome": [
-    207,
-    72,
-    32.8,
+    208,
+    74,
+    29.71,
     10
    ],
    "box": null,
@@ -935,9 +935,9 @@
    "key": "bigbooty-tap-6",
    "file": "suits/bigbooty-tap-6.png",
    "dome": [
-    208,
-    71,
-    32.8,
+    209,
+    73,
+    29.71,
     10
    ],
    "box": null,
@@ -952,9 +952,9 @@
    "key": "bigbooty-tap-7",
    "file": "suits/bigbooty-tap-7.png",
    "dome": [
-    206,
-    77,
-    32.8,
+    207,
+    79,
+    29.71,
     10
    ],
    "box": null,
@@ -969,9 +969,9 @@
    "key": "bigbooty-tap-8",
    "file": "suits/bigbooty-tap-8.png",
    "dome": [
-    202,
-    87,
-    32.8,
+    205,
+    92,
+    26.91,
     10
    ],
    "box": null,
@@ -986,9 +986,9 @@
    "key": "bigbooty-tap-9",
    "file": "suits/bigbooty-tap-9.png",
    "dome": [
-    203,
-    87,
-    32.8,
+    201,
+    90,
+    26.38,
     10
    ],
    "box": null,
@@ -1003,10 +1003,10 @@
    "key": "bigbooty-tap-10",
    "file": "suits/bigbooty-tap-10.png",
    "dome": [
-    209,
-    78,
-    32.8,
-    10
+    217,
+    73,
+    27.99,
+    15
    ],
    "box": null,
    "ownHead": false,
@@ -1020,9 +1020,9 @@
    "key": "bigbooty-tap-11",
    "file": "suits/bigbooty-tap-11.png",
    "dome": [
-    213,
-    74,
-    32.8,
+    215,
+    76,
+    28.55,
     10
    ],
    "box": null,
@@ -1037,9 +1037,9 @@
    "key": "bigbooty-tap-12",
    "file": "suits/bigbooty-tap-12.png",
    "dome": [
-    209,
-    79,
-    32.8,
+    215,
+    72,
+    29.13,
     10
    ],
    "box": null,
@@ -1054,9 +1054,9 @@
    "key": "bigbooty-tap-13",
    "file": "suits/bigbooty-tap-13.png",
    "dome": [
-    203,
-    87,
-    32.8,
+    204,
+    90,
+    27.99,
     10
    ],
    "box": null,
@@ -1071,9 +1071,9 @@
    "key": "bigbooty-tap-14",
    "file": "suits/bigbooty-tap-14.png",
    "dome": [
-    200,
-    90,
-    32.8,
+    201,
+    92,
+    28.55,
     10
    ],
    "box": null,
@@ -1088,9 +1088,9 @@
    "key": "bigbooty-tap-15",
    "file": "suits/bigbooty-tap-15.png",
    "dome": [
-    202,
-    85,
-    32.8,
+    203,
+    87,
+    29.71,
     10
    ],
    "box": null,
@@ -1105,9 +1105,9 @@
    "key": "bigbooty-tap-16",
    "file": "suits/bigbooty-tap-16.png",
    "dome": [
-    206,
-    80,
-    32.8,
+    207,
+    82,
+    29.71,
     10
    ],
    "box": null,
@@ -4987,9 +4987,9 @@
    "key": "leviathan-asc-1",
    "file": "suits/leviathan-asc-1.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5009,9 +5009,9 @@
    "key": "leviathan-asc-2",
    "file": "suits/leviathan-asc-2.png",
    "dome": [
-    206,
+    208,
     105.3,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5031,9 +5031,9 @@
    "key": "leviathan-asc-3",
    "file": "suits/leviathan-asc-3.png",
    "dome": [
-    206,
+    208,
     104.5,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5053,9 +5053,9 @@
    "key": "leviathan-asc-4",
    "file": "suits/leviathan-asc-4.png",
    "dome": [
-    206,
+    208,
     103.6,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5075,9 +5075,9 @@
    "key": "leviathan-asc-5",
    "file": "suits/leviathan-asc-5.png",
    "dome": [
-    206,
+    208,
     102.5,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5097,9 +5097,9 @@
    "key": "leviathan-asc-6",
    "file": "suits/leviathan-asc-6.png",
    "dome": [
-    206,
+    208,
     101.3,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5119,9 +5119,9 @@
    "key": "leviathan-asc-7",
    "file": "suits/leviathan-asc-7.png",
    "dome": [
-    206,
+    208,
     100,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5141,9 +5141,9 @@
    "key": "leviathan-asc-8",
    "file": "suits/leviathan-asc-8.png",
    "dome": [
-    206,
+    208,
     99,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5163,9 +5163,9 @@
    "key": "leviathan-desc-1",
    "file": "suits/leviathan-desc-1.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5185,9 +5185,9 @@
    "key": "leviathan-desc-2",
    "file": "suits/leviathan-desc-2.png",
    "dome": [
-    206,
+    208,
     106.8,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5207,9 +5207,9 @@
    "key": "leviathan-desc-3",
    "file": "suits/leviathan-desc-3.png",
    "dome": [
-    206,
+    208,
     107.8,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5229,9 +5229,9 @@
    "key": "leviathan-desc-4",
    "file": "suits/leviathan-desc-4.png",
    "dome": [
-    206,
+    208,
     109,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5251,9 +5251,9 @@
    "key": "leviathan-desc-5",
    "file": "suits/leviathan-desc-5.png",
    "dome": [
-    206,
+    208,
     110.2,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5273,9 +5273,9 @@
    "key": "leviathan-desc-6",
    "file": "suits/leviathan-desc-6.png",
    "dome": [
-    206,
+    208,
     111.6,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5295,9 +5295,9 @@
    "key": "leviathan-desc-7",
    "file": "suits/leviathan-desc-7.png",
    "dome": [
-    206,
+    208,
     113,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5317,9 +5317,9 @@
    "key": "leviathan-desc-8",
    "file": "suits/leviathan-desc-8.png",
    "dome": [
-    206,
+    208,
     114,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -6507,10 +6507,10 @@
    "key": "verdant-asc-1",
    "file": "suits/verdant-asc-1.png",
    "dome": [
-    185,
-    82.5,
-    44.8,
-    -5
+    189.11,
+    79.71,
+    36.75,
+    -2
    ],
    "box": null,
    "ownHead": false,
@@ -6524,10 +6524,10 @@
    "key": "verdant-asc-2",
    "file": "suits/verdant-asc-2.png",
    "dome": [
-    187.5,
-    80.5,
-    44.8,
-    -5
+    186.5,
+    81.5,
+    35.32,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6541,10 +6541,10 @@
    "key": "verdant-asc-3",
    "file": "suits/verdant-asc-3.png",
    "dome": [
-    184,
-    79.5,
-    44.8,
-    -5
+    186,
+    80.5,
+    34.63,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6558,10 +6558,10 @@
    "key": "verdant-asc-4",
    "file": "suits/verdant-asc-4.png",
    "dome": [
-    187,
-    78.5,
-    44.8,
-    -5
+    189,
+    79.5,
+    36.03,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6575,10 +6575,10 @@
    "key": "verdant-asc-5",
    "file": "suits/verdant-asc-5.png",
    "dome": [
-    186.5,
-    79,
-    44.8,
-    -5
+    187.5,
+    80,
+    38.24,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6592,10 +6592,10 @@
    "key": "verdant-asc-6",
    "file": "suits/verdant-asc-6.png",
    "dome": [
-    191.5,
-    75,
-    44.8,
-    -5
+    193.5,
+    77,
+    39.78,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6609,10 +6609,10 @@
    "key": "verdant-asc-7",
    "file": "suits/verdant-asc-7.png",
    "dome": [
-    193.5,
-    80,
-    44.8,
-    -5
+    194.5,
+    81,
+    39,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6626,10 +6626,10 @@
    "key": "verdant-asc-8",
    "file": "suits/verdant-asc-8.png",
    "dome": [
-    194,
-    88,
-    44.8,
-    -5
+    195,
+    89,
+    38.24,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6644,9 +6644,9 @@
    "file": "suits/verdant-desc-1.png",
    "dome": [
     201.5,
-    87,
-    44.8,
-    0
+    89,
+    41.39,
+    6
    ],
    "box": null,
    "ownHead": false,
@@ -6660,10 +6660,10 @@
    "key": "verdant-desc-2",
    "file": "suits/verdant-desc-2.png",
    "dome": [
-    201,
+    200,
     104,
-    44.8,
-    5
+    39.78,
+    11
    ],
    "box": null,
    "ownHead": false,
@@ -6678,9 +6678,9 @@
    "file": "suits/verdant-desc-3.png",
    "dome": [
     187.5,
-    126,
-    44.8,
-    15
+    129,
+    39.78,
+    21
    ],
    "box": null,
    "ownHead": false,
@@ -6694,10 +6694,10 @@
    "key": "verdant-desc-4",
    "file": "suits/verdant-desc-4.png",
    "dome": [
-    189.5,
-    135,
-    44.8,
-    20
+    190.5,
+    147,
+    39.78,
+    26
    ],
    "box": null,
    "ownHead": false,
@@ -6712,9 +6712,9 @@
    "file": "suits/verdant-desc-5.png",
    "dome": [
     189.5,
-    145.5,
-    44.8,
-    25
+    150.5,
+    39.78,
+    31
    ],
    "box": null,
    "ownHead": false,
@@ -6728,10 +6728,10 @@
    "key": "verdant-desc-6",
    "file": "suits/verdant-desc-6.png",
    "dome": [
-    190.5,
-    154,
-    44.8,
-    30
+    189.5,
+    157,
+    37.49,
+    36
    ],
    "box": null,
    "ownHead": false,
@@ -6745,10 +6745,10 @@
    "key": "verdant-desc-7",
    "file": "suits/verdant-desc-7.png",
    "dome": [
-    190,
-    160.5,
-    44.8,
-    35
+    187,
+    161.5,
+    38.24,
+    41
    ],
    "box": null,
    "ownHead": false,
@@ -6762,10 +6762,10 @@
    "key": "verdant-desc-8",
    "file": "suits/verdant-desc-8.png",
    "dome": [
-    191.5,
-    161,
-    44.8,
-    35
+    183.5,
+    174,
+    37.49,
+    41
    ],
    "box": null,
    "ownHead": false,
