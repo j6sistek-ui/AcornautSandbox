@@ -49,6 +49,7 @@ function paint(id,n,helmet=clear,size=190,t=0,bank=art){
  const pose=n===8?1e-6:(n<8?-1:1)*(n%8)/7;
  D.paintIllustrated(ctx,art.squirrelIdle[0],128,126,size,helmet,C.SUITS.find(x=>x.id===id),t,bank,'idle-1',undefined,undefined,0,'light',0,-1,-1,0,0,0,0,300,Control.suitLean(id),pose);
 }
+const perFrame=new Set(Object.keys(JSON.parse(readFileSync(join(root,'illustrated-src/qa/helmet-art-baseline.json'),'utf8')).larger_painted_heads.per_frame_radii||{}));
 const reviewHelmet={iontrim:'ion',copper:'solar',voidsuit:'void',sammie:'sammie',gemmie:'gemmie',leviathan:'leviathan',ember:'phoenix',frost:'lunar',ghost:'nebula'};
 for(const id of standard){
  const matching=reviewHelmet[id];assert(art.helms[matching],`${id}: selected review helmet exists`);
@@ -59,7 +60,8 @@ for(const id of standard){
   // one head size across the suit: every bank frame shares the still's radius
   // (36 on the shared template; a suit the owner has refitted by eye on the
   // rig editor carries its own number, Ion's 28.95 since 5 Oct 2026)
-  assert.equal(anchor[2],D.DOME['suit:'+id][2],`${key}: one fitted head size across the suit`);
+  // a suit the owner fitted frame by frame keeps a radius per pose (helmet-art-baseline per_frame_radii)
+  if(!perFrame.has(id))assert.equal(anchor[2],D.DOME['suit:'+id][2],`${key}: one fitted head size across the suit`);
   for(const helmet of C.HELMETS.filter(h=>art.helms[h.id]))for(const size of [52,190]){
    paint(id,n,helmet,size);assert.equal(window.__acornautPose.idx,n%8+1);
    const body=drawn.filter(x=>x.file===`suits/${key}.png`),helm=drawn.filter(x=>x.file.startsWith('helms/'));
