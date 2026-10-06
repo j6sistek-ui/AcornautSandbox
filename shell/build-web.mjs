@@ -37,6 +37,9 @@ writeFileSync(join(www, "index.html"), html.replace(tag,
 mkdirSync(join(www, "shell"), { recursive: true });
 writeFileSync(join(here, "adapter", "config.json"), JSON.stringify({
   products: cfg.products, leaderboards: cfg.leaderboards, revenuecat: cfg.revenuecat,
+  // the adapter reads config.admob for the app id, the unit ids and the
+  // testing flag; without this line it saw nothing and never initialised
+  admob: cfg.admob,
 }, null, 2));
 execSync(`npx esbuild adapter/adapter.js --bundle --format=esm --target=es2020 --outfile=www/shell/adapter.js --log-level=warning`, { cwd: here, stdio: "inherit" });
 

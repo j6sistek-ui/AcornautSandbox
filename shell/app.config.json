@@ -32,11 +32,11 @@
   "iap": false,
   "admob": {
     "testing": true,
-    "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+    "iosAppId": "ca-app-pub-4551315319006015~4154845260",
     "androidAppId": "ca-app-pub-3940256099942544~3347511713",
-    "rewardedIos": "ca-app-pub-3940256099942544/1712485313",
+    "rewardedIos": "ca-app-pub-4551315319006015/3029465851",
     "rewardedAndroid": "ca-app-pub-3940256099942544/5224354917",
-    "interstitialIos": "ca-app-pub-3940256099942544/4411468910",
+    "interstitialIos": "ca-app-pub-4551315319006015/6633579655",
     "interstitialAndroid": "ca-app-pub-3940256099942544/1033173712"
   }
 }
