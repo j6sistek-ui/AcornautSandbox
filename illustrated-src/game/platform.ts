@@ -96,7 +96,7 @@ export type PlatformHooks = {
   mute(m: boolean): void;
 };
 
-export type AdPlacement = "continue" | "dust" | "crash";
+export type AdPlacement = "continue" | "dust" | "crash" | "level";
 export type AdOutcome = "earned" | "dismissed" | "unavailable";
 
 export type Platform = {

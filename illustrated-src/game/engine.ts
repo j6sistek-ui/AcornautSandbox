@@ -171,6 +171,9 @@ export type Engine = {
   /** leave the crash sheet through a full-screen ad when one is due, then
    *  run `next` (fly again, back to the menu); runs `next` at once otherwise */
   afterCrash: (next: () => void) => void;
+  /** leaving a Star Chart result sheet: a full-screen ad after every 10th
+   *  level the pilot finishes (owner, 6 Oct 2026), then `next` */
+  afterLevel: (next: () => void) => void;
   /** Spill buttons and gestures share the same movement rules. */
   spillLunge: () => void;
   spillThrust: () => void;
@@ -793,16 +796,31 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     afterCrash(next) {
       // THE INTERSTITIAL, at the crash sheet's exit and nowhere else: never
       // over the receipt, never before the pilot has chosen to leave.
+      // THE 30-GATE GATE (owner, 6 Oct 2026): no full-screen ad until the
+      // pilot has once passed 30 gates in any Free Flight rule-set - a best
+      // that is already on the save, so an early, struggling pilot is never
+      // interrupted and nothing new has to be migrated
+      const bestGates = Math.max(save.highScore ?? 0, save.deepBest ?? 0, save.lostBest ?? 0, save.arcadeBest ?? 0);
       const due = platform.adsReady && platform.interstitialAdReady()
-        && save.runs >= AD_RULES.interstitialGraceRuns
+        && bestGates >= AD_RULES.interstitialAfterGates
         && save.crashesSinceAd >= AD_RULES.interstitialEveryCrashes
         && Date.now() - save.lastAdAt >= AD_RULES.interstitialMinGapSec * 1000;
       if (!due || adBusy) { next(); return; }
-      adBusy = true; notify();
-      save.crashesSinceAd = 0;
-      save.lastAdAt = Date.now();
-      writeSave(save);
-      void platform.showInterstitialAd("crash", () => muteAll(true)).then(() => { muteAll(false); adBusy = false; next(); notify(); });
+      playInterstitial("crash", next);
+    },
+    afterLevel(next) {
+      // EVERY 10TH STAR CHART LEVEL (owner, 6 Oct 2026: "and after every
+      // 10th star chart level"): the finale of each chapter, finished, plays
+      // one full-screen ad at its result sheet's exit. Keyed on the level's
+      // number ("3-10"), so a replay of a finale plays it again; the
+      // two-minute gap still holds, and the crash cadence is untouched.
+      const last = world.lastLevel;
+      const n = last?.finished ? Number(last.def.id.split("-")[1]) : 0;
+      const due = platform.adsReady && platform.interstitialAdReady()
+        && n > 0 && n % AD_RULES.interstitialEveryLevels === 0
+        && Date.now() - save.lastAdAt >= AD_RULES.interstitialMinGapSec * 1000;
+      if (!due || adBusy) { next(); return; }
+      playInterstitial("level", next);
     },
     spillThrust() {
       if (!world.spill || world.screen !== "play" || save.spillButtonsOff) return;
@@ -1205,6 +1223,17 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   let dustPurchase: { id: string; state: DustPurchaseState } | null = null;
   /** an ad is on screen (rewarded or interstitial): the sheets show it and refuse a second */
   let adBusy = false;
+
+  // one full-screen ad, wherever it is due: the game goes silent for as
+  // long as it is on screen, the cadence and the gap clock reset, and
+  // `next` runs when it closes (or at once if the SDK had nothing)
+  function playInterstitial(placement: "crash" | "level", next: () => void) {
+    adBusy = true; notify();
+    save.crashesSinceAd = 0;
+    save.lastAdAt = Date.now();
+    writeSave(save);
+    void platform.showInterstitialAd(placement, () => muteAll(true)).then(() => { muteAll(false); adBusy = false; next(); notify(); });
+  }
   function buyDust(id: string) {
     const pack = DUST_PACKS.find((p) => p.id === id);
     if (!pack) return "missing";
