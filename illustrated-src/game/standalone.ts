@@ -4786,7 +4786,17 @@ export async function bootStandalone(root: HTMLElement) {
     link.rel = "noopener";
     link.textContent = "Privacy policy";
     policy.append(link);
-    scroll.append(policy, el("p", "ac-fine ac-mid", BUILD));
+    scroll.append(policy);
+    // PRIVACY OPTIONS (6 Oct 2026): where the ad SDK's consent platform
+    // says the pilot must be able to change their choice, the shell says so
+    // through the bridge and this row opens its form. Nothing on the web
+    // page or the beta: neither has a consent platform.
+    if (platform.adsReady && platform.privacyOptionsRequired()) {
+      const privacy = el("button", "ac-ghost ac-privacyopts", "PRIVACY OPTIONS");
+      privacy.onclick = () => { void platform.showPrivacyOptions().then((r) => { if (r === "unavailable") announce("Privacy options are not available right now."); }); };
+      scroll.append(privacy, el("p", "ac-fine ac-labnote", "Change what the ad network may use. Ads reload with your new choice."));
+    }
+    scroll.append(el("p", "ac-fine ac-mid", BUILD));
 
     box.append(scroll);
     if (startOverAsk) box.append(drawStartOverSheet());

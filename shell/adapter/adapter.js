@@ -174,11 +174,31 @@ function boardsOf() {
 /** ADS (13 Sep 2026, owner: "just ad revenue for now ... tying in ads").
  *  AdMob behind the bridge's `ads` member: one rewarded and one
  *  interstitial ad kept loaded, shown on request, reloaded after each.
- *  Non-personalised (npa) so no tracking prompt is needed. With
- *  `admob.testing` the config carries Google's public test ids and the SDK
- *  runs in test mode, so a TestFlight build shows test ads with no account.
- *  Anything that fails leaves the game without an ad, never without a
- *  screen: every promise here resolves. */
+ *  Non-personalised (npa) requests on top of whatever consent allows.
+ *  With `admob.testing` the SDK runs in test mode and serves Google's demo
+ *  units, so a TestFlight build shows test ads with no account.
+ *
+ *  CONSENT, IN THE PLUGIN'S ORDER (6 Oct 2026, static review of
+ *  @capacitor-community/admob 8.1.0): `initialize` first, because the
+ *  plugin's consent executor is wired up by it and the forms need the
+ *  root view controller; then `requestConsentInfo`; then the consent form
+ *  where it is REQUIRED and available. Every prepare and show is gated on
+ *  the final `canRequestAds === true`. Anything that fails on that path
+ *  disables ads for the session and the game boots regardless - a pilot
+ *  never loses the screen to an ad problem. npa is not a substitute for
+ *  consent, it is a request flag on top of it.
+ *
+ *  GENERATIONS. A privacy-options change (the game's Profile row, where
+ *  UMP says the pilot must be able to reach it) invalidates every loaded
+ *  ad at once and bumps a generation counter; a native prepare that was in
+ *  flight for an older generation can finish but never marks an ad ready,
+ *  and a newer generation's prepare waits in line behind it so two native
+ *  requests never race for the same slot.
+ *
+ *  The game's `started` callback (it mutes itself while an ad is on
+ *  screen) fires on the native Showed event, once, and is dropped on
+ *  close or failure. The reward pays on the Rewarded event only, never on
+ *  dismissal. Every promise here resolves. */
 function adsOf(platformName) {
   const c = config.admob;
   if (!c) return null;
@@ -188,62 +208,113 @@ function adsOf(platformName) {
   if (!rewardedId && !interstitialId) return null;
   const testing = c.testing !== false;
   const opts = (adId) => ({ adId, isTesting: testing, npa: true });
+  const warn = (what, e) => console.warn(`[acornaut shell] ${what}:`, e?.message || e);
+
+  // consent state: `allowed` is the final canRequestAds of the current
+  // generation; nothing is prepared or shown without it
+  let generation = 0;
+  let allowed = false;
+  let privacyRequired = false;
   let rewardedLoaded = false, interstitialLoaded = false;
-  const ready = (async () => {
-    // CONSENT FIRST (audit, 30 Sep 2026). Google's User Messaging Platform
-    // decides, by region, whether a consent form is required; where it is,
-    // the form is shown once before the SDK starts, and the answer is
-    // Google's to keep. A pilot who declines still gets the game - the SDK
-    // serves what the answer allows, and every request here is already
-    // non-personalised. A consent failure never blocks the ads or the game.
-    try {
-      const info = await AdMob.requestConsentInfo({});
-      if (info?.isConsentFormAvailable && info.status === "REQUIRED") await AdMob.showConsentForm();
-    } catch (e) { console.warn("[acornaut shell] ad consent:", e?.message || e); }
-    await AdMob.initialize({ initializeForTesting: testing });
-  })().catch((e) => console.warn("[acornaut shell] ads not ready:", e?.message || e));
-  const loadRewarded = async () => {
-    if (!rewardedId) return;
-    try { await AdMob.prepareRewardVideoAd(opts(rewardedId)); rewardedLoaded = true; }
-    catch (e) { rewardedLoaded = false; console.warn("[acornaut shell] rewarded ad:", e?.message || e); }
+  const invalidate = () => { generation++; allowed = false; rewardedLoaded = false; interstitialLoaded = false; };
+  const applyInfo = (info) => {
+    invalidate();
+    allowed = info?.canRequestAds === true;
+    privacyRequired = info?.privacyOptionsRequirementStatus === "REQUIRED";
   };
-  const loadInterstitial = async () => {
-    if (!interstitialId) return;
-    try { await AdMob.prepareInterstitial(opts(interstitialId)); interstitialLoaded = true; }
-    catch (e) { interstitialLoaded = false; console.warn("[acornaut shell] interstitial ad:", e?.message || e); }
-  };
-  void ready.then(() => Promise.all([loadRewarded(), loadInterstitial()]));
-  // one listener set for the life of the app; each show() reads the flags it flips
+  const disable = (what, e) => { invalidate(); if (e !== undefined) warn(what, e); };
+
+  // per-show callbacks and the close latches the listeners flip
+  let rewardedStarted = null, interstitialStarted = null;
   let rewardedEarned = false, rewardedClosed = null, interstitialClosed = null;
-  void AdMob.addListener(RewardAdPluginEvents.Rewarded, () => { rewardedEarned = true; });
-  void AdMob.addListener(RewardAdPluginEvents.Dismissed, () => { rewardedClosed?.(); });
-  void AdMob.addListener(RewardAdPluginEvents.FailedToShow, () => { rewardedClosed?.(); });
-  void AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => { interstitialClosed?.(); });
-  void AdMob.addListener(InterstitialAdPluginEvents.FailedToShow, () => { interstitialClosed?.(); });
+
+  // native prepares, one queue per slot: a newer generation's request waits
+  // for an older one to finish, and an older one's result is dropped
+  const queue = { rewarded: Promise.resolve(), interstitial: Promise.resolve() };
+  const prepare = (which) => {
+    const gen = generation;
+    const id = which === "rewarded" ? rewardedId : interstitialId;
+    if (!id || !allowed) return Promise.resolve();
+    const run = async () => {
+      if (gen !== generation || !allowed) return;        // superseded while queued
+      try {
+        if (which === "rewarded") await AdMob.prepareRewardVideoAd(opts(id));
+        else await AdMob.prepareInterstitial(opts(id));
+        if (gen !== generation) return;                   // an older generation's ad: never ready
+        if (which === "rewarded") rewardedLoaded = true; else interstitialLoaded = true;
+      } catch (e) { if (gen === generation) warn(`${which} ad`, e); }
+    };
+    queue[which] = queue[which].then(run, run);
+    return queue[which];
+  };
+  const reload = () => Promise.all([prepare("rewarded"), prepare("interstitial")]);
+
+  const setup = (async () => {
+    try {
+      await AdMob.initialize({ initializeForTesting: testing });
+      // one listener set for the life of the app, awaited so a listener the
+      // plugin refuses disables ads rather than leaving a show with no close
+      await AdMob.addListener(RewardAdPluginEvents.Rewarded, () => { rewardedEarned = true; });
+      await AdMob.addListener(RewardAdPluginEvents.Showed, () => { const fn = rewardedStarted; rewardedStarted = null; fn?.(); });
+      await AdMob.addListener(RewardAdPluginEvents.Dismissed, () => { rewardedStarted = null; rewardedClosed?.(); });
+      await AdMob.addListener(RewardAdPluginEvents.FailedToShow, () => { rewardedStarted = null; rewardedClosed?.(); });
+      await AdMob.addListener(InterstitialAdPluginEvents.Showed, () => { const fn = interstitialStarted; interstitialStarted = null; fn?.(); });
+      await AdMob.addListener(InterstitialAdPluginEvents.Dismissed, () => { interstitialStarted = null; interstitialClosed?.(); });
+      await AdMob.addListener(InterstitialAdPluginEvents.FailedToShow, () => { interstitialStarted = null; interstitialClosed?.(); });
+      let info = await AdMob.requestConsentInfo({});
+      if (info?.status === "REQUIRED") {
+        if (!info.isConsentFormAvailable) { disable("ad consent", "a consent form is required but none is available"); return; }
+        info = await AdMob.showConsentForm();
+      }
+      applyInfo(info);
+      // not awaited: setup is "consent settled", and a show must not wait
+      // behind a native prepare that is still in flight
+      if (allowed) void reload();
+    } catch (e) { disable("ads", e); }
+  })();
+
   // a show that never reports back (a lost activity, a webview reload)
   // still lets the game go on after a while
   const closes = (set, ms) => new Promise((resolve) => { const t = setTimeout(resolve, ms); set(() => { clearTimeout(t); resolve(); }); });
   return {
-    rewardedReady: () => rewardedLoaded,
-    async rewarded() {
-      await ready;
-      if (!rewardedLoaded) { await loadRewarded(); if (!rewardedLoaded) return "unavailable"; }
-      rewardedLoaded = false; rewardedEarned = false;
+    rewardedReady: () => allowed && rewardedLoaded,
+    async rewarded(_placement, started) {
+      await setup;
+      if (!allowed) return "unavailable";
+      if (!rewardedLoaded) { await prepare("rewarded"); if (!rewardedLoaded) return "unavailable"; }
+      rewardedLoaded = false; rewardedEarned = false; rewardedStarted = started || null;
       const closed = closes((fn) => { rewardedClosed = fn; }, 120000);
-      try { await AdMob.showRewardVideoAd(); } catch (e) { rewardedClosed = null; void loadRewarded(); return "unavailable"; }
-      await closed; rewardedClosed = null;
-      void loadRewarded();
+      try { await AdMob.showRewardVideoAd(); }
+      catch (e) { rewardedStarted = null; rewardedClosed = null; warn("rewarded show", e); void prepare("rewarded"); return "unavailable"; }
+      await closed; rewardedClosed = null; rewardedStarted = null;
+      void prepare("rewarded");
       return rewardedEarned ? "earned" : "dismissed";
     },
-    interstitialReady: () => interstitialLoaded,
-    async interstitial() {
-      await ready;
-      if (!interstitialLoaded) return;
-      interstitialLoaded = false;
+    interstitialReady: () => allowed && interstitialLoaded,
+    async interstitial(_placement, started) {
+      await setup;
+      if (!allowed || !interstitialLoaded) return;
+      interstitialLoaded = false; interstitialStarted = started || null;
       const closed = closes((fn) => { interstitialClosed = fn; }, 90000);
-      try { await AdMob.showInterstitial(); } catch { interstitialClosed = null; void loadInterstitial(); return; }
-      await closed; interstitialClosed = null;
-      void loadInterstitial();
+      try { await AdMob.showInterstitial(); }
+      catch (e) { interstitialStarted = null; interstitialClosed = null; warn("interstitial show", e); void prepare("interstitial"); return; }
+      await closed; interstitialClosed = null; interstitialStarted = null;
+      void prepare("interstitial");
+    },
+    /** UMP says the pilot must be able to change their privacy choice */
+    privacyOptionsRequired: () => privacyRequired,
+    /** show the privacy options form, then refresh consent: every loaded ad
+     *  is dropped first, and reloaded only if the fresh answer allows it */
+    async showPrivacyOptionsForm() {
+      await setup;
+      if (!privacyRequired) return "unavailable";
+      invalidate();
+      try {
+        await AdMob.showPrivacyOptionsForm();
+        applyInfo(await AdMob.requestConsentInfo({}));
+        if (allowed) void reload();
+        return "updated";
+      } catch (e) { disable("privacy options", e); return "unavailable"; }
     },
   };
 }

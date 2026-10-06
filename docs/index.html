@@ -293,6 +293,8 @@
     .ac-idname { font-size: 18px; font-weight: 800; }
     .ac-replay { width: 100%; margin: 12px 0 4px; }
     .ac-reset { width: 100%; margin: 10px 0 2px; }
+    /* the ad network's privacy-options door, shown only where its consent platform requires one (6 Oct 2026) */
+    .ac-privacyopts { min-height: 44px; margin-top: 10px; border-color: rgba(207,175,115,.5); }
     .ac-resetarmed { color: #ff8a8a; border-color: #a84444; }
     .ac-resetnote { margin-bottom: 72px; }
     /* PREMIUM. The gold border used to be !important, which meant a premium
@@ -2339,7 +2341,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js306/standalone.js")
+    import("./js307/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

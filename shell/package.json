@@ -11,6 +11,8 @@
     "ios": "node build-web.mjs && npx cap sync ios && npx cap open ios",
     "android": "node build-web.mjs && npx cap sync android && npx cap open android",
     "check": "node check.mjs",
+    "test:config": "node test-build-web-config.mjs",
+    "test:adapter": "node --experimental-vm-modules test-adapter-consent.mjs",
     "crazygames": "node build-crazygames.mjs"
   },
   "dependencies": {

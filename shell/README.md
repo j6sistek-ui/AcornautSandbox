@@ -61,9 +61,14 @@ every third crash, never before a best run has passed 30 gates (owner, 6 Oct
 and one more when the pilot leaves the result sheet of every 10th Star Chart
 level, finished. Ads are non-personalised (`npa`), so no tracking prompt is shown.
 
-`app.config.json` ships with **Google's public test ids** and
-`"admob": { "testing": true }`, so a TestFlight build shows test ads with no
-account. Before the store build:
+`app.config.json` carries the real iOS AdMob app id and unit ids (6 Oct
+2026) and `"admob": { "testing": true }`, so a TestFlight build still shows
+Google's test ads. The adapter initialises the SDK, then runs Google's
+consent platform (UMP) and gates every ad on its answer; where UMP requires
+a reachable privacy-options entry, the Profile shows one. `npm run
+test:adapter` runs the actual adapter against mocked plugins and `npm run
+test:config` proves the ids reach it. The full setup, consent and launch
+notes are in `ADMOB_SETUP.md`. Before the store build:
 
 1. admob.google.com → Apps → Add app (iOS, then Android) → copy each **App
    ID** (`ca-app-pub-…~…`) into `admob.iosAppId` / `admob.androidAppId`.
@@ -75,8 +80,9 @@ account. Before the store build:
    not linked to you, not used for tracking (non-personalised ads).
 
 The adapter (`adapter/adapter.js`, `adsOf`) preloads one rewarded and one
-interstitial ad, shows them on request and reloads after each. If the SDK
-cannot load an ad, the game simply does not offer it.
+interstitial ad once consent allows it, shows them on request and reloads
+after each. If the SDK cannot load an ad, or consent does not allow one,
+the game simply does not offer it.
 
 ## CrazyGames (the web portal)
 

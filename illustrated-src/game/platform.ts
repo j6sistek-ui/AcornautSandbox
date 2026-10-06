@@ -69,6 +69,12 @@ export type PlatformAdapter = {
     interstitialReady(): boolean;
     /** show a full-screen ad at a natural break; resolves when it closes */
     interstitial(placement: AdPlacement, started?: () => void): Promise<void>;
+    /** the ad SDK's consent platform says the pilot must be able to change
+     *  their privacy choice (UMP privacyOptionsRequirementStatus REQUIRED);
+     *  the Profile shows a PRIVACY OPTIONS row while this is true */
+    privacyOptionsRequired?(): boolean;
+    /** show that form; "updated" once consent was refreshed afterwards */
+    showPrivacyOptionsForm?(): Promise<"updated" | "unavailable">;
   };
   /** GAMEPLAY EVENTS (13 Sep 2026, CrazyGames). A portal wants to know
    *  when the pilot is actually flying (its ads, its metrics and its
@@ -121,6 +127,9 @@ export type Platform = {
   showRewardedAd(placement: AdPlacement, started?: () => void): Promise<AdOutcome>;
   interstitialAdReady(): boolean;
   showInterstitialAd(placement: AdPlacement, started?: () => void): Promise<void>;
+  /** the shell's consent platform requires a reachable privacy-options entry */
+  privacyOptionsRequired(): boolean;
+  showPrivacyOptions(): Promise<"updated" | "unavailable">;
   /** the pilot is flying / has stopped flying (see PlatformAdapter.gameplay) */
   gameplayStart(): void;
   gameplayStop(): void;
@@ -197,6 +206,10 @@ function build(a: PlatformAdapter | null): Platform {
     // an ad that throws or hangs must never hold the game: a shell resolves
     // on close, and a failure resolves too
     showInterstitialAd: (placement, started) => ads ? ads.interstitial(placement, started).catch(() => undefined) : Promise.resolve(),
+    privacyOptionsRequired: () => { try { return !!ads?.privacyOptionsRequired?.(); } catch { return false; } },
+    showPrivacyOptions: () => ads?.showPrivacyOptionsForm
+      ? ads.showPrivacyOptionsForm().catch(() => "unavailable" as const)
+      : Promise.resolve("unavailable" as const),
     // a portal that is down never costs a run: every event is a try
     gameplayStart: () => { try { a?.gameplay?.start(); } catch { /* the pilot flies regardless */ } },
     gameplayStop: () => { try { a?.gameplay?.stop(); } catch { /* ditto */ } },
