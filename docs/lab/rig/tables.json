@@ -1,5 +1,5 @@
 {
- "artVer": "302",
+ "artVer": "303",
  "suits": [
   {
    "id": "flight",
@@ -330,10 +330,10 @@
    "key": "suit:gemmie",
    "file": "suits/gemmie.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    211,
+    107,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -351,10 +351,10 @@
    "key": "suit:sammie",
    "file": "suits/sammie.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -372,10 +372,10 @@
    "key": "suit:seraph",
    "file": "suits/seraph.png",
    "dome": [
-    203,
-    127,
-    32.68,
-    0
+    205,
+    131,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -3659,10 +3659,10 @@
    "key": "gemmie-asc-1",
    "file": "suits/gemmie-asc-1.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    211,
+    107,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3681,10 +3681,10 @@
    "key": "gemmie-asc-2",
    "file": "suits/gemmie-asc-2.png",
    "dome": [
-    206,
-    105.3,
-    36,
-    0
+    211,
+    106.3,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3703,10 +3703,10 @@
    "key": "gemmie-asc-3",
    "file": "suits/gemmie-asc-3.png",
    "dome": [
-    206,
-    104.5,
-    36,
-    0
+    211,
+    105.5,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3725,10 +3725,10 @@
    "key": "gemmie-asc-4",
    "file": "suits/gemmie-asc-4.png",
    "dome": [
-    206,
-    103.6,
-    36,
-    0
+    211,
+    104.6,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3747,10 +3747,10 @@
    "key": "gemmie-asc-5",
    "file": "suits/gemmie-asc-5.png",
    "dome": [
-    206,
-    102.5,
-    36,
-    0
+    211,
+    103.5,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3769,10 +3769,10 @@
    "key": "gemmie-asc-6",
    "file": "suits/gemmie-asc-6.png",
    "dome": [
-    206,
-    101.3,
-    36,
-    0
+    211,
+    102.3,
+    28.39,
+    -1
    ],
    "box": [
     32,
@@ -3791,10 +3791,10 @@
    "key": "gemmie-asc-7",
    "file": "suits/gemmie-asc-7.png",
    "dome": [
-    206,
-    100,
-    36,
-    -5
+    211,
+    101,
+    28.39,
+    -4
    ],
    "box": [
     32,
@@ -3813,10 +3813,10 @@
    "key": "gemmie-asc-8",
    "file": "suits/gemmie-asc-8.png",
    "dome": [
-    206,
-    99,
-    36,
-    -15
+    210,
+    100,
+    28.39,
+    -11
    ],
    "box": [
     32,
@@ -3835,10 +3835,10 @@
    "key": "gemmie-desc-1",
    "file": "suits/gemmie-desc-1.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    211,
+    108,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3857,10 +3857,10 @@
    "key": "gemmie-desc-2",
    "file": "suits/gemmie-desc-2.png",
    "dome": [
-    206,
-    106.8,
-    36,
-    0
+    211,
+    108.8,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3879,10 +3879,10 @@
    "key": "gemmie-desc-3",
    "file": "suits/gemmie-desc-3.png",
    "dome": [
-    206,
-    107.8,
-    36,
-    0
+    211,
+    108.8,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3901,10 +3901,10 @@
    "key": "gemmie-desc-4",
    "file": "suits/gemmie-desc-4.png",
    "dome": [
-    206,
-    109,
-    36,
-    5
+    211,
+    110,
+    28.39,
+    6
    ],
    "box": [
     32,
@@ -3923,10 +3923,10 @@
    "key": "gemmie-desc-5",
    "file": "suits/gemmie-desc-5.png",
    "dome": [
-    206,
-    110.2,
-    36,
-    5
+    211,
+    111.2,
+    28.39,
+    6
    ],
    "box": [
     32,
@@ -3945,10 +3945,10 @@
    "key": "gemmie-desc-6",
    "file": "suits/gemmie-desc-6.png",
    "dome": [
-    206,
-    111.6,
-    36,
-    5
+    211,
+    112.6,
+    28.39,
+    6
    ],
    "box": [
     32,
@@ -3967,10 +3967,10 @@
    "key": "gemmie-desc-7",
    "file": "suits/gemmie-desc-7.png",
    "dome": [
-    206,
-    113,
-    36,
-    5
+    211,
+    114,
+    28.39,
+    6
    ],
    "box": [
     32,
@@ -3989,10 +3989,10 @@
    "key": "gemmie-desc-8",
    "file": "suits/gemmie-desc-8.png",
    "dome": [
-    206,
-    114,
-    36,
-    5
+    211,
+    115,
+    28.39,
+    6
    ],
    "box": [
     32,
@@ -5611,10 +5611,10 @@
    "key": "sammie-asc-1",
    "file": "suits/sammie-asc-1.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -5633,10 +5633,10 @@
    "key": "sammie-asc-2",
    "file": "suits/sammie-asc-2.png",
    "dome": [
-    206,
+    208,
     105.3,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -5655,10 +5655,10 @@
    "key": "sammie-asc-3",
    "file": "suits/sammie-asc-3.png",
    "dome": [
-    206,
+    208,
     104.5,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -5677,10 +5677,10 @@
    "key": "sammie-asc-4",
    "file": "suits/sammie-asc-4.png",
    "dome": [
-    206,
+    208,
     103.6,
-    36,
-    -5
+    28.95,
+    -2
    ],
    "box": [
     32,
@@ -5699,10 +5699,10 @@
    "key": "sammie-asc-5",
    "file": "suits/sammie-asc-5.png",
    "dome": [
-    206,
+    208,
     102.5,
-    36,
-    -5
+    28.95,
+    -2
    ],
    "box": [
     32,
@@ -5721,10 +5721,10 @@
    "key": "sammie-asc-6",
    "file": "suits/sammie-asc-6.png",
    "dome": [
-    206,
+    208,
     101.3,
-    36,
-    -5
+    28.95,
+    -2
    ],
    "box": [
     32,
@@ -5743,10 +5743,10 @@
    "key": "sammie-asc-7",
    "file": "suits/sammie-asc-7.png",
    "dome": [
-    206,
+    208,
     100,
-    36,
-    -5
+    28.95,
+    -1
    ],
    "box": [
     32,
@@ -5765,10 +5765,10 @@
    "key": "sammie-asc-8",
    "file": "suits/sammie-asc-8.png",
    "dome": [
-    206,
+    208,
     99,
-    36,
-    -5
+    28.95,
+    0
    ],
    "box": [
     32,
@@ -5787,10 +5787,10 @@
    "key": "sammie-desc-1",
    "file": "suits/sammie-desc-1.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
-    0
+    28.95,
+    4
    ],
    "box": [
     32,
@@ -5809,10 +5809,10 @@
    "key": "sammie-desc-2",
    "file": "suits/sammie-desc-2.png",
    "dome": [
-    206,
+    208,
     106.8,
-    36,
-    0
+    28.95,
+    7
    ],
    "box": [
     32,
@@ -5831,10 +5831,10 @@
    "key": "sammie-desc-3",
    "file": "suits/sammie-desc-3.png",
    "dome": [
-    206,
+    208,
     107.8,
-    36,
-    0
+    28.95,
+    5
    ],
    "box": [
     32,
@@ -5853,10 +5853,10 @@
    "key": "sammie-desc-4",
    "file": "suits/sammie-desc-4.png",
    "dome": [
-    206,
+    208,
     109,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -5875,10 +5875,10 @@
    "key": "sammie-desc-5",
    "file": "suits/sammie-desc-5.png",
    "dome": [
-    206,
+    208,
     110.2,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -5897,10 +5897,10 @@
    "key": "sammie-desc-6",
    "file": "suits/sammie-desc-6.png",
    "dome": [
-    206,
+    208,
     111.6,
-    36,
-    5
+    28.95,
+    8
    ],
    "box": [
     32,
@@ -5919,10 +5919,10 @@
    "key": "sammie-desc-7",
    "file": "suits/sammie-desc-7.png",
    "dome": [
-    206,
+    208,
     113,
-    36,
-    5
+    28.95,
+    8
    ],
    "box": [
     32,
@@ -5941,10 +5941,10 @@
    "key": "sammie-desc-8",
    "file": "suits/sammie-desc-8.png",
    "dome": [
-    206,
-    114,
-    36,
-    5
+    213,
+    115,
+    28.95,
+    8
    ],
    "box": [
     32,
@@ -5963,10 +5963,10 @@
    "key": "seraph-asc-1",
    "file": "suits/seraph-asc-1.png",
    "dome": [
-    203,
-    127,
-    32.68,
-    0
+    205,
+    131,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -5980,10 +5980,10 @@
    "key": "seraph-asc-2",
    "file": "suits/seraph-asc-2.png",
    "dome": [
-    203,
-    125,
-    32.68,
-    0
+    205,
+    129,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -5997,10 +5997,10 @@
    "key": "seraph-asc-3",
    "file": "suits/seraph-asc-3.png",
    "dome": [
-    203,
-    123,
-    32.68,
-    0
+    205,
+    127,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6014,10 +6014,10 @@
    "key": "seraph-asc-4",
    "file": "suits/seraph-asc-4.png",
    "dome": [
-    203,
-    130,
-    32.68,
-    0
+    205,
+    134,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6031,10 +6031,10 @@
    "key": "seraph-asc-5",
    "file": "suits/seraph-asc-5.png",
    "dome": [
-    203,
-    128,
-    32.68,
-    0
+    205,
+    132,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6048,10 +6048,10 @@
    "key": "seraph-asc-6",
    "file": "suits/seraph-asc-6.png",
    "dome": [
-    203,
-    126,
-    32.68,
-    -3
+    205,
+    130,
+    27.89,
+    -1
    ],
    "box": null,
    "ownHead": false,
@@ -6065,10 +6065,10 @@
    "key": "seraph-asc-7",
    "file": "suits/seraph-asc-7.png",
    "dome": [
-    203,
-    124,
-    32.68,
-    -6
+    205,
+    128,
+    27.89,
+    -4
    ],
    "box": null,
    "ownHead": false,
@@ -6082,10 +6082,10 @@
    "key": "seraph-asc-8",
    "file": "suits/seraph-asc-8.png",
    "dome": [
-    203,
-    122,
-    32.68,
-    -10
+    205,
+    126,
+    27.89,
+    -8
    ],
    "box": null,
    "ownHead": false,
@@ -6099,10 +6099,10 @@
    "key": "seraph-desc-1",
    "file": "suits/seraph-desc-1.png",
    "dome": [
-    203,
-    127,
-    32.68,
-    0
+    205,
+    131,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6116,10 +6116,10 @@
    "key": "seraph-desc-2",
    "file": "suits/seraph-desc-2.png",
    "dome": [
-    203,
-    130,
-    32.68,
-    0
+    205,
+    134,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6133,10 +6133,10 @@
    "key": "seraph-desc-3",
    "file": "suits/seraph-desc-3.png",
    "dome": [
-    203,
-    133,
-    32.68,
-    2
+    205,
+    137,
+    27.89,
+    4
    ],
    "box": null,
    "ownHead": false,
@@ -6150,10 +6150,10 @@
    "key": "seraph-desc-4",
    "file": "suits/seraph-desc-4.png",
    "dome": [
-    203,
-    137,
-    32.68,
-    10
+    205,
+    141,
+    27.89,
+    12
    ],
    "box": null,
    "ownHead": false,
@@ -6167,10 +6167,10 @@
    "key": "seraph-desc-5",
    "file": "suits/seraph-desc-5.png",
    "dome": [
-    202,
-    141,
-    32.68,
-    17
+    204,
+    145,
+    27.89,
+    19
    ],
    "box": null,
    "ownHead": false,
@@ -6184,10 +6184,10 @@
    "key": "seraph-desc-6",
    "file": "suits/seraph-desc-6.png",
    "dome": [
-    201,
-    144,
-    32.68,
-    21
+    203,
+    148,
+    27.89,
+    23
    ],
    "box": null,
    "ownHead": false,
@@ -6201,10 +6201,10 @@
    "key": "seraph-desc-7",
    "file": "suits/seraph-desc-7.png",
    "dome": [
-    203,
-    158,
-    32.68,
-    52
+    201,
+    163,
+    27.89,
+    57
    ],
    "box": null,
    "ownHead": false,
@@ -6218,10 +6218,10 @@
    "key": "seraph-desc-8",
    "file": "suits/seraph-desc-8.png",
    "dome": [
-    201,
+    197,
     163,
-    32.68,
-    60
+    27.89,
+    62
    ],
    "box": null,
    "ownHead": false,
