@@ -68,7 +68,10 @@ for suit,frames in reg['report'].items():
             p=eye_center(rgba,f['head'])
             if p is None:failures.append(f['key']+': pupil not found')
             else:eyes.append(p)
-            if not os.environ.get('NATURAL_FLIGHT_OUTPUT') and dome.get(f['key'])!=reg['anchors'][f['key']]:failures.append(f['key']+': DOME differs from measured export')
+            # a suit the owner has refitted by eye on the rig editor keeps the
+            # measured anchors as the export record, but DOME is the owner's
+            # rows now, so the parity check stands down for it (registration.json owner_refit)
+            if not os.environ.get('NATURAL_FLIGHT_OUTPUT') and suit not in reg.get('owner_refit',{}) and dome.get(f['key'])!=reg['anchors'][f['key']]:failures.append(f['key']+': DOME differs from measured export')
     pairs=[(i,i+1) for i in range(15) if suit in loops or i!=7]
     if suit in loops:pairs.append((15,0))
     near=far=0

@@ -83,10 +83,11 @@ if (engine) {
   tick(1); ok(app.querySelector("[data-ad-dust]")?.disabled, "the spent row is disabled");
   // interstitial cadence
   shown.length = 0;
-  engine.save.runs = 0; engine.save.crashesSinceAd = 99; engine.save.lastAdAt = 0;
+  engine.save.highScore = C.AD_RULES.interstitialAfterGates - 1; engine.save.deepBest = engine.save.lostBest = engine.save.arcadeBest = 0;
+  engine.save.runs = 99; engine.save.crashesSinceAd = 99; engine.save.lastAdAt = 0;
   let ran = 0; engine.afterCrash(() => ran++);
-  ok(ran === 1 && !shown.some((s) => s.startsWith("interstitial")), "no full-screen ad inside the grace runs");
-  engine.save.runs = C.AD_RULES.interstitialGraceRuns; engine.save.crashesSinceAd = C.AD_RULES.interstitialEveryCrashes - 1;
+  ok(ran === 1 && !shown.some((s) => s.startsWith("interstitial")), "no full-screen ad before a best run has passed 30 gates, however many runs");
+  engine.save.arcadeBest = C.AD_RULES.interstitialAfterGates; engine.save.crashesSinceAd = C.AD_RULES.interstitialEveryCrashes - 1;
   engine.afterCrash(() => ran++);
   ok(ran === 2 && !shown.some((s) => s.startsWith("interstitial")), "not before the Nth crash");
   engine.save.crashesSinceAd = C.AD_RULES.interstitialEveryCrashes;
@@ -106,4 +107,21 @@ ok(/__ACORNAUT_BETA__/.test(src) && /betaAds/.test(src), "the beta page carries 
 ok(/adsReady: !!ads/.test(src), "a page with no adapter and no beta flag has no ads");
 
 if (fail.length) { console.error("ads: FAIL\n  " + fail.join("\n  ")); process.exit(1); }
-console.log(`ads: rewarded continue (earned/dismissed/unloaded), ${C.AD_RULES.rewardedDustPerDay}x${C.AD_RULES.rewardedDust} ad dust with a daily cap, interstitial grace/cadence/gap, free revive in the sim, web/beta split - passed`);
+// every 10th Star Chart level: its result sheet's exit plays one full-screen ad
+{
+  shown.length = 0; engine.save.lastAdAt = 0;
+  const level = (id, finished = true) => { engine.world.lastLevel = { def: { id }, finished, newMask: 0, gained: 0, totalBefore: 0, totalAfter: 0 }; };
+  let left = 0;
+  level("1-9"); engine.afterLevel(() => left++);
+  ok(left === 1 && !shown.some((s) => s.startsWith("interstitial")), "level 9: no ad");
+  level("1-10", false); engine.afterLevel(() => left++);
+  ok(left === 2 && !shown.some((s) => s.startsWith("interstitial")), "level 10 not finished: no ad");
+  level("1-10"); await new Promise((r) => { engine.afterLevel(() => { left++; r(); }); });
+  ok(left === 3 && shown.filter((s) => s === "interstitial:level").length === 1 && engine.save.lastAdAt > 0, "level 10 finished: one full-screen ad at the sheet's exit");
+  level("2-10"); engine.afterLevel(() => left++);
+  ok(left === 4 && shown.filter((s) => s === "interstitial:level").length === 1, "level 20 inside the gap: no second ad");
+  engine.save.lastAdAt = 0; level("3-10"); await new Promise((r) => { engine.afterLevel(() => { left++; r(); }); });
+  ok(left === 5 && shown.filter((s) => s === "interstitial:level").length === 2, "level 30 past the gap: the ad plays again");
+  engine.world.lastLevel = null;
+}
+console.log(`ads: rewarded continue (earned/dismissed/unloaded), ${C.AD_RULES.rewardedDustPerDay}x${C.AD_RULES.rewardedDust} ad dust with a daily cap, interstitial after 30 gates and every 10th level, grace/cadence/gap, free revive in the sim, web/beta split - passed`);

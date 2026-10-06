@@ -93,6 +93,19 @@ CALIBRATED_HELMET_TOLERANCE = 0.05
 NATURAL_FLIGHT_SUITS = {"iontrim", "copper", "voidsuit", "sammie", "gemmie", "leviathan", "ember", "frost", "ghost"}
 # Owner-requested skull normalization uses a shared 192px presentation box.
 CALIBRATED_HELMET_SCALES.update({suit: 36 / 192 for suit in NATURAL_FLIGHT_SUITS})
+# Suits the owner has refitted by eye on the rig editor leave the shared
+# 36px template; each row below is the owner's number.
+CALIBRATED_HELMET_SCALES["iontrim"] = 28.95 / 192   # 5 Oct 2026
+CALIBRATED_HELMET_SCALES["copper"] = 31.97 / 192    # 5 Oct 2026
+CALIBRATED_HELMET_SCALES["frost"] = 30.73 / 192     # 5 Oct 2026
+CALIBRATED_HELMET_SCALES["voidsuit"] = 29.53 / 192  # 5 Oct 2026
+CALIBRATED_HELMET_SCALES["ember"] = 33.26 / 192     # 5 Oct 2026
+CALIBRATED_HELMET_SCALES["ghost"] = 30.73 / 192     # 5 Oct 2026
+CALIBRATED_HELMET_SCALES["robo"] = 32.71 / 189      # 5 Oct 2026, owner refit (was 36.12)
+CALIBRATED_HELMET_SCALES["gemmie"] = 28.39 / 192    # 5 Oct 2026
+CALIBRATED_HELMET_SCALES["sammie"] = 28.95 / 192    # 5 Oct 2026
+CALIBRATED_HELMET_SCALES["leviathan"] = 29.53 / 192 # 6 Oct 2026
+CALIBRATED_HELMET_SCALES["bigbooty"] = 25.36 / 187  # 6 Oct 2026, owner refit (was 28)
 PAL_ALPHA = 15
 PAL_MIN_STRAY_AREA = 4
 PAL_MAX_DETACHED_GAP = 16
@@ -1051,7 +1064,11 @@ def verify_pose_domes(qa: QA) -> None:
                             f"{','.join(map(str, missing))} - those poses fall back "
                             f"to the static anchor and the glass jumps")
         radii = {r for _, _, r in frames.values()}
-        if len(radii) > 1:
+        # a suit the owner fitted frame by frame keeps a radius per pose by
+        # decision (helmet-art-baseline.json per_frame_radii); the gesture
+        # is reviewed live rather than held to one number
+        per_frame = json.loads(HELMET_ART_BASELINE.read_text(encoding="utf8"))["larger_painted_heads"].get("per_frame_radii", {})
+        if len(radii) > 1 and suit not in per_frame:
             problems.append(f"{suit}'s helmet changes size mid-gesture: radii "
                             f"{sorted(radii)}")
     if problems:
@@ -1516,7 +1533,9 @@ def verify_motion_banks(qa: QA) -> None:
                                         "art; the painting changed and needs a new review")
                 else:
                     radii.append(radius)
-                    regular_radius = larger_heads["bank_radii"].get(suit)
+                    # a suit the owner fitted frame by frame carries its own
+                    # radius per pose (per_frame_radii); no single number to hold it to
+                    regular_radius = None if suit in larger_heads.get("per_frame_radii", {}) else larger_heads["bank_radii"].get(suit)
                     if regular_radius is not None and radius != regular_radius:
                         problems.append(f"{key}: only the named larger-head poses may "
                                         f"leave radius {regular_radius}; got {radius:g}")
@@ -1542,7 +1561,9 @@ def verify_motion_banks(qa: QA) -> None:
                 problems.append(f"{suit}: its pose bank spans only {span:.0f} degrees "
                                 f"of pitch ({MOTION_MIN_PITCH_SPAN:.0f} is the floor) - "
                                 f"velocity indexing has nothing to pick between")
-        if len(radii) > 1:
+        # a suit the owner fitted frame by frame keeps a radius per pose by
+        # decision (per_frame_radii): the breathing is reviewed live, not gated
+        if len(radii) > 1 and suit not in larger_heads.get("per_frame_radii", {}):
             spread = (max(radii) - min(radii)) / (sum(radii) / len(radii))
             if spread > 0.04:
                 problems.append(f"{suit}: head radius swings {min(radii):.0f}-"

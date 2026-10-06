@@ -54,10 +54,12 @@ the shell set `window.__ACORNAUT_IAP__ = true` before the bundle loads.
 Owner, 13 Sep 2026: *"just ad revenue for now ... tying in ads."* Three
 placements, all numbers in `AD_RULES` (`game/catalog.ts`): a rewarded ad
 continues a crashed free flight for free (the acorn continue stays as the
-other way), a rewarded ad in the Shop pays 25 Star Dust up to three times a
+other way), a rewarded ad in the Shop pays 10 Star Dust up to five times a
 day, and a full-screen ad plays when the pilot leaves the crash sheet after
-every third crash, never in the first five runs and never twice within two
-minutes. Ads are non-personalised (`npa`), so no tracking prompt is shown.
+every third crash, never before a best run has passed 30 gates (owner, 6 Oct
+2026: "to not burden early bad players") and never twice within two minutes,
+and one more when the pilot leaves the result sheet of every 10th Star Chart
+level, finished. Ads are non-personalised (`npa`), so no tracking prompt is shown.
 
 `app.config.json` ships with **Google's public test ids** and
 `"admob": { "testing": true }`, so a TestFlight build shows test ads with no

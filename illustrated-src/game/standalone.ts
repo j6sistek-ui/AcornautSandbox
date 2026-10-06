@@ -3720,13 +3720,14 @@ export async function bootStandalone(root: HTMLElement) {
     const stars = routeMasks(engine.save, CHART_LEVELS);
     if (last.finished && next && levelUnlocked(next, stars, last.totalAfter, engine.save.raceGates)) {
       const go = el("button", "ac-primary", `NEXT \u2014 ${next.ord} ${next.name.toUpperCase()}`);
-      go.onclick = () => engine.flyLevel(next.id);
+      go.onclick = () => engine.afterLevel(() => engine.flyLevel(next.id));
       sheet.append(go);
     }
+    // leaving the result sheet is where a 10th level's full-screen ad may play (engine.afterLevel)
     const retry = el("button", last.finished ? "ac-ghost" : "ac-primary", last.finished ? "FLY IT AGAIN" : "RETRY");
-    retry.onclick = () => engine.flyLevel(last.def.id);
+    retry.onclick = () => engine.afterLevel(() => engine.flyLevel(last.def.id));
     const chart = el("button", "ac-ghost", "STAR CHART");
-    chart.onclick = () => engine.open("log");
+    chart.onclick = () => engine.afterLevel(() => engine.open("log"));
     sheet.append(retry, chart);
     return sheet;
   }

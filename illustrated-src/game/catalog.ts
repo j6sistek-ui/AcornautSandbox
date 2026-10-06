@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "298";
+export const ART_VER = "306";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -1007,14 +1007,17 @@ export const BOOST_IDS = Object.keys(BOOSTS) as BoostId[];
  *  a rewarded ad continues a crashed free flight for free (the acorn
  *  continue stays as the other option); a rewarded ad in the Shop pays
  *  Star Dust, a few times a day; a full-screen ad plays at the crash
- *  sheet's exit every few crashes, never in a pilot's first runs and never
- *  twice within the gap. The web page has no ads; the beta page pretends. */
+ *  sheet's exit every few crashes, never before the pilot has once passed
+ *  30 gates (owner, 6 Oct 2026: "to not burden early bad players") and
+ *  never twice within the gap. The web page has no ads; the beta page
+ *  pretends. Retuned 6 Oct 2026: 10 dust up to 5 a day, was 25 up to 3. */
 export const AD_RULES = {
-  rewardedDust: 25,             // Star Dust for one rewarded ad in the Shop
-  rewardedDustPerDay: 3,        // how many of those a day
+  rewardedDust: 10,             // Star Dust for one rewarded ad in the Shop
+  rewardedDustPerDay: 5,        // how many of those a day
   interstitialEveryCrashes: 3,  // a full-screen ad after every third crash...
   interstitialMinGapSec: 120,   // ...and never within two minutes of the last
-  interstitialGraceRuns: 5,     // no full-screen ads in a pilot's first five runs
+  interstitialAfterGates: 30,   // ...and only once a best run has passed 30 gates
+  interstitialEveryLevels: 10,  // and one at the exit of every 10th Star Chart level's result sheet
 };
 export const DAILY_DUST = 5;
 export const DAILY_STREAK_BONUS = 25;

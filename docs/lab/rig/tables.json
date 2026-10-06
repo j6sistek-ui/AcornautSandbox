@@ -1,5 +1,5 @@
 {
- "artVer": "298",
+ "artVer": "306",
  "suits": [
   {
    "id": "flight",
@@ -99,9 +99,9 @@
    "file": "suits/iontrim.png",
    "dome": [
     206,
-    106,
-    36,
-    0
+    109,
+    28.95,
+    6
    ],
    "box": [
     32,
@@ -119,10 +119,10 @@
    "key": "suit:copper",
    "file": "suits/copper.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    207,
+    108,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -140,10 +140,9 @@
    "key": "suit:frost",
    "file": "suits/frost.png",
    "dome": [
-    206,
+    210,
     106,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -163,8 +162,8 @@
    "dome": [
     206,
     106,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -182,9 +181,9 @@
    "key": "suit:ember",
    "file": "suits/ember.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
+    33.26,
     0
    ],
    "box": [
@@ -203,9 +202,9 @@
    "key": "suit:robo",
    "file": "suits/robo.png",
    "dome": [
-    179,
-    96,
-    36.12,
+    184,
+    98,
+    32.71,
     0
    ],
    "box": null,
@@ -234,9 +233,9 @@
    "key": "suit:ghost",
    "file": "suits/ghost.png",
    "dome": [
-    206,
-    106,
-    36,
+    208,
+    109,
+    30.73,
     0
    ],
    "box": [
@@ -255,9 +254,9 @@
    "key": "suit:bigbooty",
    "file": "suits/bigbooty.png",
    "dome": [
-    183,
-    106,
-    28,
+    184,
+    108,
+    25.36,
     10
    ],
    "box": null,
@@ -331,10 +330,10 @@
    "key": "suit:gemmie",
    "file": "suits/gemmie.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    211,
+    107,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -352,10 +351,10 @@
    "key": "suit:sammie",
    "file": "suits/sammie.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -373,10 +372,10 @@
    "key": "suit:seraph",
    "file": "suits/seraph.png",
    "dome": [
-    203,
-    127,
-    32.68,
-    0
+    205,
+    131,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -389,9 +388,9 @@
    "key": "suit:leviathan",
    "file": "suits/leviathan.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -410,10 +409,10 @@
    "key": "suit:verdant",
    "file": "suits/verdant.png",
    "dome": [
-    196,
-    92,
-    41,
-    0
+    204.19,
+    98.83,
+    37.88,
+    6
    ],
    "box": null,
    "ownHead": false,
@@ -426,10 +425,10 @@
    "key": "suit:cryostar",
    "file": "suits/cryostar.png",
    "dome": [
-    198,
-    93,
-    41,
-    0
+    202,
+    99,
+    38.64,
+    5
    ],
    "box": null,
    "ownHead": false,
@@ -442,9 +441,9 @@
    "key": "suit:eclipse",
    "file": "suits/eclipse.png",
    "dome": [
-    202,
+    205,
     89,
-    46.4,
+    41.2,
     -5
    ],
    "box": null,
@@ -473,9 +472,10 @@
    "key": "suit:cinderforge",
    "file": "suits/cinderforge.png",
    "dome": [
-    181,
-    88,
-    36
+    187.73,
+    92.62,
+    31.34,
+    3
    ],
    "box": null,
    "ownHead": false,
@@ -489,8 +489,8 @@
    "file": "suits/groveguard.png",
    "dome": [
     181,
-    88,
-    36
+    92,
+    31.34
    ],
    "box": null,
    "ownHead": false,
@@ -503,9 +503,9 @@
    "key": "suit:cosmic",
    "file": "suits/cosmic.png",
    "dome": [
-    181,
-    88,
-    36
+    182,
+    93,
+    32.61
    ],
    "box": null,
    "ownHead": false,
@@ -533,9 +533,9 @@
    "key": "suit:sunforged",
    "file": "suits/sunforged.png",
    "dome": [
-    181,
-    88,
-    36
+    184,
+    92,
+    31.34
    ],
    "box": null,
    "ownHead": false,
@@ -548,9 +548,9 @@
    "key": "suit:abyssal",
    "file": "suits/abyssal.png",
    "dome": [
-    181,
-    88,
-    36
+    182,
+    90,
+    30.12
    ],
    "box": null,
    "ownHead": false,
@@ -851,9 +851,9 @@
    "key": "bigbooty-tap-1",
    "file": "suits/bigbooty-tap-1.png",
    "dome": [
-    206,
-    88,
-    32.8,
+    207,
+    90,
+    29.71,
     10
    ],
    "box": null,
@@ -868,9 +868,9 @@
    "key": "bigbooty-tap-2",
    "file": "suits/bigbooty-tap-2.png",
    "dome": [
-    206,
-    89,
-    32.8,
+    207,
+    91,
+    29.71,
     10
    ],
    "box": null,
@@ -885,9 +885,9 @@
    "key": "bigbooty-tap-3",
    "file": "suits/bigbooty-tap-3.png",
    "dome": [
-    206,
-    86,
-    32.8,
+    209,
+    88,
+    29.71,
     10
    ],
    "box": null,
@@ -902,9 +902,9 @@
    "key": "bigbooty-tap-4",
    "file": "suits/bigbooty-tap-4.png",
    "dome": [
-    206,
-    79,
-    32.8,
+    196,
+    81,
+    27.99,
     10
    ],
    "box": null,
@@ -919,9 +919,9 @@
    "key": "bigbooty-tap-5",
    "file": "suits/bigbooty-tap-5.png",
    "dome": [
-    207,
-    72,
-    32.8,
+    208,
+    74,
+    29.71,
     10
    ],
    "box": null,
@@ -936,9 +936,9 @@
    "key": "bigbooty-tap-6",
    "file": "suits/bigbooty-tap-6.png",
    "dome": [
-    208,
-    71,
-    32.8,
+    209,
+    73,
+    29.71,
     10
    ],
    "box": null,
@@ -953,9 +953,9 @@
    "key": "bigbooty-tap-7",
    "file": "suits/bigbooty-tap-7.png",
    "dome": [
-    206,
-    77,
-    32.8,
+    207,
+    79,
+    29.71,
     10
    ],
    "box": null,
@@ -970,9 +970,9 @@
    "key": "bigbooty-tap-8",
    "file": "suits/bigbooty-tap-8.png",
    "dome": [
-    202,
-    87,
-    32.8,
+    205,
+    92,
+    26.91,
     10
    ],
    "box": null,
@@ -987,9 +987,9 @@
    "key": "bigbooty-tap-9",
    "file": "suits/bigbooty-tap-9.png",
    "dome": [
-    203,
-    87,
-    32.8,
+    201,
+    90,
+    26.38,
     10
    ],
    "box": null,
@@ -1004,10 +1004,10 @@
    "key": "bigbooty-tap-10",
    "file": "suits/bigbooty-tap-10.png",
    "dome": [
-    209,
-    78,
-    32.8,
-    10
+    217,
+    73,
+    27.99,
+    15
    ],
    "box": null,
    "ownHead": false,
@@ -1021,9 +1021,9 @@
    "key": "bigbooty-tap-11",
    "file": "suits/bigbooty-tap-11.png",
    "dome": [
-    213,
-    74,
-    32.8,
+    215,
+    76,
+    28.55,
     10
    ],
    "box": null,
@@ -1038,9 +1038,9 @@
    "key": "bigbooty-tap-12",
    "file": "suits/bigbooty-tap-12.png",
    "dome": [
-    209,
-    79,
-    32.8,
+    215,
+    72,
+    29.13,
     10
    ],
    "box": null,
@@ -1055,9 +1055,9 @@
    "key": "bigbooty-tap-13",
    "file": "suits/bigbooty-tap-13.png",
    "dome": [
-    203,
-    87,
-    32.8,
+    204,
+    90,
+    27.99,
     10
    ],
    "box": null,
@@ -1072,9 +1072,9 @@
    "key": "bigbooty-tap-14",
    "file": "suits/bigbooty-tap-14.png",
    "dome": [
-    200,
-    90,
-    32.8,
+    201,
+    92,
+    28.55,
     10
    ],
    "box": null,
@@ -1089,9 +1089,9 @@
    "key": "bigbooty-tap-15",
    "file": "suits/bigbooty-tap-15.png",
    "dome": [
-    202,
-    85,
-    32.8,
+    203,
+    87,
+    29.71,
     10
    ],
    "box": null,
@@ -1106,9 +1106,9 @@
    "key": "bigbooty-tap-16",
    "file": "suits/bigbooty-tap-16.png",
    "dome": [
-    206,
-    80,
-    32.8,
+    207,
+    82,
+    29.71,
     10
    ],
    "box": null,
@@ -1395,10 +1395,10 @@
    "key": "copper-asc-1",
    "file": "suits/copper-asc-1.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    207,
+    108,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1417,10 +1417,10 @@
    "key": "copper-asc-2",
    "file": "suits/copper-asc-2.png",
    "dome": [
-    206,
-    105.3,
-    36,
-    0
+    207,
+    107.3,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1439,10 +1439,10 @@
    "key": "copper-asc-3",
    "file": "suits/copper-asc-3.png",
    "dome": [
-    206,
-    104.5,
-    36,
-    -5
+    207,
+    106.5,
+    31.97,
+    -2
    ],
    "box": [
     32,
@@ -1461,10 +1461,10 @@
    "key": "copper-asc-4",
    "file": "suits/copper-asc-4.png",
    "dome": [
-    206,
-    103.6,
-    36,
-    0
+    207,
+    105.6,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1483,10 +1483,10 @@
    "key": "copper-asc-5",
    "file": "suits/copper-asc-5.png",
    "dome": [
-    206,
-    102.5,
-    36,
-    0
+    207,
+    104.5,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1505,10 +1505,10 @@
    "key": "copper-asc-6",
    "file": "suits/copper-asc-6.png",
    "dome": [
-    206,
-    101.3,
-    36,
-    0
+    207,
+    103.3,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1527,10 +1527,10 @@
    "key": "copper-asc-7",
    "file": "suits/copper-asc-7.png",
    "dome": [
-    206,
-    100,
-    36,
-    -5
+    207,
+    102,
+    31.97,
+    -2
    ],
    "box": [
     32,
@@ -1549,10 +1549,10 @@
    "key": "copper-asc-8",
    "file": "suits/copper-asc-8.png",
    "dome": [
-    206,
-    99,
-    36,
-    0
+    207,
+    101,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1571,10 +1571,10 @@
    "key": "copper-desc-1",
    "file": "suits/copper-desc-1.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    207,
+    108,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1593,10 +1593,10 @@
    "key": "copper-desc-2",
    "file": "suits/copper-desc-2.png",
    "dome": [
-    206,
-    106.8,
-    36,
-    0
+    207,
+    108.8,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1615,10 +1615,10 @@
    "key": "copper-desc-3",
    "file": "suits/copper-desc-3.png",
    "dome": [
-    206,
-    107.8,
-    36,
-    0
+    207,
+    109.8,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1637,10 +1637,10 @@
    "key": "copper-desc-4",
    "file": "suits/copper-desc-4.png",
    "dome": [
-    206,
-    109,
-    36,
-    5
+    207,
+    111,
+    31.97,
+    8
    ],
    "box": [
     32,
@@ -1659,10 +1659,10 @@
    "key": "copper-desc-5",
    "file": "suits/copper-desc-5.png",
    "dome": [
-    206,
-    110.2,
-    36,
-    0
+    207,
+    112.2,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1681,10 +1681,10 @@
    "key": "copper-desc-6",
    "file": "suits/copper-desc-6.png",
    "dome": [
-    206,
-    111.6,
-    36,
-    0
+    207,
+    113.6,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1703,10 +1703,10 @@
    "key": "copper-desc-7",
    "file": "suits/copper-desc-7.png",
    "dome": [
-    206,
-    113,
-    36,
-    0
+    207,
+    115,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -1725,10 +1725,10 @@
    "key": "copper-desc-8",
    "file": "suits/copper-desc-8.png",
    "dome": [
-    206,
-    114,
-    36,
-    0
+    207,
+    116,
+    31.97,
+    3
    ],
    "box": [
     32,
@@ -2019,10 +2019,10 @@
    "key": "cryostar-asc-1",
    "file": "suits/cryostar-asc-1.png",
    "dome": [
-    187,
-    81,
-    44.8,
-    -5
+    190,
+    83,
+    36.03,
+    0
    ],
    "box": null,
    "ownHead": false,
@@ -2036,10 +2036,10 @@
    "key": "cryostar-asc-2",
    "file": "suits/cryostar-asc-2.png",
    "dome": [
-    187.5,
-    79.5,
-    44.8,
-    -5
+    190.5,
+    81.5,
+    36.03,
+    0
    ],
    "box": null,
    "ownHead": false,
@@ -2053,10 +2053,10 @@
    "key": "cryostar-asc-3",
    "file": "suits/cryostar-asc-3.png",
    "dome": [
-    186,
-    78.5,
-    44.8,
-    -5
+    189,
+    80.5,
+    36.03,
+    0
    ],
    "box": null,
    "ownHead": false,
@@ -2070,10 +2070,10 @@
    "key": "cryostar-asc-4",
    "file": "suits/cryostar-asc-4.png",
    "dome": [
-    186.5,
-    77.5,
-    44.8,
-    -5
+    189.5,
+    79.5,
+    36.03,
+    0
    ],
    "box": null,
    "ownHead": false,
@@ -2087,10 +2087,10 @@
    "key": "cryostar-asc-5",
    "file": "suits/cryostar-asc-5.png",
    "dome": [
-    186.5,
-    79,
-    44.8,
-    -5
+    189.5,
+    81,
+    36.03,
+    0
    ],
    "box": null,
    "ownHead": false,
@@ -2104,10 +2104,10 @@
    "key": "cryostar-asc-6",
    "file": "suits/cryostar-asc-6.png",
    "dome": [
-    191.5,
-    74.5,
-    44.8,
-    -5
+    194.5,
+    78.5,
+    36.03,
+    5
    ],
    "box": null,
    "ownHead": false,
@@ -2121,10 +2121,10 @@
    "key": "cryostar-asc-7",
    "file": "suits/cryostar-asc-7.png",
    "dome": [
-    193.5,
-    79.5,
-    44.8,
-    -5
+    195.5,
+    85.5,
+    36.03,
+    5
    ],
    "box": null,
    "ownHead": false,
@@ -2138,10 +2138,10 @@
    "key": "cryostar-asc-8",
    "file": "suits/cryostar-asc-8.png",
    "dome": [
-    194,
-    87,
-    44.8,
-    -5
+    198,
+    91,
+    36.03,
+    6
    ],
    "box": null,
    "ownHead": false,
@@ -2155,10 +2155,10 @@
    "key": "cryostar-desc-1",
    "file": "suits/cryostar-desc-1.png",
    "dome": [
-    200.5,
-    87,
-    44.8,
-    0
+    204.5,
+    89,
+    38.24,
+    7
    ],
    "box": null,
    "ownHead": false,
@@ -2172,10 +2172,10 @@
    "key": "cryostar-desc-2",
    "file": "suits/cryostar-desc-2.png",
    "dome": [
-    199,
-    104,
-    44.8,
-    5
+    202,
+    108,
+    39,
+    10
    ],
    "box": null,
    "ownHead": false,
@@ -2189,10 +2189,10 @@
    "key": "cryostar-desc-3",
    "file": "suits/cryostar-desc-3.png",
    "dome": [
-    188,
-    125.5,
-    44.8,
-    15
+    191,
+    129.5,
+    38.24,
+    17
    ],
    "box": null,
    "ownHead": false,
@@ -2206,10 +2206,10 @@
    "key": "cryostar-desc-4",
    "file": "suits/cryostar-desc-4.png",
    "dome": [
-    188.5,
-    135,
-    44.8,
-    20
+    191.5,
+    146,
+    39,
+    19
    ],
    "box": null,
    "ownHead": false,
@@ -2224,9 +2224,9 @@
    "file": "suits/cryostar-desc-5.png",
    "dome": [
     190.5,
-    144,
-    44.8,
-    25
+    148,
+    38.24,
+    24
    ],
    "box": null,
    "ownHead": false,
@@ -2240,10 +2240,10 @@
    "key": "cryostar-desc-6",
    "file": "suits/cryostar-desc-6.png",
    "dome": [
-    190,
-    153.5,
-    44.8,
-    30
+    187,
+    152.5,
+    36.75,
+    25
    ],
    "box": null,
    "ownHead": false,
@@ -2257,10 +2257,10 @@
    "key": "cryostar-desc-7",
    "file": "suits/cryostar-desc-7.png",
    "dome": [
-    189.5,
-    159.5,
-    44.8,
-    35
+    181.5,
+    161.5,
+    36.03,
+    40
    ],
    "box": null,
    "ownHead": false,
@@ -2274,10 +2274,10 @@
    "key": "cryostar-desc-8",
    "file": "suits/cryostar-desc-8.png",
    "dome": [
-    190.5,
-    159.5,
-    44.8,
-    35
+    177.69,
+    171.59,
+    36.03,
+    40
    ],
    "box": null,
    "ownHead": false,
@@ -2291,9 +2291,9 @@
    "key": "eclipse-asc-1",
    "file": "suits/eclipse-asc-1.png",
    "dome": [
-    184,
-    82,
-    44.8,
+    187,
+    83,
+    36.75,
     -5
    ],
    "box": null,
@@ -2310,8 +2310,8 @@
    "dome": [
     183,
     80,
-    44.8,
-    -5
+    36.75,
+    -6
    ],
    "box": null,
    "ownHead": false,
@@ -2327,7 +2327,7 @@
    "dome": [
     183,
     79,
-    44.8,
+    36.75,
     -5
    ],
    "box": null,
@@ -2344,7 +2344,7 @@
    "dome": [
     185,
     78,
-    44.8,
+    36.75,
     -5
    ],
    "box": null,
@@ -2361,7 +2361,7 @@
    "dome": [
     186,
     79,
-    44.8,
+    36.75,
     -5
    ],
    "box": null,
@@ -2378,7 +2378,7 @@
    "dome": [
     189,
     75,
-    44.8,
+    36.75,
     -5
    ],
    "box": null,
@@ -2394,9 +2394,9 @@
    "file": "suits/eclipse-asc-7.png",
    "dome": [
     191,
-    80,
-    44.8,
-    -5
+    82,
+    36.75,
+    -2
    ],
    "box": null,
    "ownHead": false,
@@ -2410,9 +2410,9 @@
    "key": "eclipse-asc-8",
    "file": "suits/eclipse-asc-8.png",
    "dome": [
-    193,
-    88,
-    44.8,
+    196,
+    93,
+    36.75,
     -5
    ],
    "box": null,
@@ -2427,9 +2427,9 @@
    "key": "eclipse-desc-1",
    "file": "suits/eclipse-desc-1.png",
    "dome": [
-    199,
-    87,
-    44.8,
+    203,
+    88,
+    39.78,
     0
    ],
    "box": null,
@@ -2444,9 +2444,9 @@
    "key": "eclipse-desc-2",
    "file": "suits/eclipse-desc-2.png",
    "dome": [
-    197,
+    200,
     104,
-    44.8,
+    37.49,
     5
    ],
    "box": null,
@@ -2461,9 +2461,9 @@
    "key": "eclipse-desc-3",
    "file": "suits/eclipse-desc-3.png",
    "dome": [
-    187,
-    127,
-    44.8,
+    188,
+    129,
+    38.24,
     15
    ],
    "box": null,
@@ -2478,9 +2478,9 @@
    "key": "eclipse-desc-4",
    "file": "suits/eclipse-desc-4.png",
    "dome": [
-    188,
-    136,
-    44.8,
+    185.86,
+    148.01,
+    38.24,
     20
    ],
    "box": null,
@@ -2495,9 +2495,9 @@
    "key": "eclipse-desc-5",
    "file": "suits/eclipse-desc-5.png",
    "dome": [
-    189,
-    146,
-    44.8,
+    191,
+    148,
+    37.49,
     25
    ],
    "box": null,
@@ -2512,9 +2512,9 @@
    "key": "eclipse-desc-6",
    "file": "suits/eclipse-desc-6.png",
    "dome": [
-    189,
-    155,
-    44.8,
+    191,
+    157,
+    36.75,
     30
    ],
    "box": null,
@@ -2530,8 +2530,8 @@
    "file": "suits/eclipse-desc-7.png",
    "dome": [
     189,
-    162,
-    44.8,
+    160,
+    37.49,
     35
    ],
    "box": null,
@@ -2546,9 +2546,9 @@
    "key": "eclipse-desc-8",
    "file": "suits/eclipse-desc-8.png",
    "dome": [
-    189,
-    162,
-    44.8,
+    184,
+    173,
+    36.75,
     35
    ],
    "box": null,
@@ -2835,9 +2835,9 @@
    "key": "ember-asc-1",
    "file": "suits/ember-asc-1.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
+    33.26,
     0
    ],
    "box": [
@@ -2857,9 +2857,9 @@
    "key": "ember-asc-2",
    "file": "suits/ember-asc-2.png",
    "dome": [
-    206,
+    208,
     105.3,
-    36,
+    33.26,
     -5
    ],
    "box": [
@@ -2879,9 +2879,9 @@
    "key": "ember-asc-3",
    "file": "suits/ember-asc-3.png",
    "dome": [
-    206,
+    208,
     104.5,
-    36,
+    33.26,
     -5
    ],
    "box": [
@@ -2901,9 +2901,9 @@
    "key": "ember-asc-4",
    "file": "suits/ember-asc-4.png",
    "dome": [
-    206,
+    208,
     103.6,
-    36,
+    33.26,
     -5
    ],
    "box": [
@@ -2923,9 +2923,9 @@
    "key": "ember-asc-5",
    "file": "suits/ember-asc-5.png",
    "dome": [
-    206,
+    208,
     102.5,
-    36,
+    33.26,
     -5
    ],
    "box": [
@@ -2945,9 +2945,9 @@
    "key": "ember-asc-6",
    "file": "suits/ember-asc-6.png",
    "dome": [
-    206,
+    208,
     101.3,
-    36,
+    33.26,
     -10
    ],
    "box": [
@@ -2967,9 +2967,9 @@
    "key": "ember-asc-7",
    "file": "suits/ember-asc-7.png",
    "dome": [
-    206,
+    208,
     100,
-    36,
+    33.26,
     -5
    ],
    "box": [
@@ -2989,9 +2989,9 @@
    "key": "ember-asc-8",
    "file": "suits/ember-asc-8.png",
    "dome": [
-    206,
+    208,
     99,
-    36,
+    33.26,
     -10
    ],
    "box": [
@@ -3011,9 +3011,9 @@
    "key": "ember-desc-1",
    "file": "suits/ember-desc-1.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
+    33.26,
     0
    ],
    "box": [
@@ -3033,9 +3033,9 @@
    "key": "ember-desc-2",
    "file": "suits/ember-desc-2.png",
    "dome": [
-    206,
+    208,
     106.8,
-    36,
+    33.26,
     -5
    ],
    "box": [
@@ -3055,9 +3055,9 @@
    "key": "ember-desc-3",
    "file": "suits/ember-desc-3.png",
    "dome": [
-    206,
+    208,
     107.8,
-    36,
+    33.26,
     0
    ],
    "box": [
@@ -3077,9 +3077,9 @@
    "key": "ember-desc-4",
    "file": "suits/ember-desc-4.png",
    "dome": [
-    206,
+    208,
     109,
-    36,
+    33.26,
     0
    ],
    "box": [
@@ -3099,9 +3099,9 @@
    "key": "ember-desc-5",
    "file": "suits/ember-desc-5.png",
    "dome": [
-    206,
+    208,
     110.2,
-    36,
+    33.26,
     0
    ],
    "box": [
@@ -3121,9 +3121,9 @@
    "key": "ember-desc-6",
    "file": "suits/ember-desc-6.png",
    "dome": [
-    206,
+    208,
     111.6,
-    36,
+    33.26,
     0
    ],
    "box": [
@@ -3143,9 +3143,9 @@
    "key": "ember-desc-7",
    "file": "suits/ember-desc-7.png",
    "dome": [
-    206,
+    208,
     113,
-    36,
+    33.26,
     5
    ],
    "box": [
@@ -3165,9 +3165,9 @@
    "key": "ember-desc-8",
    "file": "suits/ember-desc-8.png",
    "dome": [
-    206,
+    208,
     114,
-    36,
+    33.26,
     5
    ],
    "box": [
@@ -3322,10 +3322,9 @@
    "key": "frost-asc-1",
    "file": "suits/frost-asc-1.png",
    "dome": [
-    206,
+    210,
     106,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3344,10 +3343,9 @@
    "key": "frost-asc-2",
    "file": "suits/frost-asc-2.png",
    "dome": [
-    206,
+    210,
     105.3,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3366,10 +3364,9 @@
    "key": "frost-asc-3",
    "file": "suits/frost-asc-3.png",
    "dome": [
-    206,
+    210,
     104.5,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3388,10 +3385,9 @@
    "key": "frost-asc-4",
    "file": "suits/frost-asc-4.png",
    "dome": [
-    206,
+    210,
     103.6,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3410,10 +3406,9 @@
    "key": "frost-asc-5",
    "file": "suits/frost-asc-5.png",
    "dome": [
-    206,
+    210,
     102.5,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3432,10 +3427,9 @@
    "key": "frost-asc-6",
    "file": "suits/frost-asc-6.png",
    "dome": [
-    206,
+    210,
     101.3,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3454,9 +3448,9 @@
    "key": "frost-asc-7",
    "file": "suits/frost-asc-7.png",
    "dome": [
-    206,
+    210,
     100,
-    36,
+    30.73,
     -5
    ],
    "box": [
@@ -3476,9 +3470,9 @@
    "key": "frost-asc-8",
    "file": "suits/frost-asc-8.png",
    "dome": [
-    206,
+    210,
     99,
-    36,
+    30.73,
     -5
    ],
    "box": [
@@ -3498,10 +3492,9 @@
    "key": "frost-desc-1",
    "file": "suits/frost-desc-1.png",
    "dome": [
-    206,
+    210,
     106,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3520,10 +3513,9 @@
    "key": "frost-desc-2",
    "file": "suits/frost-desc-2.png",
    "dome": [
-    206,
+    210,
     106.8,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3542,10 +3534,9 @@
    "key": "frost-desc-3",
    "file": "suits/frost-desc-3.png",
    "dome": [
-    206,
+    210,
     107.8,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3564,10 +3555,9 @@
    "key": "frost-desc-4",
    "file": "suits/frost-desc-4.png",
    "dome": [
-    206,
+    210,
     109,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3586,10 +3576,9 @@
    "key": "frost-desc-5",
    "file": "suits/frost-desc-5.png",
    "dome": [
-    206,
+    210,
     110.2,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3608,10 +3597,9 @@
    "key": "frost-desc-6",
    "file": "suits/frost-desc-6.png",
    "dome": [
-    206,
+    210,
     111.6,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3630,10 +3618,9 @@
    "key": "frost-desc-7",
    "file": "suits/frost-desc-7.png",
    "dome": [
-    206,
+    210,
     113,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3652,10 +3639,9 @@
    "key": "frost-desc-8",
    "file": "suits/frost-desc-8.png",
    "dome": [
-    206,
+    210,
     114,
-    36,
-    0
+    30.73
    ],
    "box": [
     32,
@@ -3674,10 +3660,10 @@
    "key": "gemmie-asc-1",
    "file": "suits/gemmie-asc-1.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    211,
+    107,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3696,10 +3682,10 @@
    "key": "gemmie-asc-2",
    "file": "suits/gemmie-asc-2.png",
    "dome": [
-    206,
-    105.3,
-    36,
-    0
+    211,
+    106.3,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3718,10 +3704,10 @@
    "key": "gemmie-asc-3",
    "file": "suits/gemmie-asc-3.png",
    "dome": [
-    206,
-    104.5,
-    36,
-    0
+    211,
+    105.5,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3740,10 +3726,10 @@
    "key": "gemmie-asc-4",
    "file": "suits/gemmie-asc-4.png",
    "dome": [
-    206,
-    103.6,
-    36,
-    0
+    211,
+    104.6,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3762,10 +3748,10 @@
    "key": "gemmie-asc-5",
    "file": "suits/gemmie-asc-5.png",
    "dome": [
-    206,
-    102.5,
-    36,
-    0
+    211,
+    103.5,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3784,10 +3770,10 @@
    "key": "gemmie-asc-6",
    "file": "suits/gemmie-asc-6.png",
    "dome": [
-    206,
-    101.3,
-    36,
-    0
+    211,
+    102.3,
+    28.39,
+    -1
    ],
    "box": [
     32,
@@ -3806,10 +3792,10 @@
    "key": "gemmie-asc-7",
    "file": "suits/gemmie-asc-7.png",
    "dome": [
-    206,
-    100,
-    36,
-    -5
+    211,
+    101,
+    28.39,
+    -4
    ],
    "box": [
     32,
@@ -3828,10 +3814,10 @@
    "key": "gemmie-asc-8",
    "file": "suits/gemmie-asc-8.png",
    "dome": [
-    206,
-    99,
-    36,
-    -15
+    210,
+    100,
+    28.39,
+    -11
    ],
    "box": [
     32,
@@ -3850,10 +3836,10 @@
    "key": "gemmie-desc-1",
    "file": "suits/gemmie-desc-1.png",
    "dome": [
-    206,
-    106,
-    36,
-    0
+    211,
+    108,
+    27.83,
+    1
    ],
    "box": [
     32,
@@ -3872,10 +3858,10 @@
    "key": "gemmie-desc-2",
    "file": "suits/gemmie-desc-2.png",
    "dome": [
-    206,
-    106.8,
-    36,
-    0
+    211,
+    108.8,
+    27.83,
+    1
    ],
    "box": [
     32,
@@ -3894,10 +3880,10 @@
    "key": "gemmie-desc-3",
    "file": "suits/gemmie-desc-3.png",
    "dome": [
-    206,
-    107.8,
-    36,
-    0
+    211,
+    108.8,
+    28.39,
+    1
    ],
    "box": [
     32,
@@ -3916,10 +3902,10 @@
    "key": "gemmie-desc-4",
    "file": "suits/gemmie-desc-4.png",
    "dome": [
-    206,
-    109,
-    36,
-    5
+    211,
+    110,
+    28.39,
+    6
    ],
    "box": [
     32,
@@ -3938,10 +3924,10 @@
    "key": "gemmie-desc-5",
    "file": "suits/gemmie-desc-5.png",
    "dome": [
-    206,
-    110.2,
-    36,
-    5
+    211,
+    111.2,
+    28.39,
+    6
    ],
    "box": [
     32,
@@ -3960,10 +3946,10 @@
    "key": "gemmie-desc-6",
    "file": "suits/gemmie-desc-6.png",
    "dome": [
-    206,
-    111.6,
-    36,
-    5
+    211,
+    112.6,
+    28.39,
+    6
    ],
    "box": [
     32,
@@ -3982,10 +3968,10 @@
    "key": "gemmie-desc-7",
    "file": "suits/gemmie-desc-7.png",
    "dome": [
-    206,
-    113,
-    36,
-    5
+    211,
+    114,
+    28.39,
+    6
    ],
    "box": [
     32,
@@ -4004,10 +3990,10 @@
    "key": "gemmie-desc-8",
    "file": "suits/gemmie-desc-8.png",
    "dome": [
-    206,
-    114,
-    36,
-    5
+    211,
+    115,
+    28.39,
+    6
    ],
    "box": [
     32,
@@ -4026,9 +4012,9 @@
    "key": "ghost-asc-1",
    "file": "suits/ghost-asc-1.png",
    "dome": [
-    206,
-    106,
-    36,
+    208,
+    109,
+    30.73,
     0
    ],
    "box": [
@@ -4048,9 +4034,9 @@
    "key": "ghost-asc-2",
    "file": "suits/ghost-asc-2.png",
    "dome": [
-    206,
-    105.3,
-    36,
+    208,
+    108.3,
+    30.73,
     -5
    ],
    "box": [
@@ -4070,9 +4056,9 @@
    "key": "ghost-asc-3",
    "file": "suits/ghost-asc-3.png",
    "dome": [
-    206,
-    104.5,
-    36,
+    208,
+    107.5,
+    30.73,
     -10
    ],
    "box": [
@@ -4092,9 +4078,9 @@
    "key": "ghost-asc-4",
    "file": "suits/ghost-asc-4.png",
    "dome": [
-    206,
-    103.6,
-    36,
+    208,
+    106.6,
+    30.73,
     -10
    ],
    "box": [
@@ -4114,9 +4100,9 @@
    "key": "ghost-asc-5",
    "file": "suits/ghost-asc-5.png",
    "dome": [
-    206,
-    102.5,
-    36,
+    208,
+    105.5,
+    30.73,
     -10
    ],
    "box": [
@@ -4136,9 +4122,9 @@
    "key": "ghost-asc-6",
    "file": "suits/ghost-asc-6.png",
    "dome": [
-    206,
-    101.3,
-    36,
+    208,
+    104.3,
+    30.73,
     -10
    ],
    "box": [
@@ -4158,9 +4144,9 @@
    "key": "ghost-asc-7",
    "file": "suits/ghost-asc-7.png",
    "dome": [
-    206,
-    100,
-    36,
+    208,
+    103,
+    30.73,
     -15
    ],
    "box": [
@@ -4180,9 +4166,9 @@
    "key": "ghost-asc-8",
    "file": "suits/ghost-asc-8.png",
    "dome": [
-    206,
-    99,
-    36,
+    208,
+    102,
+    30.73,
     -20
    ],
    "box": [
@@ -4202,9 +4188,9 @@
    "key": "ghost-desc-1",
    "file": "suits/ghost-desc-1.png",
    "dome": [
-    206,
-    106,
-    36,
+    208,
+    109,
+    30.73,
     0
    ],
    "box": [
@@ -4224,9 +4210,9 @@
    "key": "ghost-desc-2",
    "file": "suits/ghost-desc-2.png",
    "dome": [
-    206,
-    106.8,
-    36,
+    208,
+    109.8,
+    30.73,
     0
    ],
    "box": [
@@ -4246,9 +4232,9 @@
    "key": "ghost-desc-3",
    "file": "suits/ghost-desc-3.png",
    "dome": [
-    206,
-    107.8,
-    36,
+    208,
+    110.8,
+    30.73,
     -5
    ],
    "box": [
@@ -4268,9 +4254,9 @@
    "key": "ghost-desc-4",
    "file": "suits/ghost-desc-4.png",
    "dome": [
-    206,
-    109,
-    36,
+    208,
+    112,
+    30.73,
     -5
    ],
    "box": [
@@ -4290,9 +4276,9 @@
    "key": "ghost-desc-5",
    "file": "suits/ghost-desc-5.png",
    "dome": [
-    206,
-    110.2,
-    36,
+    208,
+    113.2,
+    30.73,
     0
    ],
    "box": [
@@ -4312,9 +4298,9 @@
    "key": "ghost-desc-6",
    "file": "suits/ghost-desc-6.png",
    "dome": [
-    206,
-    111.6,
-    36,
+    208,
+    114.6,
+    30.73,
     5
    ],
    "box": [
@@ -4334,9 +4320,9 @@
    "key": "ghost-desc-7",
    "file": "suits/ghost-desc-7.png",
    "dome": [
-    206,
-    113,
-    36,
+    208,
+    116,
+    30.73,
     5
    ],
    "box": [
@@ -4356,9 +4342,9 @@
    "key": "ghost-desc-8",
    "file": "suits/ghost-desc-8.png",
    "dome": [
-    206,
-    114,
-    36,
+    208,
+    117,
+    30.73,
     5
    ],
    "box": [
@@ -4651,9 +4637,9 @@
    "file": "suits/iontrim-asc-1.png",
    "dome": [
     206,
-    106,
-    36,
-    0
+    109,
+    28.95,
+    6
    ],
    "box": [
     32,
@@ -4673,9 +4659,9 @@
    "file": "suits/iontrim-asc-2.png",
    "dome": [
     206,
-    105.3,
-    36,
-    0
+    108.3,
+    28.95,
+    6
    ],
    "box": [
     32,
@@ -4695,9 +4681,9 @@
    "file": "suits/iontrim-asc-3.png",
    "dome": [
     206,
-    104.5,
-    36,
-    -5
+    107.5,
+    28.95,
+    1
    ],
    "box": [
     32,
@@ -4717,9 +4703,9 @@
    "file": "suits/iontrim-asc-4.png",
    "dome": [
     206,
-    103.6,
-    36,
-    -5
+    106.6,
+    28.95,
+    1
    ],
    "box": [
     32,
@@ -4739,9 +4725,9 @@
    "file": "suits/iontrim-asc-5.png",
    "dome": [
     206,
-    102.5,
-    36,
-    -5
+    105.5,
+    28.95,
+    1
    ],
    "box": [
     32,
@@ -4761,9 +4747,9 @@
    "file": "suits/iontrim-asc-6.png",
    "dome": [
     206,
-    101.3,
-    36,
-    -5
+    104.3,
+    28.95,
+    1
    ],
    "box": [
     32,
@@ -4783,9 +4769,9 @@
    "file": "suits/iontrim-asc-7.png",
    "dome": [
     206,
-    100,
-    36,
-    -5
+    103,
+    28.95,
+    1
    ],
    "box": [
     32,
@@ -4805,9 +4791,9 @@
    "file": "suits/iontrim-asc-8.png",
    "dome": [
     206,
-    99,
-    36,
-    -10
+    102,
+    28.95,
+    -4
    ],
    "box": [
     32,
@@ -4827,9 +4813,9 @@
    "file": "suits/iontrim-desc-1.png",
    "dome": [
     206,
-    106,
-    36,
-    0
+    109,
+    28.95,
+    6
    ],
    "box": [
     32,
@@ -4849,9 +4835,9 @@
    "file": "suits/iontrim-desc-2.png",
    "dome": [
     206,
-    106.8,
-    36,
-    -5
+    109.8,
+    28.95,
+    1
    ],
    "box": [
     32,
@@ -4871,9 +4857,9 @@
    "file": "suits/iontrim-desc-3.png",
    "dome": [
     206,
-    107.8,
-    36,
-    0
+    110.8,
+    28.95,
+    6
    ],
    "box": [
     32,
@@ -4893,9 +4879,9 @@
    "file": "suits/iontrim-desc-4.png",
    "dome": [
     206,
-    109,
-    36,
-    5
+    112,
+    28.95,
+    11
    ],
    "box": [
     32,
@@ -4915,9 +4901,9 @@
    "file": "suits/iontrim-desc-5.png",
    "dome": [
     206,
-    110.2,
-    36,
-    0
+    113.2,
+    28.95,
+    6
    ],
    "box": [
     32,
@@ -4937,9 +4923,9 @@
    "file": "suits/iontrim-desc-6.png",
    "dome": [
     206,
-    111.6,
-    36,
-    5
+    114.6,
+    28.95,
+    11
    ],
    "box": [
     32,
@@ -4959,9 +4945,9 @@
    "file": "suits/iontrim-desc-7.png",
    "dome": [
     206,
-    113,
-    36,
-    5
+    116,
+    28.95,
+    11
    ],
    "box": [
     32,
@@ -4981,9 +4967,9 @@
    "file": "suits/iontrim-desc-8.png",
    "dome": [
     206,
-    114,
-    36,
-    10
+    117,
+    28.95,
+    16
    ],
    "box": [
     32,
@@ -5002,9 +4988,9 @@
    "key": "leviathan-asc-1",
    "file": "suits/leviathan-asc-1.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5024,9 +5010,9 @@
    "key": "leviathan-asc-2",
    "file": "suits/leviathan-asc-2.png",
    "dome": [
-    206,
+    208,
     105.3,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5046,9 +5032,9 @@
    "key": "leviathan-asc-3",
    "file": "suits/leviathan-asc-3.png",
    "dome": [
-    206,
+    208,
     104.5,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5068,9 +5054,9 @@
    "key": "leviathan-asc-4",
    "file": "suits/leviathan-asc-4.png",
    "dome": [
-    206,
+    208,
     103.6,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5090,9 +5076,9 @@
    "key": "leviathan-asc-5",
    "file": "suits/leviathan-asc-5.png",
    "dome": [
-    206,
+    208,
     102.5,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5112,9 +5098,9 @@
    "key": "leviathan-asc-6",
    "file": "suits/leviathan-asc-6.png",
    "dome": [
-    206,
+    208,
     101.3,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5134,9 +5120,9 @@
    "key": "leviathan-asc-7",
    "file": "suits/leviathan-asc-7.png",
    "dome": [
-    206,
+    208,
     100,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5156,9 +5142,9 @@
    "key": "leviathan-asc-8",
    "file": "suits/leviathan-asc-8.png",
    "dome": [
-    206,
+    208,
     99,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5178,9 +5164,9 @@
    "key": "leviathan-desc-1",
    "file": "suits/leviathan-desc-1.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5200,9 +5186,9 @@
    "key": "leviathan-desc-2",
    "file": "suits/leviathan-desc-2.png",
    "dome": [
-    206,
+    208,
     106.8,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5222,9 +5208,9 @@
    "key": "leviathan-desc-3",
    "file": "suits/leviathan-desc-3.png",
    "dome": [
-    206,
+    208,
     107.8,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5244,9 +5230,9 @@
    "key": "leviathan-desc-4",
    "file": "suits/leviathan-desc-4.png",
    "dome": [
-    206,
+    208,
     109,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5266,9 +5252,9 @@
    "key": "leviathan-desc-5",
    "file": "suits/leviathan-desc-5.png",
    "dome": [
-    206,
+    208,
     110.2,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5288,9 +5274,9 @@
    "key": "leviathan-desc-6",
    "file": "suits/leviathan-desc-6.png",
    "dome": [
-    206,
+    208,
     111.6,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5310,9 +5296,9 @@
    "key": "leviathan-desc-7",
    "file": "suits/leviathan-desc-7.png",
    "dome": [
-    206,
+    208,
     113,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5332,9 +5318,9 @@
    "key": "leviathan-desc-8",
    "file": "suits/leviathan-desc-8.png",
    "dome": [
-    206,
+    208,
     114,
-    36,
+    29.53,
     0
    ],
    "box": [
@@ -5354,9 +5340,9 @@
    "key": "robo-tap-1",
    "file": "suits/robo-tap-1.png",
    "dome": [
-    188,
-    100,
-    37.8,
+    193,
+    102,
+    34.24,
     0
    ],
    "box": null,
@@ -5371,9 +5357,9 @@
    "key": "robo-tap-2",
    "file": "suits/robo-tap-2.png",
    "dome": [
-    188,
-    100,
-    37.8,
+    193,
+    102,
+    34.24,
     0
    ],
    "box": null,
@@ -5388,9 +5374,9 @@
    "key": "robo-tap-3",
    "file": "suits/robo-tap-3.png",
    "dome": [
-    188,
-    98,
-    37.8,
+    193,
+    100,
+    34.24,
     0
    ],
    "box": null,
@@ -5405,9 +5391,9 @@
    "key": "robo-tap-4",
    "file": "suits/robo-tap-4.png",
    "dome": [
-    189,
-    93,
-    37.8,
+    194,
+    95,
+    34.24,
     0
    ],
    "box": null,
@@ -5422,9 +5408,9 @@
    "key": "robo-tap-5",
    "file": "suits/robo-tap-5.png",
    "dome": [
-    189,
-    85,
-    37.8,
+    194,
+    87,
+    34.24,
     0
    ],
    "box": null,
@@ -5439,9 +5425,9 @@
    "key": "robo-tap-6",
    "file": "suits/robo-tap-6.png",
    "dome": [
-    190,
-    79,
-    37.8,
+    195,
+    81,
+    34.24,
     0
    ],
    "box": null,
@@ -5456,9 +5442,9 @@
    "key": "robo-tap-7",
    "file": "suits/robo-tap-7.png",
    "dome": [
-    190,
-    77,
-    37.8,
+    195,
+    79,
+    34.24,
     0
    ],
    "box": null,
@@ -5473,9 +5459,9 @@
    "key": "robo-tap-8",
    "file": "suits/robo-tap-8.png",
    "dome": [
-    189,
-    81,
-    37.8,
+    194,
+    83,
+    34.24,
     0
    ],
    "box": null,
@@ -5490,9 +5476,9 @@
    "key": "robo-tap-9",
    "file": "suits/robo-tap-9.png",
    "dome": [
-    188,
-    90,
-    37.8,
+    193,
+    92,
+    34.24,
     0
    ],
    "box": null,
@@ -5507,9 +5493,9 @@
    "key": "robo-tap-10",
    "file": "suits/robo-tap-10.png",
    "dome": [
-    187,
-    100,
-    37.8,
+    192,
+    102,
+    34.24,
     0
    ],
    "box": null,
@@ -5524,9 +5510,9 @@
    "key": "robo-tap-11",
    "file": "suits/robo-tap-11.png",
    "dome": [
-    187,
-    107,
-    37.8,
+    192,
+    109,
+    34.24,
     0
    ],
    "box": null,
@@ -5541,9 +5527,9 @@
    "key": "robo-tap-12",
    "file": "suits/robo-tap-12.png",
    "dome": [
-    188,
-    108,
-    37.8,
+    193,
+    110,
+    34.24,
     0
    ],
    "box": null,
@@ -5558,9 +5544,9 @@
    "key": "robo-tap-13",
    "file": "suits/robo-tap-13.png",
    "dome": [
-    189,
-    107,
-    37.8,
+    194,
+    109,
+    34.24,
     0
    ],
    "box": null,
@@ -5575,9 +5561,9 @@
    "key": "robo-tap-14",
    "file": "suits/robo-tap-14.png",
    "dome": [
-    190,
-    104,
-    37.8,
+    195,
+    106,
+    34.24,
     0
    ],
    "box": null,
@@ -5592,9 +5578,9 @@
    "key": "robo-tap-15",
    "file": "suits/robo-tap-15.png",
    "dome": [
-    189,
-    101,
-    37.8,
+    194,
+    103,
+    34.24,
     0
    ],
    "box": null,
@@ -5609,9 +5595,9 @@
    "key": "robo-tap-16",
    "file": "suits/robo-tap-16.png",
    "dome": [
-    189,
-    97,
-    37.8,
+    194,
+    99,
+    34.24,
     0
    ],
    "box": null,
@@ -5626,10 +5612,10 @@
    "key": "sammie-asc-1",
    "file": "suits/sammie-asc-1.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -5648,10 +5634,10 @@
    "key": "sammie-asc-2",
    "file": "suits/sammie-asc-2.png",
    "dome": [
-    206,
+    208,
     105.3,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -5670,10 +5656,10 @@
    "key": "sammie-asc-3",
    "file": "suits/sammie-asc-3.png",
    "dome": [
-    206,
+    208,
     104.5,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -5692,10 +5678,10 @@
    "key": "sammie-asc-4",
    "file": "suits/sammie-asc-4.png",
    "dome": [
-    206,
+    208,
     103.6,
-    36,
-    -5
+    28.95,
+    -2
    ],
    "box": [
     32,
@@ -5714,10 +5700,10 @@
    "key": "sammie-asc-5",
    "file": "suits/sammie-asc-5.png",
    "dome": [
-    206,
+    208,
     102.5,
-    36,
-    -5
+    28.95,
+    -2
    ],
    "box": [
     32,
@@ -5736,10 +5722,10 @@
    "key": "sammie-asc-6",
    "file": "suits/sammie-asc-6.png",
    "dome": [
-    206,
+    208,
     101.3,
-    36,
-    -5
+    28.95,
+    -2
    ],
    "box": [
     32,
@@ -5758,10 +5744,10 @@
    "key": "sammie-asc-7",
    "file": "suits/sammie-asc-7.png",
    "dome": [
-    206,
+    208,
     100,
-    36,
-    -5
+    28.95,
+    -1
    ],
    "box": [
     32,
@@ -5780,10 +5766,10 @@
    "key": "sammie-asc-8",
    "file": "suits/sammie-asc-8.png",
    "dome": [
-    206,
+    208,
     99,
-    36,
-    -5
+    28.95,
+    0
    ],
    "box": [
     32,
@@ -5802,10 +5788,10 @@
    "key": "sammie-desc-1",
    "file": "suits/sammie-desc-1.png",
    "dome": [
-    206,
+    208,
     106,
-    36,
-    0
+    28.95,
+    4
    ],
    "box": [
     32,
@@ -5824,10 +5810,10 @@
    "key": "sammie-desc-2",
    "file": "suits/sammie-desc-2.png",
    "dome": [
-    206,
+    208,
     106.8,
-    36,
-    0
+    28.95,
+    7
    ],
    "box": [
     32,
@@ -5846,10 +5832,10 @@
    "key": "sammie-desc-3",
    "file": "suits/sammie-desc-3.png",
    "dome": [
-    206,
+    208,
     107.8,
-    36,
-    0
+    28.95,
+    5
    ],
    "box": [
     32,
@@ -5868,10 +5854,10 @@
    "key": "sammie-desc-4",
    "file": "suits/sammie-desc-4.png",
    "dome": [
-    206,
+    208,
     109,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -5890,10 +5876,10 @@
    "key": "sammie-desc-5",
    "file": "suits/sammie-desc-5.png",
    "dome": [
-    206,
+    208,
     110.2,
-    36,
-    0
+    28.95,
+    3
    ],
    "box": [
     32,
@@ -5912,10 +5898,10 @@
    "key": "sammie-desc-6",
    "file": "suits/sammie-desc-6.png",
    "dome": [
-    206,
+    208,
     111.6,
-    36,
-    5
+    28.95,
+    8
    ],
    "box": [
     32,
@@ -5934,10 +5920,10 @@
    "key": "sammie-desc-7",
    "file": "suits/sammie-desc-7.png",
    "dome": [
-    206,
+    208,
     113,
-    36,
-    5
+    28.95,
+    8
    ],
    "box": [
     32,
@@ -5956,10 +5942,10 @@
    "key": "sammie-desc-8",
    "file": "suits/sammie-desc-8.png",
    "dome": [
-    206,
-    114,
-    36,
-    5
+    213,
+    115,
+    28.95,
+    8
    ],
    "box": [
     32,
@@ -5978,10 +5964,10 @@
    "key": "seraph-asc-1",
    "file": "suits/seraph-asc-1.png",
    "dome": [
-    203,
-    127,
-    32.68,
-    0
+    205,
+    131,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -5995,10 +5981,10 @@
    "key": "seraph-asc-2",
    "file": "suits/seraph-asc-2.png",
    "dome": [
-    203,
-    125,
-    32.68,
-    0
+    205,
+    129,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6012,10 +5998,10 @@
    "key": "seraph-asc-3",
    "file": "suits/seraph-asc-3.png",
    "dome": [
-    203,
-    123,
-    32.68,
-    0
+    205,
+    127,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6029,10 +6015,10 @@
    "key": "seraph-asc-4",
    "file": "suits/seraph-asc-4.png",
    "dome": [
-    203,
-    130,
-    32.68,
-    0
+    205,
+    134,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6046,10 +6032,10 @@
    "key": "seraph-asc-5",
    "file": "suits/seraph-asc-5.png",
    "dome": [
-    203,
-    128,
-    32.68,
-    0
+    205,
+    132,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6063,10 +6049,10 @@
    "key": "seraph-asc-6",
    "file": "suits/seraph-asc-6.png",
    "dome": [
-    203,
-    126,
-    32.68,
-    -3
+    205,
+    130,
+    27.89,
+    -1
    ],
    "box": null,
    "ownHead": false,
@@ -6080,10 +6066,10 @@
    "key": "seraph-asc-7",
    "file": "suits/seraph-asc-7.png",
    "dome": [
-    203,
-    124,
-    32.68,
-    -6
+    205,
+    128,
+    27.89,
+    -4
    ],
    "box": null,
    "ownHead": false,
@@ -6097,10 +6083,10 @@
    "key": "seraph-asc-8",
    "file": "suits/seraph-asc-8.png",
    "dome": [
-    203,
-    122,
-    32.68,
-    -10
+    205,
+    126,
+    27.89,
+    -8
    ],
    "box": null,
    "ownHead": false,
@@ -6114,10 +6100,10 @@
    "key": "seraph-desc-1",
    "file": "suits/seraph-desc-1.png",
    "dome": [
-    203,
-    127,
-    32.68,
-    0
+    205,
+    131,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6131,10 +6117,10 @@
    "key": "seraph-desc-2",
    "file": "suits/seraph-desc-2.png",
    "dome": [
-    203,
-    130,
-    32.68,
-    0
+    205,
+    134,
+    27.89,
+    2
    ],
    "box": null,
    "ownHead": false,
@@ -6148,10 +6134,10 @@
    "key": "seraph-desc-3",
    "file": "suits/seraph-desc-3.png",
    "dome": [
-    203,
-    133,
-    32.68,
-    2
+    205,
+    137,
+    27.89,
+    4
    ],
    "box": null,
    "ownHead": false,
@@ -6165,10 +6151,10 @@
    "key": "seraph-desc-4",
    "file": "suits/seraph-desc-4.png",
    "dome": [
-    203,
-    137,
-    32.68,
-    10
+    205,
+    141,
+    27.89,
+    12
    ],
    "box": null,
    "ownHead": false,
@@ -6182,10 +6168,10 @@
    "key": "seraph-desc-5",
    "file": "suits/seraph-desc-5.png",
    "dome": [
-    202,
-    141,
-    32.68,
-    17
+    204,
+    145,
+    27.89,
+    19
    ],
    "box": null,
    "ownHead": false,
@@ -6199,10 +6185,10 @@
    "key": "seraph-desc-6",
    "file": "suits/seraph-desc-6.png",
    "dome": [
-    201,
-    144,
-    32.68,
-    21
+    203,
+    148,
+    27.89,
+    23
    ],
    "box": null,
    "ownHead": false,
@@ -6216,10 +6202,10 @@
    "key": "seraph-desc-7",
    "file": "suits/seraph-desc-7.png",
    "dome": [
-    203,
-    158,
-    32.68,
-    52
+    201,
+    163,
+    27.89,
+    57
    ],
    "box": null,
    "ownHead": false,
@@ -6233,10 +6219,10 @@
    "key": "seraph-desc-8",
    "file": "suits/seraph-desc-8.png",
    "dome": [
-    201,
+    197,
     163,
-    32.68,
-    60
+    27.89,
+    62
    ],
    "box": null,
    "ownHead": false,
@@ -6522,10 +6508,10 @@
    "key": "verdant-asc-1",
    "file": "suits/verdant-asc-1.png",
    "dome": [
-    185,
-    82.5,
-    44.8,
-    -5
+    189.11,
+    79.71,
+    36.75,
+    -2
    ],
    "box": null,
    "ownHead": false,
@@ -6539,10 +6525,10 @@
    "key": "verdant-asc-2",
    "file": "suits/verdant-asc-2.png",
    "dome": [
-    187.5,
-    80.5,
-    44.8,
-    -5
+    186.5,
+    81.5,
+    35.32,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6556,10 +6542,10 @@
    "key": "verdant-asc-3",
    "file": "suits/verdant-asc-3.png",
    "dome": [
-    184,
-    79.5,
-    44.8,
-    -5
+    186,
+    80.5,
+    34.63,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6573,10 +6559,10 @@
    "key": "verdant-asc-4",
    "file": "suits/verdant-asc-4.png",
    "dome": [
-    187,
-    78.5,
-    44.8,
-    -5
+    189,
+    79.5,
+    36.03,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6590,10 +6576,10 @@
    "key": "verdant-asc-5",
    "file": "suits/verdant-asc-5.png",
    "dome": [
-    186.5,
-    79,
-    44.8,
-    -5
+    187.5,
+    80,
+    38.24,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6607,10 +6593,10 @@
    "key": "verdant-asc-6",
    "file": "suits/verdant-asc-6.png",
    "dome": [
-    191.5,
-    75,
-    44.8,
-    -5
+    193.5,
+    77,
+    39.78,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6624,10 +6610,10 @@
    "key": "verdant-asc-7",
    "file": "suits/verdant-asc-7.png",
    "dome": [
-    193.5,
-    80,
-    44.8,
-    -5
+    194.5,
+    81,
+    39,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6641,10 +6627,10 @@
    "key": "verdant-asc-8",
    "file": "suits/verdant-asc-8.png",
    "dome": [
-    194,
-    88,
-    44.8,
-    -5
+    195,
+    89,
+    38.24,
+    1
    ],
    "box": null,
    "ownHead": false,
@@ -6659,9 +6645,9 @@
    "file": "suits/verdant-desc-1.png",
    "dome": [
     201.5,
-    87,
-    44.8,
-    0
+    89,
+    41.39,
+    6
    ],
    "box": null,
    "ownHead": false,
@@ -6675,10 +6661,10 @@
    "key": "verdant-desc-2",
    "file": "suits/verdant-desc-2.png",
    "dome": [
-    201,
+    200,
     104,
-    44.8,
-    5
+    39.78,
+    11
    ],
    "box": null,
    "ownHead": false,
@@ -6693,9 +6679,9 @@
    "file": "suits/verdant-desc-3.png",
    "dome": [
     187.5,
-    126,
-    44.8,
-    15
+    129,
+    39.78,
+    21
    ],
    "box": null,
    "ownHead": false,
@@ -6709,10 +6695,10 @@
    "key": "verdant-desc-4",
    "file": "suits/verdant-desc-4.png",
    "dome": [
-    189.5,
-    135,
-    44.8,
-    20
+    190.5,
+    147,
+    39.78,
+    26
    ],
    "box": null,
    "ownHead": false,
@@ -6727,9 +6713,9 @@
    "file": "suits/verdant-desc-5.png",
    "dome": [
     189.5,
-    145.5,
-    44.8,
-    25
+    150.5,
+    39.78,
+    31
    ],
    "box": null,
    "ownHead": false,
@@ -6743,10 +6729,10 @@
    "key": "verdant-desc-6",
    "file": "suits/verdant-desc-6.png",
    "dome": [
-    190.5,
-    154,
-    44.8,
-    30
+    189.5,
+    157,
+    37.49,
+    36
    ],
    "box": null,
    "ownHead": false,
@@ -6760,10 +6746,10 @@
    "key": "verdant-desc-7",
    "file": "suits/verdant-desc-7.png",
    "dome": [
-    190,
-    160.5,
-    44.8,
-    35
+    187,
+    161.5,
+    38.24,
+    41
    ],
    "box": null,
    "ownHead": false,
@@ -6777,10 +6763,10 @@
    "key": "verdant-desc-8",
    "file": "suits/verdant-desc-8.png",
    "dome": [
-    191.5,
-    161,
-    44.8,
-    35
+    183.5,
+    174,
+    37.49,
+    41
    ],
    "box": null,
    "ownHead": false,
@@ -6796,8 +6782,8 @@
    "dome": [
     206,
     106,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -6818,8 +6804,8 @@
    "dome": [
     206,
     105.3,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -6840,8 +6826,8 @@
    "dome": [
     206,
     104.5,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -6862,8 +6848,8 @@
    "dome": [
     206,
     103.6,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -6884,8 +6870,8 @@
    "dome": [
     206,
     102.5,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -6906,8 +6892,8 @@
    "dome": [
     206,
     101.3,
-    36,
-    -5
+    29.53,
+    -2
    ],
    "box": [
     32,
@@ -6928,8 +6914,8 @@
    "dome": [
     206,
     100,
-    36,
-    -5
+    29.53,
+    -2
    ],
    "box": [
     32,
@@ -6950,8 +6936,8 @@
    "dome": [
     206,
     99,
-    36,
-    -5
+    29.53,
+    -2
    ],
    "box": [
     32,
@@ -6972,8 +6958,8 @@
    "dome": [
     206,
     106,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -6994,8 +6980,8 @@
    "dome": [
     206,
     106.8,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -7016,8 +7002,8 @@
    "dome": [
     206,
     107.8,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -7038,8 +7024,8 @@
    "dome": [
     206,
     109,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -7060,8 +7046,8 @@
    "dome": [
     206,
     110.2,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -7082,8 +7068,8 @@
    "dome": [
     206,
     111.6,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,
@@ -7104,8 +7090,8 @@
    "dome": [
     206,
     113,
-    36,
-    5
+    29.53,
+    8
    ],
    "box": [
     32,
@@ -7126,8 +7112,8 @@
    "dome": [
     206,
     114,
-    36,
-    0
+    29.53,
+    3
    ],
    "box": [
     32,

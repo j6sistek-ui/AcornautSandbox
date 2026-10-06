@@ -4,6 +4,7 @@ import {helmetReview,createCanvas} from './qa/helmet-fit-render.mjs';
 import {StudioRenderer} from '../tools/flight-studio/renderer.mjs';
 const r=await helmetReview(),fit=await r.get('helmet-fit');
 const manifest=JSON.parse(readFileSync(new URL('../tools/flight-studio/manifest.json',import.meta.url)));
+const perFrame=new Set(Object.keys(JSON.parse(readFileSync(new URL('./qa/helmet-art-baseline.json',import.meta.url))).larger_painted_heads.per_frame_radii||{}));
 const studio=new StudioRenderer(manifest,undefined,()=>createCanvas(1,1));
 for(const h of manifest.helmets)studio.images.set(h.file,r.bank.helms[h.id]);
 const a=createCanvas(256,256),b=createCanvas(256,256),ac=a.getContext('2d'),bc=b.getContext('2d');
@@ -38,7 +39,8 @@ for(const suit of r.cat.SUITS){
  for(const kind of ['asc','desc','tap']){
   const frames=r.bank['suit'+kind[0].toUpperCase()+kind.slice(1)][suit.id]||[];
   const anchors=frames.map((_,i)=>r.draw.DOME[`${suit.id}-${kind}-${i+1}`]||r.draw.DOME['suit:'+suit.id]);
-  assert.equal(new Set(anchors.map(a=>a[2])).size,frames.length?1:0,suit.id+' '+kind+' has no helmet scale pulse');
+  // a suit the owner fitted frame by frame keeps a radius per pose (helmet-art-baseline per_frame_radii)
+  if(!perFrame.has(suit.id))assert.equal(new Set(anchors.map(a=>a[2])).size,frames.length?1:0,suit.id+' '+kind+' has no helmet scale pulse');
   for(const [i,anchor]of anchors.entries()){
    const key=`${suit.id}-${kind}-${i+1}`;
    assert(anchor.every(Number.isFinite)&&anchor[2]>0,key+' valid socket');
