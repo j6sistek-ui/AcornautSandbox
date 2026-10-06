@@ -1,5 +1,5 @@
 {
- "artVer": "304",
+ "artVer": "305",
  "suits": [
   {
    "id": "flight",
@@ -425,10 +425,10 @@
    "key": "suit:cryostar",
    "file": "suits/cryostar.png",
    "dome": [
-    198,
-    93,
-    41,
-    0
+    202,
+    99,
+    38.64,
+    5
    ],
    "box": null,
    "ownHead": false,
@@ -441,9 +441,9 @@
    "key": "suit:eclipse",
    "file": "suits/eclipse.png",
    "dome": [
-    202,
+    205,
     89,
-    46.4,
+    41.2,
     -5
    ],
    "box": null,
@@ -472,9 +472,10 @@
    "key": "suit:cinderforge",
    "file": "suits/cinderforge.png",
    "dome": [
-    181,
-    88,
-    36
+    187.73,
+    92.62,
+    31.34,
+    3
    ],
    "box": null,
    "ownHead": false,
@@ -488,8 +489,8 @@
    "file": "suits/groveguard.png",
    "dome": [
     181,
-    88,
-    36
+    92,
+    31.34
    ],
    "box": null,
    "ownHead": false,
@@ -502,9 +503,9 @@
    "key": "suit:cosmic",
    "file": "suits/cosmic.png",
    "dome": [
-    181,
-    88,
-    36
+    182,
+    93,
+    32.61
    ],
    "box": null,
    "ownHead": false,
@@ -532,9 +533,9 @@
    "key": "suit:sunforged",
    "file": "suits/sunforged.png",
    "dome": [
-    181,
-    88,
-    36
+    184,
+    92,
+    31.34
    ],
    "box": null,
    "ownHead": false,
@@ -547,9 +548,9 @@
    "key": "suit:abyssal",
    "file": "suits/abyssal.png",
    "dome": [
-    181,
-    88,
-    36
+    182,
+    90,
+    30.12
    ],
    "box": null,
    "ownHead": false,
@@ -2018,10 +2019,10 @@
    "key": "cryostar-asc-1",
    "file": "suits/cryostar-asc-1.png",
    "dome": [
-    187,
-    81,
-    44.8,
-    -5
+    190,
+    83,
+    36.03,
+    0
    ],
    "box": null,
    "ownHead": false,
@@ -2035,10 +2036,10 @@
    "key": "cryostar-asc-2",
    "file": "suits/cryostar-asc-2.png",
    "dome": [
-    187.5,
-    79.5,
-    44.8,
-    -5
+    190.5,
+    81.5,
+    36.03,
+    0
    ],
    "box": null,
    "ownHead": false,
@@ -2052,10 +2053,10 @@
    "key": "cryostar-asc-3",
    "file": "suits/cryostar-asc-3.png",
    "dome": [
-    186,
-    78.5,
-    44.8,
-    -5
+    189,
+    80.5,
+    36.03,
+    0
    ],
    "box": null,
    "ownHead": false,
@@ -2069,10 +2070,10 @@
    "key": "cryostar-asc-4",
    "file": "suits/cryostar-asc-4.png",
    "dome": [
-    186.5,
-    77.5,
-    44.8,
-    -5
+    189.5,
+    79.5,
+    36.03,
+    0
    ],
    "box": null,
    "ownHead": false,
@@ -2086,10 +2087,10 @@
    "key": "cryostar-asc-5",
    "file": "suits/cryostar-asc-5.png",
    "dome": [
-    186.5,
-    79,
-    44.8,
-    -5
+    189.5,
+    81,
+    36.03,
+    0
    ],
    "box": null,
    "ownHead": false,
@@ -2103,10 +2104,10 @@
    "key": "cryostar-asc-6",
    "file": "suits/cryostar-asc-6.png",
    "dome": [
-    191.5,
-    74.5,
-    44.8,
-    -5
+    194.5,
+    78.5,
+    36.03,
+    5
    ],
    "box": null,
    "ownHead": false,
@@ -2120,10 +2121,10 @@
    "key": "cryostar-asc-7",
    "file": "suits/cryostar-asc-7.png",
    "dome": [
-    193.5,
-    79.5,
-    44.8,
-    -5
+    195.5,
+    85.5,
+    36.03,
+    5
    ],
    "box": null,
    "ownHead": false,
@@ -2137,10 +2138,10 @@
    "key": "cryostar-asc-8",
    "file": "suits/cryostar-asc-8.png",
    "dome": [
-    194,
-    87,
-    44.8,
-    -5
+    198,
+    91,
+    36.03,
+    6
    ],
    "box": null,
    "ownHead": false,
@@ -2154,10 +2155,10 @@
    "key": "cryostar-desc-1",
    "file": "suits/cryostar-desc-1.png",
    "dome": [
-    200.5,
-    87,
-    44.8,
-    0
+    204.5,
+    89,
+    38.24,
+    7
    ],
    "box": null,
    "ownHead": false,
@@ -2171,10 +2172,10 @@
    "key": "cryostar-desc-2",
    "file": "suits/cryostar-desc-2.png",
    "dome": [
-    199,
-    104,
-    44.8,
-    5
+    202,
+    108,
+    39,
+    10
    ],
    "box": null,
    "ownHead": false,
@@ -2188,10 +2189,10 @@
    "key": "cryostar-desc-3",
    "file": "suits/cryostar-desc-3.png",
    "dome": [
-    188,
-    125.5,
-    44.8,
-    15
+    191,
+    129.5,
+    38.24,
+    17
    ],
    "box": null,
    "ownHead": false,
@@ -2205,10 +2206,10 @@
    "key": "cryostar-desc-4",
    "file": "suits/cryostar-desc-4.png",
    "dome": [
-    188.5,
-    135,
-    44.8,
-    20
+    191.5,
+    146,
+    39,
+    19
    ],
    "box": null,
    "ownHead": false,
@@ -2223,9 +2224,9 @@
    "file": "suits/cryostar-desc-5.png",
    "dome": [
     190.5,
-    144,
-    44.8,
-    25
+    148,
+    38.24,
+    24
    ],
    "box": null,
    "ownHead": false,
@@ -2239,10 +2240,10 @@
    "key": "cryostar-desc-6",
    "file": "suits/cryostar-desc-6.png",
    "dome": [
-    190,
-    153.5,
-    44.8,
-    30
+    187,
+    152.5,
+    36.75,
+    25
    ],
    "box": null,
    "ownHead": false,
@@ -2256,10 +2257,10 @@
    "key": "cryostar-desc-7",
    "file": "suits/cryostar-desc-7.png",
    "dome": [
-    189.5,
-    159.5,
-    44.8,
-    35
+    181.5,
+    161.5,
+    36.03,
+    40
    ],
    "box": null,
    "ownHead": false,
@@ -2273,10 +2274,10 @@
    "key": "cryostar-desc-8",
    "file": "suits/cryostar-desc-8.png",
    "dome": [
-    190.5,
-    159.5,
-    44.8,
-    35
+    177.69,
+    171.59,
+    36.03,
+    40
    ],
    "box": null,
    "ownHead": false,
@@ -2290,9 +2291,9 @@
    "key": "eclipse-asc-1",
    "file": "suits/eclipse-asc-1.png",
    "dome": [
-    184,
-    82,
-    44.8,
+    187,
+    83,
+    36.75,
     -5
    ],
    "box": null,
@@ -2309,8 +2310,8 @@
    "dome": [
     183,
     80,
-    44.8,
-    -5
+    36.75,
+    -6
    ],
    "box": null,
    "ownHead": false,
@@ -2326,7 +2327,7 @@
    "dome": [
     183,
     79,
-    44.8,
+    36.75,
     -5
    ],
    "box": null,
@@ -2343,7 +2344,7 @@
    "dome": [
     185,
     78,
-    44.8,
+    36.75,
     -5
    ],
    "box": null,
@@ -2360,7 +2361,7 @@
    "dome": [
     186,
     79,
-    44.8,
+    36.75,
     -5
    ],
    "box": null,
@@ -2377,7 +2378,7 @@
    "dome": [
     189,
     75,
-    44.8,
+    36.75,
     -5
    ],
    "box": null,
@@ -2393,9 +2394,9 @@
    "file": "suits/eclipse-asc-7.png",
    "dome": [
     191,
-    80,
-    44.8,
-    -5
+    82,
+    36.75,
+    -2
    ],
    "box": null,
    "ownHead": false,
@@ -2409,9 +2410,9 @@
    "key": "eclipse-asc-8",
    "file": "suits/eclipse-asc-8.png",
    "dome": [
-    193,
-    88,
-    44.8,
+    196,
+    93,
+    36.75,
     -5
    ],
    "box": null,
@@ -2426,9 +2427,9 @@
    "key": "eclipse-desc-1",
    "file": "suits/eclipse-desc-1.png",
    "dome": [
-    199,
-    87,
-    44.8,
+    203,
+    88,
+    39.78,
     0
    ],
    "box": null,
@@ -2443,9 +2444,9 @@
    "key": "eclipse-desc-2",
    "file": "suits/eclipse-desc-2.png",
    "dome": [
-    197,
+    200,
     104,
-    44.8,
+    37.49,
     5
    ],
    "box": null,
@@ -2460,9 +2461,9 @@
    "key": "eclipse-desc-3",
    "file": "suits/eclipse-desc-3.png",
    "dome": [
-    187,
-    127,
-    44.8,
+    188,
+    129,
+    38.24,
     15
    ],
    "box": null,
@@ -2477,9 +2478,9 @@
    "key": "eclipse-desc-4",
    "file": "suits/eclipse-desc-4.png",
    "dome": [
-    188,
-    136,
-    44.8,
+    185.86,
+    148.01,
+    38.24,
     20
    ],
    "box": null,
@@ -2494,9 +2495,9 @@
    "key": "eclipse-desc-5",
    "file": "suits/eclipse-desc-5.png",
    "dome": [
-    189,
-    146,
-    44.8,
+    191,
+    148,
+    37.49,
     25
    ],
    "box": null,
@@ -2511,9 +2512,9 @@
    "key": "eclipse-desc-6",
    "file": "suits/eclipse-desc-6.png",
    "dome": [
-    189,
-    155,
-    44.8,
+    191,
+    157,
+    36.75,
     30
    ],
    "box": null,
@@ -2529,8 +2530,8 @@
    "file": "suits/eclipse-desc-7.png",
    "dome": [
     189,
-    162,
-    44.8,
+    160,
+    37.49,
     35
    ],
    "box": null,
@@ -2545,9 +2546,9 @@
    "key": "eclipse-desc-8",
    "file": "suits/eclipse-desc-8.png",
    "dome": [
-    189,
-    162,
-    44.8,
+    184,
+    173,
+    36.75,
     35
    ],
    "box": null,
@@ -3837,7 +3838,7 @@
    "dome": [
     211,
     108,
-    28.39,
+    27.83,
     1
    ],
    "box": [
@@ -3859,7 +3860,7 @@
    "dome": [
     211,
     108.8,
-    28.39,
+    27.83,
     1
    ],
    "box": [
