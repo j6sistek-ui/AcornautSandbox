@@ -124,4 +124,19 @@ if (fail.length) { console.error("ads: FAIL\n  " + fail.join("\n  ")); process.e
   ok(left === 5 && shown.filter((s) => s === "interstitial:level").length === 2, "level 30 past the gap: the ad plays again");
   engine.world.lastLevel = null;
 }
-console.log(`ads: rewarded continue (earned/dismissed/unloaded), ${C.AD_RULES.rewardedDustPerDay}x${C.AD_RULES.rewardedDust} ad dust with a daily cap, interstitial after 30 gates and every 10th level, grace/cadence/gap, free revive in the sim, web/beta split - passed`);
+// REMOVE ADS (owner, 7 Oct 2026): the non-consumable switches off both
+// full-screen placements and nothing else
+{
+  shown.length = 0; engine.save.lastAdAt = 0; engine.save.noAds = true;
+  engine.save.arcadeBest = C.AD_RULES.interstitialAfterGates; engine.save.crashesSinceAd = C.AD_RULES.interstitialEveryCrashes;
+  let went = 0; engine.afterCrash(() => went++);
+  ok(went === 1 && !shown.some((s) => s.startsWith("interstitial")), "no crash-exit ad once ads are removed");
+  engine.world.lastLevel = { def: { id: "1-10" }, finished: true, newMask: 0, gained: 0, totalBefore: 0, totalAfter: 0 };
+  engine.afterLevel(() => went++);
+  ok(went === 2 && !shown.some((s) => s.startsWith("interstitial")), "no 10th-level ad once ads are removed");
+  engine.world.lastLevel = null;
+  ok(engine.adDustState().left > 0, "the Shop's rewarded dust is still offered");
+  engine.save.noAds = false;
+  ok(engine.buyDust(C.REMOVE_ADS.id) === "unavailable", "the web page cannot sell Remove Ads");
+}
+console.log(`ads: rewarded continue (earned/dismissed/unloaded), ${C.AD_RULES.rewardedDustPerDay}x${C.AD_RULES.rewardedDust} ad dust with a daily cap, interstitial after 30 gates and every 10th level (off with Remove Ads), grace/cadence/gap, free revive in the sim, web/beta split - passed`);

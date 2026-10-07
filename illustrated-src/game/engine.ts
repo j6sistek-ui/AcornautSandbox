@@ -1,4 +1,4 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId, AD_RULES } from "./catalog";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, type BoostId, AD_RULES, REMOVE_ADS } from "./catalog";
 import { platform } from "./platform";
 import { beginFlightTest, type FlightTestPattern } from "./sim";
 import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX, type TapShape, type TailSpring } from "./control-constants";
@@ -128,7 +128,8 @@ export type Engine = {
    *  re-render of the same visit. */
   takeDailyClaim: () => { amount: number; streak: number; bonus: boolean; pack: boolean } | null;
   /** "pending": the store took over and will grant on success; "ok": granted
-   *  outright (beta only); "unavailable": no store on this platform */
+   *  outright (beta only, or REMOVE_ADS already owned); "unavailable": no
+   *  store on this platform. Takes a DUST_PACKS id or REMOVE_ADS.id. */
   buyDust: (id: string) => "ok" | "missing" | "pending" | "unavailable" | "poor";
   /** the pack id whose store purchase is in flight, or null */
   dustPending: () => string | null;
@@ -801,7 +802,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // that is already on the save, so an early, struggling pilot is never
       // interrupted and nothing new has to be migrated
       const bestGates = Math.max(save.highScore ?? 0, save.deepBest ?? 0, save.lostBest ?? 0, save.arcadeBest ?? 0);
-      const due = platform.adsReady && platform.interstitialAdReady()
+      const due = platform.adsReady && !save.noAds && platform.interstitialAdReady()
         && bestGates >= AD_RULES.interstitialAfterGates
         && save.crashesSinceAd >= AD_RULES.interstitialEveryCrashes
         && Date.now() - save.lastAdAt >= AD_RULES.interstitialMinGapSec * 1000;
@@ -816,7 +817,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       // two-minute gap still holds, and the crash cadence is untouched.
       const last = world.lastLevel;
       const n = last?.finished ? Number(last.def.id.split("-")[1]) : 0;
-      const due = platform.adsReady && platform.interstitialAdReady()
+      const due = platform.adsReady && !save.noAds && platform.interstitialAdReady()
         && n > 0 && n % AD_RULES.interstitialEveryLevels === 0
         && Date.now() - save.lastAdAt >= AD_RULES.interstitialMinGapSec * 1000;
       if (!due || adBusy) { next(); return; }
@@ -1234,7 +1235,42 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     writeSave(save);
     void platform.showInterstitialAd(placement, () => muteAll(true)).then(() => { muteAll(false); adBusy = false; next(); notify(); });
   }
+  /** REMOVE ADS is kept on the save, not spent: a receipt the ledger has
+   *  not seen sets it; one it has seen (a re-delivery) changes nothing. */
+  function grantNoAds(transactionId?: string) {
+    if (transactionId && !takeReceipt(save, transactionId)) return false;
+    save.noAds = true;
+    writeSave(save);
+    notify();
+    return true;
+  }
+  /** the one store round trip both products share: park the purchase as
+   *  pending, let the store answer, grant on "ok" with its transaction id */
+  function buyFromStore(id: string, grant: (transactionId?: string) => void) {
+    if (dustPurchase?.state === "pending") return "pending" as const;
+    dustPurchase = { id, state: "pending" };
+    notify();
+    platform.buyDust(id)
+      .then((r) => {
+        if (r.result === "ok") grant(r.transactionId);
+        dustPurchase = { id, state: r.result };
+        notify();
+      })
+      // a store that throws (network gone, sheet dismissed by the OS) is
+      // a failed purchase, not an unhandled rejection with a stuck row
+      .catch(() => { dustPurchase = { id, state: "failed" }; notify(); });
+    return "pending" as const;
+  }
   function buyDust(id: string) {
+    // REMOVE ADS (owner, 7 Oct 2026): the store sells it once; the beta
+    // grants it so testers can see the sheets go quiet; the web page has
+    // no full-screen ads to remove and no store, so it refuses
+    if (id === REMOVE_ADS.id) {
+      if (save.noAds) return "ok";
+      if (platform.storeReady) return buyFromStore(id, (tx) => grantNoAds(tx));
+      if (IS_BETA) { grantNoAds(); return "ok"; }
+      return "unavailable";
+    }
     const pack = DUST_PACKS.find((p) => p.id === id);
     if (!pack) return "missing";
     // ACORNS BUY STAR DUST (owner, 13 Sep 2026: "leave the packs in, they
@@ -1247,21 +1283,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       grantDust(pack);
       return "ok";
     }
-    if (platform.storeReady) {
-      if (dustPurchase?.state === "pending") return "pending";
-      dustPurchase = { id, state: "pending" };
-      notify();
-      platform.buyDust(id)
-        .then((r) => {
-          if (r.result === "ok") grantDust(pack, r.transactionId);
-          dustPurchase = { id, state: r.result };
-          notify();
-        })
-        // a store that throws (network gone, sheet dismissed by the OS) is
-        // a failed purchase, not an unhandled rejection with a stuck row
-        .catch(() => { dustPurchase = { id, state: "failed" }; notify(); });
-      return "pending";
-    }
+    if (platform.storeReady) return buyFromStore(id, (tx) => grantDust(pack, tx));
     if (IS_BETA) { grantDust(pack); return "ok"; }
     return "unavailable";
   }
@@ -1282,6 +1304,10 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     return platform.pendingPurchases().then((list) => {
       let paid = 0;
       for (const p of list) {
+        // the non-consumable comes back on the same list (RevenueCat's
+        // non-subscription transactions), which is what makes Restore
+        // Purchases and a new device re-grant it
+        if (p.id === REMOVE_ADS.id) { if (grantNoAds(p.transactionId)) paid++; continue; }
         const pack = DUST_PACKS.find((d) => d.id === p.id);
         if (pack && grantDust(pack, p.transactionId)) paid++;
       }

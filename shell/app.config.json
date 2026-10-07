@@ -18,7 +18,8 @@
   },
   "products": {
     "dust-250": "PLACEHOLDER_PRODUCT_DUST_250",
-    "dust-2500": "PLACEHOLDER_PRODUCT_DUST_2500"
+    "dust-2500": "PLACEHOLDER_PRODUCT_DUST_2500",
+    "no-ads": "PLACEHOLDER_PRODUCT_NO_ADS"
   },
   "leaderboards": {
     "fly": "PLACEHOLDER_LEADERBOARD_NORMAL",

@@ -13,7 +13,7 @@ import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog";
 import { repeatTapMode, FLIGHT_TEST_PATTERNS, type FlightTestPattern } from "./sim";
 import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants";
 import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, type BoostId, IAP_LIVE, ACORNS_PER_DUST} from "./catalog";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, REMOVE_ADS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, type BoostId, IAP_LIVE, ACORNS_PER_DUST} from "./catalog";
 import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview, FROZEN_SUITS, type ShipPick } from "./draw";
 import { bundleQuote, type BundleItem } from "./catalog";
 import { drawSprite as drawSpriteOn } from "./art";
@@ -4207,12 +4207,40 @@ export async function bootStandalone(root: HTMLElement) {
       row.onclick = () => { if (!priced || inFlight) return; if (tx(row, () => engine.buyDust(dp.id))) render(); };
       scroll.append(row);
     }
+    // REMOVE ADS (owner, 7 Oct 2026): one non-consumable beside the packs.
+    // Listed wherever the cash packs are (a store that answers, or the
+    // beta's sticker preview); the web page, which has no full-screen ads,
+    // shows the sticker and a tap says it is sold in the app, like a pack.
+    if (!(platform.native && !platform.storeReady)) {
+      const row = el("button", "ac-card ac-modcard ac-noadsrow");
+      row.dataset.productId = REMOVE_ADS.id;
+      row.append(el("span", "ac-dustface ac-noadsface", "AD"));
+      const t = el("div", "ac-modtxt");
+      t.append(el("p", "ac-modname", REMOVE_ADS.name), el("p", "ac-sub", REMOVE_ADS.blurb));
+      if (engine.save.noAds) {
+        row.append(t, el("span", "ac-modprice ac-owned", "OWNED"));
+        row.disabled = true;
+        row.setAttribute("aria-label", "Remove Ads: owned. No full-screen ads.");
+      } else {
+        const price = platform.priceOf(REMOVE_ADS.id);
+        const priced = !!price || !platform.native;
+        const waiting = inFlight === REMOVE_ADS.id;
+        const label = waiting ? "Waiting for the store…" : price ?? (platform.native ? "…" : REMOVE_ADS.price);
+        row.append(t, el("span", `ac-modprice ac-cashprice${waiting ? " ac-waiting" : ""}`, label));
+        if (!priced) { row.disabled = true; row.setAttribute("aria-label", "Price loading"); }
+        if (inFlight) { row.disabled = true; if (waiting) row.setAttribute("aria-label", "Purchase in progress"); }
+        row.onclick = () => { if (!priced || inFlight) return; if (tx(row, () => engine.buyDust(REMOVE_ADS.id))) render(); };
+      }
+      scroll.append(row);
+    }
     // the store answered while we were away from this list, or just now:
     // a success shows as dust in the badge and needs no words; anything
     // else gets one line so a tap that did nothing is never a mystery
     const outcome = engine.takeDustOutcome();
     if (outcome) {
-      const note = DUST_OUTCOME_TEXT[outcome.state];
+      const note = outcome.id === REMOVE_ADS.id && outcome.state === "ok"
+        ? "Full-screen ads are gone. The free continue and Star Dust ads stay."
+        : DUST_OUTCOME_TEXT[outcome.state];
       if (note) announce(note); else clearDeny();
     }
     if (platform.storeReady) {
@@ -4225,8 +4253,8 @@ export async function bootStandalone(root: HTMLElement) {
     // beta says dust is granted; the live web page says the store is
     // the app's.
     if (!platform.storeReady) scroll.append(el("p", "ac-fine", IS_BETA
-      ? `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The payment rail is not connected yet, so the ${CASH_PACKS.map((p) => p.dust.toLocaleString()).join(" and ")} packs are granted during the beta.`
-      : `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The ${CASH_PACKS.map((p) => p.price).join(" and ")} packs are sold in the app.`));
+      ? `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The payment rail is not connected yet, so the ${CASH_PACKS.map((p) => p.dust.toLocaleString()).join(" and ")} packs and Remove Ads are granted during the beta.`
+      : `Star Dust comes free every day and on the Star Chart, or trade acorns for it here: ${(500 * ACORNS_PER_DUST).toLocaleString()} acorns buys 500. The ${CASH_PACKS.map((p) => p.price).join(" and ")} packs and Remove Ads are sold in the app.`));
 
     box.append(scroll);
     // THE CYCLE INSPECTOR IS A BETA TOOL (owner, 1 Oct 2026: "inspector

@@ -33,7 +33,7 @@ Waiting on you, in this order:
 
 `npm run check` prints exactly what is still missing.
 
-## Two in-app purchases
+## Three in-app purchases
 
 Owner, 15 Sep 2026: *"Restore a single IAP for 2500 star dust @$3.99. User
 can still buy star dust with acorns."* Owner, 23 Sep 2026: *"The 200 acorn
@@ -43,11 +43,17 @@ in the game, always, on every page (1,000 / 2,000 / 4,000 acorns). The two
 real-money products are `dust-250` (250 Star Dust, $1.99 tier) and
 `dust-2500` (2,500 Star Dust, $3.99 tier), `cash: true` in `DUST_PACKS`;
 the shop shows them only where a store answers (a shell with its store, or
-the beta's sticker preview). `app.config.json` still carries `"iap": false`
-until the accounts exist: flip it, fill the RevenueCat keys and the two
-product ids (`products.dust-250` and `products.dust-2500`, consumables at
-the $1.99 and $3.99 tiers in App Store Connect and Play Console), and have
-the shell set `window.__ACORNAUT_IAP__ = true` before the bundle loads.
+the beta's sticker preview). The third product is `no-ads` (Remove Ads,
+$2.99 tier, a NON-consumable; owner, 7 Oct 2026): bought once, it switches
+off the two full-screen placements for good and leaves the rewarded ads
+the pilot chooses. It lives on the save (`noAds`), survives Start Over,
+and Restore Purchases or a new device re-grants it through the same
+receipt path as the packs. `app.config.json` still carries `"iap": false`
+until the accounts exist: flip it, fill the RevenueCat keys and the three
+product ids (`products.dust-250` and `products.dust-2500` as consumables
+at the $1.99 and $3.99 tiers, `products.no-ads` as a non-consumable at the
+$2.99 tier, in App Store Connect and Play Console), and have the shell set
+`window.__ACORNAUT_IAP__ = true` before the bundle loads.
 
 ## Ads (AdMob)
 
