@@ -561,7 +561,26 @@ try{
     row().click();resolvePurchase({result:'ok',transactionId:'shop-visuals-receipt'});await settle();e.open('shop');
     assert.equal(e.save.starDust,starting+pack.dust+pack.bonus,'redelivered receipt cannot grant twice');
     button('RESTORE PURCHASES').click();await settle();assert.equal(restoreCalls,1);
-    console.log('PASS Shop visuals native: decoded emblem, localized and missing prices, pending exclusion, cancelled/failed recovery, exact receipt grant, duplicate protection and restore.');
+    // REMOVE ADS (owner, 7 Oct 2026): one non-consumable row beside the packs.
+    // No price yet: disabled and not for sale. Priced: a purchase through the
+    // same store round trip, granted once on its receipt, OWNED afterwards,
+    // and a re-delivered receipt (Restore Purchases, a new device) is idempotent.
+    e.open('shop');const noAds=()=>app.querySelector(`[data-product-id="${C.REMOVE_ADS.id}"]`);
+    assert(noAds(),'Remove Ads is listed in the app');assert(noAds().disabled);assert.equal(noAds().querySelector('.ac-cashprice').textContent,'…');
+    prices.set(C.REMOVE_ADS.id,'€2,99');e.open('shop');assert(!noAds().disabled);assert.equal(noAds().querySelector('.ac-cashprice').textContent,'€2,99');
+    assert.equal(e.save.noAds,false);const callsBefore=storeCalls.length;noAds().click();await settle();
+    assert.equal(storeCalls.at(-1),C.REMOVE_ADS.id);assert.equal(e.dustPending(),C.REMOVE_ADS.id);assert(noAds().disabled,'waits for the store');
+    resolvePurchase({result:'ok',transactionId:'shop-visuals-no-ads'});await settle();e.open('shop');
+    assert.equal(e.save.noAds,true,'Remove Ads is owned');assert(noAds().disabled);assert.equal(noAds().querySelector('.ac-owned').textContent,'OWNED');
+    assert.equal(e.buyDust(C.REMOVE_ADS.id),'ok','a second buy is a no-op, not a second sheet');assert.equal(storeCalls.length,callsBefore+1);
+    e.save.noAds=false;S.writeSave(e.save);
+    e.world.lastLevel=null;await e.restorePurchases();assert.equal(e.save.noAds,false,'nothing pending at the store, nothing granted');
+    win.__acornautPlatform.store.pending=async()=>[{id:C.REMOVE_ADS.id,transactionId:'shop-visuals-no-ads'}];
+    await e.restorePurchases();assert.equal(e.save.noAds,false,'a receipt the ledger already paid grants nothing');
+    win.__acornautPlatform.store.pending=async()=>[{id:C.REMOVE_ADS.id,transactionId:'shop-visuals-no-ads-2'}];
+    await e.restorePurchases();assert.equal(e.save.noAds,true,'a fresh receipt on record re-grants Remove Ads');
+    win.__acornautPlatform.store.pending=async()=>[];
+    console.log('PASS Shop visuals native: decoded emblem, localized and missing prices, pending exclusion, cancelled/failed recovery, exact receipt grant, duplicate protection and restore; Remove Ads priced/bought/owned/restored.');
   }
 }finally{Date.now=clock;}
 process.exit(0);

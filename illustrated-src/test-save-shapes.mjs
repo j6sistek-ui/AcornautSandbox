@@ -45,10 +45,12 @@ if(Camp.CHART_LEVELS.length<Camp.ALL_LEVELS.length){
 }
 // (f) Start Over keeps purchases, Star Dust and boosts; erases the rest
 {
-  const s=load({acorns:900,starDust:777,purchased:['arcflash','porcelain'],boosts:{levelskip:2,starunlock:1},pilotName:'Zed',highScore:40,tutorialDone:true,guide:'done'});
+  assert.equal(load({noAds:'yes'}).noAds,false,'junk in noAds reads as not bought');
+  const s=load({acorns:900,starDust:777,purchased:['arcflash','porcelain'],noAds:true,boosts:{levelskip:2,starunlock:1},pilotName:'Zed',highScore:40,tutorialDone:true,guide:'done'});
+  assert.equal(s.noAds,true,'Remove Ads is kept on the save');
   assert.equal(s.starDust,777);
   Save.eraseSave();const f=Save.loadSave();
-  assert.deepEqual(f.purchased.sort(),['arcflash','porcelain'],'shop purchases survive');
+  assert.deepEqual(f.purchased.sort(),['arcflash','porcelain'],'shop purchases survive');assert.equal(f.noAds,true,'Remove Ads survives Start Over');
   assert.equal(f.starDust,777,'Star Dust survives');assert.equal(f.boosts.levelskip,2);assert.equal(f.boosts.starunlock,1);
   assert.equal(f.acorns,Save.defaultSave().acorns,'acorns reset');assert.equal(f.highScore,0);assert.equal(f.pilotName,'');assert.equal(f.tutorialDone,false);
   // sealed: nothing writes after Start Over

@@ -86,8 +86,10 @@ ok(DUST_PACKS.some((p) => p.id === "dust-550" && p.dust + p.bonus === 550), "dus
 
 // ---- the engine's wiring, read from source: no promise left unhandled ---
 const engineSrc = readFileSync(new URL("./game/engine.ts", import.meta.url), "utf8");
-const buyBlock = engineSrc.slice(engineSrc.indexOf("function buyDust("), engineSrc.indexOf("function dustPending("));
-ok(/platform\.buyDust\(id\)[\s\S]*\.catch\(/.test(buyBlock), "engine.buyDust must .catch the store promise");
+// the store round trip lives in buyFromStore since Remove Ads joined the
+// packs (7 Oct 2026); buyDust routes both products through it
+const buyBlock = engineSrc.slice(engineSrc.indexOf("function buyFromStore("), engineSrc.indexOf("function dustPending("));
+ok(/platform\.buyDust\(id\)[\s\S]*\.catch\(/.test(buyBlock), "the store round trip must .catch the store promise");
 ok(/state: "failed"/.test(buyBlock), "a throwing store must read as a failed purchase");
 ok(/takeReceipt\(save, transactionId\)/.test(engineSrc), "grantDust must go through takeReceipt");
 ok(!/save\.receipts\.push/.test(engineSrc), "only save.ts writes the receipt ledger");

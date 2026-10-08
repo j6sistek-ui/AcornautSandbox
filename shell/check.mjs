@@ -19,7 +19,7 @@ const rows = [
   ...(cfg.iap === false ? [] : [
   ["revenuecat.iosApiKey", cfg.revenuecat?.iosApiKey, "RevenueCat → Project → Apps → the iOS app → Public API key"],
   ["revenuecat.androidApiKey", cfg.revenuecat?.androidApiKey, "RevenueCat → Project → Apps → the Android app → Public API key"],
-  ...Object.entries(cfg.products).map(([k, v]) => [`products.${k}`, v, "App Store Connect → In-App Purchases (consumable) → Product ID; same ID in Play Console → In-app products"]),
+  ...Object.entries(cfg.products).map(([k, v]) => [`products.${k}`, v, "App Store Connect → In-App Purchases → Product ID (the dust packs are consumables, no-ads is a non-consumable); same ID in Play Console → In-app products"]),
   // The hyper board is scored on TIME, so it is the one board that must be
   // sorted the other way: the game posts finish ticks (sim.ts), and a board
   // left on the default sort would crown the slowest pilot.

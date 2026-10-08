@@ -404,6 +404,11 @@
       background: rgba(6,4,18,.72); border-radius: 999px; padding: 1px;
       box-shadow: 0 0 0 1px rgba(203,180,255,.45); }
     .ac-dustface { background: radial-gradient(70% 70% at 50% 30%, rgba(90,60,180,.5), rgba(4,3,12,.92));
+    /* REMOVE ADS: the one non-consumable beside the packs (7 Oct 2026). A struck AD badge for a face, OWNED once bought. */
+    .ac-noadsface { position: relative; display: grid; place-items: center; font: 900 18px/1 Figtree, sans-serif; letter-spacing: .08em; color: #ffd7e8; }
+    .ac-noadsface::after { content: ""; position: absolute; z-index: 1; left: 14%; right: 14%; top: 50%; height: 3px; background: #ff5d8a; transform: rotate(-28deg); border-radius: 2px; }
+    .ac-noadsrow .ac-owned { display: grid; place-items: center; min-height: 42px; min-width: 70px; padding: 8px 12px; border-radius: 12px;
+      border: 1px solid rgba(124,224,173,.5); color: #7ce0ad; font: 800 12px/1 Figtree, sans-serif; letter-spacing: .08em; }
       border-color: rgba(203,180,255,.55); }
 
 
@@ -1497,7 +1502,7 @@
       font: 900 9.5px/1 Figtree, sans-serif; letter-spacing: .1em; color: #241500;
       background: linear-gradient(180deg, #ffd76a, #dd9c25); border-radius: 999px; padding: 5px 9px;
       box-shadow: 0 3px 10px -3px rgba(255,180,60,.8); }
-    .ac-dustrow .ac-dustface { flex: none; width: 48px; height: 48px; border-radius: 14px;
+    .ac-dustrow .ac-dustface, .ac-noadsrow .ac-dustface { flex: none; width: 48px; height: 48px; border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
       background: radial-gradient(70% 70% at 50% 30%, rgba(138,90,228,.5), rgba(8,5,22,.7));
       border: 1px solid rgba(170,140,240,.35); }
@@ -1580,20 +1585,20 @@
     .ac-shopvisual .ac-boostcard .ac-modprice { padding: 9px 8px; border-radius: 9px;
       border: 1px solid rgba(211,162,250,.5); color: #f1dcff; background: rgba(38,15,66,.8); }
     .ac-shopvisual .ac-boostcard.ac-confirming { border-color: #ffe1a0; }
-    .ac-shopvisual .ac-card.ac-dustrow { margin-bottom: 10px; display: grid; grid-template-columns: 52px minmax(0, 1fr) auto;
+    .ac-shopvisual .ac-card.ac-dustrow, .ac-shopvisual .ac-card.ac-noadsrow { margin-bottom: 10px; display: grid; grid-template-columns: 52px minmax(0, 1fr) auto;
       gap: 11px; min-height: 82px; padding: 10px; border-radius: 16px; border: 1px solid rgba(207,175,115,.6);
       background: linear-gradient(105deg, rgba(74,44,110,.94), rgba(18,9,39,.94) 55%, rgba(54,27,82,.95));
       box-shadow: inset 0 1px 2px rgba(239,215,255,.5), inset 0 -2px 5px rgba(4,1,16,.8), 0 5px 15px rgba(0,0,0,.3); }
-    .ac-shopvisual .ac-dustrow .ac-dustface { width: 52px; height: 52px; border-radius: 12px; overflow: hidden; }
+    .ac-shopvisual .ac-dustrow .ac-dustface, .ac-shopvisual .ac-noadsrow .ac-dustface { width: 52px; height: 52px; border-radius: 12px; overflow: hidden; }
     .ac-shopvisual .ac-stardust-emblem { display: block; width: 100%; height: 100%; object-fit: contain; }
-    .ac-shopvisual .ac-dustrow .ac-modname { color: #faf0ff; font-size: 13px; }
-    .ac-shopvisual .ac-dustrow .ac-sub { font-size: 10px; line-height: 1.3; }
-    .ac-shopvisual .ac-dustrow .ac-cashprice { display: grid; place-items: center; min-height: 42px;
+    .ac-shopvisual .ac-dustrow .ac-modname, .ac-shopvisual .ac-noadsrow .ac-modname { color: #faf0ff; font-size: 13px; }
+    .ac-shopvisual .ac-dustrow .ac-sub, .ac-shopvisual .ac-noadsrow .ac-sub { font-size: 10px; line-height: 1.3; }
+    .ac-shopvisual .ac-dustrow .ac-cashprice, .ac-shopvisual .ac-noadsrow .ac-cashprice { display: grid; place-items: center; min-height: 42px;
       min-width: 72px; max-width: 115px; padding: 10px; border-radius: 13px; border: 1px solid #ffe9a9;
       color: #311c09; background: linear-gradient(#ffe89b, #edb746 55%, #ca841d); font-size: 15px;
       box-shadow: inset 0 1px 1px #fff9d8, 0 0 12px rgba(255,180,63,.28); overflow-wrap: anywhere; }
-    .ac-shopvisual .ac-dustrow .ac-cashprice.ac-waiting { font-size: 11px; font-weight: 700; }
-    .ac-shopvisual .ac-dustrow:disabled { opacity: .65; cursor: wait; }
+    .ac-shopvisual .ac-dustrow .ac-cashprice.ac-waiting, .ac-shopvisual .ac-noadsrow .ac-cashprice.ac-waiting { font-size: 11px; font-weight: 700; }
+    .ac-shopvisual .ac-dustrow:disabled, .ac-shopvisual .ac-noadsrow:disabled { opacity: .65; cursor: wait; }
     .ac-shopvisual .ac-shopreviewsheet { width: min(560px, 100%); margin-inline: auto;
       border: 1px solid rgba(221,188,126,.68); border-bottom: 0; background:
       linear-gradient(rgba(23,11,44,.92), rgba(13,6,29,.96)), var(--shop-nebula) center / cover; }
@@ -1622,16 +1627,16 @@
     .ac-shopvisual button:focus-visible { outline: 3px solid #ffe5a4; outline-offset: 3px; }
     .ac-shopvisual button { transition: border-color .15s, box-shadow .15s; }
     @media (max-width: 349px) {
-      .ac-shopvisual .ac-card.ac-dustrow { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 7px; padding: 8px; }
-      .ac-shopvisual .ac-dustrow .ac-dustface { width: 44px; height: 44px; }
-      .ac-shopvisual .ac-dustrow .ac-cashprice { min-width: 60px; max-width: 90px; padding: 8px; font-size: 13px; }
+      .ac-shopvisual .ac-card.ac-dustrow, .ac-shopvisual .ac-card.ac-noadsrow { grid-template-columns: 44px minmax(0, 1fr) auto; gap: 7px; padding: 8px; }
+      .ac-shopvisual .ac-dustrow .ac-dustface, .ac-shopvisual .ac-noadsrow .ac-dustface { width: 44px; height: 44px; }
+      .ac-shopvisual .ac-dustrow .ac-cashprice, .ac-shopvisual .ac-noadsrow .ac-cashprice { min-width: 60px; max-width: 90px; padding: 8px; font-size: 13px; }
       .ac-shopvisual .ac-shopincluded { gap: 6px; }
       .ac-shopvisual .ac-shopincluded > .ac-card { padding: 9px 5px 7px; }
     }
     @media (prefers-reduced-motion: reduce) { .ac-shopvisual button { transition: none; } }
-    .ac-card.ac-dustrow { width: 100%; min-height: 0; flex-direction: row; align-items: center;
+    .ac-card.ac-dustrow, .ac-card.ac-noadsrow { width: 100%; min-height: 0; flex-direction: row; align-items: center;
       justify-content: flex-start; gap: 12px; text-align: left; padding: 11px 14px; }
-    .ac-card.ac-dustrow .ac-modtxt { flex: 1; min-width: 0; text-align: left; }
+    .ac-card.ac-dustrow .ac-modtxt, .ac-card.ac-noadsrow .ac-modtxt { flex: 1; min-width: 0; text-align: left; }
     /* the last shelf must clear the preproduction bar pinned under it */
     .ac-shopbeta .ac-sheet-scroll { padding-bottom: 18px; }
     .ac-featuresheet { max-height: 92vh; overflow-y: auto; }
@@ -2342,7 +2347,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("../js307/standalone.js")
+    import("../js308/standalone.js")
       .catch(() => import("../js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

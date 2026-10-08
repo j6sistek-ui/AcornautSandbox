@@ -75,6 +75,8 @@ export type SaveData = {
   palGuideSeen?: boolean;
   chartGuideSeen?: boolean;
   purchased: string[];
+  /** REMOVE ADS bought: no full-screen ads, ever (rewarded ads stay) */
+  noAds: boolean;
   /** store transaction ids already turned into dust, so a re-delivered
    *  receipt is never paid twice (owner's store build, 8 Sep 2026) */
   receipts: string[];
@@ -251,6 +253,7 @@ export function defaultSave(): SaveData {
     spillBest: 0,
     spillRecords: freshSpillRecords(), spillSuspended: null, spillStarter: null, spillSignal: false,
     purchased: [],
+    noAds: false,
     receipts: [],
     boosts: { levelskip: 0, starunlock: 0 },
     keyUnlocks: [],
@@ -455,6 +458,7 @@ export function loadSave(): SaveData {
   }
   if (!Array.isArray(s.receipts)) s.receipts = [];
   s.receipts = s.receipts.filter((r) => typeof r === "string").slice(-500);
+  if (typeof s.noAds !== "boolean") s.noAds = false;
   // saves written before the Star Chart boosts existed
   if (!s.boosts || typeof s.boosts !== "object" || Array.isArray(s.boosts)) s.boosts = { levelskip: 0, starunlock: 0 };
   for (const id of BOOST_IDS) {
@@ -749,6 +753,7 @@ export function eraseSave() {
   const old = loadSave();
   const fresh = defaultSave();
   fresh.purchased = [...new Set(old.purchased || [])];
+  fresh.noAds = old.noAds === true;
   fresh.starDust = Math.max(0, old.starDust || 0);
   fresh.boosts = { ...fresh.boosts, ...(old.boosts || {}) };
   writeSave(fresh);

@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "307";
+export const ART_VER = "308";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -983,6 +983,18 @@ export const DUST_PACKS: { id: string; dust: number; bonus: number; acorns: numb
 ];
 /** the packs a store sells for money, and the ones acorns buy */
 export const CASH_PACKS = DUST_PACKS.filter((p) => p.cash);
+/** REMOVE ADS (owner, 7 Oct 2026: "one more iap - ad removal 2.99 (except
+ *  star dust and continuation ads) just the forced ones"). A non-consumable:
+ *  bought once, kept on the save (eraseSave keeps it, Restore Purchases
+ *  re-grants it), and it switches off the two FULL-SCREEN placements - the
+ *  crash-exit interstitial and the every-10th-level one. The rewarded ads
+ *  the pilot chooses (the free continue, the Shop's Star Dust) stay. */
+export const REMOVE_ADS = {
+  id: "no-ads",
+  name: "Remove Ads",
+  price: "$2.99",
+  blurb: "No more full-screen ads, ever. The free continue and Star Dust ads stay.",
+} as const;
 export const ACORN_PACKS = DUST_PACKS.filter((p) => !p.cash);
 
 /** STAR CHART BOOSTS (owner, 8 Sep 2026: "a level skip item... instant 3
