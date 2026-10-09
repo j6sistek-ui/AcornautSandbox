@@ -56,6 +56,18 @@ developer website through its Marketing URL, host the account's exact
 and readiness review. Payment setup, hosting and store submission are the
 owner's.
 
+**Account moved, 9 Oct 2026.** The ids above the fold now come from the
+LLC's AdMob account (publisher `pub-1941049073659574`, business payments
+profile): app `~8344445678`, rewarded `/2699479164`, interstitial
+`/5381482821`. The earlier personal account (`pub-4551315319006015`,
+individual payments profile, which Google cannot convert) is to be
+cancelled by the owner once the new one is approved. The site root now
+hosts the new account's `app-ads.txt` line (`docs/app-ads.txt`). The UMP
+consent messages (Privacy & messaging: European regulations and US state
+regulations) live per account and have to be created and published again
+in the new one, or the consent sheet and Profile → Privacy Options never
+appear and EEA traffic does not serve.
+
 Sources: [Google test ads](https://developers.google.com/admob/ios/test-ads),
 [app setup](https://support.google.com/admob/answer/9989980?hl=en),
 [app-ads.txt](https://support.google.com/admob/answer/9363762?hl=en),

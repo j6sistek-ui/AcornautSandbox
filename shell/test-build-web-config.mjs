@@ -39,11 +39,11 @@ require("node:module").syncBuiltinESMExports();
 
 const admob = {
   testing: false,
-  iosAppId: "ca-app-pub-4551315319006015~4154845260",
+  iosAppId: "ca-app-pub-1941049073659574~8344445678",
   androidAppId: "ca-app-pub-3940256099942544~3347511713",
-  rewardedIos: "ca-app-pub-4551315319006015/3029465851",
+  rewardedIos: "ca-app-pub-1941049073659574/2699479164",
   rewardedAndroid: "ca-app-pub-3940256099942544/5224354917",
-  interstitialIos: "ca-app-pub-4551315319006015/6633579655",
+  interstitialIos: "ca-app-pub-1941049073659574/5381482821",
   interstitialAndroid: "ca-app-pub-3940256099942544/1033173712",
 };
 
