@@ -52,8 +52,9 @@ receipt path as the packs. `app.config.json` still carries `"iap": false`
 until the accounts exist: flip it, fill the RevenueCat keys and the three
 product ids (`products.dust-250` and `products.dust-2500` as consumables
 at the $1.99 and $3.99 tiers, `products.no-ads` as a non-consumable at the
-$2.99 tier, in App Store Connect and Play Console), and have the shell set
-`window.__ACORNAUT_IAP__ = true` before the bundle loads.
+$2.99 tier, in App Store Connect and Play Console). The adapter sets
+`window.__ACORNAUT_IAP__` from that flag before the bundle loads, and while
+it is false it never configures RevenueCat, whatever keys are filled in.
 
 ## Ads (AdMob)
 
@@ -160,10 +161,16 @@ afternoon on the Mac.
 1. app.revenuecat.com → new project "Acornaut" → add an App Store app. It
    asks for the bundle ID and an App Store Connect **In-App Purchase Key**
    (App Store Connect → Users and Access → Integrations → In-App Purchase →
-   generate; download the .p8 once and upload it to RevenueCat).
-2. Copy the app's **Public API key** into `revenuecat.iosApiKey`.
-3. Products → import the four product IDs. Entitlements and offerings are not
-   needed; the adapter buys products directly.
+   generate; download the .p8 once and upload it to RevenueCat). The .p8
+   must come from the Apple team that owns the app record, and RevenueCat's
+   credential check stays red until an app with this bundle ID exists in
+   that team.
+2. Copy the app's **Public API key** into `revenuecat.iosApiKey`. Done,
+   9 Oct 2026. It is a public SDK key, safe in the repo, and it does not
+   change if the .p8 is later replaced by one from another Apple team.
+3. Products → import the three product IDs once they exist in App Store
+   Connect. Entitlements and offerings are not needed; the adapter buys
+   products directly.
 
 **D. Build and TestFlight (the Mac).**
 1. Install Xcode from the App Store and open it once so it installs its tools.

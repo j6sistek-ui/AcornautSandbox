@@ -52,6 +52,12 @@ async function preloadStorage() {
 }
 
 function storeOf(platformName) {
+  // THE REAL-MONEY STORE IS A CONFIG SWITCH (9 Oct 2026). With "iap": false
+  // in app.config.json the adapter neither configures RevenueCat nor hands
+  // the game a store, whatever keys are filled in: the RevenueCat key went
+  // in before the App Store products existed, and a key alone must not
+  // start selling or phone home at launch.
+  if (config.iap !== true) return null;
   const apiKey = platformName === "ios" ? config.revenuecat.iosApiKey : config.revenuecat.androidApiKey;
   const productIds = config.products;                       // game id -> store product id
   if (!apiKey || apiKey.startsWith("PLACEHOLDER")) return null;   // no store until the key is in
@@ -322,6 +328,10 @@ function adsOf(platformName) {
 async function boot() {
   if (Capacitor.isNativePlatform()) {
     const platformName = Capacitor.getPlatform();           // "ios" | "android"
+    // the bundle reads this once, at module init (catalog.ts IAP_LIVE), so it
+    // has to be on window before the import below; the same flag gates
+    // storeOf, so the game never sees a live store without an adapter
+    window.__ACORNAUT_IAP__ = config.iap === true;
     const storage = await preloadStorage();
     const adapter = { kind: platformName, storage, devDoors: false };
     const store = storeOf(platformName);
