@@ -37,6 +37,10 @@ writeFileSync(join(www, "index.html"), html.replace(tag,
 mkdirSync(join(www, "shell"), { recursive: true });
 writeFileSync(join(here, "adapter", "config.json"), JSON.stringify({
   products: cfg.products, leaderboards: cfg.leaderboards, revenuecat: cfg.revenuecat,
+  // the real-money store is a config switch: the adapter sets the bundle's
+  // window.__ACORNAUT_IAP__ from it and leaves RevenueCat unconfigured while
+  // it is false, whatever keys are filled in (9 Oct 2026)
+  iap: cfg.iap === true,
   // the adapter reads config.admob for the app id, the unit ids and the
   // testing flag; without this line it saw nothing and never initialised
   admob: cfg.admob,

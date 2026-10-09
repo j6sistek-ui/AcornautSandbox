@@ -61,6 +61,8 @@ try {
       leaderboards: { fly: "PLACEHOLDER_LEADERBOARD_NORMAL" },
       revenuecat: { iosApiKey: "PLACEHOLDER_REVENUECAT_IOS_KEY" },
       admob: { ...admob, testing },
+      // the store switch: absent in one scenario, true in the other
+      ...(testing ? { iap: true } : {}),
     };
     writeFileSync(join(shell, "app.config.json"), JSON.stringify(config));
     writeFileSync(join(shell, "build-web.mjs"), buildSource);
@@ -80,6 +82,7 @@ try {
     assert.equal(run.status, 0, `${scenario}: builder failed\n${run.stdout}${run.stderr}`);
     const generated = JSON.parse(readFileSync(join(shell, "adapter", "config.json"), "utf8"));
     assert.deepEqual(generated.admob, config.admob, `${scenario}: generated adapter must retain all AdMob IDs and the explicit testing flag`);
+    assert.equal(generated.iap, testing, `${scenario}: generated adapter must carry the iap switch as a boolean (absent reads false)`);
     assert.equal(JSON.parse(readFileSync(join(shell, "bundler-called.json"), "utf8")).cwd, shell);
     console.log(`PASS build-web AdMob propagation: ${scenario} (testing:${testing})`);
   }
