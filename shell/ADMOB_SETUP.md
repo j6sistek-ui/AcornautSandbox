@@ -56,17 +56,19 @@ developer website through its Marketing URL, host the account's exact
 and readiness review. Payment setup, hosting and store submission are the
 owner's.
 
-**Account moved, 9 Oct 2026.** The ids above the fold now come from the
-LLC's AdMob account (publisher `pub-1941049073659574`, business payments
-profile): app `~8344445678`, rewarded `/2699479164`, interstitial
-`/5381482821`. The earlier personal account (`pub-4551315319006015`,
-individual payments profile, which Google cannot convert) is to be
-cancelled by the owner once the new one is approved. The site root now
-hosts the new account's `app-ads.txt` line (`docs/app-ads.txt`). The UMP
-consent messages (Privacy & messaging: European regulations and US state
-regulations) live per account and have to be created and published again
-in the new one, or the consent sheet and Profile → Privacy Options never
-appear and EEA traffic does not serve.
+**Account stays personal, 14 Oct 2026.** On 9 Oct the ids were moved to a
+new AdMob account opened for the LLC (`pub-1941049073659574`); Google
+refused that application on 12 Oct without stating a reason, almost
+certainly the one-account-per-publisher rule, since the personal account
+was still open. The personal account (`pub-4551315319006015`, individual
+payments profile) is approved and keeps the app and both units, so the ids
+above, `Info.plist` and the site's `app-ads.txt` are back on it. The AdMob
+payee is never visible to players or to Apple; the store listing belongs
+to whichever Apple team publishes the app. If an LLC account is ever
+approved (only after closing the personal one), restamp all three ids and
+`docs/app-ads.txt` in one PR. The UMP consent messages (Privacy &
+messaging: European regulations and US state regulations) and the ad
+content rating are set in the personal account.
 
 Sources: [Google test ads](https://developers.google.com/admob/ios/test-ads),
 [app setup](https://support.google.com/admob/answer/9989980?hl=en),
