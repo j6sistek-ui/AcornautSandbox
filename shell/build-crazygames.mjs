@@ -31,7 +31,7 @@ mkdirSync(out, { recursive: true });
 // never in the upload: the beta page, the lab, the Pages hostname, the
 // privacy page (the portal has its own), older stamps (no cached HTML can
 // ask for them - the zip is one version)
-const SKIP = new Set(["beta", "lab", "index.html", "CNAME", "privacy.html", "robots.txt", "sitemap.xml"]);
+const SKIP = new Set(["beta", "lab", "index.html", "CNAME", "privacy.html", "about.html", "app-ads.txt", "robots.txt", "sitemap.xml"]);
 for (const name of readdirSync(docs)) {
   if (SKIP.has(name)) continue;
   if (/^js\d+$/.test(name) && name !== `js${stamp}`) continue;
