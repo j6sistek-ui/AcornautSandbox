@@ -18,6 +18,24 @@
   "beta": false
  },
  {
+  "id": "porcelain",
+  "name": "Percy",
+  "glow": "#b9d8ff",
+  "beta": false
+ },
+ {
+  "id": "nacre",
+  "name": "Envoy",
+  "glow": "#e5a8ed",
+  "beta": false
+ },
+ {
+  "id": "origamist",
+  "name": "Patriot",
+  "glow": "#f5bb75",
+  "beta": false
+ },
+ {
   "id": "iontrim",
   "name": "Ion",
   "glow": "#4ad8ff",

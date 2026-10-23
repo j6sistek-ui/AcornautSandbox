@@ -195,7 +195,7 @@ def main():
 
     size = os.path.getsize(dst)
     print("%s -> %s (%.2f MB)" % (args.mode, dst, size / 1048576))
-    print("31 selectable suits, 6 gameplay modes, 4 cinematic films")
+    print("34 selectable suits, 6 gameplay modes, 4 cinematic films")
     if args.mode == "files":
         total = sum(os.path.getsize(os.path.join(r, f))
                     for r, _, fs in os.walk(out_dir) for f in fs)
