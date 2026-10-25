@@ -157,9 +157,10 @@ export async function loadRig(url, opts = {}) {
   for (let i = 0; i < N; i++) { const t = tailW[i], s = sParam[weld[i]] >= 0 ? sParam[weld[i]] : 0; sOf[i] = s; share[i] = t < 0.02 ? 0 : (s > 0.06 ? (t >= 0.5 ? 1 : 0) : t); }
   const rShare = new Float32Array(M); { const n = new Float32Array(M); for (let i = 0; i < N; i++) { rShare[weld[i]] += share[i]; n[weld[i]]++; } for (let r = 0; r < M; r++) if (n[r]) rShare[r] /= n[r]; }
 
-  // CUTS. (a) where the sculpt fused the curl onto itself; (b) where the tail lies against the
-  // back above the root: those faces would stretch into a sheet as the tail lifts away.
-  const CONTACT_S = 0.06;   // the same line the hard tail/body split starts at: above it, contact is cut, below it, blended
+  // CUTS where the sculpt fused the curl onto itself, so it can unroll. Cutting where the tail
+  // lies against the back too ({ contactCut: true }) opened a dark pocket under a lip at the top
+  // of the root as the tail swung out, so by default that strip stays skin and is blended below.
+  const CONTACT_S = 0.06;   // the same line the hard tail/body split starts at
   const cutFace = new Uint8Array(ix.length / 3), touched = new Uint8Array(M);
   let cut = 0, contact = 0;
   for (let t = 0; t < ix.length; t += 3) {
@@ -169,7 +170,7 @@ export async function loadRig(url, opts = {}) {
     const sides = rs.map(r => rShare[r] >= 0.5), mixed = sides.some(x => x) && sides.some(x => !x);
     const tailS = Math.max(0, ...rs.filter(r => rShare[r] >= 0.5).map(r => sParam[r]));
     if (sp > 0.18 || bsp > 1) { cutFace[t / 3] = 1; cut++; }
-    else if (mixed && tailS > CONTACT_S) { cutFace[t / 3] = 1; contact++; }
+    else if (opts.contactCut === true && mixed && tailS > CONTACT_S) { cutFace[t / 3] = 1; contact++; }
     if (cutFace[t / 3]) rs.forEach(r => touched[r] = 1);
   }
   const adjK = Array.from({ length: M }, () => new Set());
@@ -186,13 +187,26 @@ export async function loadRig(url, opts = {}) {
   const zone = []; for (let r = 0; r < M; r++) if (dj[r] <= BLEND) zone.push(r);
   for (let it = 0; it < 60; it++) { const next = new Float32Array(rShare); for (const r of zone) { let a = 0, c = 0; for (const n of adjK[r]) { a += rShare[n]; c++; } if (c) next[r] = a / c; } rShare.set(next); }
 
+  // SOCKETED EDGES. Where the sculpt sinks the tail's open edges into the rump, those edges
+  // stay with the body (fading back to tail over TUCK_W), so swinging the tail does not pull
+  // them out as a ragged flange with a hole behind it.
+  const tuck = new Float32Array(M).fill(1); let socketed = 0;
+  if (opts.tuck !== false) { const TUCK_R = opts.tuckR ?? 0.04, TUCK_W = opts.tuckW ?? 0.1;
+    const ec = new Map(); for (let t = 0; t < ix.length; t += 3) for (const [a, b] of [[ix[t], ix[t + 1]], [ix[t + 1], ix[t + 2]], [ix[t + 2], ix[t]]]) { const wa = weld[a], wb = weld[b]; const k = wa < wb ? wa * M + wb : wb * M + wa; ec.set(k, (ec.get(k) || 0) + 1); }
+    const open = new Uint8Array(M); for (const [k, c] of ec) if (c === 1) { open[Math.floor(k / M)] = 1; open[k % M] = 1; }
+    const body = []; for (let r = 0; r < M; r++) if (rTail[r] < 0.02 && sParam[r] < 0) body.push(r);
+    const R2 = TUCK_R * TUCK_R, dt = new Float64Array(M).fill(Infinity), tq = [];
+    for (let r = 0; r < M; r++) { if (!open[r] || rShare[r] < 0.5 || sParam[r] > 0.35) continue; let near = false; for (const b of body) if (RP[b].distanceToSquared(RP[r]) < R2) { near = true; break; } if (near) { dt[r] = 0; hpush(0, r); socketed++; } }
+    while (hq.length) { const [d, r] = hpop(); if (d > dt[r] || d > TUCK_W) continue; for (const n of adj[r]) { if (rShare[n] < 0.02) continue; const nd = d + RP[r].distanceTo(RP[n]); if (nd < dt[n]) { dt[n] = nd; hpush(nd, n); } } }
+    for (let r = 0; r < M; r++) if (dt[r] <= TUCK_W) { const f = dt[r] / TUCK_W; tuck[r] = f * f * (3 - 2 * f); } }
+
   // write the weights. Each tail vertex follows the bones within TENT joints of it (a tent
   // falloff), not just the two either side, so a bend is shared over a stretch of skin
   // instead of creasing it at one joint
   const TENT = opts.tent ?? 2;
   const bodyAnchor = bones.indexOf(parentBone);
   for (let i = 0; i < N; i++) {
-    const r = weld[i], t = dj[r] <= BLEND ? rShare[r] : share[i];
+    const r = weld[i], t = (dj[r] <= BLEND ? rShare[r] : share[i]) * tuck[r];
     if (t < 0.002 && tailW[i] < 0.02) continue;
     const u = Math.min(NB - 1e-4, sOf[i] * NB), c = u - 0.5; let k0 = Math.floor(c), f = c - k0, k1 = k0 + 1;
     if (k0 < 0) { k0 = 0; f = 0; } if (k1 > NB - 1) k1 = NB - 1;
@@ -206,8 +220,8 @@ export async function loadRig(url, opts = {}) {
   }
 
   // CAPS. Every opening a cut leaves is closed, tail side and body side separately (a fan to
-  // each side's own centre), so lifting the tail off the back shows skin, not a hole, and no
-  // cap ever spans tail and body.
+  // each side's own centre), so an unrolling curl shows skin, not a hole, and no cap ever
+  // spans tail and body.
   const keepIx = []; for (let t = 0; t < ix.length; t += 3) if (!cutFace[t / 3]) keepIx.push(ix[t], ix[t + 1], ix[t + 2]);
   const dirE = new Map();
   for (let t = 0; t < keepIx.length; t += 3) for (const [a, b] of [[keepIx[t], keepIx[t + 1]], [keepIx[t + 1], keepIx[t + 2]], [keepIx[t + 2], keepIx[t]]]) dirE.set(weld[a] + ':' + weld[b], [a, b]);
@@ -286,7 +300,7 @@ export async function loadRig(url, opts = {}) {
       head: bones[head].name, ears: ears.map(i => bones[i].name), spine: spine.map(i => bones[i].name),
       front: front.map(c => c.map(i => bones[i].name)), hind: hind.map(c => c.map(i => bones[i].name)),
       tail: [...tailSet].map(i => bones[i].name), forward: fwd.toArray().map(x => +x.toFixed(3)),
-      tailBones: NB, cutFaces: cut, contactFaces: contact, caps, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
+      tailBones: NB, cutFaces: cut, contactFaces: contact, caps, socketed, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
     },
   };
 }

@@ -47,7 +47,9 @@ curl and re-weights the tail to it:
 3. loose pieces (sprinkles, spikes) ride rigidly on the nearest part of the tail
 4. faces where the sculpt fused the curl onto itself are cut, so it can unroll
 5. away from the true root every vertex is wholly tail or wholly body, so no skin film
-   stretches between tail and back when the tail swings
+   stretches between tail and back when the tail swings; where the tail lies against the back
+   the skin is blended rather than cut, and the tail's open edges that the sculpt sinks into
+   the rump stay with the body, so swinging the tail out doesn't pull them into a lip over a hole
 6. every bend is spread over a stretch of skin, so the thick plume doesn't punch through or
    scrunch: the position along the tail is smoothed over the surface, each vertex follows the
    bones within two joints of it (not just the two either side), and the tail's root swing is
