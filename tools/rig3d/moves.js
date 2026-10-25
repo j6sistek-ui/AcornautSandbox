@@ -4,21 +4,27 @@
 //   tap  16 frames  (<id>-tap-1..16)   a loop, u = i / 16
 //   asc   8 frames  (<id>-asc-1..8)    a ramp from level to a gentle climb, u = i / 7
 //   desc  8 frames  (<id>-desc-1..8)   a ramp from level to the dive, u = i / 7; the
-//                                      tail travels back until it is straight out
+//                                      tail swings back until it is straight out
 // Frame 1 of every bank is the same level pose, so the game can cut between banks.
+//
+// The tail keeps its sculpted shape: it swings as one piece at the root (tailOut: 0 is
+// the sculpt's own angle, 1 lays the plume's axis straight out behind, measured per model
+// by the rig), and only a few degrees of whip run down it. Bending a thick sculpted plume
+// further than that smears its ridges and scroll.
 const TAU = Math.PI * 2;
 const ease = x => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
 const easeIO = x => { x = Math.min(1, Math.max(0, x)); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
 
 // the level pose every bank starts from
-export const LEVEL = { pitch: 0, spine: 0, head: 0, ears: 0, front: 6, paw: 0, hind: -6, hindLow: 0, tailRoot: 18, unfurl: 0.8 };
-// tail root angle that lays the tail straight out behind the body
-export const TAIL_STRAIGHT = 86;
+export const LEVEL = { pitch: 0, spine: 0, head: 0, ears: 0, front: 6, paw: 0, hind: -6, hindLow: 0, tailOut: 0.25 };
+// how far the tap's sweep carries the tail (1 = straight out behind a level body), and how
+// far the dive does: past 1, so the plume lines up with the body as it tips nose down
+const TAP_OUT = 0.9, DIVE_OUT = 1.25;
 
 export const MOVES = {
   // Robo's tail: from the upright plume it sweeps down to straight out behind, back up,
-  // and again - twice per loop - each joint a beat behind the one before (a whip), while
-  // the body bobs once and the legs paddle with the bob.
+  // and again - twice per loop - with a light whip running down it, while the body bobs
+  // once and the legs paddle with the bob.
   tap: {
     frames: 16, loop: true,
     pose(u) {
@@ -35,13 +41,12 @@ export const MOVES = {
         paw: w(-12, 1.0),
         hind: LEVEL.hind + w(-22, 0),
         hindLow: w(14, 0.8),
-        tailRoot: LEVEL.tailRoot + (TAIL_STRAIGHT - 6 - LEVEL.tailRoot) * s2,
-        unfurl: 0.8 + 0.18 * s2,
-        tail: (f, k) => 9 * f * (Math.sin(2 * c - 0.6 - k * 0.42) - Math.sin(-0.6 - k * 0.42)),
+        tailOut: LEVEL.tailOut + (TAP_OUT - LEVEL.tailOut) * s2,
+        tail: (f, k) => 2 * f * (Math.sin(2 * c - 0.6 - k * 0.42) - Math.sin(-0.6 - k * 0.42)),
       };
     },
   },
-  // a gentle climb: nose up, paws reach up and forward, hind legs trail, tail eases back and low
+  // a gentle climb: nose up, paws reach up and forward, hind legs trail, tail eases back
   asc: {
     frames: 8, loop: false,
     pose(u) {
@@ -51,12 +56,11 @@ export const MOVES = {
         spine: 6 * e, head: -9 * e, ears: 14 * e,
         front: LEVEL.front + 34 * e, paw: 10 * e,
         hind: LEVEL.hind - 30 * e, hindLow: 10 * e,
-        tailRoot: LEVEL.tailRoot + 26 * e, unfurl: 0.8 + 0.08 * e,
-        tail: f => -10 * f * e,
+        tailOut: LEVEL.tailOut + 0.35 * e,
       };
     },
   },
-  // the dive: tip over, stretch into it, and the tail travels back until it lies straight out
+  // the dive: tip over, stretch into it, and the tail swings back until it lies straight out
   desc: {
     frames: 8, loop: false,
     pose(u) {
@@ -66,9 +70,7 @@ export const MOVES = {
         spine: -6 * e, head: 18 * e, ears: 32 * e,
         front: LEVEL.front + 66 * e, paw: -10 * e,
         hind: LEVEL.hind - 40 * e, hindLow: 18 * e,
-        tailRoot: LEVEL.tailRoot + (TAIL_STRAIGHT - LEVEL.tailRoot) * t, unfurl: 0.8 + 0.2 * t,
-        // the outer third straightens its last hook so the tail ends in one line
-        tail: (f, k) => (k > 6 ? 30 * t * (k - 6) / 5 : 0),
+        tailOut: LEVEL.tailOut + (DIVE_OUT - LEVEL.tailOut) * t,
       };
     },
   },

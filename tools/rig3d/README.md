@@ -35,37 +35,42 @@ Tripo's bone *names* are not trusted: on the first model its "Head" chain was th
 
 If a model fools the classifier, `loadRig(url, { map: { head: '<bone name>' } })` pins the head.
 
-## What the auto-rig fixes in the tail
+## What the auto-rig does to the tail
 
-A Tripo tail gets about five bones down a curl that can turn a full circle, so the curl moves
-as a lump. The auto-rig replaces them with a **12-bone chain** down the middle of the real
-curl and re-weights the tail to it:
+A Tripo tail gets about five bones down a plume that can curl a full circle. The auto-rig
+replaces them with a **12-bone chain** down the middle of the real curl and re-weights the
+tail to it, built so the plume **keeps its sculpted shape** while it moves:
 
 1. distance along the surface from the tail's root, walking only between neighbouring bands
    of Tripo's own weights, so a curl tip sculpted touching the root cannot shortcut
-2. joints at the centroid of each slice, each vertex placed by projection onto that chain
+2. joints at the centroid of each slice, each vertex placed by projection onto that chain;
+   the position along the tail is smoothed over the surface and each vertex follows the
+   bones within two joints of it, so the light whip bends the plume without creasing it
 3. loose pieces (sprinkles, spikes) ride rigidly on the nearest part of the tail
-4. faces where the sculpt fused the curl onto itself are cut, so it can unroll
-5. away from the true root every vertex is wholly tail or wholly body, so no skin film
-   stretches between tail and back when the tail swings; where the tail lies against the back
-   the skin is blended rather than cut, and the tail's open edges that the sculpt sinks into
-   the rump stay with the body, so swinging the tail out doesn't pull them into a lip over a hole
-6. every bend is spread over a stretch of skin, so the thick plume doesn't punch through or
-   scrunch: the position along the tail is smoothed over the surface, each vertex follows the
-   bones within two joints of it (not just the two either side), and the tail's root swing is
-   shared by its first five joints instead of hinging at one, which raised a fin over the rump
+4. away from the true root every vertex is wholly tail or wholly body, so no skin film
+   stretches between tail and back; where the tail lies against the back the skin is
+   blended, and the tail's open edges that the sculpt sinks into the rump stay with the body
+5. **the swing**: the rig measures the plume's own axis (root to the centre of its mass),
+   so `tailOut: 1` lays it straight out behind on any model, and searches the root for the
+   hinge point that stretches the join least when it gets there. The whole plume turns
+   about that hinge as one piece
+
+Unrolling the curl (`unfurl` in a pose, with `loadRig(url, { unroll: true })` to cut where the
+sculpt fused it) is still there, but it smears a thick plume's ridges and scroll; the moves
+don't use it.
 
 ## The moves (`moves.js`)
 
-Degrees about the lateral axis: + is nose up, limb forward, tail back. Frame 1 of every bank
-is the same `LEVEL` pose, so the game can cut between banks.
+Degrees about the lateral axis: + is nose up, limb forward, tail back. `tailOut` swings the
+tail: 0 is the sculpt's own angle, 1 straight out behind a level body. Frame 1 of every bank
+is the same `LEVEL` pose (`tailOut` 0.25), so the game can cut between banks.
 
 - **tap** (16, loops): Robo's tail. From the upright plume it sweeps down to straight out
-  behind and back up, twice per loop, each joint a beat behind the last (a whip); the body
-  bobs once and the legs paddle with it.
-- **asc** (8): nose up 22°, paws reach, hind legs trail, the tail eases back and low.
-- **desc** (8): nose down 48°, paws forward, the tail travels back until it lies straight
-  out behind at frame 8 (`TAIL_STRAIGHT`), the outer third straightening its last hook.
+  behind (`TAP_OUT` 0.9) and back up, twice per loop, with a light whip running down it;
+  the body bobs once and the legs paddle with it.
+- **asc** (8): nose up 22°, paws reach, hind legs trail, the tail eases back.
+- **desc** (8): nose down 48°, paws forward, the tail swings back until it lies straight out
+  in line with the body at frame 8 (`DIVE_OUT` 1.25: past 1, since the body tips forward).
 
 To dial a move in: edit its numbers in `moves.js`, re-run, and watch `preview/<move>.mp4`
 or scrub the clip in Blender before anything reaches the app.

@@ -11,12 +11,13 @@
 //      (geodesic distance from the root, walked only between neighbouring
 //      bands of the original weights, so a curl tip fused to the root cannot
 //      shortcut), re-weight the tail to it, carry loose pieces (sprinkles)
-//      rigidly, cut the faces where the sculpt fused the curl onto itself,
-//      sharpen the tail/body split everywhere except the true root, and spread
-//      every bend over a stretch of skin (smoothed parameter, tent weights, the
-//      root swing shared by five joints) so the plume bends without folding
-//   4. expose one control surface, apply(pose), in degrees about the lateral
-//      axis: + is nose up / limb forward / tail back
+//      rigidly, and sharpen the tail/body split everywhere except the true root
+//   4. find where the tail should turn: the plume's own axis (so tailOut: 1 lays
+//      it straight out behind on any model) and the hinge point at the root that
+//      stretches the join least, so the plume swings as one piece and keeps the
+//      shape it was sculpted with
+//   5. expose one control surface, apply(pose), in degrees about the lateral
+//      axis: + is nose up / limb forward / tail back; tailOut swings the tail
 //
 // Runs in a browser (three.js, WebGL). studio.html drives it.
 import * as THREE from 'three';
@@ -79,7 +80,7 @@ export async function loadRig(url, opts = {}) {
   const restWInv = bones.map(b => b.getWorldQuaternion(new THREE.Quaternion()).invert());
   const turn = (i, deg) => { if (i == null || i < 0) return; const a = LAT.clone().applyQuaternion(restWInv[i]).normalize(); bones[i].quaternion.copy(restQ[i]).multiply(new THREE.Quaternion().setFromAxisAngle(a, deg * Math.PI / 180)); };
 
-  // ---------- 3. rebuild the tail ----------
+  // ---------- 3. rebuild the tail (and 4. its hinge, further down) ----------
   const tailIdx = tailSet;
   const tailW = new Float32Array(N);
   for (let i = 0; i < N; i++) for (let k = 0; k < 4; k++) if (tailIdx.has(si.getComponent(i, k))) tailW[i] += sw.getComponent(i, k);
@@ -169,7 +170,7 @@ export async function loadRig(url, opts = {}) {
     const sp = ss.length > 1 ? Math.max(...ss) - Math.min(...ss) : 0, bsp = bs.length > 1 ? Math.max(...bs) - Math.min(...bs) : 0;
     const sides = rs.map(r => rShare[r] >= 0.5), mixed = sides.some(x => x) && sides.some(x => !x);
     const tailS = Math.max(0, ...rs.filter(r => rShare[r] >= 0.5).map(r => sParam[r]));
-    if (sp > 0.18 || bsp > 1) { cutFace[t / 3] = 1; cut++; }
+    if (opts.unroll && (sp > 0.18 || bsp > 1)) { cutFace[t / 3] = 1; cut++; }
     else if (opts.contactCut === true && mixed && tailS > CONTACT_S) { cutFace[t / 3] = 1; contact++; }
     if (cutFace[t / 3]) rs.forEach(r => touched[r] = 1);
   }
@@ -265,15 +266,40 @@ export async function loadRig(url, opts = {}) {
   // signed bend of the curl at each joint, about the lateral axis
   const ang = []; for (let k = 1; k < NB; k++) { const a = J[k].clone().sub(J[k - 1]), b = J[k + 1].clone().sub(J[k]); const cr = new THREE.Vector3().crossVectors(a, b); ang.push(Math.atan2(cr.dot(LAT), a.dot(b))); }
   const tailRestQ = tailBones.map(b => b.quaternion.clone());
+  // the plume's own axis, root to the centre of the tail's mass, as an angle in the forward/up
+  // plane; TAIL_OUT is how far the root must turn to lay that axis straight out behind
+  const plume = new THREE.Vector3(); { let n = 0; for (let r = 0; r < M; r++) if (sParam[r] >= 0) { plume.add(RP[r]); n++; } plume.divideScalar(n).sub(J[0]); }
+  const TAIL_OUT = 180 - Math.atan2(plume.dot(UP), plume.dot(fwd)) * 180 / Math.PI;
 
-  // ---------- 4. one control surface ----------
+  // THE HINGE. The tail joins the rump across a wide patch, so where it turns matters: turned
+  // about the middle of its base, the front of that patch tears off the back and stretches.
+  // Try pivots in the forward/up plane around the root and keep the one that, swinging the
+  // tail straight out, stretches and squeezes the skin across the join least.
+  const HP = J[0].clone();
+  if (opts.hingeSearch !== false) {
+    const tw = new Float32Array(N); for (let i = 0; i < N; i++) for (let k = 0; k < 4; k++) if (si.getComponent(i, k) >= base) tw[i] += sw.getComponent(i, k);
+    const E = []; const seen = new Set();
+    for (let t = 0; t < ix.length; t += 3) for (const [a, b] of [[ix[t], ix[t + 1]], [ix[t + 1], ix[t + 2]], [ix[t + 2], ix[t]]]) { if (Math.abs(tw[a] - tw[b]) < 1e-3) continue; const k = a < b ? a * N + b : b * N + a; if (seen.has(k)) continue; seen.add(k); E.push(a, b); }
+    const q = new THREE.Quaternion().setFromAxisAngle(LAT, TAIL_OUT * Math.PI / 180), v = new THREE.Vector3(), pa = new THREE.Vector3(), pb = new THREE.Vector3();
+    // vertex i (rest position P[i]) with the tail turned straight out about pivot H
+    const moved = (i, H, out) => { v.copy(P[i]).sub(H).applyQuaternion(q).add(H); return out.copy(P[i]).lerp(v, tw[i]); };
+    const cost = H => { let c = 0; for (let e = 0; e < E.length; e += 2) { const a = E[e], b = E[e + 1], L = P[a].distanceTo(P[b]); if (L < 1e-7) continue; const L1 = moved(a, H, pa).distanceTo(moved(b, H, pb)); c += (L1 - L) * (L1 - L) / L; } return c; };
+    let best = cost(HP), bp = HP.clone();
+    for (const [R, st] of [[0.3, 0.03], [0.04, 0.008]]) { const c0 = bp.clone(); for (let x = -R; x <= R + 1e-9; x += st) for (let y = -R; y <= R + 1e-9; y += st) { const H = c0.clone().addScaledVector(fwd, x).addScaledVector(UP, y); const c = cost(H); if (c < best) { best = c; bp = H; } } }
+    HP.copy(bp);
+  }
+  // the hinge in tail_00's own frame, so apply() can turn the tail about it
+  const hingeLocal = tailBones[0].worldToLocal(HP.clone()), tail0Pos = tailBones[0].position.clone();
+
+  // ---------- 5. one control surface ----------
   const all = bones.concat(tailBones);
   const restAll = all.map(b => b.quaternion.clone());
   const pivot = new THREE.Group(); pivot.name = 'flightPivot';
   const box = new THREE.Box3().setFromObject(model), centre = box.getCenter(new THREE.Vector3());
   pivot.position.copy(centre); model.position.sub(centre); pivot.add(model);
-  // the tail's root swing, shared down its first joints so no one joint folds the skin
-  const ROOT_SPLIT = opts.rootSplit || [0.2, 0.2, 0.2, 0.2, 0.2];
+  // the tail's swing: all at the hinge, so the plume turns as one piece ({ rootSplit: [...] }
+  // shares it down the first joints instead, bending the plume's base)
+  const ROOT_SPLIT = opts.rootSplit || [1];
   const lagAt = (fn, k) => typeof fn === 'function' ? fn(k / (NB - 1), k) : (fn || 0);
   function apply(p) {
     all.forEach((b, i) => b.quaternion.copy(restAll[i]));
@@ -284,12 +310,14 @@ export async function loadRig(url, opts = {}) {
     ears.forEach((i, n) => turn(i, (p.ears || 0) * (n ? 0.85 : 1)));
     front.forEach((ch, n) => { const v = n ? (p.frontR ?? p.front ?? 0) : (p.frontL ?? p.front ?? 0); turn(ch[0], v * 0.55); if (ch[1] != null) turn(ch[1], v * 0.35); if (ch[2] != null) turn(ch[2], -(p.paw || 0) - v * 0.2); });
     hind.forEach((ch, n) => { const v = n ? (p.hindR ?? p.hind ?? 0) : (p.hindL ?? p.hind ?? 0); turn(ch[0], v + (n ? 4 : -4)); if (ch[1] != null) turn(ch[1], p.hindLow || 0); if (ch[2] != null) turn(ch[2], (p.hindLow || 0) * 0.6); });
-    const unf = p.unfurl ?? 0.8;
+    const unf = p.unfurl ?? 0;
     tailBones.forEach((b, k) => {
       const rootRamp = Math.min(1, Math.max(0, (k - 1) / 3)), ramp = rootRamp * rootRamp * (3 - 2 * rootRamp);
       const bend = k === 0 ? 0 : -ang[k - 1] * unf * ramp * 180 / Math.PI;
-      const deg = (p.tailRoot || 0) * (ROOT_SPLIT[k] || 0) + bend + lagAt(p.tail, k);
+      const deg = ((p.tailOut || 0) * TAIL_OUT + (p.tailRoot || 0)) * (ROOT_SPLIT[k] || 0) + bend + lagAt(p.tail, k);
       b.quaternion.copy(tailRestQ[k]).multiply(new THREE.Quaternion().setFromAxisAngle(LAT, deg * Math.PI / 180));
+      // tail_00 turns about the hinge, not its own origin
+      if (k === 0) b.position.copy(tail0Pos).add(hingeLocal.clone().applyQuaternion(tailRestQ[0])).sub(hingeLocal.clone().applyQuaternion(b.quaternion));
     });
     pivot.updateMatrixWorld(true);
   }
@@ -300,7 +328,7 @@ export async function loadRig(url, opts = {}) {
       head: bones[head].name, ears: ears.map(i => bones[i].name), spine: spine.map(i => bones[i].name),
       front: front.map(c => c.map(i => bones[i].name)), hind: hind.map(c => c.map(i => bones[i].name)),
       tail: [...tailSet].map(i => bones[i].name), forward: fwd.toArray().map(x => +x.toFixed(3)),
-      tailBones: NB, cutFaces: cut, contactFaces: contact, caps, socketed, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
+      tailBones: NB, tailOutDeg: +TAIL_OUT.toFixed(1), hinge: HP.clone().sub(J[0]).toArray().map(x => +x.toFixed(3)), cutFaces: cut, contactFaces: contact, caps, socketed, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
     },
   };
 }
