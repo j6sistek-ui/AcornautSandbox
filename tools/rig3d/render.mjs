@@ -2,6 +2,7 @@
 // RENDER A RIGGED TRIPO MODEL INTO GAME BANKS.
 //
 //   node tools/rig3d/render.mjs <model.glb> --id <suit-id> [--out <dir>] [--size 512] [--seconds 2]
+//                               [--frames tap:12,desc:4,asc:0]   (per-bank counts; 0 drops a bank)
 //
 // Writes, for the suit id:
 //   <out>/<id>-tap-1..16.png  <id>-asc-1..8.png  <id>-desc-1..8.png   256 px, the game's size
@@ -24,9 +25,9 @@ const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf('--' + k); return i >= 0 ? args[i + 1] : d; };
 const modelPath = args.find(a => a.endsWith('.glb'));
 const id = opt('id');
-if (!modelPath || !id) { console.error('usage: node render.mjs <model.glb> --id <suit-id> [--out dir] [--size 512] [--seconds 2]'); process.exit(2); }
+if (!modelPath || !id) { console.error('usage: node render.mjs <model.glb> --id <suit-id> [--out dir] [--size 512] [--seconds 2] [--frames tap:12,desc:4,asc:0]'); process.exit(2); }
 const out = path.resolve(opt('out', `rig3d-out/${id}`));
-const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30;
+const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', '');
 for (const d of ['', 'hd', 'sheets', 'preview']) fs.mkdirSync(path.join(out, d), { recursive: true });
 
 // playwright: local install, then the PLAYWRIGHT_MODULE env var, then a global path
@@ -53,7 +54,7 @@ const browser = await chromium.launch({
 });
 const page = await browser.newPage();
 page.on('pageerror', e => console.error('page error:', e.message));
-await page.goto(`http://localhost:${port}/studio.html?model=/model.glb&size=${SIZE}`);
+await page.goto(`http://localhost:${port}/studio.html?model=/model.glb&size=${SIZE}&frames=${encodeURIComponent(FRAMES)}`);
 await page.waitForFunction(() => window.studioReady, null, { timeout: 600000 });
 const info = await page.evaluate(() => window.studio.info);
 fs.writeFileSync(path.join(out, 'rig.json'), JSON.stringify(info, null, 2));

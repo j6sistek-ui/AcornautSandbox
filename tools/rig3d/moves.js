@@ -6,14 +6,15 @@
 //   desc  8 frames  (<id>-desc-1..8)   a ramp from level to the dive, u = i / 7; the
 //                                      tail swings back until it is straight out
 // Frame 1 of every bank is the same level pose, so the game can cut between banks.
+// The ramps are evenly spaced, one equal step per frame: the game already eases how it
+// walks them (the tap clock, the pose curve, the dive's ease-in), so easing the frames
+// as well bunched them at the ends and left one big jump in the middle.
 //
 // The tail keeps its sculpted shape: it swings as one piece at the root (tailOut: 0 is
 // the sculpt's own angle, 1 lays the plume's axis straight out behind, measured per model
 // by the rig), and only a few degrees of whip run down it. Bending a thick sculpted plume
 // further than that smears its ridges and scroll.
 const TAU = Math.PI * 2;
-const ease = x => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
-const easeIO = x => { x = Math.min(1, Math.max(0, x)); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
 
 // the level pose every bank starts from
 export const LEVEL = { pitch: 0, spine: 0, head: 0, ears: 0, front: 6, paw: 0, hind: -6, hindLow: 0, tailOut: 0.25 };
@@ -50,7 +51,7 @@ export const MOVES = {
   asc: {
     frames: 8, loop: false,
     pose(u) {
-      const e = ease(u);
+      const e = u;
       return {
         pitch: 22 * e, lift: 0.04 * e,
         spine: 6 * e, head: -9 * e, ears: 14 * e,
@@ -64,7 +65,7 @@ export const MOVES = {
   desc: {
     frames: 8, loop: false,
     pose(u) {
-      const e = ease(u), t = easeIO(u);
+      const e = u, t = u;
       return {
         pitch: -48 * e, lift: -0.05 * e,
         spine: -6 * e, head: 18 * e, ears: 32 * e,

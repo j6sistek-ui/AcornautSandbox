@@ -12,10 +12,13 @@
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { loadRig } from './autorig.js';
-import { MOVES } from './moves.js';
+import { MOVES as ALL_MOVES } from './moves.js';
 
 const q = new URLSearchParams(location.search);
 const SIZE = +(q.get('size') || 512);
+// ?frames=tap:12,desc:4,asc:0 overrides a bank's frame count; 0 leaves the move out
+const counts = Object.fromEntries((q.get('frames') || '').split(',').filter(Boolean).map(kv => kv.split(':')).map(([k, v]) => [k, +v]));
+const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames }]));
 const R = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 R.setPixelRatio(1); R.setSize(SIZE, SIZE);
 R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
