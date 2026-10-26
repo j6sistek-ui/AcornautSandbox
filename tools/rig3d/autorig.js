@@ -12,7 +12,7 @@
 //      bands of the original weights, so a curl tip fused to the root cannot
 //      shortcut), re-weight the tail to it, carry loose pieces (sprinkles)
 //      rigidly, and sharpen the tail/body split everywhere except the true root
-//   4. find where the tail should turn: the plume's own axis (so tailOut: 1 lays
+//   4. find where the tail should turn: the tail chain's own axis (so tailOut: 1 lays
 //      it straight out behind on any model) and the hinge point at the root that
 //      stretches the join least, so the plume swings as one piece and keeps the
 //      shape it was sculpted with
@@ -56,11 +56,14 @@ export async function loadRig(url, opts = {}) {
   for (const s of spinePath) if (s !== head) for (const c of kids[s]) if (!onSpine.has(c)) chains.push(subtree(c));
   const tipY = ch => Math.min(...ch.map(i => wpos(bones[i]).y));
   const verts = ch => ch.reduce((a, i) => a + count[i], 0);
-  // legs: the four chains reaching lowest
-  const legs = chains.slice().sort((a, b) => tipY(a) - tipY(b)).slice(0, 4);
+  // tail FIRST: the heaviest chain of all. Picking the legs first ("the four reaching lowest")
+  // took a tail that curls down below the feet for a hind leg - the robot squirrel's ten-bone
+  // tail flew as a leg and its tail got one stray bone
+  const tailMain = chains.slice().sort((a, b) => verts(b) - verts(a))[0] || [];
+  // legs: the four chains reaching lowest, of the rest
+  const legs = chains.filter(c => c !== tailMain).sort((a, b) => tipY(a) - tipY(b)).slice(0, 4);
   const rest = chains.filter(c => !legs.includes(c));
-  // tail: the heaviest remaining chain; forward runs from its mass to the head
-  const tailMain = rest.slice().sort((a, b) => verts(b) - verts(a))[0] || [];
+  // forward runs from the tail's mass to the head
   const massOf = ch => { const c = new THREE.Vector3(); let n = 0; ch.forEach(i => { c.addScaledVector(cent[i], count[i]); n += count[i]; }); return n ? c.divideScalar(n) : null; };
   const fwd = wpos(bones[head]).sub(massOf(tailMain)); fwd.y = 0; fwd.normalize();
   // any other leftover chain whose mass sits behind the hips is part of the tail too (the base of a big curl)
@@ -266,10 +269,22 @@ export async function loadRig(url, opts = {}) {
   // signed bend of the curl at each joint, about the lateral axis
   const ang = []; for (let k = 1; k < NB; k++) { const a = J[k].clone().sub(J[k - 1]), b = J[k + 1].clone().sub(J[k]); const cr = new THREE.Vector3().crossVectors(a, b); ang.push(Math.atan2(cr.dot(LAT), a.dot(b))); }
   const tailRestQ = tailBones.map(b => b.quaternion.clone());
-  // the plume's own axis, root to the centre of the tail's mass, as an angle in the forward/up
-  // plane; TAIL_OUT is how far the root must turn to lay that axis straight out behind
-  const plume = new THREE.Vector3(); { let n = 0; for (let r = 0; r < M; r++) if (sParam[r] >= 0) { plume.add(RP[r]); n++; } plume.divideScalar(n).sub(J[0]); }
-  const TAIL_OUT = 180 - Math.atan2(plume.dot(UP), plume.dot(fwd)) * 180 / Math.PI;
+  // WHERE "STRAIGHT OUT" IS. tailOut 1 lays the tail's axis (root to the centre of its
+  // joints) straight out behind. An unrolling tail no longer points where its curl did -
+  // unrolled, it lies along its base - so tailOutAt(unfurl) rebuilds the chain in the forward/up plane with the curl opened by
+  // that much, exactly as apply() opens it, and measures where its joints now point. The
+  // robot squirrel's tail curls up and forward over its back, so swinging it by its curled
+  // axis with the curl opened hung it straight down.
+  const rampAt = k => { const r = Math.min(1, Math.max(0, (k - 1) / 3)); return r * r * (3 - 2 * r); };
+  const segLen = [], seg0 = J[1].clone().sub(J[0]); for (let k = 0; k < NB; k++) segLen.push(J[k + 1].distanceTo(J[k]));
+  const a0 = Math.atan2(seg0.dot(UP), seg0.dot(fwd));
+  const axisAt = u => { let a = a0, x = 0, y = 0, sx = 0, sy = 0; for (let k = 0; k < NB; k++) { if (k > 0) a += ang[k - 1] * (1 - u * rampAt(k)); x += Math.cos(a) * segLen[k]; y += Math.sin(a) * segLen[k]; sx += x; sy += y; } return Math.atan2(sy, sx) * 180 / Math.PI; };
+  // measured along the joints, not the mass: the robot's coil sits forward over its back, so
+  // its mass axis ran 56 degrees off the chain and every swing overshot by that much
+  const tailOutAt = u => 180 - axisAt(u);
+  // past straight out (and back past the sculpt's angle) the swing is in plain degrees, the
+  // same on every model, so an overshoot written for one tail is not doubled on another
+  const OVER_DEG = 70;
 
   // THE HINGE. The tail joins the rump across a wide patch, so where it turns matters: turned
   // about the middle of its base, the front of that patch tears off the back and stretches.
@@ -280,7 +295,7 @@ export async function loadRig(url, opts = {}) {
     const tw = new Float32Array(N); for (let i = 0; i < N; i++) for (let k = 0; k < 4; k++) if (si.getComponent(i, k) >= base) tw[i] += sw.getComponent(i, k);
     const E = []; const seen = new Set();
     for (let t = 0; t < ix.length; t += 3) for (const [a, b] of [[ix[t], ix[t + 1]], [ix[t + 1], ix[t + 2]], [ix[t + 2], ix[t]]]) { if (Math.abs(tw[a] - tw[b]) < 1e-3) continue; const k = a < b ? a * N + b : b * N + a; if (seen.has(k)) continue; seen.add(k); E.push(a, b); }
-    const q = new THREE.Quaternion().setFromAxisAngle(LAT, TAIL_OUT * Math.PI / 180), v = new THREE.Vector3(), pa = new THREE.Vector3(), pb = new THREE.Vector3();
+    const q = new THREE.Quaternion().setFromAxisAngle(LAT, tailOutAt(0) * Math.PI / 180), v = new THREE.Vector3(), pa = new THREE.Vector3(), pb = new THREE.Vector3();
     // vertex i (rest position P[i]) with the tail turned straight out about pivot H
     const moved = (i, H, out) => { v.copy(P[i]).sub(H).applyQuaternion(q).add(H); return out.copy(P[i]).lerp(v, tw[i]); };
     const cost = H => { let c = 0; for (let e = 0; e < E.length; e += 2) { const a = E[e], b = E[e + 1], L = P[a].distanceTo(P[b]); if (L < 1e-7) continue; const L1 = moved(a, H, pa).distanceTo(moved(b, H, pb)); c += (L1 - L) * (L1 - L) / L; } return c; };
@@ -299,7 +314,7 @@ export async function loadRig(url, opts = {}) {
   pivot.position.copy(centre); model.position.sub(centre); pivot.add(model);
   // the tail's swing: all at the hinge, so the plume turns as one piece ({ rootSplit: [...] }
   // shares it down the first joints instead, bending the plume's base)
-  const ROOT_SPLIT = opts.rootSplit || [1];
+  const ROOT_SPLIT = opts.rootSplit || [1], ROOT_MAX = opts.rootMax ?? 95;
   const lagAt = (fn, k) => typeof fn === 'function' ? fn(k / (NB - 1), k) : (fn || 0);
   function apply(p) {
     all.forEach((b, i) => b.quaternion.copy(restAll[i]));
@@ -310,11 +325,16 @@ export async function loadRig(url, opts = {}) {
     ears.forEach((i, n) => turn(i, (p.ears || 0) * (n ? 0.85 : 1)));
     front.forEach((ch, n) => { const v = n ? (p.frontR ?? p.front ?? 0) : (p.frontL ?? p.front ?? 0); turn(ch[0], v * 0.55); if (ch[1] != null) turn(ch[1], v * 0.35); if (ch[2] != null) turn(ch[2], -(p.paw || 0) - v * 0.2); });
     hind.forEach((ch, n) => { const v = n ? (p.hindR ?? p.hind ?? 0) : (p.hindL ?? p.hind ?? 0); turn(ch[0], v + (n ? 4 : -4)); if (ch[1] != null) turn(ch[1], p.hindLow || 0); if (ch[2] != null) turn(ch[2], (p.hindLow || 0) * 0.6); });
-    const unf = p.unfurl ?? 0;
+    const unf = p.unfurl ?? 0, out = p.tailOut || 0, outIn = Math.min(1, Math.max(0, out));
+    const outDeg = outIn * tailOutAt(unf) + (out - outIn) * OVER_DEG;
     tailBones.forEach((b, k) => {
       const rootRamp = Math.min(1, Math.max(0, (k - 1) / 3)), ramp = rootRamp * rootRamp * (3 - 2 * rootRamp);
       const bend = k === 0 ? 0 : -ang[k - 1] * unf * ramp * 180 / Math.PI;
-      const deg = ((p.tailOut || 0) * TAIL_OUT + (p.tailRoot || 0)) * (ROOT_SPLIT[k] || 0) + bend + lagAt(p.tail, k);
+      // the root hinge turns at most ROOT_MAX; any more is shared by the next joints, so a
+      // tail that must turn far (the robot's starts pointing up over its back) bends at its
+      // base instead of dragging the rump round with one joint
+      const swing = outDeg + (p.tailRoot || 0), held = Math.max(-ROOT_MAX, Math.min(ROOT_MAX, swing)), extra = swing - held;
+      const deg = held * (ROOT_SPLIT[k] || 0) + (k >= 1 && k <= 3 ? extra / 3 : 0) + bend + lagAt(p.tail, k);
       b.quaternion.copy(tailRestQ[k]).multiply(new THREE.Quaternion().setFromAxisAngle(LAT, deg * Math.PI / 180));
       // tail_00 turns about the hinge, not its own origin
       if (k === 0) b.position.copy(tail0Pos).add(hingeLocal.clone().applyQuaternion(tailRestQ[0])).sub(hingeLocal.clone().applyQuaternion(b.quaternion));
@@ -323,12 +343,12 @@ export async function loadRig(url, opts = {}) {
   }
 
   return {
-    pivot, model, mesh, apply, debug: { sOf: () => sOf, weld, sParam }, centre, LAT, FWD: fwd, UP, all, tailBones,
+    pivot, model, mesh, apply, debug: { sOf: () => sOf, weld, sParam, axisAt, tailOutAt }, centre, LAT, FWD: fwd, UP, all, tailBones,
     info: {
       head: bones[head].name, ears: ears.map(i => bones[i].name), spine: spine.map(i => bones[i].name),
       front: front.map(c => c.map(i => bones[i].name)), hind: hind.map(c => c.map(i => bones[i].name)),
       tail: [...tailSet].map(i => bones[i].name), forward: fwd.toArray().map(x => +x.toFixed(3)),
-      tailBones: NB, tailOutDeg: +TAIL_OUT.toFixed(1), hinge: HP.clone().sub(J[0]).toArray().map(x => +x.toFixed(3)), cutFaces: cut, contactFaces: contact, caps, socketed, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
+      tailBones: NB, tailOutDeg: +tailOutAt(0).toFixed(1), tailOutUnrolledDeg: +tailOutAt(1).toFixed(1), hinge: HP.clone().sub(J[0]).toArray().map(x => +x.toFixed(3)), cutFaces: cut, contactFaces: contact, caps, socketed, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
     },
   };
 }
