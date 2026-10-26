@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "309",
-  "sourceCommit": "d76c4ef923b0dcdae150998ef268726c679a3745",
+  "artVer": "310",
+  "sourceCommit": "348990119e970118cb18a1cbdf44b1503aface0a",
   "models": [
     {
       "id": "flight",
