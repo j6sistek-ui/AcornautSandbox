@@ -1,7 +1,7 @@
 {
   "version": 1,
   "artVer": "309",
-  "sourceCommit": "2aba4ce3b334606ca7dd8a249c106fa1692eb967",
+  "sourceCommit": "a332a725bedea6a5fa186b832efa2c46f06e6d9f",
   "models": [
     {
       "id": "flight",
@@ -1956,23 +1956,23 @@
         "loop": []
       },
       "hashes": {
-        "suits/pinky.png": "3dedba95353293775d84681a8ad5fe1a99e4cabcdfab0c8c433c3a5badb8aef1",
-        "suits/pinky-tap-1.png": "3dedba95353293775d84681a8ad5fe1a99e4cabcdfab0c8c433c3a5badb8aef1",
-        "suits/pinky-tap-2.png": "8fc7411b67813e67de8814a753851d64e5c512e5ce9a3777d2517d0cfcb49366",
-        "suits/pinky-tap-3.png": "b21b40c12d7b64eb2396af1fe9693617dcf1fe15febd3c72574d6a4482c96726",
-        "suits/pinky-tap-4.png": "85a3349a4d429c2f51e79fe8b7c1ffaa665aea3ecdce2072ba431f6b9d25940a",
-        "suits/pinky-tap-5.png": "1afaa647c186696a7a3157655e04f2a35392c03bade1472024d9048ccbe06a3f",
-        "suits/pinky-tap-6.png": "154968f2fa6e8705df1936dc0837323203eff5957144ac7880b9dd911de6c901",
-        "suits/pinky-tap-7.png": "2828f6aeb74fc0e84de12bedd7ceeb0cfbf4b2ffdbc41728a7e8c264fd477114",
-        "suits/pinky-tap-8.png": "c9bac23f7c94920ed95fc2d750125b1f244ed242948ca57684c1ac6c4576e40a",
-        "suits/pinky-tap-9.png": "3371033b894629f1e6ad9c5423cbec6d0eb2e1f16f8b9d37261c99898ffa9e4e",
-        "suits/pinky-tap-10.png": "4aa3e6c972457df478b1957bfb3bec74a507c6755545992d5fd32f7badc7977f",
-        "suits/pinky-tap-11.png": "936ac68da2683d99ccedbaf29237da1723425fbe8ee75779851c2a228182c6e1",
-        "suits/pinky-tap-12.png": "b4c9387b34fb5cdf3b81736250e6e4307c7ef68efe6f233572979a51bb52c1a2",
-        "suits/pinky-desc-1.png": "3dedba95353293775d84681a8ad5fe1a99e4cabcdfab0c8c433c3a5badb8aef1",
-        "suits/pinky-desc-2.png": "de04478fdb227ceae8a16d6414197ba31cdec4d2e65d17f07af35bdb443f9f82",
-        "suits/pinky-desc-3.png": "3359c4e440e8da5b4d5591f68624a0eb36c0d2522103460c7a825fde0e6c6e1b",
-        "suits/pinky-desc-4.png": "1577a7a6078ba864a85b62f179ef23a6107b8e1e9da62a54064aa1f710a1b1b5"
+        "suits/pinky.png": "f7001f40482892a5b2f0432624768b61d0ba43544450393953a54ac1d80af772",
+        "suits/pinky-tap-1.png": "f7001f40482892a5b2f0432624768b61d0ba43544450393953a54ac1d80af772",
+        "suits/pinky-tap-2.png": "8d4f4a48cd18e85bad070bbee93ebbb1ac2debb30d23cb47f80989e4d1cbcf54",
+        "suits/pinky-tap-3.png": "34df7cf304fe88986c271a3a1111676ff838552c2ac91afdb3324b756f02eb8b",
+        "suits/pinky-tap-4.png": "e78127e1b39431d2818fc2cf40f8e18a2b24d1880a0bd79e0d8d0f4d88537623",
+        "suits/pinky-tap-5.png": "1d2e073a7b8b4cfb05d9b936efeb24a8067507e4b092ebf2b26f32cf7757cfc2",
+        "suits/pinky-tap-6.png": "0da63b3a4ce84d4cab7a916f4bfccd45c7bd052492ad907c4eaa2778da9e7576",
+        "suits/pinky-tap-7.png": "16cbffa8050159743c7619f2c33449b7e08ae3f04c123c9895c85e5fab7ce257",
+        "suits/pinky-tap-8.png": "d15f28d4d1de895510af02e691fcef8dfbb1f52a45ed5c8b8df2def68abfea9f",
+        "suits/pinky-tap-9.png": "fec14ed6de63da3cbb0913d89d605ff8c969bebfd0d6db06f2f5686c8631c76b",
+        "suits/pinky-tap-10.png": "dcad16b069de5c0595788290144a85635105f825281fc0f107a477167e0d80fa",
+        "suits/pinky-tap-11.png": "0905348ed38ddb383c609ae6f91403f5c0ecf3277753323c8635d75dad67a119",
+        "suits/pinky-tap-12.png": "f5d39c3b9455dcdb9ed61f72a23d67fd8152d1a750694dd36df74df52d3ce326",
+        "suits/pinky-desc-1.png": "f7001f40482892a5b2f0432624768b61d0ba43544450393953a54ac1d80af772",
+        "suits/pinky-desc-2.png": "e1ec9e18e08c0661443257877b94c3b54aa2d1f80a790c37312ef8d55cee3f60",
+        "suits/pinky-desc-3.png": "6aa7de07cb7d93830b55aeb6988fbfef2c368c0b81b6d8fbca048c758baacda5",
+        "suits/pinky-desc-4.png": "efc126ba95482be60a2649d5047f5603a2b2b6e42c0abeee4990c6abe5d83397"
       }
     },
     {

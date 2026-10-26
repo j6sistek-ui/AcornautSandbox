@@ -22,11 +22,20 @@ export const LEVEL = { pitch: 0, spine: 0, head: 0, ears: 0, front: 6, paw: 0, h
 // plume lines up with the body as it tips nose down
 const DIVE_OUT = 1.25;
 // THE TAP'S TAIL, keyed to Robo's painted bank (owner, 26 Oct 2026: "the tail movement on
-// tap is NOT playing enough"): sweep down to straight out and HOLD there, swing back up past
-// rest so it leans forward over the back, sweep down again, settle. [u, tailOut] pairs,
-// eased between, so the same keys read the same at 12 frames or 16.
-const TAP_KEYS = [[0, LEVEL.tailOut], [0.12, 0.85], [0.22, 1.3], [0.42, 1.3], [0.52, 0.5],
-  [0.62, -0.35], [0.68, -0.35], [0.76, 0.9], [0.83, 1.15], [0.92, 0.6], [1, LEVEL.tailOut]];
+// tap is NOT playing enough" ... "the animation doesn't feel like it plays on tap"): it SNAPS
+// out on the first frames after the tap, holds straight out, swings back up past rest so it
+// leans over the back, sweeps down again and settles. [u, tailOut] pairs, eased between, so
+// the same keys read the same at 12 frames or 16.
+const TAP_KEYS = [[0, LEVEL.tailOut], [0.08, 1.1], [0.16, 1.3], [0.36, 1.3], [0.46, 0.55],
+  [0.56, -0.3], [0.62, -0.3], [0.72, 0.95], [0.8, 1.15], [0.9, 0.6], [1, LEVEL.tailOut]];
+// THE CURL OPENS AS THE TAIL SWINGS OUT (owner: "the tail stays curled the whole time that's
+// the issue ... look at ... how much the tail straightened and moved"). At rest and swung up
+// the plume keeps its sculpted curl; swung out it straightens by up to UNFURL_OUT. Never at
+// rest: unrolling it there is what smeared the scroll.
+const UNFURL_OUT = 0.85, OUT_MAX = 1.3;
+const unfurlFor = out => UNFURL_OUT * Math.min(1, Math.max(0, (out - LEVEL.tailOut) / (OUT_MAX - LEVEL.tailOut)));
+// the rig options these moves need: unrolling the curl cuts where the sculpt fused it
+export const RIG_OPTS = { unroll: true };
 const keyed = (keys, u) => {
   let i = 1; while (i < keys.length - 1 && u > keys[i][0]) i++;
   const [u0, a] = keys[i - 1], [u1, b] = keys[i], x = Math.min(1, Math.max(0, (u - u0) / (u1 - u0)));
@@ -34,8 +43,9 @@ const keyed = (keys, u) => {
 };
 
 export const MOVES = {
-  // Robo's tail (TAP_KEYS): down to straight out and held, up past rest, down again, home,
-  // with a light whip running down it, while the body bobs once and the legs paddle.
+  // Robo's tail (TAP_KEYS): snaps out and holds, straightening as it goes; up past rest,
+  // curled again; down again; home. A light whip runs down it, the body bobs once and the
+  // legs paddle.
   tap: {
     frames: 16, loop: true,
     pose(u) {
@@ -52,7 +62,7 @@ export const MOVES = {
         paw: w(-12, 1.0),
         hind: LEVEL.hind + w(-22, 0),
         hindLow: w(14, 0.8),
-        tailOut: keyed(TAP_KEYS, u),
+        tailOut: keyed(TAP_KEYS, u), unfurl: unfurlFor(keyed(TAP_KEYS, u)),
         tail: (f, k) => 2 * f * (Math.sin(2 * c - 0.6 - k * 0.42) - Math.sin(-0.6 - k * 0.42)),
       };
     },
@@ -81,7 +91,7 @@ export const MOVES = {
         spine: -6 * e, head: 18 * e, ears: 32 * e,
         front: LEVEL.front + 66 * e, paw: -10 * e,
         hind: LEVEL.hind - 40 * e, hindLow: 18 * e,
-        tailOut: LEVEL.tailOut + (DIVE_OUT - LEVEL.tailOut) * t,
+        tailOut: LEVEL.tailOut + (DIVE_OUT - LEVEL.tailOut) * t, unfurl: UNFURL_OUT * t,
       };
     },
   },

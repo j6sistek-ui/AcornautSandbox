@@ -12,7 +12,7 @@
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { loadRig } from './autorig.js';
-import { MOVES as ALL_MOVES } from './moves.js';
+import { MOVES as ALL_MOVES, RIG_OPTS } from './moves.js';
 
 const q = new URLSearchParams(location.search);
 const SIZE = +(q.get('size') || 512);
@@ -24,7 +24,7 @@ R.setPixelRatio(1); R.setSize(SIZE, SIZE);
 R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
 document.body.appendChild(R.domElement);
 
-const rig = await loadRig(q.get('model'));
+const rig = await loadRig(q.get('model'), RIG_OPTS || {});
 const scene = new THREE.Scene(); scene.add(rig.pivot);
 scene.add(new THREE.HemisphereLight(0xfff4fb, 0x3a2f55, 2.0));
 const key = new THREE.DirectionalLight(0xffffff, 2.4); scene.add(key);
