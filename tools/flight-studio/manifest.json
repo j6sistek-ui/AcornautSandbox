@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "315",
-  "sourceCommit": "6f2ff734726e4d1f85a51dd54bca7d2bfd7883b8",
+  "artVer": "316",
+  "sourceCommit": "40db0e3b6908d4b927b5a03a332398327756ca54",
   "models": [
     {
       "id": "flight",
@@ -1424,10 +1424,10 @@
       "key": "suit:verdant",
       "file": "suits/verdant.png",
       "dome": [
-        204.19,
-        98.83,
-        37.88,
-        6
+        186.2,
+        112.62,
+        26.96,
+        1.82
       ],
       "box": null,
       "ownHead": false,
@@ -1436,47 +1436,47 @@
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/verdant-asc-1.png",
-          "suits/verdant-asc-2.png",
-          "suits/verdant-asc-3.png",
-          "suits/verdant-asc-4.png",
-          "suits/verdant-asc-5.png",
-          "suits/verdant-asc-6.png",
-          "suits/verdant-asc-7.png",
-          "suits/verdant-asc-8.png"
+        "tap": [
+          "suits/verdant-tap-1.png",
+          "suits/verdant-tap-2.png",
+          "suits/verdant-tap-3.png",
+          "suits/verdant-tap-4.png",
+          "suits/verdant-tap-5.png",
+          "suits/verdant-tap-6.png",
+          "suits/verdant-tap-7.png",
+          "suits/verdant-tap-8.png",
+          "suits/verdant-tap-9.png",
+          "suits/verdant-tap-10.png",
+          "suits/verdant-tap-11.png",
+          "suits/verdant-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/verdant-desc-1.png",
           "suits/verdant-desc-2.png",
           "suits/verdant-desc-3.png",
-          "suits/verdant-desc-4.png",
-          "suits/verdant-desc-5.png",
-          "suits/verdant-desc-6.png",
-          "suits/verdant-desc-7.png",
-          "suits/verdant-desc-8.png"
+          "suits/verdant-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/verdant.png": "b775bf6f8f2b62e89a77fbedf96fbe82874809c7762b7a6f9ea549d39207cf14",
-        "suits/verdant-asc-1.png": "262881cb30406c3a6d78e8d4e8681aa564b6e12eea4255447c295108198ef111",
-        "suits/verdant-asc-2.png": "77f03d1b7a5f4e9fc44e2499001b53ff6197594f92543b21a4e0a96ab27e5caa",
-        "suits/verdant-asc-3.png": "a03a858e3008ae8464a61e25987408a5c1b50d8e6285eb6bcc5bf35610c0d984",
-        "suits/verdant-asc-4.png": "ab1677561db71154ae95894932e9c6b3de74e29f39758e7c3d43c951284cb826",
-        "suits/verdant-asc-5.png": "ef9062815959f4a7e25e8df7949fcbe7e0d923d6984cb2b6c70b4a60213648fb",
-        "suits/verdant-asc-6.png": "6eed5503bf79cfecff4d7a7c325efc6931dc5935351b5930fa663592f4155e1f",
-        "suits/verdant-asc-7.png": "d3f5f20a3ac1af6b7b1df9f5f2a2238aaa5702e47354c1339f11a2fed0258813",
-        "suits/verdant-asc-8.png": "7e57b4076e9a33a7ece64e6bc2ec75d6bf0c409e1c71798f67acd8555759d5fe",
-        "suits/verdant-desc-1.png": "cc8983e82d98d692aee7b2bfab1b34499f831a0affb1052a58d09041f7aea902",
-        "suits/verdant-desc-2.png": "549bf014136823944fb98c8336bec9e5dde4e05454f153b5796cc64aba61eacc",
-        "suits/verdant-desc-3.png": "c30fd5a54314f2bc0ba5a6c8c6fa8263b2ed2dd1857ba02bd5a1e1d94db28297",
-        "suits/verdant-desc-4.png": "3ff001f40fa4d0a21a0edb62f6c692fa1e0ed722d118cacf9121b15c0ceab30d",
-        "suits/verdant-desc-5.png": "f2d1a728a89fbeda3b0635ce266702083473a05f890e1097b31578f573cf8ea1",
-        "suits/verdant-desc-6.png": "a0110612fedd23d0c281f052d2ebacc8b394d4719b3d9799ef430ac2e17f8d8a",
-        "suits/verdant-desc-7.png": "3249cf4f406943f3d0359a4d1116b4b04f89c1c193dcdde399fbc582261c97a4",
-        "suits/verdant-desc-8.png": "6bf4d9eca0d3728661bae17d57394588dd4536d1807da121adcb8b733fb9a04d"
+        "suits/verdant.png": "33c50d7a954f132669a603866c1a892d492864bf63de7597d57e5792c7a8d174",
+        "suits/verdant-tap-1.png": "33c50d7a954f132669a603866c1a892d492864bf63de7597d57e5792c7a8d174",
+        "suits/verdant-tap-2.png": "6bd64016d5a7a4a4e0d39075a0ab13e64f21b696821405bcd182b7fe50cd79f2",
+        "suits/verdant-tap-3.png": "05f5e6867cb6a71fef151ac62bfb634add13060855b10579f13ccf24a465226b",
+        "suits/verdant-tap-4.png": "149953535d428737532b21bc2944a5ee0e0fae247932fd23401988faed5c8473",
+        "suits/verdant-tap-5.png": "e8a835c78904c78d262f14ee69caddca46ae7594b898ca2e7b4f032a32a8ee78",
+        "suits/verdant-tap-6.png": "736506fc6c799e96f7f35856802fc09c03fef3072e1aa9ca8528ebe0a3485972",
+        "suits/verdant-tap-7.png": "c1c2b982fa9afff12bbd77c582a5b09b8fdf1ef27b35cbc66a7b4149bc3d6ba3",
+        "suits/verdant-tap-8.png": "ba45f8fc59c1fc0389b2dc4c6b4025bbd47ac07f89c63f28e9a90ce804993cb7",
+        "suits/verdant-tap-9.png": "3eee96483878b8be491577c28aa8e013198cd852686107ee181e8c376beb0668",
+        "suits/verdant-tap-10.png": "2a9d46e45362f6cf6b5996123fa6e76438c8490c2dff09face3407d3cd463e6e",
+        "suits/verdant-tap-11.png": "a28ecf282d7eb969863424f45dc10b5257bb89fd28880b7ae078ad27a568cdba",
+        "suits/verdant-tap-12.png": "88cd6c4a673dec1236ed3f75185d4144f758cda7258e379d54869879776a0eeb",
+        "suits/verdant-desc-1.png": "33c50d7a954f132669a603866c1a892d492864bf63de7597d57e5792c7a8d174",
+        "suits/verdant-desc-2.png": "387506252bb248992a68cafebafdb6bb3a34ee8b019049e406e3239f73be3f74",
+        "suits/verdant-desc-3.png": "e8e0f752682b4352671f88ba2aa80f1bcb2f19e569666a09073cf3f3a5c83495",
+        "suits/verdant-desc-4.png": "76d932315cb44e3316264ce24e024298c3de6008f5f593ba1ed17825de7764bf"
       }
     },
     {
@@ -1485,10 +1485,10 @@
       "key": "suit:cryostar",
       "file": "suits/cryostar.png",
       "dome": [
-        202,
-        99,
-        38.64,
-        5
+        186.2,
+        112.62,
+        26.96,
+        1.82
       ],
       "box": null,
       "ownHead": false,
@@ -1497,47 +1497,47 @@
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/cryostar-asc-1.png",
-          "suits/cryostar-asc-2.png",
-          "suits/cryostar-asc-3.png",
-          "suits/cryostar-asc-4.png",
-          "suits/cryostar-asc-5.png",
-          "suits/cryostar-asc-6.png",
-          "suits/cryostar-asc-7.png",
-          "suits/cryostar-asc-8.png"
+        "tap": [
+          "suits/cryostar-tap-1.png",
+          "suits/cryostar-tap-2.png",
+          "suits/cryostar-tap-3.png",
+          "suits/cryostar-tap-4.png",
+          "suits/cryostar-tap-5.png",
+          "suits/cryostar-tap-6.png",
+          "suits/cryostar-tap-7.png",
+          "suits/cryostar-tap-8.png",
+          "suits/cryostar-tap-9.png",
+          "suits/cryostar-tap-10.png",
+          "suits/cryostar-tap-11.png",
+          "suits/cryostar-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/cryostar-desc-1.png",
           "suits/cryostar-desc-2.png",
           "suits/cryostar-desc-3.png",
-          "suits/cryostar-desc-4.png",
-          "suits/cryostar-desc-5.png",
-          "suits/cryostar-desc-6.png",
-          "suits/cryostar-desc-7.png",
-          "suits/cryostar-desc-8.png"
+          "suits/cryostar-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/cryostar.png": "0c8c5fb982b13f3a970ea8ec00ed4679ca5dd6557b4396b4372818a0ff16391c",
-        "suits/cryostar-asc-1.png": "975663dcc1c443ab487f0514bf8d5388e9601d6f8e7a074e2dff89f50eb83608",
-        "suits/cryostar-asc-2.png": "2a21a0c774f7c0c14e348918aeb1e0d81bb5f5c81832b634b76db97c5f9fd174",
-        "suits/cryostar-asc-3.png": "778026890553aaa33cdc7b9efd9610001b0c1bc420e2fafeeeacca4cf93d1fbb",
-        "suits/cryostar-asc-4.png": "522a9ac30d4719e5499f28efa83c1ea6f4342de4fca849f4a5e18ae10cd4f0d6",
-        "suits/cryostar-asc-5.png": "b7effb6dcdcdd9c23853214e5037e8db35ad11d9234b899c9e175082c078c844",
-        "suits/cryostar-asc-6.png": "8b3da00cb75dd7c1dc2fff2e4d36b0ea2632c1762a5f4591e4bfa29a56de3183",
-        "suits/cryostar-asc-7.png": "698f64d0573ac1be28dfbc5023d010ea31362a367ceb24f6dd2c28e2fa45d318",
-        "suits/cryostar-asc-8.png": "5fc657d456c51e6fd85a14036c337682a19c9b607402869d0c39ff7e24672ea9",
-        "suits/cryostar-desc-1.png": "f017137edb608d99cf777505973dbb713b7a4977eefa86de6ea7ace267ae57ed",
-        "suits/cryostar-desc-2.png": "22796c3429dd4831f45eb3a8dccb31d7793718338fb24c8f2367635378e49d94",
-        "suits/cryostar-desc-3.png": "2447f09dfb819d382d2e136f724245bcf601973c68d9aa3e32a141f5eda53222",
-        "suits/cryostar-desc-4.png": "2df3f01909ecc2f727c3584e0b9ddaf131de2d956ab9182a11dde69c59856464",
-        "suits/cryostar-desc-5.png": "ffdf9413d0eb3c9673fdccdf3d13ae4377732fa1943713ec0219e23754327893",
-        "suits/cryostar-desc-6.png": "55d08d40c079435073ba5aa0bf19aeeb463fac3d7a4601884e0582069913d95a",
-        "suits/cryostar-desc-7.png": "0985d0b412c85c30cba882e55248784851a0d88eec630af7be4cda3262593e54",
-        "suits/cryostar-desc-8.png": "fccab883ab06989426a68127c6bd37df91fb2bab52cfb9dee85717ebd9cd342a"
+        "suits/cryostar.png": "53239ad6e75cae855230f5fea3dfe06ece4aa6c970b0a62ccc8b5bc503e7347c",
+        "suits/cryostar-tap-1.png": "53239ad6e75cae855230f5fea3dfe06ece4aa6c970b0a62ccc8b5bc503e7347c",
+        "suits/cryostar-tap-2.png": "f18b68b3516f62b9f583e78c462f0dad5f8bbd9f0f45dfba8beeb052a6b887e2",
+        "suits/cryostar-tap-3.png": "6e66e7dcfea3ddd3f3ecbd36fa323f22c4d73599e37d6ef627284485907c1537",
+        "suits/cryostar-tap-4.png": "a6b354ba448628ff27dd890403dbb7b89b61847f874c6225bd748dd6f9bfafc8",
+        "suits/cryostar-tap-5.png": "067a544ad7731aba8a309cae4cc9504cc21184111caf70a068ec0bdd45ed0283",
+        "suits/cryostar-tap-6.png": "78297b0f89e4b471cbfc46c9f858cf2708d017015561889de1dc6835fcd8e7b5",
+        "suits/cryostar-tap-7.png": "edb335c824d9e59481a3af6845db4582611806ca629031454699a45b9186eafd",
+        "suits/cryostar-tap-8.png": "04758cc78ff5c63fb80e45a33bbfa0dacb5b8d419cbd023f33d9ec878458c5bf",
+        "suits/cryostar-tap-9.png": "950325ed4cbb4c99bb928c4b69fa3d2b2cd547de692ac2e0694f81ac0c36352b",
+        "suits/cryostar-tap-10.png": "53f9cf4f900289cefdb4d04a11ec7cb245b871bae7bae0a4686ed499280579fd",
+        "suits/cryostar-tap-11.png": "1ec7f8ab86dd52357ef2e7f8c220ce6a5cffc9d109a65290d133b175d4f0124a",
+        "suits/cryostar-tap-12.png": "dede29a7d239da0dbe2482f1e5c5952eedeb17a5d20994c2cc83adceb923e5c7",
+        "suits/cryostar-desc-1.png": "53239ad6e75cae855230f5fea3dfe06ece4aa6c970b0a62ccc8b5bc503e7347c",
+        "suits/cryostar-desc-2.png": "edbffbb02a8944bc1597a6bc7becffc9ef4d3c38afc19840880084223d4fbaa0",
+        "suits/cryostar-desc-3.png": "6da116c99f1fa224915a28fb41eaec4a0d023f1e3dbd1af369cbaf7c8f080c4b",
+        "suits/cryostar-desc-4.png": "2db44497e9a8b862a9baa5e9f5b24034523c8f116bdaaa6a1a770d9b3983bc6a"
       }
     },
     {
@@ -1546,10 +1546,10 @@
       "key": "suit:eclipse",
       "file": "suits/eclipse.png",
       "dome": [
-        205,
-        89,
-        41.2,
-        -5
+        186.2,
+        112.62,
+        26.96,
+        1.82
       ],
       "box": null,
       "ownHead": false,
@@ -1570,68 +1570,35 @@
           "suits/eclipse-tap-9.png",
           "suits/eclipse-tap-10.png",
           "suits/eclipse-tap-11.png",
-          "suits/eclipse-tap-12.png",
-          "suits/eclipse-tap-13.png",
-          "suits/eclipse-tap-14.png",
-          "suits/eclipse-tap-15.png",
-          "suits/eclipse-tap-16.png"
+          "suits/eclipse-tap-12.png"
         ],
-        "asc": [
-          "suits/eclipse-asc-1.png",
-          "suits/eclipse-asc-2.png",
-          "suits/eclipse-asc-3.png",
-          "suits/eclipse-asc-4.png",
-          "suits/eclipse-asc-5.png",
-          "suits/eclipse-asc-6.png",
-          "suits/eclipse-asc-7.png",
-          "suits/eclipse-asc-8.png"
-        ],
+        "asc": [],
         "desc": [
           "suits/eclipse-desc-1.png",
           "suits/eclipse-desc-2.png",
           "suits/eclipse-desc-3.png",
-          "suits/eclipse-desc-4.png",
-          "suits/eclipse-desc-5.png",
-          "suits/eclipse-desc-6.png",
-          "suits/eclipse-desc-7.png",
-          "suits/eclipse-desc-8.png"
+          "suits/eclipse-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/eclipse.png": "210b1c50664eaf794f775b139acee76b8d04b87753553c37ad64db515f7a7eda",
-        "suits/eclipse-tap-1.png": "5b9164c0d313afd7eae9f80c55b83e13bf7539d10ceafee19f41d83214cbb5c1",
-        "suits/eclipse-tap-2.png": "abc00924287309bbb6dd2882067083168bc17af3cee3fb85ada2f4af973b7a88",
-        "suits/eclipse-tap-3.png": "38745afbfda361ec9559ac18c14f7c55fcda6992d6856854e7e872ea7cbd337d",
-        "suits/eclipse-tap-4.png": "97cfd5f250f9951c841c8a7e4c4cf6a6c8f727f4b3e715333fe9511e05bb74b3",
-        "suits/eclipse-tap-5.png": "f881a0f0ce6cc4fbc5e1b045d999757336cd201cfa4b9af4bf118bd7aaa6405c",
-        "suits/eclipse-tap-6.png": "c4235afd82bef9e473b79f2f1ecc88575487a10cbf45e41bace1225e48cf0f12",
-        "suits/eclipse-tap-7.png": "3bba92e2656acab8a4982168a2f7de3fbe77a906fd6d51b997141daf5e92a7e1",
-        "suits/eclipse-tap-8.png": "882025441c61922af127917c9ab23a3b98140d6de97530e182ffbf51d33de564",
-        "suits/eclipse-tap-9.png": "8c7e02a28c58a807fe76d2014279fce15f7747913ae0960efd2da355cf08a711",
-        "suits/eclipse-tap-10.png": "d494f681a6699e8210340cbf0d43237a16762a3035249aa3ebd35350edc517ee",
-        "suits/eclipse-tap-11.png": "bc2dd148759e863cd9a0bd58107ab210629f4a6b4a552b69ad76f8cd560f9cb6",
-        "suits/eclipse-tap-12.png": "5e82ead8f9bb77096e068587da12e8ce8d1d62b790f7b78efbc1a56cd2404d02",
-        "suits/eclipse-tap-13.png": "0f13cde7b84ef7e42617b932282f8facc07fc0142785fb06318170f49afe9e4f",
-        "suits/eclipse-tap-14.png": "e5f87e33fb1943bee5120662f2a5785102b0cacf2e925e4e1c0828c7d903a15b",
-        "suits/eclipse-tap-15.png": "42e844182a84b544d2ab5a88b3e1784cccacc0284bf6abd4bb0be7f92a4b10dc",
-        "suits/eclipse-tap-16.png": "dd3eae2b7bdabac8fd33d7a2825ad9d8cdc6e673fe1b042ed8a2cf37d35b3461",
-        "suits/eclipse-asc-1.png": "295fb8fb7a3ed3f7e02bf04365f9ead6fed3fe78e09d8a737a3d832972a5e38a",
-        "suits/eclipse-asc-2.png": "43e2d8f2f52087166c10fb2b80518d3550eb2c786dbbabecd54f8e97c65dfce3",
-        "suits/eclipse-asc-3.png": "684e7fd264ed709cebddef8b9b5e8913a7e7e5ee03640f8f3a06da0a830e4a1b",
-        "suits/eclipse-asc-4.png": "8bddd15d29366ec6d59e035b294542860043ba827a19f9d1feac37d761e4ebe0",
-        "suits/eclipse-asc-5.png": "73986d1fb425e0a57e41ec0a026296f461c9b93716d73e76fc07cd43dc5f7b65",
-        "suits/eclipse-asc-6.png": "33b4de196f3c4cd358bc9e7ce87071ee4883802a56ed057d5f4757c1365375d4",
-        "suits/eclipse-asc-7.png": "91680c734dca3a22af50c57b20dd68ba99c9cca9354d6c44f5e2ef6ac7a126b9",
-        "suits/eclipse-asc-8.png": "5ad38bef11a4b1b8db1385643d2b64fad94b8ce875137fdcffeddab67c126005",
-        "suits/eclipse-desc-1.png": "6295a1f61b2e982b3c57160e5e377d455053e0adb327483297208b2a22c2523d",
-        "suits/eclipse-desc-2.png": "9dbd67a244557ee871f3f33b451b8faa6f95ad2700427381837471de2046feb7",
-        "suits/eclipse-desc-3.png": "fec3eb4f5a754cacfd9b2d3c083df33b4df48bfd1aac9f1a6ea2a3ad30465520",
-        "suits/eclipse-desc-4.png": "d1176eab1a288a1ef4e3ed1ab91c9cea52529633014bd00518105dead8575911",
-        "suits/eclipse-desc-5.png": "03d75117b7353a3fc9055d539479f8809aa06de5bb7cf9873844e2b490489b75",
-        "suits/eclipse-desc-6.png": "4a37009afba859cbdc48241c8ca5db81443fb52d98298c0beb0539174b222333",
-        "suits/eclipse-desc-7.png": "c440d6710efb4a3282108039b75d8d1f8ee39345a073fc29dad8fa380b114139",
-        "suits/eclipse-desc-8.png": "148bff042b24407aa665f7bc96e362ced17f600d2f96477fe27248b562b7a2b2"
+        "suits/eclipse.png": "d8649134fbfb8c4643ef0e0a2d56018aa17390d93026fd829a1629c6576a3e6a",
+        "suits/eclipse-tap-1.png": "d8649134fbfb8c4643ef0e0a2d56018aa17390d93026fd829a1629c6576a3e6a",
+        "suits/eclipse-tap-2.png": "cfafa3e0386d3525368d10507877d003464b52ca6e8b3b6e134495a1ea3f652b",
+        "suits/eclipse-tap-3.png": "3b64dbc93b0edfa57e77b17352cd9fc0803cf911f43ee0e663a05822853b1367",
+        "suits/eclipse-tap-4.png": "93d396f26596718ba1c0cfe8ee73117d323251d81356d62d0030e2da2f74340e",
+        "suits/eclipse-tap-5.png": "d450c71478db06757df6db59bd3b6112b5d67df96c80041be244782fa0d81aab",
+        "suits/eclipse-tap-6.png": "87cd2b6bda0c9c3202e7f8236c738cd9adabc31e6b9d52e06136d2b2c70e6eaf",
+        "suits/eclipse-tap-7.png": "b843d327ea0ea7960b855888a2b6c249f14b85a592abbaf76d531fc93425db43",
+        "suits/eclipse-tap-8.png": "5d2e7a03817b2d76a3d135eaeac920a459c60c0f2381b17afdb293c2558feaff",
+        "suits/eclipse-tap-9.png": "9b8ce85404e9e74f985957630a53cbb168155b354ab86dd496a5d08796f3ee86",
+        "suits/eclipse-tap-10.png": "2acf9d9f45e750c343bcd47afad7d250591e8055e014d1f9a82e4684758a9654",
+        "suits/eclipse-tap-11.png": "2623828c22d16ff36ed8ea03695da556e83eeecefa8f7537630d8a2925e634bf",
+        "suits/eclipse-tap-12.png": "71279c42bbfb0bff7657495bd0aebad38b8e0c513f28704b5cbc09c3de84bb24",
+        "suits/eclipse-desc-1.png": "d8649134fbfb8c4643ef0e0a2d56018aa17390d93026fd829a1629c6576a3e6a",
+        "suits/eclipse-desc-2.png": "95aa06180f41af42b5112a0ce022261ca36d6030e351581a8676e32834879168",
+        "suits/eclipse-desc-3.png": "f7644300da430cddbbb20ac343eff13e3cc5fa814377e32392508b7c193ad360",
+        "suits/eclipse-desc-4.png": "8dcb4ca2e0f81185ea02243501fa50c83327c1fa7b7d1a05bc2dad8b679afe4a"
       }
     },
     {
@@ -2779,22 +2746,22 @@
       1.8
     ],
     "suit:verdant": [
-      204.19,
-      98.83,
-      37.88,
-      6
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "suit:cryostar": [
-      202,
-      99,
-      38.64,
-      5
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "suit:eclipse": [
-      205,
-      89,
-      41.2,
-      -5
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "suit:volt": [
       128,
@@ -3513,293 +3480,197 @@
       35.29,
       5.85
     ],
-    "cryostar-asc-1": [
-      190,
-      83,
-      36.03,
-      0
-    ],
-    "cryostar-asc-2": [
-      190.5,
-      81.5,
-      36.03,
-      0
-    ],
-    "cryostar-asc-3": [
-      189,
-      80.5,
-      36.03,
-      0
-    ],
-    "cryostar-asc-4": [
-      189.5,
-      79.5,
-      36.03,
-      0
-    ],
-    "cryostar-asc-5": [
-      189.5,
-      81,
-      36.03,
-      0
-    ],
-    "cryostar-asc-6": [
-      194.5,
-      78.5,
-      36.03,
-      5
-    ],
-    "cryostar-asc-7": [
-      195.5,
-      85.5,
-      36.03,
-      5
-    ],
-    "cryostar-asc-8": [
-      198,
-      91,
-      36.03,
-      6
-    ],
     "cryostar-desc-1": [
-      204.5,
-      89,
-      38.24,
-      7
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "cryostar-desc-2": [
-      202,
-      108,
-      39,
-      10
+      188.58,
+      124.69,
+      26.96,
+      15.58
     ],
     "cryostar-desc-3": [
-      191,
-      129.5,
-      38.24,
-      17
+      187.99,
+      138.17,
+      26.96,
+      28.78
     ],
     "cryostar-desc-4": [
-      191.5,
-      146,
-      39,
-      19
+      184.8,
+      150.86,
+      26.96,
+      41.25
     ],
-    "cryostar-desc-5": [
-      190.5,
-      148,
-      38.24,
-      24
+    "cryostar-tap-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
-    "cryostar-desc-6": [
-      187,
-      152.5,
-      36.75,
-      25
+    "cryostar-tap-2": [
+      184.49,
+      109.48,
+      26.96,
+      -1.87
     ],
-    "cryostar-desc-7": [
-      181.5,
-      161.5,
-      36.03,
-      40
+    "cryostar-tap-3": [
+      183.33,
+      108.02,
+      26.96,
+      -4.22
     ],
-    "cryostar-desc-8": [
-      177.69,
-      171.59,
-      36.03,
-      40
+    "cryostar-tap-4": [
+      183.18,
+      108.46,
+      26.96,
+      -4.6
     ],
-    "eclipse-asc-1": [
-      187,
-      83,
-      36.75,
-      -5
+    "cryostar-tap-5": [
+      184.07,
+      110.69,
+      26.96,
+      -2.9
     ],
-    "eclipse-asc-2": [
-      183,
-      80,
-      36.75,
-      -6
+    "cryostar-tap-6": [
+      185.56,
+      114.27,
+      26.96,
+      0.41
     ],
-    "eclipse-asc-3": [
-      183,
-      79,
-      36.75,
-      -5
+    "cryostar-tap-7": [
+      187.13,
+      118.34,
+      26.96,
+      4.44
     ],
-    "eclipse-asc-4": [
-      185,
-      78,
-      36.75,
-      -5
+    "cryostar-tap-8": [
+      188.4,
+      121.78,
+      26.96,
+      8.1
     ],
-    "eclipse-asc-5": [
-      186,
-      79,
-      36.75,
-      -5
+    "cryostar-tap-9": [
+      189.19,
+      123.57,
+      26.96,
+      10.41
     ],
-    "eclipse-asc-6": [
-      189,
-      75,
-      36.75,
-      -5
+    "cryostar-tap-10": [
+      189.41,
+      123.16,
+      26.96,
+      10.79
     ],
-    "eclipse-asc-7": [
-      191,
-      82,
-      36.75,
-      -2
+    "cryostar-tap-11": [
+      188.98,
+      120.63,
+      26.96,
+      9.12
     ],
-    "eclipse-asc-8": [
-      196,
-      93,
-      36.75,
-      -5
+    "cryostar-tap-12": [
+      187.85,
+      116.72,
+      26.96,
+      5.84
     ],
     "eclipse-desc-1": [
-      203,
-      88,
-      39.78,
-      0
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "eclipse-desc-2": [
-      200,
-      104,
-      37.49,
-      5
+      188.58,
+      124.69,
+      26.96,
+      15.58
     ],
     "eclipse-desc-3": [
-      188,
-      129,
-      38.24,
-      15
+      187.99,
+      138.17,
+      26.96,
+      28.78
     ],
     "eclipse-desc-4": [
-      185.86,
-      148.01,
-      38.24,
-      20
-    ],
-    "eclipse-desc-5": [
-      191,
-      148,
-      37.49,
-      25
-    ],
-    "eclipse-desc-6": [
-      191,
-      157,
-      36.75,
-      30
-    ],
-    "eclipse-desc-7": [
-      189,
-      160,
-      37.49,
-      35
-    ],
-    "eclipse-desc-8": [
-      184,
-      173,
-      36.75,
-      35
+      184.8,
+      150.86,
+      26.96,
+      41.25
     ],
     "eclipse-tap-1": [
-      194,
-      92,
-      42.4,
-      -5
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "eclipse-tap-2": [
-      194,
-      90,
-      42.4,
-      -5
+      184.49,
+      109.48,
+      26.96,
+      -1.87
     ],
     "eclipse-tap-3": [
-      192,
-      84,
-      42.4,
-      -5
+      183.33,
+      108.02,
+      26.96,
+      -4.22
     ],
     "eclipse-tap-4": [
-      188,
-      76,
-      42.4,
-      -5
+      183.18,
+      108.46,
+      26.96,
+      -4.6
     ],
     "eclipse-tap-5": [
-      184,
-      69,
-      42.4,
-      -5
+      184.07,
+      110.69,
+      26.96,
+      -2.9
     ],
     "eclipse-tap-6": [
-      181,
-      63,
-      42.4,
-      -5
+      185.56,
+      114.27,
+      26.96,
+      0.41
     ],
     "eclipse-tap-7": [
-      180,
-      62,
-      42.4,
-      -5
+      187.13,
+      118.34,
+      26.96,
+      4.44
     ],
     "eclipse-tap-8": [
-      181,
-      64,
-      42.4,
-      -5
+      188.4,
+      121.78,
+      26.96,
+      8.1
     ],
     "eclipse-tap-9": [
-      184,
-      70,
-      42.4,
-      -5
+      189.19,
+      123.57,
+      26.96,
+      10.41
     ],
     "eclipse-tap-10": [
-      189,
-      79,
-      42.4,
-      -5
+      189.41,
+      123.16,
+      26.96,
+      10.79
     ],
     "eclipse-tap-11": [
-      193,
-      85,
-      42.4,
-      -5
+      188.98,
+      120.63,
+      26.96,
+      9.12
     ],
     "eclipse-tap-12": [
-      195,
-      88,
-      42.4,
-      -5
-    ],
-    "eclipse-tap-13": [
-      196,
-      90,
-      42.4,
-      -5
-    ],
-    "eclipse-tap-14": [
-      196,
-      91,
-      42.4,
-      -5
-    ],
-    "eclipse-tap-15": [
-      196,
-      91,
-      42.4,
-      -5
-    ],
-    "eclipse-tap-16": [
-      196,
-      91,
-      42.4,
-      -5
+      187.85,
+      116.72,
+      26.96,
+      5.84
     ],
     "ember-desc-1": [
       183.97,
@@ -5049,101 +4920,101 @@
       33.8,
       5.81
     ],
-    "verdant-asc-1": [
-      189.11,
-      79.71,
-      36.75,
-      -2
-    ],
-    "verdant-asc-2": [
-      186.5,
-      81.5,
-      35.32,
-      1
-    ],
-    "verdant-asc-3": [
-      186,
-      80.5,
-      34.63,
-      1
-    ],
-    "verdant-asc-4": [
-      189,
-      79.5,
-      36.03,
-      1
-    ],
-    "verdant-asc-5": [
-      187.5,
-      80,
-      38.24,
-      1
-    ],
-    "verdant-asc-6": [
-      193.5,
-      77,
-      39.78,
-      1
-    ],
-    "verdant-asc-7": [
-      194.5,
-      81,
-      39,
-      1
-    ],
-    "verdant-asc-8": [
-      195,
-      89,
-      38.24,
-      1
-    ],
     "verdant-desc-1": [
-      201.5,
-      89,
-      41.39,
-      6
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "verdant-desc-2": [
-      200,
-      104,
-      39.78,
-      11
+      188.58,
+      124.69,
+      26.96,
+      15.58
     ],
     "verdant-desc-3": [
-      187.5,
-      129,
-      39.78,
-      21
+      187.99,
+      138.17,
+      26.96,
+      28.78
     ],
     "verdant-desc-4": [
-      190.5,
-      147,
-      39.78,
-      26
+      184.8,
+      150.86,
+      26.96,
+      41.25
     ],
-    "verdant-desc-5": [
-      189.5,
-      150.5,
-      39.78,
-      31
+    "verdant-tap-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
-    "verdant-desc-6": [
-      189.5,
-      157,
-      37.49,
-      36
+    "verdant-tap-2": [
+      184.49,
+      109.48,
+      26.96,
+      -1.87
     ],
-    "verdant-desc-7": [
-      187,
-      161.5,
-      38.24,
-      41
+    "verdant-tap-3": [
+      183.33,
+      108.02,
+      26.96,
+      -4.22
     ],
-    "verdant-desc-8": [
-      183.5,
-      174,
-      37.49,
-      41
+    "verdant-tap-4": [
+      183.18,
+      108.46,
+      26.96,
+      -4.6
+    ],
+    "verdant-tap-5": [
+      184.07,
+      110.69,
+      26.96,
+      -2.9
+    ],
+    "verdant-tap-6": [
+      185.56,
+      114.27,
+      26.96,
+      0.41
+    ],
+    "verdant-tap-7": [
+      187.13,
+      118.34,
+      26.96,
+      4.44
+    ],
+    "verdant-tap-8": [
+      188.4,
+      121.78,
+      26.96,
+      8.1
+    ],
+    "verdant-tap-9": [
+      189.19,
+      123.57,
+      26.96,
+      10.41
+    ],
+    "verdant-tap-10": [
+      189.41,
+      123.16,
+      26.96,
+      10.79
+    ],
+    "verdant-tap-11": [
+      188.98,
+      120.63,
+      26.96,
+      9.12
+    ],
+    "verdant-tap-12": [
+      187.85,
+      116.72,
+      26.96,
+      5.84
     ],
     "voidsuit-desc-1": [
       182.69,
@@ -5871,7 +5742,7 @@
     "arcflash": "e3311622176da38faba697d12c9b2a471084681e7192d539da559e6336028b38",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "4fd218c2cb1a02334eae0fd17119eb212dec6d20f2784a0ac64a1b9206ff0673",
+    "control-constants": "7c96fee5b5b642a53bbe665470e0ce604dda10351a75569e26deb22e621e2ae4",
     "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",

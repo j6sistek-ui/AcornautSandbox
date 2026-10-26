@@ -1,38 +1,38 @@
-import { spillDockTravelDuration } from "./spill.js?v=315";
-import { clipHelmetGlass } from "./helmet-openings.js?v=315";
-import { paintFittedHelmet } from "./helmet-fit.js?v=315";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=315";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=315";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=315";
-import { arcflashPreview } from "./arcflash-motion.js?v=315";
-import { paintLiveStarTrail } from "./star-trails.js?v=315";
-import { trailWornBy } from "./catalog.js?v=315";
-import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=315";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=315";
-import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=315";
-import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=315";
-import { RIG3D_BOOTS } from "./rig3d-boots.js?v=315";
-import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=315";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=315";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=315";
-import { spillAppearance } from "./spill-appearance.js?v=315";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=315";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=315";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=315";
-import { goalHud } from "./campaign.js?v=315";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=315";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=315";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=315";
-import { spriteImageFor } from "./sprite-detail.js?v=315";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=315";
-import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=315";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=315";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=315";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=315";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=315";
-import { spillEngineColor } from "./spill-content.js?v=315";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=315";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=315";
+import { spillDockTravelDuration } from "./spill.js?v=316";
+import { clipHelmetGlass } from "./helmet-openings.js?v=316";
+import { paintFittedHelmet } from "./helmet-fit.js?v=316";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=316";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=316";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=316";
+import { arcflashPreview } from "./arcflash-motion.js?v=316";
+import { paintLiveStarTrail } from "./star-trails.js?v=316";
+import { trailWornBy } from "./catalog.js?v=316";
+import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=316";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=316";
+import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=316";
+import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=316";
+import { RIG3D_BOOTS } from "./rig3d-boots.js?v=316";
+import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=316";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=316";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=316";
+import { spillAppearance } from "./spill-appearance.js?v=316";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=316";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=316";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=316";
+import { goalHud } from "./campaign.js?v=316";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=316";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=316";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=316";
+import { spriteImageFor } from "./sprite-detail.js?v=316";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=316";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=316";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=316";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=316";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=316";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=316";
+import { spillEngineColor } from "./spill-content.js?v=316";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=316";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=316";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3520,9 +3520,6 @@ const DOME = {
     "suit:catsuit": [212, 86, 50],
     "suit:phoenix": [207, 92, 41],
     "suit:seraph": [205, 131, 27.89, 2],
-    "suit:verdant": [204.19, 98.83, 37.88, 6],
-    "suit:cryostar": [202, 99, 38.64, 5],
-    "suit:eclipse": [205, 89, 41.2, -5],
     "suit:porcelain": [180, 84, 35.3465],
     "suit:nacre": [180, 84, 32.0492],
     // robo — pose-specific head and collar registration.
@@ -3559,39 +3556,6 @@ const DOME = {
     "bigbooty-tap-14": [201, 92, 28.55, 10],
     "bigbooty-tap-15": [203, 87, 29.71, 10],
     "bigbooty-tap-16": [207, 82, 29.71, 10],
-    // eclipse — pose-specific head and collar registration.
-    "eclipse-tap-1": [194, 92, 42.4, -5],
-    "eclipse-tap-2": [194, 90, 42.4, -5],
-    "eclipse-tap-3": [192, 84, 42.4, -5],
-    "eclipse-tap-4": [188, 76, 42.4, -5],
-    "eclipse-tap-5": [184, 69, 42.4, -5],
-    "eclipse-tap-6": [181, 63, 42.4, -5],
-    "eclipse-tap-7": [180, 62, 42.4, -5],
-    "eclipse-tap-8": [181, 64, 42.4, -5],
-    "eclipse-tap-9": [184, 70, 42.4, -5],
-    "eclipse-tap-10": [189, 79, 42.4, -5],
-    "eclipse-tap-11": [193, 85, 42.4, -5],
-    "eclipse-tap-12": [195, 88, 42.4, -5],
-    "eclipse-tap-13": [196, 90, 42.4, -5],
-    "eclipse-tap-14": [196, 91, 42.4, -5],
-    "eclipse-tap-15": [196, 91, 42.4, -5],
-    "eclipse-tap-16": [196, 91, 42.4, -5],
-    "eclipse-asc-1": [187, 83, 36.75, -5],
-    "eclipse-asc-2": [183, 80, 36.75, -6],
-    "eclipse-asc-3": [183, 79, 36.75, -5],
-    "eclipse-asc-4": [185, 78, 36.75, -5],
-    "eclipse-asc-5": [186, 79, 36.75, -5],
-    "eclipse-asc-6": [189, 75, 36.75, -5],
-    "eclipse-asc-7": [191, 82, 36.75, -2],
-    "eclipse-asc-8": [196, 93, 36.75, -5],
-    "eclipse-desc-1": [203, 88, 39.78, 0],
-    "eclipse-desc-2": [200, 104, 37.49, 5],
-    "eclipse-desc-3": [188, 129, 38.24, 15],
-    "eclipse-desc-4": [185.86, 148.01, 38.24, 20],
-    "eclipse-desc-5": [191, 148, 37.49, 25],
-    "eclipse-desc-6": [191, 157, 36.75, 30],
-    "eclipse-desc-7": [189, 160, 37.49, 35],
-    "eclipse-desc-8": [184, 173, 36.75, 35],
     // seraph — pose-specific head and collar registration.
     "seraph-asc-1": [205, 131, 27.89, 2],
     "seraph-asc-2": [205, 129, 27.89, 2],
@@ -3609,40 +3573,6 @@ const DOME = {
     "seraph-desc-6": [203, 148, 27.89, 23],
     "seraph-desc-7": [201, 163, 27.89, 57],
     "seraph-desc-8": [197, 163, 27.89, 62],
-    // cryostar — pose-specific head and collar registration.
-    "cryostar-asc-1": [190, 83, 36.03, 0],
-    "cryostar-asc-2": [190.5, 81.5, 36.03, 0],
-    "cryostar-asc-3": [189, 80.5, 36.03, 0],
-    "cryostar-asc-4": [189.5, 79.5, 36.03, 0],
-    "cryostar-asc-5": [189.5, 81, 36.03, 0],
-    "cryostar-asc-6": [194.5, 78.5, 36.03, 5],
-    "cryostar-asc-7": [195.5, 85.5, 36.03, 5],
-    "cryostar-asc-8": [198, 91, 36.03, 6],
-    "cryostar-desc-1": [204.5, 89, 38.24, 7],
-    "cryostar-desc-2": [202, 108, 39, 10],
-    "cryostar-desc-3": [191, 129.5, 38.24, 17],
-    "cryostar-desc-4": [191.5, 146, 39, 19],
-    "cryostar-desc-5": [190.5, 148, 38.24, 24],
-    "cryostar-desc-6": [187, 152.5, 36.75, 25],
-    "cryostar-desc-7": [181.5, 161.5, 36.03, 40],
-    "cryostar-desc-8": [177.69, 171.59, 36.03, 40],
-    // verdant — pose-specific head and collar registration.
-    "verdant-asc-1": [189.11, 79.71, 36.75, -2],
-    "verdant-asc-2": [186.5, 81.5, 35.32, 1],
-    "verdant-asc-3": [186, 80.5, 34.63, 1],
-    "verdant-asc-4": [189, 79.5, 36.03, 1],
-    "verdant-asc-5": [187.5, 80, 38.24, 1],
-    "verdant-asc-6": [193.5, 77, 39.78, 1],
-    "verdant-asc-7": [194.5, 81, 39, 1],
-    "verdant-asc-8": [195, 89, 38.24, 1],
-    "verdant-desc-1": [201.5, 89, 41.39, 6],
-    "verdant-desc-2": [200, 104, 39.78, 11],
-    "verdant-desc-3": [187.5, 129, 39.78, 21],
-    "verdant-desc-4": [190.5, 147, 39.78, 26],
-    "verdant-desc-5": [189.5, 150.5, 39.78, 31],
-    "verdant-desc-6": [189.5, 157, 37.49, 36],
-    "verdant-desc-7": [187, 161.5, 38.24, 41],
-    "verdant-desc-8": [183.5, 174, 37.49, 41],
     // ghost — pose-specific head and collar registration.
     "ghost-asc-1": [208, 109, 30.73, 0],
     "ghost-asc-2": [208, 108.3, 30.73, -5],
@@ -3833,6 +3763,57 @@ const DOME = {
     "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
     "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
     "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+    "suit:eclipse": [186.2, 112.62, 26.96, 1.82],
+    "eclipse-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "eclipse-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "eclipse-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "eclipse-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "eclipse-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "eclipse-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "eclipse-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "eclipse-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "eclipse-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "eclipse-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "eclipse-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "eclipse-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "eclipse-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "eclipse-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "eclipse-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "eclipse-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:cryostar": [186.2, 112.62, 26.96, 1.82],
+    "cryostar-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "cryostar-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "cryostar-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "cryostar-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "cryostar-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "cryostar-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "cryostar-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "cryostar-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "cryostar-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "cryostar-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "cryostar-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "cryostar-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "cryostar-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "cryostar-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "cryostar-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "cryostar-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:verdant": [186.2, 112.62, 26.96, 1.82],
+    "verdant-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "verdant-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "verdant-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "verdant-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "verdant-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "verdant-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "verdant-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "verdant-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "verdant-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "verdant-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "verdant-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "verdant-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "verdant-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "verdant-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "verdant-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "verdant-desc-4": [184.8, 150.86, 26.96, 41.25],
     "suit:arcflash": [186.2, 112.62, 26.96, 1.82],
     "arcflash-tap-1": [186.2, 112.62, 26.96, 1.82],
     "arcflash-tap-2": [184.49, 109.48, 26.96, -1.87],
@@ -4546,7 +4527,7 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // The 3D lineup too (26 Oct 2026): its rendered dive frames carry the attitude.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
     "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
-    "flight", "frost", "leviathan", "copper", "arcflash", "origamist"]);
+    "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as

@@ -59,6 +59,15 @@
   },
   "origamist": {
    "model": "patriot-pbr"
+  },
+  "eclipse": {
+   "model": "eclipse3d"
+  },
+  "cryostar": {
+   "model": "cryostar3d"
+  },
+  "verdant": {
+   "model": "verdant3d"
   }
  },
  "hashes": {
@@ -367,6 +376,57 @@
   "suits/origamist-tap-10.png": "85bdf07b64277778ee8d12f02853857cd10550ab",
   "suits/origamist-tap-11.png": "55dd59895fd9f0cb2ed621b28d533d3338befa2d",
   "suits/origamist-tap-12.png": "063c1072aad92e764e928882718351f4bd1883cc",
-  "suits/origamist.png": "1bb8536ca3582e12bdf7fd185250d821d03172ae"
+  "suits/origamist.png": "1bb8536ca3582e12bdf7fd185250d821d03172ae",
+  "suits/eclipse-desc-1.png": "e3af0d04a007ed6d1da0de166f994723b40bfd47",
+  "suits/eclipse-desc-2.png": "fbbb02e8171d8e570103b54ca74a0a33b000e021",
+  "suits/eclipse-desc-3.png": "a763c41674d09b394c1a93a48e875b5405b24e0a",
+  "suits/eclipse-desc-4.png": "eed6f73d2be59d4f65fdc8bfc9338e7e477883c1",
+  "suits/eclipse-tap-1.png": "e3af0d04a007ed6d1da0de166f994723b40bfd47",
+  "suits/eclipse-tap-2.png": "11d1f21d3d5a6aba3d498ce3a0060c852ac2e9ba",
+  "suits/eclipse-tap-3.png": "eae344aa547546925c6b033bd4e79aced6c82317",
+  "suits/eclipse-tap-4.png": "b8e7ac8243df227d1c1b199626df88bbb0e35ff3",
+  "suits/eclipse-tap-5.png": "6d456787ea3759e864af7df4f70ec1e8c523c8a4",
+  "suits/eclipse-tap-6.png": "77db3a5caf56ba4470568f60b5a38389ec5ca3f2",
+  "suits/eclipse-tap-7.png": "f5854c9e0ff821d735a369520e8fdc974f481fc6",
+  "suits/eclipse-tap-8.png": "13abe3c788c09ac1440eac162d70937f6aa42b21",
+  "suits/eclipse-tap-9.png": "8c26a3b6479d193a8f8895b0b64237a9b1bc31bb",
+  "suits/eclipse-tap-10.png": "a9b998277d43e692df8c26d177eee17ae17a7dfc",
+  "suits/eclipse-tap-11.png": "894cc406b1f922c9e2741fa60bff58ae9369b773",
+  "suits/eclipse-tap-12.png": "2cde0796d7973a98fc4cecf02a82f0420fd80c95",
+  "suits/eclipse.png": "e3af0d04a007ed6d1da0de166f994723b40bfd47",
+  "suits/cryostar-desc-1.png": "8b698e23f5a21447cf289e8195c8818131aaa116",
+  "suits/cryostar-desc-2.png": "e6e6e4e8ca68e99146131a3d0a171e6645f91e8f",
+  "suits/cryostar-desc-3.png": "c424b45d996eb496d12fe080ec94e2b1ef00f97c",
+  "suits/cryostar-desc-4.png": "607806a70ca12f1c71b439a9c64eb59ad02bd428",
+  "suits/cryostar-tap-1.png": "8b698e23f5a21447cf289e8195c8818131aaa116",
+  "suits/cryostar-tap-2.png": "906c4d707ef815cfab7ba1a2a07f8f0ec2d831e8",
+  "suits/cryostar-tap-3.png": "e54d2dea85d083d388920de484130a5faa2ffcbf",
+  "suits/cryostar-tap-4.png": "f03655388cefce5fe9c766c7840c5cc88704c29b",
+  "suits/cryostar-tap-5.png": "46d499a622779f73cec246f3c6df4bc18f14eb01",
+  "suits/cryostar-tap-6.png": "f234c7655abecfe4e9f1c1c3b8260fc76adf6470",
+  "suits/cryostar-tap-7.png": "50bf31defdc8a5c25acd78ee6b2f980343c7b757",
+  "suits/cryostar-tap-8.png": "0bbf3eb97fb064ce4af7a282200d049e6c437248",
+  "suits/cryostar-tap-9.png": "4891bcea162ba6e0c5b1da56b0baabf2d32bc2f8",
+  "suits/cryostar-tap-10.png": "9355bb60e24c557ded5001ee3bf5c3177fab8498",
+  "suits/cryostar-tap-11.png": "a214180ed8bb9abcbbdb7dfd157f9904344543e5",
+  "suits/cryostar-tap-12.png": "e9a019b6581f405096ef4a6dee999d75e05f42e1",
+  "suits/cryostar.png": "8b698e23f5a21447cf289e8195c8818131aaa116",
+  "suits/verdant-desc-1.png": "a9ef23b3d1432c7bda707c6374178dd98ff030cc",
+  "suits/verdant-desc-2.png": "130a84cde060861d25765dd3469da7037deb8f4f",
+  "suits/verdant-desc-3.png": "eae22c48cd4f1e20a0270b2b71ae8a1e025d1b77",
+  "suits/verdant-desc-4.png": "d0353fde1738da4c9cf434f105e492f2b741e016",
+  "suits/verdant-tap-1.png": "a9ef23b3d1432c7bda707c6374178dd98ff030cc",
+  "suits/verdant-tap-2.png": "b25eae114464c97b5026e668314406bfd6771304",
+  "suits/verdant-tap-3.png": "1bbc4bd14f5005b4a73bb8189f423a87681121ca",
+  "suits/verdant-tap-4.png": "b00f97c68b36811628e3adcfdc8072872d448efd",
+  "suits/verdant-tap-5.png": "05659abd334b74d2e73b44506f5747ea81a0f475",
+  "suits/verdant-tap-6.png": "b5d3371870ba085bf56260d08752ecd6674c17fc",
+  "suits/verdant-tap-7.png": "d134e617d8b4aa555b65fb4b23e63e0136e7fa27",
+  "suits/verdant-tap-8.png": "d65d33026b17e3e617b49a1d871966b4f166d1cc",
+  "suits/verdant-tap-9.png": "980a0e6de9cc6fdbfe8e4b497bd8b1e4e2f1fb49",
+  "suits/verdant-tap-10.png": "e0c408ba9ef2d419a985a3eb3be7e052e4d1d4df",
+  "suits/verdant-tap-11.png": "dce8c25e9ae37833cb238fa3d29e406af3587f6d",
+  "suits/verdant-tap-12.png": "bb4aa75f6edc70179bbddfa1c589d1ac26b81a25",
+  "suits/verdant.png": "a9ef23b3d1432c7bda707c6374178dd98ff030cc"
  }
 }

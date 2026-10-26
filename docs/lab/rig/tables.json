@@ -1,5 +1,5 @@
 {
- "artVer": "315",
+ "artVer": "316",
  "suits": [
   {
    "id": "flight",
@@ -373,10 +373,10 @@
    "key": "suit:verdant",
    "file": "suits/verdant.png",
    "dome": [
-    204.19,
-    98.83,
-    37.88,
-    6
+    186.2,
+    112.62,
+    26.96,
+    1.82
    ],
    "box": null,
    "ownHead": false,
@@ -389,10 +389,10 @@
    "key": "suit:cryostar",
    "file": "suits/cryostar.png",
    "dome": [
-    202,
-    99,
-    38.64,
-    5
+    186.2,
+    112.62,
+    26.96,
+    1.82
    ],
    "box": null,
    "ownHead": false,
@@ -405,10 +405,10 @@
    "key": "suit:eclipse",
    "file": "suits/eclipse.png",
    "dome": [
-    205,
-    89,
-    41.2,
-    -5
+    186.2,
+    112.62,
+    26.96,
+    1.82
    ],
    "box": null,
    "ownHead": false,
@@ -2446,151 +2446,15 @@
   },
   {
    "played": true,
-   "id": "cryostar-asc-1",
-   "name": "Cryostar asc 1",
-   "key": "cryostar-asc-1",
-   "file": "suits/cryostar-asc-1.png",
-   "dome": [
-    190,
-    83,
-    36.03,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "cryostar-asc-2",
-   "name": "Cryostar asc 2",
-   "key": "cryostar-asc-2",
-   "file": "suits/cryostar-asc-2.png",
-   "dome": [
-    190.5,
-    81.5,
-    36.03,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "cryostar-asc-3",
-   "name": "Cryostar asc 3",
-   "key": "cryostar-asc-3",
-   "file": "suits/cryostar-asc-3.png",
-   "dome": [
-    189,
-    80.5,
-    36.03,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "cryostar-asc-4",
-   "name": "Cryostar asc 4",
-   "key": "cryostar-asc-4",
-   "file": "suits/cryostar-asc-4.png",
-   "dome": [
-    189.5,
-    79.5,
-    36.03,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "cryostar-asc-5",
-   "name": "Cryostar asc 5",
-   "key": "cryostar-asc-5",
-   "file": "suits/cryostar-asc-5.png",
-   "dome": [
-    189.5,
-    81,
-    36.03,
-    0
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "cryostar-asc-6",
-   "name": "Cryostar asc 6",
-   "key": "cryostar-asc-6",
-   "file": "suits/cryostar-asc-6.png",
-   "dome": [
-    194.5,
-    78.5,
-    36.03,
-    5
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "cryostar-asc-7",
-   "name": "Cryostar asc 7",
-   "key": "cryostar-asc-7",
-   "file": "suits/cryostar-asc-7.png",
-   "dome": [
-    195.5,
-    85.5,
-    36.03,
-    5
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "cryostar-asc-8",
-   "name": "Cryostar asc 8",
-   "key": "cryostar-asc-8",
-   "file": "suits/cryostar-asc-8.png",
-   "dome": [
-    198,
-    91,
-    36.03,
-    6
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
    "id": "cryostar-desc-1",
    "name": "Cryostar desc 1",
    "key": "cryostar-desc-1",
    "file": "suits/cryostar-desc-1.png",
    "dome": [
-    204.5,
-    89,
-    38.24,
-    7
+    186.2,
+    112.62,
+    26.96,
+    1.82
    ],
    "box": null,
    "ownHead": false,
@@ -2604,10 +2468,10 @@
    "key": "cryostar-desc-2",
    "file": "suits/cryostar-desc-2.png",
    "dome": [
-    202,
-    108,
-    39,
-    10
+    188.58,
+    124.69,
+    26.96,
+    15.58
    ],
    "box": null,
    "ownHead": false,
@@ -2621,10 +2485,10 @@
    "key": "cryostar-desc-3",
    "file": "suits/cryostar-desc-3.png",
    "dome": [
-    191,
-    129.5,
-    38.24,
-    17
+    187.99,
+    138.17,
+    26.96,
+    28.78
    ],
    "box": null,
    "ownHead": false,
@@ -2638,10 +2502,10 @@
    "key": "cryostar-desc-4",
    "file": "suits/cryostar-desc-4.png",
    "dome": [
-    191.5,
-    146,
-    39,
-    19
+    184.8,
+    150.86,
+    26.96,
+    41.25
    ],
    "box": null,
    "ownHead": false,
@@ -2650,15 +2514,15 @@
   },
   {
    "played": true,
-   "id": "cryostar-desc-5",
-   "name": "Cryostar desc 5",
-   "key": "cryostar-desc-5",
-   "file": "suits/cryostar-desc-5.png",
+   "id": "cryostar-tap-1",
+   "name": "Cryostar tap 1",
+   "key": "cryostar-tap-1",
+   "file": "suits/cryostar-tap-1.png",
    "dome": [
-    190.5,
-    148,
-    38.24,
-    24
+    186.2,
+    112.62,
+    26.96,
+    1.82
    ],
    "box": null,
    "ownHead": false,
@@ -2667,15 +2531,15 @@
   },
   {
    "played": true,
-   "id": "cryostar-desc-6",
-   "name": "Cryostar desc 6",
-   "key": "cryostar-desc-6",
-   "file": "suits/cryostar-desc-6.png",
+   "id": "cryostar-tap-2",
+   "name": "Cryostar tap 2",
+   "key": "cryostar-tap-2",
+   "file": "suits/cryostar-tap-2.png",
    "dome": [
-    187,
-    152.5,
-    36.75,
-    25
+    184.49,
+    109.48,
+    26.96,
+    -1.87
    ],
    "box": null,
    "ownHead": false,
@@ -2684,15 +2548,15 @@
   },
   {
    "played": true,
-   "id": "cryostar-desc-7",
-   "name": "Cryostar desc 7",
-   "key": "cryostar-desc-7",
-   "file": "suits/cryostar-desc-7.png",
+   "id": "cryostar-tap-3",
+   "name": "Cryostar tap 3",
+   "key": "cryostar-tap-3",
+   "file": "suits/cryostar-tap-3.png",
    "dome": [
-    181.5,
-    161.5,
-    36.03,
-    40
+    183.33,
+    108.02,
+    26.96,
+    -4.22
    ],
    "box": null,
    "ownHead": false,
@@ -2701,15 +2565,15 @@
   },
   {
    "played": true,
-   "id": "cryostar-desc-8",
-   "name": "Cryostar desc 8",
-   "key": "cryostar-desc-8",
-   "file": "suits/cryostar-desc-8.png",
+   "id": "cryostar-tap-4",
+   "name": "Cryostar tap 4",
+   "key": "cryostar-tap-4",
+   "file": "suits/cryostar-tap-4.png",
    "dome": [
-    177.69,
-    171.59,
-    36.03,
-    40
+    183.18,
+    108.46,
+    26.96,
+    -4.6
    ],
    "box": null,
    "ownHead": false,
@@ -2718,15 +2582,15 @@
   },
   {
    "played": true,
-   "id": "eclipse-asc-1",
-   "name": "Eclipse asc 1",
-   "key": "eclipse-asc-1",
-   "file": "suits/eclipse-asc-1.png",
+   "id": "cryostar-tap-5",
+   "name": "Cryostar tap 5",
+   "key": "cryostar-tap-5",
+   "file": "suits/cryostar-tap-5.png",
    "dome": [
-    187,
-    83,
-    36.75,
-    -5
+    184.07,
+    110.69,
+    26.96,
+    -2.9
    ],
    "box": null,
    "ownHead": false,
@@ -2735,15 +2599,15 @@
   },
   {
    "played": true,
-   "id": "eclipse-asc-2",
-   "name": "Eclipse asc 2",
-   "key": "eclipse-asc-2",
-   "file": "suits/eclipse-asc-2.png",
+   "id": "cryostar-tap-6",
+   "name": "Cryostar tap 6",
+   "key": "cryostar-tap-6",
+   "file": "suits/cryostar-tap-6.png",
    "dome": [
-    183,
-    80,
-    36.75,
-    -6
+    185.56,
+    114.27,
+    26.96,
+    0.41
    ],
    "box": null,
    "ownHead": false,
@@ -2752,15 +2616,15 @@
   },
   {
    "played": true,
-   "id": "eclipse-asc-3",
-   "name": "Eclipse asc 3",
-   "key": "eclipse-asc-3",
-   "file": "suits/eclipse-asc-3.png",
+   "id": "cryostar-tap-7",
+   "name": "Cryostar tap 7",
+   "key": "cryostar-tap-7",
+   "file": "suits/cryostar-tap-7.png",
    "dome": [
-    183,
-    79,
-    36.75,
-    -5
+    187.13,
+    118.34,
+    26.96,
+    4.44
    ],
    "box": null,
    "ownHead": false,
@@ -2769,15 +2633,15 @@
   },
   {
    "played": true,
-   "id": "eclipse-asc-4",
-   "name": "Eclipse asc 4",
-   "key": "eclipse-asc-4",
-   "file": "suits/eclipse-asc-4.png",
+   "id": "cryostar-tap-8",
+   "name": "Cryostar tap 8",
+   "key": "cryostar-tap-8",
+   "file": "suits/cryostar-tap-8.png",
    "dome": [
-    185,
-    78,
-    36.75,
-    -5
+    188.4,
+    121.78,
+    26.96,
+    8.1
    ],
    "box": null,
    "ownHead": false,
@@ -2786,15 +2650,15 @@
   },
   {
    "played": true,
-   "id": "eclipse-asc-5",
-   "name": "Eclipse asc 5",
-   "key": "eclipse-asc-5",
-   "file": "suits/eclipse-asc-5.png",
+   "id": "cryostar-tap-9",
+   "name": "Cryostar tap 9",
+   "key": "cryostar-tap-9",
+   "file": "suits/cryostar-tap-9.png",
    "dome": [
-    186,
-    79,
-    36.75,
-    -5
+    189.19,
+    123.57,
+    26.96,
+    10.41
    ],
    "box": null,
    "ownHead": false,
@@ -2803,15 +2667,15 @@
   },
   {
    "played": true,
-   "id": "eclipse-asc-6",
-   "name": "Eclipse asc 6",
-   "key": "eclipse-asc-6",
-   "file": "suits/eclipse-asc-6.png",
+   "id": "cryostar-tap-10",
+   "name": "Cryostar tap 10",
+   "key": "cryostar-tap-10",
+   "file": "suits/cryostar-tap-10.png",
    "dome": [
-    189,
-    75,
-    36.75,
-    -5
+    189.41,
+    123.16,
+    26.96,
+    10.79
    ],
    "box": null,
    "ownHead": false,
@@ -2820,15 +2684,15 @@
   },
   {
    "played": true,
-   "id": "eclipse-asc-7",
-   "name": "Eclipse asc 7",
-   "key": "eclipse-asc-7",
-   "file": "suits/eclipse-asc-7.png",
+   "id": "cryostar-tap-11",
+   "name": "Cryostar tap 11",
+   "key": "cryostar-tap-11",
+   "file": "suits/cryostar-tap-11.png",
    "dome": [
-    191,
-    82,
-    36.75,
-    -2
+    188.98,
+    120.63,
+    26.96,
+    9.12
    ],
    "box": null,
    "ownHead": false,
@@ -2837,15 +2701,15 @@
   },
   {
    "played": true,
-   "id": "eclipse-asc-8",
-   "name": "Eclipse asc 8",
-   "key": "eclipse-asc-8",
-   "file": "suits/eclipse-asc-8.png",
+   "id": "cryostar-tap-12",
+   "name": "Cryostar tap 12",
+   "key": "cryostar-tap-12",
+   "file": "suits/cryostar-tap-12.png",
    "dome": [
-    196,
-    93,
-    36.75,
-    -5
+    187.85,
+    116.72,
+    26.96,
+    5.84
    ],
    "box": null,
    "ownHead": false,
@@ -2859,10 +2723,10 @@
    "key": "eclipse-desc-1",
    "file": "suits/eclipse-desc-1.png",
    "dome": [
-    203,
-    88,
-    39.78,
-    0
+    186.2,
+    112.62,
+    26.96,
+    1.82
    ],
    "box": null,
    "ownHead": false,
@@ -2876,10 +2740,10 @@
    "key": "eclipse-desc-2",
    "file": "suits/eclipse-desc-2.png",
    "dome": [
-    200,
-    104,
-    37.49,
-    5
+    188.58,
+    124.69,
+    26.96,
+    15.58
    ],
    "box": null,
    "ownHead": false,
@@ -2893,10 +2757,10 @@
    "key": "eclipse-desc-3",
    "file": "suits/eclipse-desc-3.png",
    "dome": [
-    188,
-    129,
-    38.24,
-    15
+    187.99,
+    138.17,
+    26.96,
+    28.78
    ],
    "box": null,
    "ownHead": false,
@@ -2910,10 +2774,10 @@
    "key": "eclipse-desc-4",
    "file": "suits/eclipse-desc-4.png",
    "dome": [
-    185.86,
-    148.01,
-    38.24,
-    20
+    184.8,
+    150.86,
+    26.96,
+    41.25
    ],
    "box": null,
    "ownHead": false,
@@ -2922,83 +2786,15 @@
   },
   {
    "played": true,
-   "id": "eclipse-desc-5",
-   "name": "Eclipse desc 5",
-   "key": "eclipse-desc-5",
-   "file": "suits/eclipse-desc-5.png",
-   "dome": [
-    191,
-    148,
-    37.49,
-    25
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "eclipse-desc-6",
-   "name": "Eclipse desc 6",
-   "key": "eclipse-desc-6",
-   "file": "suits/eclipse-desc-6.png",
-   "dome": [
-    191,
-    157,
-    36.75,
-    30
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "eclipse-desc-7",
-   "name": "Eclipse desc 7",
-   "key": "eclipse-desc-7",
-   "file": "suits/eclipse-desc-7.png",
-   "dome": [
-    189,
-    160,
-    37.49,
-    35
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "eclipse-desc-8",
-   "name": "Eclipse desc 8",
-   "key": "eclipse-desc-8",
-   "file": "suits/eclipse-desc-8.png",
-   "dome": [
-    184,
-    173,
-    36.75,
-    35
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": false,
    "id": "eclipse-tap-1",
    "name": "Eclipse tap 1",
    "key": "eclipse-tap-1",
    "file": "suits/eclipse-tap-1.png",
    "dome": [
-    194,
-    92,
-    42.4,
-    -5
+    186.2,
+    112.62,
+    26.96,
+    1.82
    ],
    "box": null,
    "ownHead": false,
@@ -3006,16 +2802,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-2",
    "name": "Eclipse tap 2",
    "key": "eclipse-tap-2",
    "file": "suits/eclipse-tap-2.png",
    "dome": [
-    194,
-    90,
-    42.4,
-    -5
+    184.49,
+    109.48,
+    26.96,
+    -1.87
    ],
    "box": null,
    "ownHead": false,
@@ -3023,16 +2819,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-3",
    "name": "Eclipse tap 3",
    "key": "eclipse-tap-3",
    "file": "suits/eclipse-tap-3.png",
    "dome": [
-    192,
-    84,
-    42.4,
-    -5
+    183.33,
+    108.02,
+    26.96,
+    -4.22
    ],
    "box": null,
    "ownHead": false,
@@ -3040,16 +2836,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-4",
    "name": "Eclipse tap 4",
    "key": "eclipse-tap-4",
    "file": "suits/eclipse-tap-4.png",
    "dome": [
-    188,
-    76,
-    42.4,
-    -5
+    183.18,
+    108.46,
+    26.96,
+    -4.6
    ],
    "box": null,
    "ownHead": false,
@@ -3057,16 +2853,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-5",
    "name": "Eclipse tap 5",
    "key": "eclipse-tap-5",
    "file": "suits/eclipse-tap-5.png",
    "dome": [
-    184,
-    69,
-    42.4,
-    -5
+    184.07,
+    110.69,
+    26.96,
+    -2.9
    ],
    "box": null,
    "ownHead": false,
@@ -3074,16 +2870,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-6",
    "name": "Eclipse tap 6",
    "key": "eclipse-tap-6",
    "file": "suits/eclipse-tap-6.png",
    "dome": [
-    181,
-    63,
-    42.4,
-    -5
+    185.56,
+    114.27,
+    26.96,
+    0.41
    ],
    "box": null,
    "ownHead": false,
@@ -3091,16 +2887,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-7",
    "name": "Eclipse tap 7",
    "key": "eclipse-tap-7",
    "file": "suits/eclipse-tap-7.png",
    "dome": [
-    180,
-    62,
-    42.4,
-    -5
+    187.13,
+    118.34,
+    26.96,
+    4.44
    ],
    "box": null,
    "ownHead": false,
@@ -3108,16 +2904,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-8",
    "name": "Eclipse tap 8",
    "key": "eclipse-tap-8",
    "file": "suits/eclipse-tap-8.png",
    "dome": [
-    181,
-    64,
-    42.4,
-    -5
+    188.4,
+    121.78,
+    26.96,
+    8.1
    ],
    "box": null,
    "ownHead": false,
@@ -3125,16 +2921,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-9",
    "name": "Eclipse tap 9",
    "key": "eclipse-tap-9",
    "file": "suits/eclipse-tap-9.png",
    "dome": [
-    184,
-    70,
-    42.4,
-    -5
+    189.19,
+    123.57,
+    26.96,
+    10.41
    ],
    "box": null,
    "ownHead": false,
@@ -3142,16 +2938,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-10",
    "name": "Eclipse tap 10",
    "key": "eclipse-tap-10",
    "file": "suits/eclipse-tap-10.png",
    "dome": [
-    189,
-    79,
-    42.4,
-    -5
+    189.41,
+    123.16,
+    26.96,
+    10.79
    ],
    "box": null,
    "ownHead": false,
@@ -3159,16 +2955,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-11",
    "name": "Eclipse tap 11",
    "key": "eclipse-tap-11",
    "file": "suits/eclipse-tap-11.png",
    "dome": [
-    193,
-    85,
-    42.4,
-    -5
+    188.98,
+    120.63,
+    26.96,
+    9.12
    ],
    "box": null,
    "ownHead": false,
@@ -3176,84 +2972,16 @@
    "frame": true
   },
   {
-   "played": false,
+   "played": true,
    "id": "eclipse-tap-12",
    "name": "Eclipse tap 12",
    "key": "eclipse-tap-12",
    "file": "suits/eclipse-tap-12.png",
    "dome": [
-    195,
-    88,
-    42.4,
-    -5
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": false,
-   "id": "eclipse-tap-13",
-   "name": "Eclipse tap 13",
-   "key": "eclipse-tap-13",
-   "file": "suits/eclipse-tap-13.png",
-   "dome": [
-    196,
-    90,
-    42.4,
-    -5
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": false,
-   "id": "eclipse-tap-14",
-   "name": "Eclipse tap 14",
-   "key": "eclipse-tap-14",
-   "file": "suits/eclipse-tap-14.png",
-   "dome": [
-    196,
-    91,
-    42.4,
-    -5
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": false,
-   "id": "eclipse-tap-15",
-   "name": "Eclipse tap 15",
-   "key": "eclipse-tap-15",
-   "file": "suits/eclipse-tap-15.png",
-   "dome": [
-    196,
-    91,
-    42.4,
-    -5
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": false,
-   "id": "eclipse-tap-16",
-   "name": "Eclipse tap 16",
-   "key": "eclipse-tap-16",
-   "file": "suits/eclipse-tap-16.png",
-   "dome": [
-    196,
-    91,
-    42.4,
-    -5
+    187.85,
+    116.72,
+    26.96,
+    5.84
    ],
    "box": null,
    "ownHead": false,
@@ -6878,151 +6606,15 @@
   },
   {
    "played": true,
-   "id": "verdant-asc-1",
-   "name": "Verdant asc 1",
-   "key": "verdant-asc-1",
-   "file": "suits/verdant-asc-1.png",
-   "dome": [
-    189.11,
-    79.71,
-    36.75,
-    -2
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "verdant-asc-2",
-   "name": "Verdant asc 2",
-   "key": "verdant-asc-2",
-   "file": "suits/verdant-asc-2.png",
-   "dome": [
-    186.5,
-    81.5,
-    35.32,
-    1
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "verdant-asc-3",
-   "name": "Verdant asc 3",
-   "key": "verdant-asc-3",
-   "file": "suits/verdant-asc-3.png",
-   "dome": [
-    186,
-    80.5,
-    34.63,
-    1
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "verdant-asc-4",
-   "name": "Verdant asc 4",
-   "key": "verdant-asc-4",
-   "file": "suits/verdant-asc-4.png",
-   "dome": [
-    189,
-    79.5,
-    36.03,
-    1
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "verdant-asc-5",
-   "name": "Verdant asc 5",
-   "key": "verdant-asc-5",
-   "file": "suits/verdant-asc-5.png",
-   "dome": [
-    187.5,
-    80,
-    38.24,
-    1
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "verdant-asc-6",
-   "name": "Verdant asc 6",
-   "key": "verdant-asc-6",
-   "file": "suits/verdant-asc-6.png",
-   "dome": [
-    193.5,
-    77,
-    39.78,
-    1
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "verdant-asc-7",
-   "name": "Verdant asc 7",
-   "key": "verdant-asc-7",
-   "file": "suits/verdant-asc-7.png",
-   "dome": [
-    194.5,
-    81,
-    39,
-    1
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "verdant-asc-8",
-   "name": "Verdant asc 8",
-   "key": "verdant-asc-8",
-   "file": "suits/verdant-asc-8.png",
-   "dome": [
-    195,
-    89,
-    38.24,
-    1
-   ],
-   "box": null,
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
    "id": "verdant-desc-1",
    "name": "Verdant desc 1",
    "key": "verdant-desc-1",
    "file": "suits/verdant-desc-1.png",
    "dome": [
-    201.5,
-    89,
-    41.39,
-    6
+    186.2,
+    112.62,
+    26.96,
+    1.82
    ],
    "box": null,
    "ownHead": false,
@@ -7036,10 +6628,10 @@
    "key": "verdant-desc-2",
    "file": "suits/verdant-desc-2.png",
    "dome": [
-    200,
-    104,
-    39.78,
-    11
+    188.58,
+    124.69,
+    26.96,
+    15.58
    ],
    "box": null,
    "ownHead": false,
@@ -7053,10 +6645,10 @@
    "key": "verdant-desc-3",
    "file": "suits/verdant-desc-3.png",
    "dome": [
-    187.5,
-    129,
-    39.78,
-    21
+    187.99,
+    138.17,
+    26.96,
+    28.78
    ],
    "box": null,
    "ownHead": false,
@@ -7070,10 +6662,10 @@
    "key": "verdant-desc-4",
    "file": "suits/verdant-desc-4.png",
    "dome": [
-    190.5,
-    147,
-    39.78,
-    26
+    184.8,
+    150.86,
+    26.96,
+    41.25
    ],
    "box": null,
    "ownHead": false,
@@ -7082,15 +6674,15 @@
   },
   {
    "played": true,
-   "id": "verdant-desc-5",
-   "name": "Verdant desc 5",
-   "key": "verdant-desc-5",
-   "file": "suits/verdant-desc-5.png",
+   "id": "verdant-tap-1",
+   "name": "Verdant tap 1",
+   "key": "verdant-tap-1",
+   "file": "suits/verdant-tap-1.png",
    "dome": [
-    189.5,
-    150.5,
-    39.78,
-    31
+    186.2,
+    112.62,
+    26.96,
+    1.82
    ],
    "box": null,
    "ownHead": false,
@@ -7099,15 +6691,15 @@
   },
   {
    "played": true,
-   "id": "verdant-desc-6",
-   "name": "Verdant desc 6",
-   "key": "verdant-desc-6",
-   "file": "suits/verdant-desc-6.png",
+   "id": "verdant-tap-2",
+   "name": "Verdant tap 2",
+   "key": "verdant-tap-2",
+   "file": "suits/verdant-tap-2.png",
    "dome": [
-    189.5,
-    157,
-    37.49,
-    36
+    184.49,
+    109.48,
+    26.96,
+    -1.87
    ],
    "box": null,
    "ownHead": false,
@@ -7116,15 +6708,15 @@
   },
   {
    "played": true,
-   "id": "verdant-desc-7",
-   "name": "Verdant desc 7",
-   "key": "verdant-desc-7",
-   "file": "suits/verdant-desc-7.png",
+   "id": "verdant-tap-3",
+   "name": "Verdant tap 3",
+   "key": "verdant-tap-3",
+   "file": "suits/verdant-tap-3.png",
    "dome": [
-    187,
-    161.5,
-    38.24,
-    41
+    183.33,
+    108.02,
+    26.96,
+    -4.22
    ],
    "box": null,
    "ownHead": false,
@@ -7133,15 +6725,151 @@
   },
   {
    "played": true,
-   "id": "verdant-desc-8",
-   "name": "Verdant desc 8",
-   "key": "verdant-desc-8",
-   "file": "suits/verdant-desc-8.png",
+   "id": "verdant-tap-4",
+   "name": "Verdant tap 4",
+   "key": "verdant-tap-4",
+   "file": "suits/verdant-tap-4.png",
    "dome": [
-    183.5,
-    174,
-    37.49,
-    41
+    183.18,
+    108.46,
+    26.96,
+    -4.6
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "verdant-tap-5",
+   "name": "Verdant tap 5",
+   "key": "verdant-tap-5",
+   "file": "suits/verdant-tap-5.png",
+   "dome": [
+    184.07,
+    110.69,
+    26.96,
+    -2.9
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "verdant-tap-6",
+   "name": "Verdant tap 6",
+   "key": "verdant-tap-6",
+   "file": "suits/verdant-tap-6.png",
+   "dome": [
+    185.56,
+    114.27,
+    26.96,
+    0.41
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "verdant-tap-7",
+   "name": "Verdant tap 7",
+   "key": "verdant-tap-7",
+   "file": "suits/verdant-tap-7.png",
+   "dome": [
+    187.13,
+    118.34,
+    26.96,
+    4.44
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "verdant-tap-8",
+   "name": "Verdant tap 8",
+   "key": "verdant-tap-8",
+   "file": "suits/verdant-tap-8.png",
+   "dome": [
+    188.4,
+    121.78,
+    26.96,
+    8.1
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "verdant-tap-9",
+   "name": "Verdant tap 9",
+   "key": "verdant-tap-9",
+   "file": "suits/verdant-tap-9.png",
+   "dome": [
+    189.19,
+    123.57,
+    26.96,
+    10.41
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "verdant-tap-10",
+   "name": "Verdant tap 10",
+   "key": "verdant-tap-10",
+   "file": "suits/verdant-tap-10.png",
+   "dome": [
+    189.41,
+    123.16,
+    26.96,
+    10.79
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "verdant-tap-11",
+   "name": "Verdant tap 11",
+   "key": "verdant-tap-11",
+   "file": "suits/verdant-tap-11.png",
+   "dome": [
+    188.98,
+    120.63,
+    26.96,
+    9.12
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "verdant-tap-12",
+   "name": "Verdant tap 12",
+   "key": "verdant-tap-12",
+   "file": "suits/verdant-tap-12.png",
+   "dome": [
+    187.85,
+    116.72,
+    26.96,
+    5.84
    ],
    "box": null,
    "ownHead": false,

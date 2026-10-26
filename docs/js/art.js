@@ -1,10 +1,10 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=315";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=315";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=315";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=315";
-import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumFrames, isHighOrbitRig } from "./high-orbit-config.js?v=315";
-import { isArcflashRig } from "./arcflash.js?v=315";
-import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=315";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=316";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=316";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=316";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=316";
+import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumFrames, isHighOrbitRig } from "./high-orbit-config.js?v=316";
+import { isArcflashRig } from "./arcflash.js?v=316";
+import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=316";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -339,7 +339,8 @@ const RIGGED_SUITS = [
     // asc-1 has no neck to cut (neck-cut.py refused it), and it flies a
     // full bank - the static master is its loading fallback, like alien.
     "catsuit",
-    "verdant", "cryostar", "eclipse", "volt",
+    // verdant, cryostar and eclipse left with the 3D lineup (26 Oct 2026)
+    "volt",
     // Cyber is NOT beta-gated any more. It started beta-only, then the shop
     // overhaul sold it on production in two bundles - and its rig stayed
     // behind this flag, so a pilot who bought it flew a flat sticker while
@@ -357,7 +358,7 @@ const TAP_BANKS = {
     // not on beta. A painted frame has no such thing: the pose IS the art.
     // Every one of these banks already shipped in the production art folder;
     // only this list kept production from asking for them.
-    robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
+    robo: 16, bigbooty: 16, catsuit: 16, volt: 16,
     // THE 3D LINEUP (owner, 26 Oct 2026: "here are the replacements, DIRECT
     // replace"): ten suits re-made from rigged 3D squirrels by tools/rig3d -
     // a twelve-frame tap and a four-frame dive (the dive table below), no climb, the
@@ -366,7 +367,7 @@ const TAP_BANKS = {
     abyssal: 12, gemmie: 12, iontrim: 12, sammie: 12, cosmic: 12,
     // and the next two on the same rendered skeleton, then four on their own rigs
     flight: 12, frost: 12, leviathan: 12, copper: 12, alien: 12, hedgehog: 12,
-    arcflash: 12, origamist: 12,
+    arcflash: 12, origamist: 12, eclipse: 12, cryostar: 12, verdant: 12,
     // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
     // retired: their GENERATED motion lost the pilot's lower body at its
     // extremes, and each flies a painted ascent/descent ramp now -
@@ -378,7 +379,8 @@ const TAP_BANKS = {
     // The five unreleased suits' obsolete tap banks are retired with their
     // owner-requested 8/8 replacement sheets (7 Sep 2026).
 };
-const TAIL_TAP_BANKS = { eclipse: 12 };
+// eclipse's tail-tap bank retired with its painted art (3D lineup, 26 Oct 2026)
+const TAIL_TAP_BANKS = {};
 const BOUNCE_BANKS = { volt: 16 };
 // Alien descends on SEVEN frames, deliberately: the delivered desc-7 was a
 // heavy black tail-swirl that would flash on colored skies, so the owner
@@ -398,20 +400,20 @@ const BOUNCE_BANKS = { volt: 16 };
 // "large frame in rotation" the owner could see but not name. Dropped and
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
-const ASC_BANKS = { eclipse: 8, cyber: 9, porcelain: 9, nacre: 9, seraph: 8,
+const ASC_BANKS = { cyber: 9, porcelain: 9, nacre: 9, seraph: 8,
     // alien, copper and leviathan left for the 3D lineup (26 Oct 2026)
-    cryostar: 8, verdant: 8, ghost: 8,
+    ghost: 8,
     // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
     briellacat: 7,
 };
-const DESC_BANKS = { eclipse: 8, cyber: 9, porcelain: 9, nacre: 9, seraph: 8,
-    cryostar: 8, verdant: 8, ghost: 8,
+const DESC_BANKS = { cyber: 9, porcelain: 9, nacre: 9, seraph: 8,
+    ghost: 8,
     briellacat: 4,
     // the 3D lineup's dives, paired with their twelve-frame taps above
     ember: 4, voidsuit: 4, groveguard: 4, cinderforge: 4, sunforged: 4,
     abyssal: 4, gemmie: 4, iontrim: 4, sammie: 4, cosmic: 4,
     flight: 4, frost: 4, leviathan: 4, copper: 4, alien: 4, hedgehog: 4,
-    arcflash: 4, origamist: 4,
+    arcflash: 4, origamist: 4, eclipse: 4, cryostar: 4, verdant: 4,
 };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.

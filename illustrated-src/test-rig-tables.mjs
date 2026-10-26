@@ -24,8 +24,9 @@ const still=t.suits.find(s=>s.key==='suit:flight');assert(still&&!still.frame);
 // rendered twelve-frame tap and four-frame dive
 const ids=t.suits.filter(s=>s.played!==false).map(s=>s.id);
 assert.deepEqual(ids.filter(i=>i.startsWith('flight-')).sort(),[...Array.from({length:12},(_,i)=>'flight-tap-'+(i+1)),...Array.from({length:4},(_,i)=>'flight-desc-'+(i+1))].sort(),'Flight shows its 12 tap and 4 dive frames and nothing else');
-assert.equal(ids.filter(i=>i.startsWith('eclipse-tap-')).length,0,'Eclipse flies its ramp, not its tap bank');
-assert.equal(t.suits.filter(s=>s.id.startsWith('eclipse-tap-')&&s.played===false).length,16,'but its tap anchors stay in the table for the Studio and the game');
+// Eclipse flies a rendered tap and dive since the 3D lineup (26 Oct 2026): every frame plays
+assert.equal(ids.filter(i=>i.startsWith('eclipse-tap-')).length,12,'Eclipse flies its twelve tap frames');
+assert.equal(ids.filter(i=>i.startsWith('eclipse-asc-')).length,0,'and no ramp');
 assert.equal(ids.filter(i=>i.startsWith('robo-tap-')).length,16,'Robo flies its tap bank');
 assert(t.suits.filter(s=>s.id.startsWith('flight-tap-')).every(s=>!s.seeded),'real DOME rows are not seeded');
 const seeded=t.suits.filter(s=>s.seeded);

@@ -1286,10 +1286,9 @@ def sprite_pitch(path: Path) -> float | None:
 # Both are pre-existing and both are waiting on a decision, so they are
 # recorded here rather than failing the build - but a NEW suit that does it
 # still fails, which is the point.
-MOTION_TAP_OVERLAP = {
-    "eclipse": "1.5 MB, and tied to the open question of whether Eclipse keeps "
-               "its asc/desc experiment at all. Resolving that resolves this.",
-}
+# Flight's and Eclipse's entries resolved with the 3D lineup (26 Oct 2026): both now
+# fly a rendered tap and dive bank, with no ramp to shadow it.
+MOTION_TAP_OVERLAP: dict = {}
 
 
 def verify_pause_has_an_exit(qa: QA) -> None:

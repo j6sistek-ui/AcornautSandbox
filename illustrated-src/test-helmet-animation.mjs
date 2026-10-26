@@ -104,12 +104,13 @@ try {
   // replace"): suits re-made as rendered tap and dive banks, helmets kept -
   // the first ten, Flight and Frost on Ion's skeleton, then Leviathan, Copper and
   // Alien on their own rigs (Alien wears a helmet now: owner, 26 Oct 2026).
-  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic","flight","frost","leviathan","copper","alien","arcflash","origamist"];
+  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic","flight","frost","leviathan","copper","alien","arcflash","origamist","eclipse","cryostar","verdant"];
   const suits=NewCat.SUITS.filter(suit=>!NewCat.wearsOwnHead(suit));
   assert.equal(suits.length,24,'all twenty-four production suits with wearable helmets are covered (Alien, Arcflash and Patriot joined, 26 Oct 2026)');
   const promoted=suits.filter(suit=>HIGH_ORBIT.includes(suit.id)&&!THREE_D_TEST.includes(suit.id));
   const lineup=suits.filter(suit=>THREE_D_TEST.includes(suit.id));
-  const TRANSFERRED=['cryostar','verdant'];
+  // Cryostar and Verdant's Eclipse transfers retired with the family's 3D models (26 Oct 2026)
+  const TRANSFERRED=[];
   const transferred=suits.filter(suit=>TRANSFERRED.includes(suit.id));
   const transferHashes=JSON.parse(readFileSync(join(root,'art-src/eclipse-motion-transfer/frame-hashes.json'),'utf8'));
   const orbitHashes=JSON.parse(readFileSync(join(root,'art-src/high-orbit/shipping-hashes.json'),'utf8'));
@@ -187,10 +188,12 @@ try {
           const x=p/4%256,y=Math.floor(p/4/256);
           if(x<60||x>205||y<150||y>224)assert.deepEqual(a.slice(p,p+4),b.slice(p,p+4),'helmet exterior is protected');
         }
+      } else if(threeDHashes[path]) {
+        // the rendered receipt first: Cryostar's and Verdant's 3D dive frames reuse the
+        // retired Eclipse transfer's file names (26 Oct 2026)
+        assert.equal(hash,threeDHashes[path],`${path}: rendered 3D lineup art (art-src/rig3d/receipt.json)`);
       } else if(/^suits\/(cryostar|verdant)-(asc|desc)-[1-8]\.png$/.test(path)) {
         assert.equal(hash,transferHashes[path],`${path}: reviewed Eclipse transfer art`);
-      } else if(threeDHashes[path]) {
-        assert.equal(hash,threeDHashes[path],`${path}: rendered 3D lineup art (art-src/rig3d/receipt.json)`);
       } else if(orbitHashes[full]) {
         assert.equal(createHash('sha256').update(bytes).digest('hex'),orbitHashes[full],`${path}: High Orbit cut-rig art receipt`);
       } else if(naturalHashes[path]) {
@@ -298,8 +301,9 @@ try {
   // a76c23e dialled Eclipse to 5 degrees forward and Volt to 25; no other
   // suit's flight lean moved, and every suit flown below is flown at its own
   // resolved lean so the two renderers never disagree about the attitude.
-  assert.deepEqual(NewCat.SUIT_PITCH_DEFAULTS,{...OldCat.SUIT_PITCH_DEFAULTS,eclipse:5,cryostar:5,verdant:5,volt:25},
-    'suit lean defaults include the two owner-requested Eclipse transfers');
+  // the Eclipse family's 5 degrees went with its painted art (3D lineup, 26 Oct 2026)
+  const expectedPitch={...OldCat.SUIT_PITCH_DEFAULTS,volt:25};for(const id of ['eclipse','cryostar','verdant'])delete expectedPitch[id];
+  assert.deepEqual(NewCat.SUIT_PITCH_DEFAULTS,expectedPitch,'suit lean defaults: Volt dialled, the Eclipse family level');
   function illustrated(renderer,ctx,suit,bank,{pose=NaN,tap=-1,time=0,size=256,pitch=0,vy=0}={}) {
     ctx.translate(dimensions/2,dimensions/2);ctx.rotate(pitch);
     renderer.paintIllustrated(ctx,art.squirrelIdle[0],0,0,size,helmet,suit,time,bank,'idle-1',

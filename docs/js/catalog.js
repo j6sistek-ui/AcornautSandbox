@@ -1,7 +1,7 @@
-import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=315";
-import { platform } from "./platform.js?v=315";
-import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=315";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=315";
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=316";
+import { platform } from "./platform.js?v=316";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=316";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=316";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -17,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=315";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "315";
+export const ART_VER = "316";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-10-26 16:53 UTC";
+export const BUILD_TIME = "2026-10-26 19:33 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -108,7 +108,8 @@ export const TUTORIAL_SUIT = "vanguard";
 // difference. Every other suit flies as drawn until the owner tunes it with
 // the beta pause-sheet dial; a tuned number lives in the save as suitPitch.
 // owner, 7 Sep 2026: Eclipse leans 5 forward, Volt 25
-export const SUIT_PITCH_DEFAULTS = { vanguard: 12, arcflash: 0, eclipse: 5, cryostar: 5, verdant: 5, volt: 25 };
+// eclipse, cryostar and verdant dropped their 5 deg with their painted art: the 3D lineup flies level (26 Oct 2026)
+export const SUIT_PITCH_DEFAULTS = { vanguard: 12, arcflash: 0, volt: 25 };
 export const SUIT_PITCH_MIN = -20, SUIT_PITCH_MAX = 45;
 export const suitPitchDefault = (id) => SUIT_PITCH_DEFAULTS[id] ?? 0;
 export const GUIDE_HELM = "ion";
