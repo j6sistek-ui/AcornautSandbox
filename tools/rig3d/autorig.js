@@ -88,7 +88,10 @@ export async function loadRig(url, opts = {}) {
   // any other leftover chain whose mass sits behind the hips is part of the tail too (the base of a big curl)
   const hips = wpos(bones[root]).dot(fwd);
   const tailSet = new Set(tailMain);
-  for (const c of rest) if (c !== tailMain) { const m = massOf(c); if (m && m.dot(fwd) < hips) c.forEach(i => tailSet.add(i)); }
+  // map.keep names bones whose chains stay with the body even though they sit behind the hips
+  // (Ghost's second wisp grows from its back: folded into the one rebuilt tail, its tip tore off)
+  const keep = new Set((map.keep || []).map(byName).filter(i => i >= 0));
+  for (const c of rest) if (c !== tailMain && !c.some(i => keep.has(i))) { const m = massOf(c); if (m && m.dot(fwd) < hips) c.forEach(i => tailSet.add(i)); }
   const UP = new THREE.Vector3(0, 1, 0), LAT = new THREE.Vector3().crossVectors(fwd, UP).normalize();
   const along = v => v.dot(fwd);
   const legRoots = legs.map(c => ({ c, x: along(wpos(bones[c[0]])) })).sort((a, b) => b.x - a.x);

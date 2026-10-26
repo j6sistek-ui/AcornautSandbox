@@ -35,7 +35,7 @@ document.body.appendChild(R.domElement);
 // ?jup= lifts each region's centre by that share of its radius; ?jfloor= the share of its lowest
 // points left out of the centre (a foot on the same bone does not drag it down)
 const JIGGLE = q.get('jiggle') ? q.get('jiggle').split('|').map(r => ({ bones: r.split(','), up: +(q.get('jup') || 0), back: +(q.get('jback') || 0), rear: +(q.get('jrear') || 0), reach: +(q.get('jreach') || 1), floor: +(q.get('jfloor') || 0.3), at: q.get('jat') || '', tailRoot: +(q.get('jtail') || 0) })) : [];
-const rig = await loadRig(q.get('model'), { ...(RIG_OPTS || {}), jiggle: JIGGLE, basePitch: +(q.get('pitch') || 0), yaw: +(q.get('yaw') || 0), ...(q.get('head') || q.get('tail') ? { map: { ...(q.get('head') ? { head: q.get('head') } : {}), ...(q.get('tail') ? { tail: q.get('tail') } : {}) } } : {}) });
+const rig = await loadRig(q.get('model'), { ...(RIG_OPTS || {}), jiggle: JIGGLE, basePitch: +(q.get('pitch') || 0), yaw: +(q.get('yaw') || 0), ...(q.get('head') || q.get('tail') || q.get('keep') ? { map: { ...(q.get('head') ? { head: q.get('head') } : {}), ...(q.get('tail') ? { tail: q.get('tail') } : {}), ...(q.get('keep') ? { keep: q.get('keep').split(',') } : {}) } } : {}) });
 const scene = new THREE.Scene(); scene.add(rig.pivot);
 // ?jshow=1 paints the jiggle region over the model (green = full spring, fading out) to check it by eye
 if (q.get('jshow') && rig.jiggleCount) {
