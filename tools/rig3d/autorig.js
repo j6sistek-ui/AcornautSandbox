@@ -95,6 +95,15 @@ export async function loadRig(url, opts = {}) {
   // the kept chains still move: apply()'s p.follow turns them (owner: "the tails move independently
   // on timing ... big one always leads"), shared down the chain so the wisp curls rather than pivots
   const keepChains = rest.filter(c => c.some(i => keep.has(i)));
+  // map.untail names a bone INSIDE the tail whose branch is a second tail (Envoy's upright tail:
+  // Tripo threaded one chain through both): it leaves the rebuilt tail and is driven like a kept
+  // chain, so the two tails can move on their own timing
+  // map.drive names a bone whose branch the rebuilt tail never took (its vertices kept their own
+  // bones): it is driven like a kept chain without changing the tail at all - Envoy's upright tail
+  for (const n of map.drive || []) { const i = byName(n); if (i >= 0) keepChains.push(subtree(i)); }
+  // exactly the named bones leave (not their whole branch: Envoy's loop-tip bone hangs below the
+  // upright tail's chain but carries the LOOP), and they are driven together as one chain
+  { const un = (map.untail || []).map(byName).filter(i => i >= 0); un.forEach(k => tailSet.delete(k)); if (un.length) keepChains.push(un); }
   const UP = new THREE.Vector3(0, 1, 0), LAT = new THREE.Vector3().crossVectors(fwd, UP).normalize();
   const along = v => v.dot(fwd);
   const legRoots = legs.map(c => ({ c, x: along(wpos(bones[c[0]])) })).sort((a, b) => b.x - a.x);
@@ -356,6 +365,9 @@ export async function loadRig(url, opts = {}) {
   // signed bend of the curl at each joint, about the lateral axis
   const ang = []; for (let k = 1; k < NB; k++) { const a = J[k].clone().sub(J[k - 1]), b = J[k + 1].clone().sub(J[k]); const cr = new THREE.Vector3().crossVectors(a, b); ang.push(Math.atan2(cr.dot(LAT), a.dot(b))); }
   const tailRestQ = tailBones.map(b => b.quaternion.clone());
+  // each rebuilt tail bone's own length direction at rest (its frame is world-aligned there), for
+  // p.tailRoll: a twist about the tail's own axis, shared down the chain so it builds toward the tip
+  const segDir = tailBones.map((b, k) => J[k + 1].clone().sub(J[k]).normalize());
   // WHERE "STRAIGHT OUT" IS. tailOut 1 lays the tail's axis (root to the centre of its
   // joints) straight out behind. An unrolling tail no longer points where its curl did -
   // unrolled, it lies along its base - so tailOutAt(unfurl) rebuilds the chain in the forward/up plane with the curl opened by
@@ -423,7 +435,10 @@ export async function loadRig(url, opts = {}) {
     pivot.position.copy(centre).addScaledVector(UP, p.lift || 0);
     spine.forEach((i, n) => turn(i, (p.spine || 0) / spine.length));
     turn(head, p.head || 0);
-    if (p.follow) keepChains.forEach(ch => ch.slice(0, 3).forEach((b, k) => turn(b, p.follow * [0.5, 0.3, 0.2][k])));
+    if (p.follow || p.followYaw) keepChains.forEach(ch => ch.slice(0, 3).forEach((b, k) => {
+      const w = [0.5, 0.3, 0.2][k]; turn(b, (p.follow || 0) * w);
+      // a sideways sway (about up) on top: the two tails cross and twist round each other
+      if (p.followYaw) { const a = UP.clone().applyQuaternion(restWInv[b]).normalize(); bones[b].quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(a, p.followYaw * w * Math.PI / 180)); } }));
     ears.forEach((i, n) => turn(i, (p.ears || 0) * (n ? 0.85 : 1)));
     front.forEach((ch, n) => { const v = n ? (p.frontR ?? p.front ?? 0) : (p.frontL ?? p.front ?? 0); turn(ch[0], v * 0.55); if (ch[1] != null) turn(ch[1], v * 0.35); if (ch[2] != null) turn(ch[2], -(p.paw || 0) - v * 0.2); });
     hind.forEach((ch, n) => { const v = n ? (p.hindR ?? p.hind ?? 0) : (p.hindL ?? p.hind ?? 0); turn(ch[0], v + (n ? 4 : -4)); if (ch[1] != null) turn(ch[1], p.hindLow || 0); if (ch[2] != null) turn(ch[2], (p.hindLow || 0) * 0.6); });
@@ -437,7 +452,13 @@ export async function loadRig(url, opts = {}) {
       // base instead of dragging the rump round with one joint
       const swing = outDeg + (p.tailRoot || 0), held = Math.max(-ROOT_MAX, Math.min(ROOT_MAX, swing)), extra = swing - held;
       const deg = held * (ROOT_SPLIT[k] || 0) + (k >= 1 && k <= 3 ? extra / 3 : 0) + bend + lagAt(p.tail, k);
-      b.quaternion.copy(tailRestQ[k]).multiply(new THREE.Quaternion().setFromAxisAngle(LAT, deg * Math.PI / 180));
+      b.quaternion.copy(tailRestQ[k]);
+      // p.tailYaw sways the whole tail sideways at its root (Envoy's twist), before its swing
+      if (k === 0 && p.tailYaw) b.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(UP, p.tailYaw * Math.PI / 180));
+      b.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(LAT, deg * Math.PI / 180));
+      // Envoy's twirl: the strands wind round each other and unwind (owner: "the tails are supposed
+      // to twirl and interlock and then unwind")
+      if (p.tailRoll && k > 0) b.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(segDir[k], p.tailRoll / (NB - 1) * Math.PI / 180));
       // tail_00 turns about the hinge, not its own origin
       if (k === 0) b.position.copy(tail0Pos).add(hingeLocal.clone().applyQuaternion(tailRestQ[0])).sub(hingeLocal.clone().applyQuaternion(b.quaternion));
     });

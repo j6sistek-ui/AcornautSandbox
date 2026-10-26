@@ -32,7 +32,18 @@ const SECONDS_OF = { tap: 1.0, desc: 0.6, asc: 0.6 };
 const followed = (name, pose, loop) => !FOLLOW ? pose : u => { const p = pose(u), T = SECONDS_OF[name] || 0.6;
   const ud = u - FOLLOW / T, pd = pose(loop ? ((ud % 1) + 1) % 1 : Math.max(0, ud));
   if (pd.tailAim) p.follow = (pd.tailAim[1] - TAIL_REST) * FAMP; return p; };
-const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames, pose: followed(k, shaped(m.pose), m.loop) }]));
+// ?tyaw=/?fyaw= (degrees): the two tails sway sideways in opposite senses through each loop of a
+// move (?fphase= offsets the second), so they cross and twist round each other like Envoy's
+const TYAW = +(q.get('tyaw') || 0), FYAW = +(q.get('fyaw') || 0), FPHASE = +(q.get('fphase') || 0.25);
+const swayed = (name, pose, loop) => !(TYAW || FYAW) ? pose : u => { const p = pose(u), c = 2 * Math.PI * u, k = loop ? 1 : 0.35;
+  p.tailYaw = TYAW * k * Math.sin(c); p.followYaw = -FYAW * k * Math.sin(c - 2 * Math.PI * FPHASE); return p; };
+// ?troll= (degrees, tip to root): the tail twirls about its own axis through the tap - winding in
+// as it thrusts out, held, then unwinding home - and the dive carries a slow quarter of it
+const TROLL = +(q.get('troll') || 0);
+const ease = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+const twirled = (name, pose, loop) => !TROLL ? pose : u => { const p = pose(u);
+  p.tailRoll = loop ? TROLL * (ease((u - 0.04) / 0.36) - ease((u - 0.6) / 0.32)) : 0.25 * TROLL * ease(u); return p; };
+const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames, pose: twirled(k, swayed(k, followed(k, shaped(m.pose), m.loop), m.loop), m.loop) }]));
 const R = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 R.setPixelRatio(1); R.setSize(SIZE, SIZE);
 R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
@@ -42,8 +53,14 @@ document.body.appendChild(R.domElement);
 // ?jup= lifts each region's centre by that share of its radius; ?jfloor= the share of its lowest
 // points left out of the centre (a foot on the same bone does not drag it down)
 const JIGGLE = q.get('jiggle') ? q.get('jiggle').split('|').map(r => ({ bones: r.split(','), up: +(q.get('jup') || 0), back: +(q.get('jback') || 0), rear: +(q.get('jrear') || 0), reach: +(q.get('jreach') || 1), floor: +(q.get('jfloor') || 0.3), at: q.get('jat') || '', tailRoot: +(q.get('jtail') || 0) })) : [];
-const rig = await loadRig(q.get('model'), { ...(RIG_OPTS || {}), jiggle: JIGGLE, basePitch: +(q.get('pitch') || 0), yaw: +(q.get('yaw') || 0), ...(q.get('head') || q.get('tail') || q.get('keep') ? { map: { ...(q.get('head') ? { head: q.get('head') } : {}), ...(q.get('tail') ? { tail: q.get('tail') } : {}), ...(q.get('keep') ? { keep: q.get('keep').split(',') } : {}) } } : {}) });
+const rig = await loadRig(q.get('model'), { ...(RIG_OPTS || {}), jiggle: JIGGLE, basePitch: +(q.get('pitch') || 0), yaw: +(q.get('yaw') || 0), ...(q.get('head') || q.get('tail') || q.get('keep') || q.get('untail') || q.get('drive') ? { map: { ...(q.get('head') ? { head: q.get('head') } : {}), ...(q.get('tail') ? { tail: q.get('tail') } : {}), ...(q.get('keep') ? { keep: q.get('keep').split(',') } : {}), ...(q.get('untail') ? { untail: q.get('untail').split(',') } : {}), ...(q.get('drive') ? { drive: q.get('drive').split(',') } : {}) } } : {}) });
 const scene = new THREE.Scene(); scene.add(rig.pivot);
+// ?tshow=1 paints how much of each vertex the rebuilt tail carries (red = all tail)
+if (q.get('tshow')) {
+  const g = rig.mesh.geometry, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, names = rig.mesh.skeleton.bones.map(b => b.name);
+  const col = new Float32Array(si.count * 3); for (let i = 0; i < si.count; i++) { let t = 0; for (let k = 0; k < 4; k++) if (/^tail_/.test(names[si.getComponent(i, k)] || '')) t += sw.getComponent(i, k); col[i * 3] = 1; col[i * 3 + 1] = 1 - 0.85 * t; col[i * 3 + 2] = 1 - 0.85 * t; }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3)); (Array.isArray(rig.mesh.material) ? rig.mesh.material : [rig.mesh.material]).forEach(m => { m.vertexColors = true; m.needsUpdate = true; });
+}
 // ?jshow=1 paints the jiggle region over the model (green = full spring, fading out) to check it by eye
 if (q.get('jshow') && rig.jiggleCount) {
   const w = rig.jiggleWeights(), g = rig.mesh.geometry, mats = Array.isArray(rig.mesh.material) ? rig.mesh.material : [rig.mesh.material];
