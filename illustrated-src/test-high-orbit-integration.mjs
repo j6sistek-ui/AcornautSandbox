@@ -78,5 +78,17 @@ for(const id of H.HIGH_ORBIT_IDS){
  assert(app.textContent.includes('previous trail returns'),id+' exclusivity is explained');
  assert.equal(e.buySuit('flight'),'equip');assert.equal(C.trailWornBy(e.save.equippedTrail,e.save.equippedSuit),'ion');
 }
+// THEIR WAKES RIDE THE RENDERED BANKS (26 Oct 2026): the cut rig used to paint them, so
+// retiring it silently dropped all five in play. Every frame they fly has measured feet.
+{
+ const {RIG3D_BOOTS}=await import('../docs/js/rig3d-boots.js');
+ for(const id of H.HIGH_ORBIT_IDS){
+  assert(H.CUT_RIG_RETIRED.has(id),id+' flies its rendered bank');
+  for(const [bank,n] of [['tap',12],['desc',4]])for(let i=1;i<=n;i++){
+   const b=RIG3D_BOOTS[`${id}-${bank}-${i}`];
+   assert(b&&b.length>=1&&b.every(p=>p.length===2&&p.every(Number.isFinite)),`${id}-${bank}-${i} has wake emitters`);
+  }
+ }
+}
 console.log(mode+': five unlock gates, exclusive wakes, loadout copy, previous-trail restoration, loader failure/retry and exact five-atlas paths passed');
 process.exit(0);

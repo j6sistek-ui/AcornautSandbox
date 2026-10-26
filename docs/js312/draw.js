@@ -7,10 +7,11 @@ import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcfla
 import { arcflashPreview } from "./arcflash-motion.js?v=312";
 import { paintLiveStarTrail } from "./star-trails.js?v=312";
 import { trailWornBy } from "./catalog.js?v=312";
-import { isHighOrbitRig, isPremiumSuit, highOrbitTrailSuit } from "./high-orbit-config.js?v=312";
+import { isHighOrbit, isHighOrbitRig, isPremiumSuit, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=312";
 import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=312";
 import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=312";
-import { paintPremiumBankWake } from "./premium-bank-wake.js?v=312";
+import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=312";
+import { RIG3D_BOOTS } from "./rig3d-boots.js?v=312";
 import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=312";
 import { paintHighOrbitWake } from "./high-orbit-effects.js?v=312";
 import { runPals, fxOf, worldFlipped } from "./sim.js?v=312";
@@ -4972,6 +4973,10 @@ tapShape = null, wake) {
                 { suit: suit.id, bank: bankName, idx: k + 1, v };
             // one registration for both banks: they are rendered on one canvas
             const refT = tapFrames[0].box ?? ref;
+            // a signature wake leaves from the frame's own measured feet, under the pilot
+            const boots = RIG3D_BOOTS[`${suit.id}-${bankName}-${k + 1}`];
+            if (wake && boots && isHighOrbit(suit.id))
+                paintBootWake(ctx, suit.id, boots, refT, x, y, size, wake);
             drawRigLayer(ctx, frame, refT, x, y, size, 0, undefined, halo);
             // every rendered frame carries its own measured helmet anchor (tools/rig3d
             // anchors.json), read against the bank's first frame like the bank itself
@@ -5237,7 +5242,9 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
         paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
         // Cryostar and Verdant now share Eclipse's heading mapping by owner
         // request. All three use the same smoother, pose curve and frame index.
-        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed, lean, NaN, true, tapShapeFor(save, suit.id), effects && isPremiumSuit(suit.id) ? { state: w.highOrbit, travel: w.distance / localScale } : undefined);
+        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed, lean, NaN, true, tapShapeFor(save, suit.id),
+        // the High Orbit five fly rendered banks now (CUT_RIG_RETIRED); their wake rides the bank
+        effects && (isPremiumSuit(suit.id) || CUT_RIG_RETIRED.has(suit.id)) ? { state: w.highOrbit, travel: w.distance / localScale } : undefined);
     if (flagship && w.shieldCharges > 0)
         paintVanguardShield(ctx, 0, 0, w.time);
     ctx.restore();
@@ -5562,7 +5569,8 @@ pitch = 0) {
     const pop = 1 + (articulated ? 0 : kick * 0.05);
     ctx.scale(pop, pop);
     paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art, (flapping ? "flap-" : "idle-") + (idx + 1), frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend, "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean, sweptPose, false, tapShapeFor(null, suit.id), // the table only: a preview has no save
-    isPremiumSuit(suit.id) ? { state: premiumWakePreview(ctx, suit.id, t, vy), travel: t * 300 } : undefined);
+    isPremiumSuit(suit.id) ? { state: premiumWakePreview(ctx, suit.id, t, vy), travel: t * 300 }
+        : CUT_RIG_RETIRED.has(suit.id) && isHighOrbit(suit.id) ? { state: highOrbitPreview(ctx, suit.id, t), travel: t * 300 } : undefined);
     ctx.restore();
 }
 export function paintPalPreview(ctx, art, id, cx, cy, size) {

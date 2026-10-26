@@ -7,10 +7,11 @@ import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcfla
 import { arcflashPreview } from "./arcflash-motion";
 import { paintLiveStarTrail } from "./star-trails";
 import { trailWornBy } from "./catalog";
-import {isHighOrbitRig,isPremiumSuit,highOrbitTrailSuit,type HighOrbitId} from "./high-orbit-config";
+import {isHighOrbit,isHighOrbitRig,isPremiumSuit,highOrbitTrailSuit,CUT_RIG_RETIRED,type HighOrbitId} from "./high-orbit-config";
 import {paintHighOrbit,paintHighOrbitCockpit} from "./high-orbit";
 import {highOrbitPreview,premiumWakePreview,type HighOrbitMotion} from "./high-orbit-motion";
-import {paintPremiumBankWake,type PremiumBankWake} from "./premium-bank-wake";
+import {paintPremiumBankWake,paintBootWake,type PremiumBankWake} from "./premium-bank-wake";
+import {RIG3D_BOOTS} from "./rig3d-boots";
 import {CYBER_TRIO_REGISTRATION} from "./cyber-trio-registration";
 import {paintHighOrbitWake,type HighOrbitTravel} from "./high-orbit-effects";
 import { runPals, fxOf, worldFlipped } from "./sim";
@@ -5089,6 +5090,9 @@ function paintIllustrated(
         { suit: suit.id, bank: bankName, idx: k + 1, v };
       // one registration for both banks: they are rendered on one canvas
       const refT = (tapFrames[0] as Sprite).box ?? ref;
+      // a signature wake leaves from the frame's own measured feet, under the pilot
+      const boots = RIG3D_BOOTS[`${suit.id}-${bankName}-${k + 1}`];
+      if (wake && boots && isHighOrbit(suit.id)) paintBootWake(ctx, suit.id, boots, refT, x, y, size, wake);
       drawRigLayer(ctx, frame, refT, x, y, size, 0, undefined, halo);
       // every rendered frame carries its own measured helmet anchor (tools/rig3d
       // anchors.json), read against the bank's first frame like the bank itself
@@ -5351,7 +5355,8 @@ function drawPilot(
     // request. All three use the same smoother, pose curve and frame index.
     w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed,
     lean, NaN, true, tapShapeFor(save, suit.id),
-    effects && isPremiumSuit(suit.id) ? {state:w.highOrbit,travel:w.distance/localScale} : undefined);
+    // the High Orbit five fly rendered banks now (CUT_RIG_RETIRED); their wake rides the bank
+    effects && (isPremiumSuit(suit.id) || CUT_RIG_RETIRED.has(suit.id)) ? {state:w.highOrbit,travel:w.distance/localScale} : undefined);
   if (flagship && w.shieldCharges > 0) paintVanguardShield(ctx, 0, 0, w.time);
   ctx.restore();
 }
@@ -5702,7 +5707,8 @@ export function paintFlightPreview(
     frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend,
     "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean, sweptPose, false,
     tapShapeFor(null, suit.id),   // the table only: a preview has no save
-    isPremiumSuit(suit.id) ? {state:premiumWakePreview(ctx,suit.id,t,vy),travel:t*300} : undefined);
+    isPremiumSuit(suit.id) ? {state:premiumWakePreview(ctx,suit.id,t,vy),travel:t*300}
+      : CUT_RIG_RETIRED.has(suit.id) && isHighOrbit(suit.id) ? {state:highOrbitPreview(ctx,suit.id,t),travel:t*300} : undefined);
   ctx.restore();
 }
 
