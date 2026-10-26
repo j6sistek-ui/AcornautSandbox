@@ -1,9 +1,9 @@
-import { HIGH_ORBIT_PARTS } from './high-orbit-parts.js?v=317';
-import { HIGH_ORBIT_HEAD_RADIUS, HIGH_ORBIT_DISPLAY_SPAN, isPremiumSuit } from './high-orbit-config.js?v=317';
-import { createHighOrbitMotion } from './high-orbit-motion.js?v=317';
-import { paintHighOrbitEffect } from './high-orbit-effects.js?v=317';
-import { rigLimbFit, rigPartMatrix } from './rig-limb-fit.js?v=317';
-import { paintPremiumFlight, paintPremiumFlightCockpit } from './premium-flight.js?v=317';
+import { HIGH_ORBIT_PARTS } from './high-orbit-parts.js?v=318';
+import { HIGH_ORBIT_HEAD_RADIUS, HIGH_ORBIT_DISPLAY_SPAN, isPremiumSuit } from './high-orbit-config.js?v=318';
+import { createHighOrbitMotion } from './high-orbit-motion.js?v=318';
+import { paintHighOrbitEffect } from './high-orbit-effects.js?v=318';
+import { rigLimbFit, rigPartMatrix } from './rig-limb-fit.js?v=318';
+import { paintPremiumFlight, paintPremiumFlightCockpit } from './premium-flight.js?v=318';
 const DEG = Math.PI / 180;
 const add = (a, b) => [a[0] + b[0], a[1] + b[1]];
 const rotate = (p, a) => [p[0] * Math.cos(a * DEG) - p[1] * Math.sin(a * DEG), p[0] * Math.sin(a * DEG) + p[1] * Math.cos(a * DEG)];

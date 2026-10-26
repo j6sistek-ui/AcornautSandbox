@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "317",
-  "sourceCommit": "b70a8540dbb95d55786877c78a887b0c5ab66fee",
+  "artVer": "318",
+  "sourceCommit": "ddd4be2a5720ca86d28e64819b4de757abbbf7cf",
   "models": [
     {
       "id": "flight",
@@ -883,10 +883,10 @@
       "key": "suit:bigbooty",
       "file": "suits/bigbooty.png",
       "dome": [
-        184,
-        108,
-        25.36,
-        10
+        197.85,
+        110.52,
+        26.23,
+        1.25
       ],
       "box": null,
       "ownHead": false,
@@ -907,34 +907,35 @@
           "suits/bigbooty-tap-9.png",
           "suits/bigbooty-tap-10.png",
           "suits/bigbooty-tap-11.png",
-          "suits/bigbooty-tap-12.png",
-          "suits/bigbooty-tap-13.png",
-          "suits/bigbooty-tap-14.png",
-          "suits/bigbooty-tap-15.png",
-          "suits/bigbooty-tap-16.png"
+          "suits/bigbooty-tap-12.png"
         ],
         "asc": [],
-        "desc": [],
+        "desc": [
+          "suits/bigbooty-desc-1.png",
+          "suits/bigbooty-desc-2.png",
+          "suits/bigbooty-desc-3.png",
+          "suits/bigbooty-desc-4.png"
+        ],
         "loop": []
       },
       "hashes": {
-        "suits/bigbooty.png": "2de6f064f1633eb9ef2740e08939ad30ba9539296bfb43c37f37dca345ef618f",
-        "suits/bigbooty-tap-1.png": "b2bf796ad7d03e95b6715e0c3738cbca1de39d12a3d8e2a7fcb71d04f78f7145",
-        "suits/bigbooty-tap-2.png": "65d86b2b8797c037a0b14b691f5d84f573d8d9ff196143b3102654b5cea32999",
-        "suits/bigbooty-tap-3.png": "fae8462436443cb26ba44b764dced096a527fab812642f89c1eea39e933c6735",
-        "suits/bigbooty-tap-4.png": "e7734c65c8e36775f572536449f4d6009038585cf11e45554bcda30ed871fcff",
-        "suits/bigbooty-tap-5.png": "e60dcc5f55432d515a758bbd363a457a5bd9b0173ad02bbe21a129eac0a51055",
-        "suits/bigbooty-tap-6.png": "4fdb0d63293b9511423dd52744fab1dfd89097c638a07133833f50b41c865587",
-        "suits/bigbooty-tap-7.png": "91f387df0d2813ba1613682cb38a4d24079f04f1e07018f8eb64840a8ea7590d",
-        "suits/bigbooty-tap-8.png": "49261c8f6de8f2860983f467c7ead0225896faf9fe63c60d1aa78a0b2c83fa5d",
-        "suits/bigbooty-tap-9.png": "ec3c1146b79102059e8dbeca69b9fdffd5c56dfecdd5c9e0b81e488dd8cf5fb9",
-        "suits/bigbooty-tap-10.png": "0bb28ec032e0c64c9fb6327bdfee14c14a216daf7d3ba7e0f3e6033f3e8842f0",
-        "suits/bigbooty-tap-11.png": "9877e2b9559b5b3617c57c664c2fd8a48eb39161da930346ceb0b9454f5ea370",
-        "suits/bigbooty-tap-12.png": "1ea154333b73aebc921c2398a3647fe8d5c04f9e786d4694adef75c3f8ffbe73",
-        "suits/bigbooty-tap-13.png": "da21d76b298b689c0b476ef1cc800efa20467098506985238cf194f0e7d68716",
-        "suits/bigbooty-tap-14.png": "ab72b3a32eefd437234d6cda9cc8d078e98ca2530e4adf8aadaf528903287f1c",
-        "suits/bigbooty-tap-15.png": "45062630d3f95df89b4288055316b2a60dbdaf37165420ee66b8c2b28c8793d6",
-        "suits/bigbooty-tap-16.png": "fa63512b8c88d5b0d190235301defb36caea47669aa84c6d6f9123de14df595b"
+        "suits/bigbooty.png": "179d0f61423c6a9d9e8beb8e4ea39c550e4e46e569fe78b538c0446f7ff81088",
+        "suits/bigbooty-tap-1.png": "179d0f61423c6a9d9e8beb8e4ea39c550e4e46e569fe78b538c0446f7ff81088",
+        "suits/bigbooty-tap-2.png": "fdfd5cc5d633846eddc59a0ffbe6a90d41f759b56949a3e1d089f6927d0a098d",
+        "suits/bigbooty-tap-3.png": "089ba7a4aceda307da3a68cf9e48093317a97029abbae1633c48744e6300ab3e",
+        "suits/bigbooty-tap-4.png": "1fe5afaa81bf274e1495cb9d61d3b7113bbb23919257d00c6c435209554ce76f",
+        "suits/bigbooty-tap-5.png": "b4f2c063521a290dbccde75139607082879df322011169c87a88daa36fceab5f",
+        "suits/bigbooty-tap-6.png": "7717637b7e3d97cd59cf2dd9e9a4ca8b37a3222f0b1e7f06e8055dbb7a2ae691",
+        "suits/bigbooty-tap-7.png": "96739561dca81129a98ee1f43fe4094ff1c212c358569420d41e697c5883a57b",
+        "suits/bigbooty-tap-8.png": "accf35c8274cba907ff4120ba13a5a8816870b7b7fb54606f52dcc15afa83872",
+        "suits/bigbooty-tap-9.png": "4290da94bc8ae22a01c66e23fdb5b611cea0ecc2a832f0fc5deeb3ab5a4b96a8",
+        "suits/bigbooty-tap-10.png": "11043cad4f033918057f6e12ab71918de00d7f3bf50dc269be9a3f0885ed902d",
+        "suits/bigbooty-tap-11.png": "3182f41912a72bcf0bc772ac6ff9824a00c0a5fc2cf534e8984859ce98352d65",
+        "suits/bigbooty-tap-12.png": "d739a001e0fdbd9dc17ce2191104a2560a1a27886f8b1e86d321670b69726d0c",
+        "suits/bigbooty-desc-1.png": "bb80e77f802f752e2432496358ca4c3307b73f6b2a8f9e173a37988a8fa5aacc",
+        "suits/bigbooty-desc-2.png": "2ecf84173742c966d766597534d41801563faa6090b01e85ef150d5337fc9d6f",
+        "suits/bigbooty-desc-3.png": "46d53a4c924474496c6f01d1c2f121ae462bcde1ffc148497ff654b6345584f4",
+        "suits/bigbooty-desc-4.png": "c43ba2dd2420e3f84f5e928915a6de6df9671ca147d23352b7c456ff324c8c0d"
       }
     },
     {
@@ -2698,10 +2699,10 @@
       0
     ],
     "suit:bigbooty": [
-      184,
-      108,
-      25.36,
-      10
+      197.85,
+      110.52,
+      26.23,
+      1.25
     ],
     "suit:catsuit": [
       212,
@@ -3098,101 +3099,101 @@
       26.96,
       5.84
     ],
+    "bigbooty-desc-1": [
+      197.85,
+      110.52,
+      26.23,
+      1.25
+    ],
+    "bigbooty-desc-2": [
+      198.06,
+      123.37,
+      26.23,
+      11.05
+    ],
+    "bigbooty-desc-3": [
+      195.01,
+      135.55,
+      26.23,
+      20.85
+    ],
+    "bigbooty-desc-4": [
+      188.82,
+      146.13,
+      26.23,
+      30.67
+    ],
     "bigbooty-tap-1": [
-      207,
-      90,
-      29.71,
-      10
+      197.85,
+      110.52,
+      26.23,
+      1.25
     ],
     "bigbooty-tap-2": [
-      207,
-      91,
-      29.71,
-      10
+      196.78,
+      108.28,
+      26.23,
+      -1.34
     ],
     "bigbooty-tap-3": [
-      209,
-      88,
-      29.71,
-      10
+      196.04,
+      107.44,
+      26.23,
+      -2.99
     ],
     "bigbooty-tap-4": [
-      196,
-      81,
-      27.99,
-      10
+      195.88,
+      107.97,
+      26.23,
+      -3.25
     ],
     "bigbooty-tap-5": [
-      208,
-      74,
-      29.71,
-      10
+      196.35,
+      109.67,
+      26.23,
+      -2.06
     ],
     "bigbooty-tap-6": [
-      209,
-      73,
-      29.71,
-      10
+      197.16,
+      112.27,
+      26.23,
+      0.26
     ],
     "bigbooty-tap-7": [
-      207,
-      79,
-      29.71,
-      10
+      197.96,
+      115.28,
+      26.23,
+      3.1
     ],
     "bigbooty-tap-8": [
-      205,
-      92,
-      26.91,
-      10
+      198.57,
+      117.91,
+      26.23,
+      5.69
     ],
     "bigbooty-tap-9": [
-      201,
-      90,
-      26.38,
-      10
+      199.01,
+      119.33,
+      26.23,
+      7.34
     ],
     "bigbooty-tap-10": [
-      217,
-      73,
-      27.99,
-      15
+      199.3,
+      118.97,
+      26.23,
+      7.6
     ],
     "bigbooty-tap-11": [
-      215,
-      76,
-      28.55,
-      10
+      199.27,
+      116.84,
+      26.23,
+      6.41
     ],
     "bigbooty-tap-12": [
-      215,
-      72,
-      29.13,
-      10
-    ],
-    "bigbooty-tap-13": [
-      204,
-      90,
-      27.99,
-      10
-    ],
-    "bigbooty-tap-14": [
-      201,
-      92,
-      28.55,
-      10
-    ],
-    "bigbooty-tap-15": [
-      203,
-      87,
-      29.71,
-      10
-    ],
-    "bigbooty-tap-16": [
-      207,
-      82,
-      29.71,
-      10
+      198.78,
+      113.68,
+      26.23,
+      4.09
     ],
     "cinderforge-desc-1": [
       185.02,
@@ -5864,7 +5865,7 @@
     "arcflash": "e3311622176da38faba697d12c9b2a471084681e7192d539da559e6336028b38",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "cb8e8a9da67abc331453f4cbb5704e340b345534bcea3da026e4e61e6472d1fc",
+    "control-constants": "259fd3aca49d513fcaa808c2053c677c7b5c5d627ea0fb7c65cdf2bb04b2cb33",
     "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",

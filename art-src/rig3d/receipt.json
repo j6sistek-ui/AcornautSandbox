@@ -75,6 +75,12 @@
   },
   "raccoon": {
    "model": "raccoon3d"
+  },
+  "bigbooty": {
+   "model": "bigb3d (squirrelcharacter3dmodel.glb)",
+   "head": "tripoHead_0",
+   "args": "--yaw 45 --body 0.6 --jiggle \"bone_39|bone_42\" --jup 0.6 --jfloor 0.5 --jreach 1.45 --jf 2 --jdet 0.25 --jk 1.4 --jkw 0.12 --jg 1.7 --jz 0.09 --tailamp 0.55",
+   "note": "owner, 27 Oct 2026: yaw 45 no pitch; jiggle \"medium\" (two cheek springs rippling out of step, flap push spread over the first 12% of the tap); tail swing at 55% so it clears the legs"
   }
  },
  "hashes": {
@@ -468,6 +474,23 @@
   "suits/raccoon-tap-10.png": "67cee33b52ad5ffe73157f4d049b940a99ec9825",
   "suits/raccoon-tap-11.png": "2c9ecd11c05e439de680ed2bb2db565ab504ff73",
   "suits/raccoon-tap-12.png": "c866fb57ffaff8a5f161cc472cab1c8ec638dee9",
-  "suits/raccoon.png": "00d9d9888d2d52c250d2eb7be868130760d87841"
+  "suits/raccoon.png": "00d9d9888d2d52c250d2eb7be868130760d87841",
+  "suits/bigbooty-desc-1.png": "82f3f94090f234b08ae1a867765555ab9fac539d",
+  "suits/bigbooty-desc-2.png": "36fd31932651f4520748138e9f0faccb708bfd35",
+  "suits/bigbooty-desc-3.png": "47dd495c88a2fc47884df47bbba823e805363cfd",
+  "suits/bigbooty-desc-4.png": "6ca75a6f176b2cee27c2fe0b90cf6f7d55058c59",
+  "suits/bigbooty-tap-1.png": "3ba2c26f6aa4ab2aba7a2a01b2c42bc401835114",
+  "suits/bigbooty-tap-2.png": "2bd5fbed4b637d6ae06dee1116b45e71437211ca",
+  "suits/bigbooty-tap-3.png": "f26250cf989e074258104bbfe2fd1b62d89064a6",
+  "suits/bigbooty-tap-4.png": "e8c9158f8cb703314aa3f6cc4eea27d6a267538d",
+  "suits/bigbooty-tap-5.png": "700f6cf392c16cdabff004ca005f0198db150428",
+  "suits/bigbooty-tap-6.png": "4bdb1760d699f5b7e0d020831ee78209081d1644",
+  "suits/bigbooty-tap-7.png": "989d5efdc72a0407342554ca11c4808fec8849a4",
+  "suits/bigbooty-tap-8.png": "eaee1873fc8d63571add8b2c3afb543208421317",
+  "suits/bigbooty-tap-9.png": "fd4cd93122555e6eafb11bfbf7cf369520f389ae",
+  "suits/bigbooty-tap-10.png": "0a88c83d6741aceb438e7f75c9d777f126eb84b7",
+  "suits/bigbooty-tap-11.png": "0dda1fc236a4c3fbbff45fc7e24b8feb6fffc8dc",
+  "suits/bigbooty-tap-12.png": "f1010d60be1cca97f8b2cf9805c4de0328f840c2",
+  "suits/bigbooty.png": "3ba2c26f6aa4ab2aba7a2a01b2c42bc401835114"
  }
 }

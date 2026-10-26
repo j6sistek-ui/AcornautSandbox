@@ -72,7 +72,7 @@ export type TailSpring = { stiff: number; damp: number; kick: number };
 export const TAIL_SPRING_MIN = 0.25, TAIL_SPRING_MAX = 3;
 export const TAIL_SPRING_ONE: TailSpring = { stiff: 1, damp: 1, kick: 1 };
 export const TAIL_SPRING: Record<string, TailSpring> = {};
-export const TAIL_SPRING_SUITS = ["robo", "bigbooty", "catsuit", "volt", "cyber", "porcelain", "nacre"];
+export const TAIL_SPRING_SUITS = ["robo", "catsuit", "volt", "cyber", "porcelain", "nacre"];
 
 /** THE TAP ACCENT, LIVE (owner, 12 Sep 2026: "enable it in game ... by
  *  default 1x is good"). The 167 ms ignition and the body reaction on every
@@ -200,7 +200,6 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   // --- custom ANIMATION suits. Their frames are the owner's and are not to
   //     be touched; their LEAN is a dial like everyone else's.
   volt:        { up: 0.8, down: 0.3 },
-  bigbooty:    { up: 0.8, down: 0.3 },
   robo:        { up: 0.8, down: 0.3 },
   catsuit:     { up: 0.8, down: 0.3 },
   // Briella's Cat flies its still until its sprite sheet lands
@@ -235,6 +234,7 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   verdant:     { up: 0, down: 0 },
   raccoon:     { up: 0, down: 0 },
   ferret:      { up: 0, down: 0 },
+  bigbooty:    { up: 0, down: 0 },
 };
 
 /** The dial for a suit, or the default for one that has none yet. */
