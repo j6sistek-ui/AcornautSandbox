@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "309";
+export const ART_VER = "317";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -119,7 +119,8 @@ export const TUTORIAL_SUIT = "vanguard";
 // difference. Every other suit flies as drawn until the owner tunes it with
 // the beta pause-sheet dial; a tuned number lives in the save as suitPitch.
 // owner, 7 Sep 2026: Eclipse leans 5 forward, Volt 25
-export const SUIT_PITCH_DEFAULTS: Readonly<Record<string, number>> = { vanguard: 12, arcflash: 0, eclipse: 5, cryostar: 5, verdant: 5, volt: 25 };
+// eclipse, cryostar and verdant dropped their 5 deg with their painted art: the 3D lineup flies level (26 Oct 2026)
+export const SUIT_PITCH_DEFAULTS: Readonly<Record<string, number>> = { vanguard: 12, arcflash: 0, volt: 25 };
 export const SUIT_PITCH_MIN = -20, SUIT_PITCH_MAX = 45;
 export const suitPitchDefault = (id: string) => SUIT_PITCH_DEFAULTS[id] ?? 0;
 export const GUIDE_HELM = "ion";
@@ -261,21 +262,22 @@ export const SUITS: Suit[] = [
   // acorns, remove from star chart"). The flagship left the 570-star rung
   // for the Loadout shelf at this price; the tutorial still borrows him.
   { id: "vanguard", name: "AcorNut", cost: 1000, ownHead: true, fur: "#c4783e", furDark: "#593b28", belly: "#f6e7d1", suit: "#dcdedb", suitLite: "#fff8e8", suitDark: "#28303b", trim: "#d6ae63", glow: "#85edff", dust: null },
-  // Carbon armour, blue eyes and a blue electrical wake; its articulated
-  // bare-headed pilot is one integrated look with independent flight motion.
+  // Carbon armour, blue eyes and a blue electrical wake. Since the 3D lineup
+  // (owner, 26 Oct 2026) it flies a rendered bank and wears the pilot's helmet;
+  // the wake stays, leaving from its feet.
   // ARCFLASH IS SOLD (owner, 7 Sep 2026): production, 1,850 star dust,
   // its blue electrical wake built in - see bundle-arcflash and DUST_STICKER.
-  { id: "arcflash", name: "Arcflash", cost: 0, ownHead: true, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
+  { id: "arcflash", name: "Arcflash", cost: 0, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
   { id: "porcelain", name: "Percy", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Sovereign Shell", fur: "#c7ccd3", furDark: "#767e8d", belly: "#fff8e9", suit: "#efe8d7", suitLite: "#fffdf3", suitDark: "#38567b", trim: "#466bb4", glow: "#b9d8ff", dust: null },
   { id: "nacre", name: "Envoy", cost: 0, ownHead: true, headPolicy: "helmetless", fur: "#cfb1df", furDark: "#8e709f", belly: "#f5d8dc", suit: "#e4d6dc", suitLite: "#fff0df", suitDark: "#4a315d", trim: "#d4a2d8", glow: "#e5a8ed", dust: null },
-  { id: "origamist", name: "Patriot", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Facet Shell", fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
+  { id: "origamist", name: "Patriot", cost: 0, fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
   { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
   { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
   { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
   { id: "voidsuit", name: "Void", cost: 240, fur: "#544a63", furDark: "#312a3d", belly: "#8d7fa0", suit: "#241d33", suitLite: "#4f4270", suitDark: "#100c18", trim: "#d4af37", glow: "#b45cff", dust: "#e7b6ff" },
   { id: "ember", name: "Ember", cost: 90, fur: "#b5722f", furDark: "#7c481a", belly: "#eccb96", suit: "#3a2a26", suitLite: "#7a4a3a", suitDark: "#1e1412", trim: "#ff7a2e", glow: "#ff5a1e", dust: "#ffb066" },
   { id: "robo", name: "Robo", cost: 0, robo: true, fur: "#9aa6b4", furDark: "#525d6c", belly: "#cfd8e2", suit: "#37414f", suitLite: "#7f93a6", suitDark: "#1d242e", trim: "#35e0ff", glow: "#35e0ff", dust: "#9be8ff" },
-  { id: "alien", name: "Alien", cost: 0, alien: true, ownHead: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
+  { id: "alien", name: "Alien", cost: 0, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
   // The A/B is DECIDED: the standard bank won and flies "alien" above.
   // This is the retired custom-posed character, kept on the beta shelf as
   // Alien 1 by the owner's call ("alien 1 retires to unreleased").
@@ -291,7 +293,9 @@ export const SUITS: Suit[] = [
   { id: "ferret", name: "Noodle", cost: 0, ownHead: true, fur: "#6b4a3a", furDark: "#3b2418", belly: "#f1e6d6", suit: "#f2b21c", suitLite: "#ffd75a", suitDark: "#8a5f0a", trim: "#2b2b2b", glow: "#ffc83a", dust: "#ffe08a" },
   { id: "hedgehog", name: "Quill", cost: 0, ownHead: true, fur: "#8a6a48", furDark: "#3f2b18", belly: "#e9d6bd", suit: "#6f8f4a", suitLite: "#a8c46e", suitDark: "#37502a", trim: "#ff9a2a", glow: "#ffa53a", dust: "#ffd28a" },
   { id: "gemmie", name: "Gemmie", cost: 0, fur: "#e6cdf2", furDark: "#a98cc4", belly: "#ffffff", suit: "#d9c3ea", suitLite: "#ffffff", suitDark: "#8f7aa8", trim: "#a8e6ff", glow: "#ffb8f0", dust: "#d8f4ff" },
-  { id: "sammie", name: "Sammie", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#5e1418", suitLite: "#a83a2e", suitDark: "#2a080a", trim: "#d4af37", glow: null, dust: null },
+  // RE-MADE AS STONE (owner, 26 Oct 2026): the id stays so every save, bundle and reward
+  // still finds it; the 3D stone creature's banks replace the Samurai art.
+  { id: "sammie", name: "Stone", cost: 0, fur: "#a7a58c", furDark: "#6d6b58", belly: "#d6d3bd", suit: "#8f8d74", suitLite: "#c2bfa5", suitDark: "#4f4e3f", trim: "#5fd36a", glow: null, dust: null },
   { id: "seraph", name: "Seraph", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#fff6e2", suit: "#f2ead8", suitLite: "#ffffff", suitDark: "#b8a882", trim: "#e8c66a", glow: "#ffe9a8", dust: "#fff4cf" },
   { id: "leviathan", name: "Leviathan", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f2e0c0", suit: "#127f7d", suitLite: "#3fd8cf", suitDark: "#06413f", trim: "#5ce6dc", glow: "#4fe8dd", dust: "#a8fff6" },
   { id: "verdant", name: "Verdant", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c6844", suitLite: "#45b977", suitDark: "#063e2a", trim: "#d7b85a", glow: "#38ff9a", dust: "#a8ffd1" },
@@ -300,18 +304,15 @@ export const SUITS: Suit[] = [
   { id: "volt", name: "Volt", cost: 0, ownHead: true, fur: "#8a7434", furDark: "#4a3f14", belly: "#c9b06a", suit: "#46421a", suitLite: "#6f6220", suitDark: "#1d1d04", trim: "#6eab3c", glow: "#54ff2e", dust: "#a8ff7a" },
   { id: "cinderforge", name: "Cinderforge", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#2a1114", suitLite: "#7e2f27", suitDark: "#12080a", trim: "#ff4b2f", glow: "#ff3b22", dust: "#ff9470" },
   { id: "groveguard", name: "Groveguard", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#2e5e2d", suitLite: "#719452", suitDark: "#18351c", trim: "#c6a75d", glow: "#65dca1", dust: "#bff0ac" },
-  { id: "cosmic", name: "Cosmic", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#6b4b91", suitLite: "#b978d3", suitDark: "#30214d", trim: "#e4b8ff", glow: "#d687ff", dust: "#f0cfff" },
+  // RE-MADE AS CUPCAKE (owner, 26 Oct 2026): the 3D frosted squirrel replaces the Cosmic
+  // art; the id stays, so its Star Chart rung, helmet and wake all carry over.
+  { id: "cosmic", name: "Cupcake", cost: 0, fur: "#f07ab8", furDark: "#b84482", belly: "#fde3ef", suit: "#f59ac8", suitLite: "#ffd1e8", suitDark: "#a8336f", trim: "#7fd3ff", glow: "#d687ff", dust: "#f0cfff" },
   // BRIELLA'S CAT (owner, 6 Sep 2026): a whole pencil-and-fur character,
   // its own head, no helmet. Ships the still for now; the flight sprite
   // sheet follows and is wired as its bank when it lands. Beta until then.
   { id: "briellacat", name: "Briella's Cat", cost: 999, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
   { id: "sunforged", name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
   { id: "abyssal", name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
-  // THE 3D TEST (owner, 25 Oct 2026: "drop it in beta. see how it works...
-  // let me see how it looks in general or if it just doesn't fit"). A
-  // rendered model, not a painting: tools/rig3d made its twelve tap and four
-  // dive frames. Its own head, so no helmet is fitted. Beta only.
-  { id: "pinky", name: "Pinky 3D", cost: 0, beta: true, ownHead: true, fur: "#f07ab8", furDark: "#b84482", belly: "#fde3ef", suit: "#f59ac8", suitLite: "#ffd1e8", suitDark: "#a8336f", trim: "#7fd3ff", glow: null, dust: null },
   { id: "cyber", name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
 ];
 // Beta-only suits are stripped from production entirely. Anything a PACK
@@ -1065,8 +1066,6 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   // rewards where gaps are missing... all tap animations fixed so they can
   // go live now"): the five former beta suits fill the ladder above 300.
   { title: "HIGH ORBIT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
-  // the 3D test (25 Oct 2026); its suit is beta-only, so this row is too
-  ...(IS_BETA ? [{ title: "3D TEST", ids: ["pinky"] }] : []),
 ];
 
 // The helmet wall groups by what the GLASS does, because that is how a

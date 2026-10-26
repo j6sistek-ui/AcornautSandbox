@@ -1,37 +1,38 @@
-import { spillDockTravelDuration } from "./spill.js?v=309";
-import { clipHelmetGlass } from "./helmet-openings.js?v=309";
-import { paintFittedHelmet } from "./helmet-fit.js?v=309";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=309";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=309";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=309";
-import { arcflashPreview } from "./arcflash-motion.js?v=309";
-import { paintLiveStarTrail } from "./star-trails.js?v=309";
-import { trailWornBy } from "./catalog.js?v=309";
-import { isHighOrbitRig, isPremiumSuit, highOrbitTrailSuit } from "./high-orbit-config.js?v=309";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=309";
-import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=309";
-import { paintPremiumBankWake } from "./premium-bank-wake.js?v=309";
-import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=309";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=309";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=309";
-import { spillAppearance } from "./spill-appearance.js?v=309";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=309";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=309";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=309";
-import { goalHud } from "./campaign.js?v=309";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=309";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=309";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=309";
-import { spriteImageFor } from "./sprite-detail.js?v=309";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=309";
-import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=309";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=309";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=309";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=309";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=309";
-import { spillEngineColor } from "./spill-content.js?v=309";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=309";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=309";
+import { spillDockTravelDuration } from "./spill.js?v=317";
+import { clipHelmetGlass } from "./helmet-openings.js?v=317";
+import { paintFittedHelmet } from "./helmet-fit.js?v=317";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=317";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=317";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=317";
+import { arcflashPreview } from "./arcflash-motion.js?v=317";
+import { paintLiveStarTrail } from "./star-trails.js?v=317";
+import { trailWornBy } from "./catalog.js?v=317";
+import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=317";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=317";
+import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=317";
+import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=317";
+import { RIG3D_BOOTS } from "./rig3d-boots.js?v=317";
+import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=317";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=317";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=317";
+import { spillAppearance } from "./spill-appearance.js?v=317";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=317";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=317";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=317";
+import { goalHud } from "./campaign.js?v=317";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=317";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=317";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=317";
+import { spriteImageFor } from "./sprite-detail.js?v=317";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=317";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=317";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=317";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=317";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=317";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=317";
+import { spillEngineColor } from "./spill-content.js?v=317";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=317";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=317";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1696,7 +1697,7 @@ function paintSpillHead(ctx, art, save, hole) {
         paintHighOrbitCockpit(ctx, art, suit.id, hole.cx, hole.cy, hole.rx, hole.ry);
         return;
     }
-    if (suit.id === "arcflash") {
+    if (isArcflashRig(suit.id)) {
         paintArcflashCockpit(ctx, art, hole.cx, hole.cy, hole.rx, hole.ry);
         return;
     }
@@ -1704,7 +1705,7 @@ function paintSpillHead(ctx, art, save, hole) {
     if (!body)
         return;
     const key = art.suits[suit.id] ? `suit:${suit.id}` : "idle-1";
-    const anchor = isPremiumSuit(suit.id) ? CYBER_TRIO_REGISTRATION[suit.id].head : DOME[key] ?? DOME["suit:flight"];
+    const anchor = isPremiumFrames(suit.id) ? CYBER_TRIO_REGISTRATION[suit.id].head : DOME[key] ?? DOME["suit:flight"];
     const helmet = helmetWornBy(save.equipped, suit.id);
     const b = naturalFlightKey(key) ? NATURAL_FLIGHT_BOX : body.box;
     const scale = hole.rx * 0.94 / anchor[2];
@@ -1715,7 +1716,7 @@ function paintSpillHead(ctx, art, save, hole) {
     ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
     ctx.clip();
     ctx.drawImage(body, hole.cx - anchor[0] * scale, hole.cy - anchor[1] * scale, body.width * scale, body.height * scale);
-    if (!isPremiumSuit(suit.id))
+    if (!isPremiumFrames(suit.id))
         paintDome(ctx, body, key, helmet, x, y, Math.max(b.w, b.h) * scale, art);
     ctx.restore();
 }
@@ -3513,112 +3514,14 @@ const DOME = {
     "flap-4": [163, 80, 45],
     // Static portraits; each radius fits that painting's head, not its body box.
     // Five beta suits: whole-frame skull registration from beta-flight-refresh.
-    "cinderforge-asc-1": [178.29, 105.5, 30.8, 13.45],
-    "cinderforge-asc-2": [175.89, 101.65, 30.8, 12.32],
-    "cinderforge-asc-3": [173.22, 97.98, 30.8, 16.51],
-    "cinderforge-asc-4": [170.3, 94.51, 30.8, 17.33],
-    "cinderforge-asc-5": [167.15, 91.24, 30.8, 1.61],
-    "cinderforge-asc-6": [163.78, 88.21, 30.8, 9.49],
-    "cinderforge-asc-7": [160.21, 85.41, 30.8, 4.87],
-    "cinderforge-asc-8": [156.44, 82.88, 30.8, 17.28],
-    "cinderforge-desc-1": [178.29, 105.5, 30.8, 13.45],
-    "cinderforge-desc-2": [182.68, 114.71, 30.8, 10.81],
-    "cinderforge-desc-3": [185.58, 124.49, 30.8, 3.92],
-    "cinderforge-desc-4": [186.91, 134.6, 30.8, 7.56],
-    "cinderforge-desc-5": [186.64, 144.79, 30.8, 36.98],
-    "cinderforge-desc-6": [184.79, 154.82, 30.8, 36.08],
-    "cinderforge-desc-7": [181.38, 164.44, 30.8, 41.04],
-    "cinderforge-desc-8": [176.51, 173.4, 30.8, 43.90],
-    "groveguard-asc-1": [178.29, 105.5, 30.8, 17.37],
-    "groveguard-asc-2": [175.89, 101.65, 30.8, 31.35],
-    "groveguard-asc-3": [173.22, 97.98, 30.8, 5.28],
-    "groveguard-asc-4": [170.3, 94.51, 30.8, 13.06],
-    "groveguard-asc-5": [167.15, 91.24, 30.8, -0.69],
-    "groveguard-asc-6": [163.78, 88.21, 30.8, -8.76],
-    "groveguard-asc-7": [160.21, 85.41, 30.8, -22.61],
-    "groveguard-asc-8": [156.44, 82.88, 30.8, -14.15],
-    "groveguard-desc-1": [178.29, 105.5, 30.8, 17.37],
-    "groveguard-desc-2": [182.68, 114.71, 30.8, 7.93],
-    "groveguard-desc-3": [185.58, 124.49, 30.8, -7.72],
-    "groveguard-desc-4": [186.91, 134.6, 30.8, -2.75],
-    "groveguard-desc-5": [186.64, 144.79, 30.8, 24.89],
-    "groveguard-desc-6": [184.79, 154.82, 30.8, 28.98],
-    "groveguard-desc-7": [181.38, 164.44, 30.8, 35.05],
-    "groveguard-desc-8": [176.51, 173.4, 30.8, 49.26],
-    "cosmic-asc-1": [178.29, 105.5, 30.8, 11.19],
-    "cosmic-asc-2": [175.89, 101.65, 30.8, 5.83],
-    "cosmic-asc-3": [173.22, 97.98, 30.8, 8.42],
-    "cosmic-asc-4": [170.3, 94.51, 30.8, 21.33],
-    "cosmic-asc-5": [167.15, 91.24, 30.8, 0.84],
-    "cosmic-asc-6": [163.78, 88.21, 30.8, -4.27],
-    "cosmic-asc-7": [160.21, 85.41, 30.8, 4.56],
-    "cosmic-asc-8": [156.44, 82.88, 30.8, 13.32],
-    "cosmic-desc-1": [178.29, 105.5, 30.8, 11.19],
-    "cosmic-desc-2": [182.68, 114.71, 30.8, 27.30],
-    "cosmic-desc-3": [185.58, 124.49, 30.8, 22.96],
-    "cosmic-desc-4": [186.91, 134.6, 30.8, 11.65],
-    "cosmic-desc-5": [186.64, 144.79, 30.8, 29.25],
-    "cosmic-desc-6": [184.79, 154.82, 30.8, 29.96],
-    "cosmic-desc-7": [181.38, 164.44, 30.8, 33.78],
-    "cosmic-desc-8": [176.51, 173.4, 30.8, 34.10],
-    "sunforged-asc-1": [178.29, 105.5, 29.4, 15.64],
-    "sunforged-asc-2": [175.89, 101.65, 29.4, 13.37],
-    "sunforged-asc-3": [173.22, 97.98, 29.4, 21.61],
-    "sunforged-asc-4": [170.3, 94.51, 29.4, 28.47],
-    "sunforged-asc-5": [167.15, 91.24, 29.4, 17.00],
-    "sunforged-asc-6": [163.78, 88.21, 29.4, 11.48],
-    "sunforged-asc-7": [160.21, 85.41, 29.4, 15.00],
-    "sunforged-asc-8": [156.44, 82.88, 29.4, 15.93],
-    "sunforged-desc-1": [178.29, 105.5, 29.4, 15.64],
-    "sunforged-desc-2": [182.68, 114.71, 29.4, 27.97],
-    "sunforged-desc-3": [185.58, 124.49, 29.4, 24.72],
-    "sunforged-desc-4": [186.91, 134.6, 29.4, 36.86],
-    "sunforged-desc-5": [186.64, 144.79, 29.4, 42.41],
-    "sunforged-desc-6": [184.79, 154.82, 29.4, 51.15],
-    "sunforged-desc-7": [181.38, 164.44, 29.4, 52.72],
-    "sunforged-desc-8": [176.51, 173.4, 29.4, 58.01],
-    "abyssal-asc-1": [178.29, 105.5, 30.8, 7.22],
-    "abyssal-asc-2": [175.89, 101.65, 30.8, 7.36],
-    "abyssal-asc-3": [173.22, 97.98, 30.8, 4.34],
-    "abyssal-asc-4": [170.3, 94.51, 30.8, 7.77],
-    "abyssal-asc-5": [167.15, 91.24, 30.8, 0.16],
-    "abyssal-asc-6": [163.78, 88.21, 30.8, -6.79],
-    "abyssal-asc-7": [160.21, 85.41, 30.8, -11.57],
-    "abyssal-asc-8": [156.44, 82.88, 30.8, -8.27],
-    "abyssal-desc-1": [178.29, 105.5, 30.8, 7.22],
-    "abyssal-desc-2": [182.68, 114.71, 30.8, 16.16],
-    "abyssal-desc-3": [185.58, 124.49, 30.8, 27.23],
-    "abyssal-desc-4": [186.91, 134.6, 30.8, 37.23],
-    "abyssal-desc-5": [186.64, 144.79, 30.8, 43.71],
-    "abyssal-desc-6": [184.79, 154.82, 30.8, 47.05],
-    "abyssal-desc-7": [181.38, 164.44, 30.8, 61.64],
-    "abyssal-desc-8": [176.51, 173.4, 30.8, 70.44],
-    "suit:flight": [184, 91, 31.17, 5],
-    "suit:iontrim": [206, 109, 28.95, 6],
-    "suit:copper": [207, 108, 31.97, 3],
-    "suit:frost": [210, 106, 30.73],
-    "suit:voidsuit": [206, 106, 29.53, 3],
-    "suit:ember": [208, 106, 33.26, 0],
     "suit:robo": [184, 98, 32.71, 0],
     "suit:ghost": [208, 109, 30.73, 0],
     "suit:bigbooty": [184, 108, 25.36, 10],
     "suit:catsuit": [212, 86, 50],
-    "suit:gemmie": [211, 107, 28.39, 1],
     "suit:phoenix": [207, 92, 41],
-    "suit:sammie": [208, 106, 28.95, 3],
     "suit:seraph": [205, 131, 27.89, 2],
-    "suit:leviathan": [208, 106, 29.53, 0],
-    "suit:verdant": [204.19, 98.83, 37.88, 6],
-    "suit:cryostar": [202, 99, 38.64, 5],
-    "suit:eclipse": [205, 89, 41.2, -5],
-    "suit:cinderforge": [187.73, 92.62, 31.34, 3],
-    "suit:groveguard": [181, 92, 31.34],
-    "suit:cosmic": [182, 93, 32.61],
-    "suit:sunforged": [184, 92, 31.34],
-    "suit:abyssal": [182, 90, 30.12],
     "suit:porcelain": [180, 84, 35.3465],
     "suit:nacre": [180, 84, 32.0492],
-    "suit:origamist": [180, 84, 35],
     // robo — pose-specific head and collar registration.
     "robo-tap-1": [193, 102, 34.24, 0],
     "robo-tap-2": [193, 102, 34.24, 0],
@@ -3653,48 +3556,6 @@ const DOME = {
     "bigbooty-tap-14": [201, 92, 28.55, 10],
     "bigbooty-tap-15": [203, 87, 29.71, 10],
     "bigbooty-tap-16": [207, 82, 29.71, 10],
-    // eclipse — pose-specific head and collar registration.
-    "eclipse-tap-1": [194, 92, 42.4, -5],
-    "eclipse-tap-2": [194, 90, 42.4, -5],
-    "eclipse-tap-3": [192, 84, 42.4, -5],
-    "eclipse-tap-4": [188, 76, 42.4, -5],
-    "eclipse-tap-5": [184, 69, 42.4, -5],
-    "eclipse-tap-6": [181, 63, 42.4, -5],
-    "eclipse-tap-7": [180, 62, 42.4, -5],
-    "eclipse-tap-8": [181, 64, 42.4, -5],
-    "eclipse-tap-9": [184, 70, 42.4, -5],
-    "eclipse-tap-10": [189, 79, 42.4, -5],
-    "eclipse-tap-11": [193, 85, 42.4, -5],
-    "eclipse-tap-12": [195, 88, 42.4, -5],
-    "eclipse-tap-13": [196, 90, 42.4, -5],
-    "eclipse-tap-14": [196, 91, 42.4, -5],
-    "eclipse-tap-15": [196, 91, 42.4, -5],
-    "eclipse-tap-16": [196, 91, 42.4, -5],
-    "eclipse-asc-1": [187, 83, 36.75, -5],
-    "eclipse-asc-2": [183, 80, 36.75, -6],
-    "eclipse-asc-3": [183, 79, 36.75, -5],
-    "eclipse-asc-4": [185, 78, 36.75, -5],
-    "eclipse-asc-5": [186, 79, 36.75, -5],
-    "eclipse-asc-6": [189, 75, 36.75, -5],
-    "eclipse-asc-7": [191, 82, 36.75, -2],
-    "eclipse-asc-8": [196, 93, 36.75, -5],
-    "eclipse-desc-1": [203, 88, 39.78, 0],
-    "eclipse-desc-2": [200, 104, 37.49, 5],
-    "eclipse-desc-3": [188, 129, 38.24, 15],
-    "eclipse-desc-4": [185.86, 148.01, 38.24, 20],
-    "eclipse-desc-5": [191, 148, 37.49, 25],
-    "eclipse-desc-6": [191, 157, 36.75, 30],
-    "eclipse-desc-7": [189, 160, 37.49, 35],
-    "eclipse-desc-8": [184, 173, 36.75, 35],
-    // flight — pose-specific head and collar registration.
-    "flight-asc-1": [175.1, 97.5, 26.21, -7],
-    "flight-asc-2": [176.6, 99.6, 26.21, -5],
-    "flight-asc-3": [175.1, 98.1, 26.21, -7],
-    "flight-desc-1": [180, 102, 26.21],
-    "flight-desc-2": [179.4, 104.6, 26.21, 3],
-    "flight-desc-3": [174.9, 119.8, 26.21, 2],
-    "flight-desc-4": [172.8, 122.7, 26.21, 4],
-    "flight-desc-5": [166.2, 147.4, 26.21, 11],
     // seraph — pose-specific head and collar registration.
     "seraph-asc-1": [205, 131, 27.89, 2],
     "seraph-asc-2": [205, 129, 27.89, 2],
@@ -3712,159 +3573,6 @@ const DOME = {
     "seraph-desc-6": [203, 148, 27.89, 23],
     "seraph-desc-7": [201, 163, 27.89, 57],
     "seraph-desc-8": [197, 163, 27.89, 62],
-    // iontrim — pose-specific head and collar registration.
-    "iontrim-asc-1": [206, 109, 28.95, 6],
-    "iontrim-asc-2": [206, 108.3, 28.95, 6],
-    "iontrim-asc-3": [206, 107.5, 28.95, 1],
-    "iontrim-asc-4": [206, 106.6, 28.95, 1],
-    "iontrim-asc-5": [206, 105.5, 28.95, 1],
-    "iontrim-asc-6": [206, 104.3, 28.95, 1],
-    "iontrim-asc-7": [206, 103, 28.95, 1],
-    "iontrim-asc-8": [206, 102, 28.95, -4],
-    "iontrim-desc-1": [206, 109, 28.95, 6],
-    "iontrim-desc-2": [206, 109.8, 28.95, 1],
-    "iontrim-desc-3": [206, 110.8, 28.95, 6],
-    "iontrim-desc-4": [206, 112, 28.95, 11],
-    "iontrim-desc-5": [206, 113.2, 28.95, 6],
-    "iontrim-desc-6": [206, 114.6, 28.95, 11],
-    "iontrim-desc-7": [206, 116, 28.95, 11],
-    "iontrim-desc-8": [206, 117, 28.95, 16],
-    // copper — pose-specific head and collar registration.
-    "copper-asc-1": [207, 108, 31.97, 3],
-    "copper-asc-2": [207, 107.3, 31.97, 3],
-    "copper-asc-3": [207, 106.5, 31.97, -2],
-    "copper-asc-4": [207, 105.6, 31.97, 3],
-    "copper-asc-5": [207, 104.5, 31.97, 3],
-    "copper-asc-6": [207, 103.3, 31.97, 3],
-    "copper-asc-7": [207, 102, 31.97, -2],
-    "copper-asc-8": [207, 101, 31.97, 3],
-    "copper-desc-1": [207, 108, 31.97, 3],
-    "copper-desc-2": [207, 108.8, 31.97, 3],
-    "copper-desc-3": [207, 109.8, 31.97, 3],
-    "copper-desc-4": [207, 111, 31.97, 8],
-    "copper-desc-5": [207, 112.2, 31.97, 3],
-    "copper-desc-6": [207, 113.6, 31.97, 3],
-    "copper-desc-7": [207, 115, 31.97, 3],
-    "copper-desc-8": [207, 116, 31.97, 3],
-    // voidsuit — pose-specific head and collar registration.
-    "voidsuit-asc-1": [206, 106, 29.53, 3],
-    "voidsuit-asc-2": [206, 105.3, 29.53, 3],
-    "voidsuit-asc-3": [206, 104.5, 29.53, 3],
-    "voidsuit-asc-4": [206, 103.6, 29.53, 3],
-    "voidsuit-asc-5": [206, 102.5, 29.53, 3],
-    "voidsuit-asc-6": [206, 101.3, 29.53, -2],
-    "voidsuit-asc-7": [206, 100, 29.53, -2],
-    "voidsuit-asc-8": [206, 99, 29.53, -2],
-    "voidsuit-desc-1": [206, 106, 29.53, 3],
-    "voidsuit-desc-2": [206, 106.8, 29.53, 3],
-    "voidsuit-desc-3": [206, 107.8, 29.53, 3],
-    "voidsuit-desc-4": [206, 109, 29.53, 3],
-    "voidsuit-desc-5": [206, 110.2, 29.53, 3],
-    "voidsuit-desc-6": [206, 111.6, 29.53, 3],
-    "voidsuit-desc-7": [206, 113, 29.53, 8],
-    "voidsuit-desc-8": [206, 114, 29.53, 3],
-    // ember — pose-specific head and collar registration.
-    "ember-asc-1": [208, 106, 33.26, 0],
-    "ember-asc-2": [208, 105.3, 33.26, -5],
-    "ember-asc-3": [208, 104.5, 33.26, -5],
-    "ember-asc-4": [208, 103.6, 33.26, -5],
-    "ember-asc-5": [208, 102.5, 33.26, -5],
-    "ember-asc-6": [208, 101.3, 33.26, -10],
-    "ember-asc-7": [208, 100, 33.26, -5],
-    "ember-asc-8": [208, 99, 33.26, -10],
-    "ember-desc-1": [208, 106, 33.26, 0],
-    "ember-desc-2": [208, 106.8, 33.26, -5],
-    "ember-desc-3": [208, 107.8, 33.26, 0],
-    "ember-desc-4": [208, 109, 33.26, 0],
-    "ember-desc-5": [208, 110.2, 33.26, 0],
-    "ember-desc-6": [208, 111.6, 33.26, 0],
-    "ember-desc-7": [208, 113, 33.26, 5],
-    "ember-desc-8": [208, 114, 33.26, 5],
-    // cryostar — pose-specific head and collar registration.
-    "cryostar-asc-1": [190, 83, 36.03, 0],
-    "cryostar-asc-2": [190.5, 81.5, 36.03, 0],
-    "cryostar-asc-3": [189, 80.5, 36.03, 0],
-    "cryostar-asc-4": [189.5, 79.5, 36.03, 0],
-    "cryostar-asc-5": [189.5, 81, 36.03, 0],
-    "cryostar-asc-6": [194.5, 78.5, 36.03, 5],
-    "cryostar-asc-7": [195.5, 85.5, 36.03, 5],
-    "cryostar-asc-8": [198, 91, 36.03, 6],
-    "cryostar-desc-1": [204.5, 89, 38.24, 7],
-    "cryostar-desc-2": [202, 108, 39, 10],
-    "cryostar-desc-3": [191, 129.5, 38.24, 17],
-    "cryostar-desc-4": [191.5, 146, 39, 19],
-    "cryostar-desc-5": [190.5, 148, 38.24, 24],
-    "cryostar-desc-6": [187, 152.5, 36.75, 25],
-    "cryostar-desc-7": [181.5, 161.5, 36.03, 40],
-    "cryostar-desc-8": [177.69, 171.59, 36.03, 40],
-    // verdant — pose-specific head and collar registration.
-    "verdant-asc-1": [189.11, 79.71, 36.75, -2],
-    "verdant-asc-2": [186.5, 81.5, 35.32, 1],
-    "verdant-asc-3": [186, 80.5, 34.63, 1],
-    "verdant-asc-4": [189, 79.5, 36.03, 1],
-    "verdant-asc-5": [187.5, 80, 38.24, 1],
-    "verdant-asc-6": [193.5, 77, 39.78, 1],
-    "verdant-asc-7": [194.5, 81, 39, 1],
-    "verdant-asc-8": [195, 89, 38.24, 1],
-    "verdant-desc-1": [201.5, 89, 41.39, 6],
-    "verdant-desc-2": [200, 104, 39.78, 11],
-    "verdant-desc-3": [187.5, 129, 39.78, 21],
-    "verdant-desc-4": [190.5, 147, 39.78, 26],
-    "verdant-desc-5": [189.5, 150.5, 39.78, 31],
-    "verdant-desc-6": [189.5, 157, 37.49, 36],
-    "verdant-desc-7": [187, 161.5, 38.24, 41],
-    "verdant-desc-8": [183.5, 174, 37.49, 41],
-    // gemmie — pose-specific head and collar registration.
-    "gemmie-asc-1": [211, 107, 28.39, 1],
-    "gemmie-asc-2": [211, 106.3, 28.39, 1],
-    "gemmie-asc-3": [211, 105.5, 28.39, 1],
-    "gemmie-asc-4": [211, 104.6, 28.39, 1],
-    "gemmie-asc-5": [211, 103.5, 28.39, 1],
-    "gemmie-asc-6": [211, 102.3, 28.39, -1],
-    "gemmie-asc-7": [211, 101, 28.39, -4],
-    "gemmie-asc-8": [210, 100, 28.39, -11],
-    "gemmie-desc-1": [211, 108, 27.83, 1],
-    "gemmie-desc-2": [211, 108.8, 27.83, 1],
-    "gemmie-desc-3": [211, 108.8, 28.39, 1],
-    "gemmie-desc-4": [211, 110, 28.39, 6],
-    "gemmie-desc-5": [211, 111.2, 28.39, 6],
-    "gemmie-desc-6": [211, 112.6, 28.39, 6],
-    "gemmie-desc-7": [211, 114, 28.39, 6],
-    "gemmie-desc-8": [211, 115, 28.39, 6],
-    // sammie — pose-specific head and collar registration.
-    "sammie-asc-1": [208, 106, 28.95, 3],
-    "sammie-asc-2": [208, 105.3, 28.95, 3],
-    "sammie-asc-3": [208, 104.5, 28.95, 3],
-    "sammie-asc-4": [208, 103.6, 28.95, -2],
-    "sammie-asc-5": [208, 102.5, 28.95, -2],
-    "sammie-asc-6": [208, 101.3, 28.95, -2],
-    "sammie-asc-7": [208, 100, 28.95, -1],
-    "sammie-asc-8": [208, 99, 28.95, 0],
-    "sammie-desc-1": [208, 106, 28.95, 4],
-    "sammie-desc-2": [208, 106.8, 28.95, 7],
-    "sammie-desc-3": [208, 107.8, 28.95, 5],
-    "sammie-desc-4": [208, 109, 28.95, 3],
-    "sammie-desc-5": [208, 110.2, 28.95, 3],
-    "sammie-desc-6": [208, 111.6, 28.95, 8],
-    "sammie-desc-7": [208, 113, 28.95, 8],
-    "sammie-desc-8": [213, 115, 28.95, 8],
-    // frost — pose-specific head and collar registration.
-    "frost-asc-1": [210, 106, 30.73],
-    "frost-asc-2": [210, 105.3, 30.73],
-    "frost-asc-3": [210, 104.5, 30.73],
-    "frost-asc-4": [210, 103.6, 30.73],
-    "frost-asc-5": [210, 102.5, 30.73],
-    "frost-asc-6": [210, 101.3, 30.73],
-    "frost-asc-7": [210, 100, 30.73, -5],
-    "frost-asc-8": [210, 99, 30.73, -5],
-    "frost-desc-1": [210, 106, 30.73],
-    "frost-desc-2": [210, 106.8, 30.73],
-    "frost-desc-3": [210, 107.8, 30.73],
-    "frost-desc-4": [210, 109, 30.73],
-    "frost-desc-5": [210, 110.2, 30.73],
-    "frost-desc-6": [210, 111.6, 30.73],
-    "frost-desc-7": [210, 113, 30.73],
-    "frost-desc-8": [210, 114, 30.73],
     // ghost — pose-specific head and collar registration.
     "ghost-asc-1": [208, 109, 30.73, 0],
     "ghost-asc-2": [208, 108.3, 30.73, -5],
@@ -3882,23 +3590,349 @@ const DOME = {
     "ghost-desc-6": [208, 114.6, 30.73, 5],
     "ghost-desc-7": [208, 116, 30.73, 5],
     "ghost-desc-8": [208, 117, 30.73, 5],
-    // leviathan — pose-specific head and collar registration.
-    "leviathan-asc-1": [208, 106, 29.53, 0],
-    "leviathan-asc-2": [208, 105.3, 29.53, 0],
-    "leviathan-asc-3": [208, 104.5, 29.53, 0],
-    "leviathan-asc-4": [208, 103.6, 29.53, 0],
-    "leviathan-asc-5": [208, 102.5, 29.53, 0],
-    "leviathan-asc-6": [208, 101.3, 29.53, 0],
-    "leviathan-asc-7": [208, 100, 29.53, 0],
-    "leviathan-asc-8": [208, 99, 29.53, 0],
-    "leviathan-desc-1": [208, 106, 29.53, 0],
-    "leviathan-desc-2": [208, 106.8, 29.53, 0],
-    "leviathan-desc-3": [208, 107.8, 29.53, 0],
-    "leviathan-desc-4": [208, 109, 29.53, 0],
-    "leviathan-desc-5": [208, 110.2, 29.53, 0],
-    "leviathan-desc-6": [208, 111.6, 29.53, 0],
-    "leviathan-desc-7": [208, 113, 29.53, 0],
-    "leviathan-desc-8": [208, 114, 29.53, 0],
+    // THE 3D LINEUP (26 Oct 2026): measured, not placed - tools/rig3d projects each
+    // frame's 3D head through the render camera (anchors.json). Centre and tilt are
+    // per frame; the radius is the suit's median, so the glass never resizes.
+    "suit:ember": [183.97, 101.49, 38.88, 1.83],
+    "ember-tap-1": [183.97, 101.49, 38.88, 1.83],
+    "ember-tap-2": [182.77, 98.45, 38.88, -1.85],
+    "ember-tap-3": [181.94, 96.94, 38.88, -4.19],
+    "ember-tap-4": [181.82, 97.21, 38.88, -4.57],
+    "ember-tap-5": [182.4, 99.17, 38.88, -2.88],
+    "ember-tap-6": [183.41, 102.43, 38.88, 0.42],
+    "ember-tap-7": [184.43, 106.21, 38.88, 4.44],
+    "ember-tap-8": [185.21, 109.5, 38.88, 8.08],
+    "ember-tap-9": [185.7, 111.34, 38.88, 10.39],
+    "ember-tap-10": [185.89, 111.13, 38.88, 10.77],
+    "ember-tap-11": [185.7, 108.89, 38.88, 9.1],
+    "ember-tap-12": [185.04, 105.32, 38.88, 5.84],
+    "ember-desc-1": [183.97, 101.49, 38.88, 1.83],
+    "ember-desc-2": [184.95, 115.48, 38.88, 15.54],
+    "ember-desc-3": [184.68, 129.78, 38.88, 28.72],
+    "ember-desc-4": [181.15, 142.71, 38.88, 41.18],
+    "suit:voidsuit": [182.69, 112.11, 27.72, 1.82],
+    "voidsuit-tap-1": [182.69, 112.11, 27.72, 1.82],
+    "voidsuit-tap-2": [181.35, 109.62, 27.72, -1.87],
+    "voidsuit-tap-3": [180.35, 108.38, 27.72, -4.22],
+    "voidsuit-tap-4": [180.08, 108.59, 27.72, -4.6],
+    "voidsuit-tap-5": [180.57, 110.24, 27.72, -2.91],
+    "voidsuit-tap-6": [181.58, 112.9, 27.72, 0.4],
+    "voidsuit-tap-7": [182.71, 116.05, 27.72, 4.43],
+    "voidsuit-tap-8": [183.65, 118.83, 27.72, 8.09],
+    "voidsuit-tap-9": [184.28, 120.4, 27.72, 10.4],
+    "voidsuit-tap-10": [184.61, 120.22, 27.72, 10.78],
+    "voidsuit-tap-11": [184.51, 118.34, 27.72, 9.11],
+    "voidsuit-tap-12": [183.87, 115.32, 27.72, 5.84],
+    "voidsuit-desc-1": [182.69, 112.11, 27.72, 1.82],
+    "voidsuit-desc-2": [183.49, 123.89, 27.72, 15.57],
+    "voidsuit-desc-3": [182.95, 135.88, 27.72, 28.77],
+    "voidsuit-desc-4": [179.66, 147.47, 27.72, 41.24],
+    "suit:groveguard": [187.04, 110.31, 26.17, 1.73],
+    "groveguard-tap-1": [187.04, 110.31, 26.17, 1.73],
+    "groveguard-tap-2": [185.86, 108.17, 26.17, -1.93],
+    "groveguard-tap-3": [185.03, 107.18, 26.17, -4.27],
+    "groveguard-tap-4": [184.88, 107.51, 26.17, -4.65],
+    "groveguard-tap-5": [185.42, 109.06, 26.17, -2.96],
+    "groveguard-tap-6": [186.36, 111.5, 26.17, 0.33],
+    "groveguard-tap-7": [187.34, 114.26, 26.17, 4.34],
+    "groveguard-tap-8": [188.07, 116.58, 26.17, 7.97],
+    "groveguard-tap-9": [188.52, 117.79, 26.17, 10.28],
+    "groveguard-tap-10": [188.73, 117.5, 26.17, 10.65],
+    "groveguard-tap-11": [188.64, 115.76, 26.17, 8.99],
+    "groveguard-tap-12": [188.1, 113.09, 26.17, 5.73],
+    "groveguard-desc-1": [187.04, 110.31, 26.17, 1.73],
+    "groveguard-desc-2": [187.89, 120.87, 26.17, 15.42],
+    "groveguard-desc-3": [186.57, 132.56, 26.17, 28.58],
+    "groveguard-desc-4": [183.01, 144.6, 26.17, 41.04],
+    "suit:cinderforge": [185.02, 106.88, 33.97, 1.8],
+    "cinderforge-tap-1": [185.02, 106.88, 33.97, 1.8],
+    "cinderforge-tap-2": [183.7, 104.15, 33.97, -1.88],
+    "cinderforge-tap-3": [182.9, 102.97, 33.97, -4.22],
+    "cinderforge-tap-4": [182.69, 103.4, 33.97, -4.6],
+    "cinderforge-tap-5": [183.1, 105.19, 33.97, -2.91],
+    "cinderforge-tap-6": [183.85, 108.2, 33.97, 0.39],
+    "cinderforge-tap-7": [185.68, 111.58, 33.97, 4.41],
+    "cinderforge-tap-8": [187.28, 114.16, 33.97, 8.05],
+    "cinderforge-tap-9": [188.33, 115.42, 33.97, 10.36],
+    "cinderforge-tap-10": [188.68, 115.06, 33.97, 10.73],
+    "cinderforge-tap-11": [188.21, 113.11, 33.97, 9.07],
+    "cinderforge-tap-12": [186.91, 110.17, 33.97, 5.81],
+    "cinderforge-desc-1": [185.02, 106.88, 33.97, 1.8],
+    "cinderforge-desc-2": [188.8, 119.63, 33.97, 15.51],
+    "cinderforge-desc-3": [189.89, 132.77, 33.97, 28.69],
+    "cinderforge-desc-4": [188.62, 146.22, 33.97, 41.14],
+    "suit:sunforged": [184.69, 105.65, 33.8, 1.79],
+    "sunforged-tap-1": [184.69, 105.65, 33.8, 1.79],
+    "sunforged-tap-2": [183.6, 102.96, 33.8, -1.89],
+    "sunforged-tap-3": [182.76, 101.59, 33.8, -4.23],
+    "sunforged-tap-4": [182.48, 101.88, 33.8, -4.61],
+    "sunforged-tap-5": [182.82, 103.72, 33.8, -2.92],
+    "sunforged-tap-6": [183.56, 106.67, 33.8, 0.38],
+    "sunforged-tap-7": [185.19, 109.97, 33.8, 4.4],
+    "sunforged-tap-8": [187.01, 112.84, 33.8, 8.05],
+    "sunforged-tap-9": [188.16, 114.49, 33.8, 10.37],
+    "sunforged-tap-10": [188.57, 114.32, 33.8, 10.74],
+    "sunforged-tap-11": [188.14, 112.3, 33.8, 9.08],
+    "sunforged-tap-12": [186.8, 109.04, 33.8, 5.81],
+    "sunforged-desc-1": [184.69, 105.65, 33.8, 1.79],
+    "sunforged-desc-2": [188.8, 118.83, 33.8, 15.52],
+    "sunforged-desc-3": [190.08, 132.44, 33.8, 28.71],
+    "sunforged-desc-4": [188.1, 145.92, 33.8, 41.18],
+    "suit:abyssal": [184.85, 114.5, 25.88, 1.82],
+    "abyssal-tap-1": [184.85, 114.5, 25.88, 1.82],
+    "abyssal-tap-2": [184.07, 111.63, 25.88, -1.87],
+    "abyssal-tap-3": [183.48, 110.17, 25.88, -4.22],
+    "abyssal-tap-4": [183.34, 110.43, 25.88, -4.6],
+    "abyssal-tap-5": [183.65, 112.35, 25.88, -2.91],
+    "abyssal-tap-6": [184.23, 115.44, 25.88, 0.4],
+    "abyssal-tap-7": [184.74, 118.94, 25.88, 4.43],
+    "abyssal-tap-8": [185.08, 121.89, 25.88, 8.09],
+    "abyssal-tap-9": [185.28, 123.48, 25.88, 10.41],
+    "abyssal-tap-10": [185.48, 123.26, 25.88, 10.78],
+    "abyssal-tap-11": [185.58, 121.28, 25.88, 9.12],
+    "abyssal-tap-12": [185.42, 118.06, 25.88, 5.84],
+    "abyssal-desc-1": [184.85, 114.5, 25.88, 1.82],
+    "abyssal-desc-2": [184.52, 127.1, 25.88, 15.57],
+    "abyssal-desc-3": [182.65, 139.3, 25.88, 28.78],
+    "abyssal-desc-4": [178.01, 150.6, 25.88, 41.24],
+    "suit:gemmie": [183.43, 99.44, 36.18, 1.82],
+    "gemmie-tap-1": [183.43, 99.44, 36.18, 1.82],
+    "gemmie-tap-2": [182.35, 96.36, 36.18, -1.86],
+    "gemmie-tap-3": [181.61, 94.53, 36.18, -4.21],
+    "gemmie-tap-4": [181.5, 94.73, 36.18, -4.59],
+    "gemmie-tap-5": [182.03, 97.04, 36.18, -2.9],
+    "gemmie-tap-6": [182.94, 100.59, 36.18, 0.41],
+    "gemmie-tap-7": [184.34, 104.23, 36.18, 4.43],
+    "gemmie-tap-8": [186.4, 107, 36.18, 8.08],
+    "gemmie-tap-9": [187.72, 108.35, 36.18, 10.39],
+    "gemmie-tap-10": [188.03, 108.09, 36.18, 10.77],
+    "gemmie-tap-11": [187.21, 105.92, 36.18, 9.1],
+    "gemmie-tap-12": [185.38, 102.92, 36.18, 5.83],
+    "gemmie-desc-1": [183.43, 99.44, 36.18, 1.82],
+    "gemmie-desc-2": [188.66, 113.27, 36.18, 15.55],
+    "gemmie-desc-3": [190.83, 128.76, 36.18, 28.74],
+    "gemmie-desc-4": [189.93, 144.01, 36.18, 41.19],
+    "suit:iontrim": [186.2, 112.62, 26.96, 1.82],
+    "iontrim-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "iontrim-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "iontrim-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "iontrim-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "iontrim-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "iontrim-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "iontrim-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "iontrim-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "iontrim-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "iontrim-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "iontrim-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "iontrim-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "iontrim-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "iontrim-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "iontrim-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "iontrim-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:sammie": [185.89, 114.58, 26.09, 1.83],
+    "sammie-tap-1": [185.89, 114.58, 26.09, 1.83],
+    "sammie-tap-2": [184.91, 112.4, 26.09, -1.84],
+    "sammie-tap-3": [184.22, 111.2, 26.09, -4.18],
+    "sammie-tap-4": [184.09, 111.6, 26.09, -4.55],
+    "sammie-tap-5": [184.54, 113.59, 26.09, -2.87],
+    "sammie-tap-6": [185.3, 116.28, 26.09, 0.43],
+    "sammie-tap-7": [186.11, 119.42, 26.09, 4.43],
+    "sammie-tap-8": [186.73, 122.42, 26.09, 8.08],
+    "sammie-tap-9": [187.15, 124.23, 26.09, 10.38],
+    "sammie-tap-10": [187.36, 123.89, 26.09, 10.75],
+    "sammie-tap-11": [187.27, 121.55, 26.09, 9.09],
+    "sammie-tap-12": [186.77, 117.99, 26.09, 5.83],
+    "sammie-desc-1": [185.89, 114.58, 26.09, 1.83],
+    "sammie-desc-2": [186.55, 127.66, 26.09, 15.52],
+    "sammie-desc-3": [185.53, 139.88, 26.09, 28.68],
+    "sammie-desc-4": [181.44, 151.15, 26.09, 41.12],
+    "suit:cosmic": [184.32, 101.02, 35.29, 1.83],
+    "cosmic-tap-1": [184.32, 101.02, 35.29, 1.83],
+    "cosmic-tap-2": [183.15, 98.55, 35.29, -1.85],
+    "cosmic-tap-3": [182.31, 97.42, 35.29, -4.21],
+    "cosmic-tap-4": [182.1, 97.75, 35.29, -4.59],
+    "cosmic-tap-5": [182.57, 99.46, 35.29, -2.89],
+    "cosmic-tap-6": [183.44, 102.21, 35.29, 0.42],
+    "cosmic-tap-7": [184.99, 105.39, 35.29, 4.45],
+    "cosmic-tap-8": [187.08, 108.2, 35.29, 8.11],
+    "cosmic-tap-9": [188.42, 109.75, 35.29, 10.42],
+    "cosmic-tap-10": [188.8, 109.48, 35.29, 10.8],
+    "cosmic-tap-11": [188.13, 107.45, 35.29, 9.13],
+    "cosmic-tap-12": [186.43, 104.3, 35.29, 5.85],
+    "cosmic-desc-1": [184.32, 101.02, 35.29, 1.83],
+    "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
+    "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
+    "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+    "suit:eclipse": [186.2, 112.62, 26.96, 1.82],
+    "eclipse-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "eclipse-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "eclipse-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "eclipse-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "eclipse-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "eclipse-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "eclipse-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "eclipse-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "eclipse-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "eclipse-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "eclipse-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "eclipse-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "eclipse-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "eclipse-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "eclipse-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "eclipse-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:cryostar": [186.2, 112.62, 26.96, 1.82],
+    "cryostar-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "cryostar-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "cryostar-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "cryostar-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "cryostar-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "cryostar-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "cryostar-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "cryostar-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "cryostar-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "cryostar-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "cryostar-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "cryostar-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "cryostar-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "cryostar-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "cryostar-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "cryostar-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:verdant": [186.2, 112.62, 26.96, 1.82],
+    "verdant-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "verdant-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "verdant-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "verdant-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "verdant-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "verdant-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "verdant-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "verdant-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "verdant-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "verdant-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "verdant-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "verdant-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "verdant-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "verdant-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "verdant-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "verdant-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:arcflash": [186.2, 112.62, 26.96, 1.82],
+    "arcflash-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "arcflash-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "arcflash-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "arcflash-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "arcflash-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "arcflash-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "arcflash-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "arcflash-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "arcflash-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "arcflash-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "arcflash-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "arcflash-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "arcflash-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "arcflash-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "arcflash-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "arcflash-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:origamist": [186.2, 112.62, 26.96, 1.82],
+    "origamist-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "origamist-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "origamist-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "origamist-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "origamist-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "origamist-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "origamist-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "origamist-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "origamist-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "origamist-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "origamist-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "origamist-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "origamist-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "origamist-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "origamist-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "origamist-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:leviathan": [186.86, 102.5, 24.93, 1.8],
+    "leviathan-tap-1": [186.86, 102.5, 24.93, 1.8],
+    "leviathan-tap-2": [185.3, 99.36, 24.93, -1.93],
+    "leviathan-tap-3": [184.38, 98.01, 24.93, -4.31],
+    "leviathan-tap-4": [184.44, 98.69, 24.93, -4.69],
+    "leviathan-tap-5": [185.43, 101.19, 24.93, -2.98],
+    "leviathan-tap-6": [186.94, 105, 24.93, 0.37],
+    "leviathan-tap-7": [188.42, 109.22, 24.93, 4.44],
+    "leviathan-tap-8": [189.53, 112.68, 24.93, 8.14],
+    "leviathan-tap-9": [190.12, 114.35, 24.93, 10.48],
+    "leviathan-tap-10": [190.18, 113.68, 24.93, 10.86],
+    "leviathan-tap-11": [189.64, 110.85, 24.93, 9.17],
+    "leviathan-tap-12": [188.46, 106.71, 24.93, 5.87],
+    "leviathan-desc-1": [186.86, 102.5, 24.93, 1.8],
+    "leviathan-desc-2": [190, 120.7, 24.93, 15.69],
+    "leviathan-desc-3": [188.79, 138.78, 24.93, 29],
+    "leviathan-desc-4": [184.5, 156.43, 24.93, 41.51],
+    "suit:copper": [185.92, 105.99, 26.56, 1.81],
+    "copper-tap-1": [185.92, 105.99, 26.56, 1.81],
+    "copper-tap-2": [184.32, 103.19, 26.56, -1.86],
+    "copper-tap-3": [183.15, 101.84, 26.56, -4.2],
+    "copper-tap-4": [183, 102.18, 26.56, -4.57],
+    "copper-tap-5": [183.84, 104.11, 26.56, -2.89],
+    "copper-tap-6": [185.39, 107.24, 26.56, 0.4],
+    "copper-tap-7": [186.65, 110.83, 26.56, 4.41],
+    "copper-tap-8": [187.71, 113.92, 26.56, 8.05],
+    "copper-tap-9": [188.59, 115.58, 26.56, 10.36],
+    "copper-tap-10": [188.79, 115.27, 26.56, 10.73],
+    "copper-tap-11": [188.23, 113.05, 26.56, 9.07],
+    "copper-tap-12": [187.24, 109.61, 26.56, 5.81],
+    "copper-desc-1": [185.92, 105.99, 26.56, 1.81],
+    "copper-desc-2": [188.69, 119.68, 26.56, 15.5],
+    "copper-desc-3": [188.8, 133.27, 26.56, 28.66],
+    "copper-desc-4": [185.84, 145.51, 26.56, 41.11],
+    "suit:alien": [188.74, 121.7, 22.29, 1.82],
+    "alien-tap-1": [188.74, 121.7, 22.29, 1.82],
+    "alien-tap-2": [187.8, 119.23, 22.29, -1.85],
+    "alien-tap-3": [187.09, 118.11, 22.29, -4.19],
+    "alien-tap-4": [186.89, 118.53, 22.29, -4.57],
+    "alien-tap-5": [187.23, 120.36, 22.29, -2.88],
+    "alien-tap-6": [187.87, 123.17, 22.29, 0.41],
+    "alien-tap-7": [188.55, 126.4, 22.29, 4.42],
+    "alien-tap-8": [189.1, 129.21, 22.29, 8.06],
+    "alien-tap-9": [189.51, 130.68, 22.29, 10.36],
+    "alien-tap-10": [189.8, 130.35, 22.29, 10.73],
+    "alien-tap-11": [189.87, 128.29, 22.29, 9.08],
+    "alien-tap-12": [189.51, 125.09, 22.29, 5.82],
+    "alien-desc-1": [188.74, 121.7, 22.29, 1.82],
+    "alien-desc-2": [188.54, 134.72, 22.29, 15.5],
+    "alien-desc-3": [185.29, 146.95, 22.29, 28.66],
+    "alien-desc-4": [179.25, 157.86, 22.29, 41.1],
+    "suit:flight": [186.2, 112.62, 26.96, 1.82],
+    "flight-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "flight-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "flight-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "flight-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "flight-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "flight-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "flight-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "flight-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "flight-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "flight-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "flight-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "flight-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "flight-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "flight-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "flight-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "flight-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:frost": [186.2, 112.62, 26.96, 1.82],
+    "frost-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "frost-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "frost-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "frost-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "frost-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "frost-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "frost-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "frost-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "frost-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "frost-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "frost-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "frost-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "frost-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "frost-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "frost-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "frost-desc-4": [184.8, 150.86, 26.96, 41.25],
 };
 // Measured head registration in each shipped helmet sprite. The ten
 // regenerated paintings share [128,136,80]; their source export applies the
@@ -4170,7 +4204,10 @@ function bakedDome(key) {
 // and one presentation box. Alpha-box fitting would undo the normalization
 // whenever a tail was longer, making the same helmet a different size.
 export const NATURAL_FLIGHT_SUITS = new Set([
-    "iontrim", "copper", "voidsuit", "sammie", "gemmie", "leviathan", "ember", "frost", "ghost",
+    "ghost",
+    // iontrim, voidsuit, sammie, gemmie and ember left this set with the 3D lineup
+    // (26 Oct 2026), then frost, copper and leviathan: their rendered banks register
+    // by their own first tap frame
 ]);
 const NATURAL_FLIGHT_BOX = { x: 32, y: 32, w: 192, h: 192 };
 function naturalFlightKey(key) {
@@ -4359,13 +4396,13 @@ export const SUIT_DIVE_DEPTH = {
     // the Eclipse family, locked together on Eclipse's own ramp
     cryostar: 1, verdant: 1,
     // ---- tunable ----
-    // "dives a bit too steep visually, over rotates but tail doesn't do
-    // enough on the way up" - the High Orbit five
-    cinderforge: 0.7, groveguard: 0.7, cosmic: 0.7, sunforged: 0.7, abyssal: 0.7,
+    // THE 3D LINEUP (26 Oct 2026): four rendered dive frames, walked in full
+    cinderforge: 1, groveguard: 1, cosmic: 1, sunforged: 1, abyssal: 1,
+    iontrim: 1, voidsuit: 1, ember: 1, sammie: 1, gemmie: 1,
     // Fresh natural banks carry the shallow body pitch in the art and use
     // every tail-whip pose. The temporary limits on obsolete art are retired.
-    iontrim: 1, copper: 1, leviathan: 1,
-    ghost: 1, voidsuit: 1, ember: 1, frost: 1, sammie: 1, gemmie: 1,
+    copper: 1, leviathan: 1,
+    ghost: 1, frost: 1,
     // ---- EVERY SUIT CARRIES ITS OWN NUMBER ----
     // These twelve used to have no line here and fell through to
     // POSE_DIVE_DEPTH, which meant one edit moved all twelve at once. Owner,
@@ -4487,8 +4524,10 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // painted HEAD-UP at -22 - 36 degrees the other side of the family - so a
 // climb tipped it back until it sat upright in the sky rather than
 // climbing, which is what the owner saw as leading with its head.
-// The 3D test (pinky) too: its rendered dive frames carry the attitude.
-const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog", "pinky"]);
+// The 3D lineup too (26 Oct 2026): its rendered dive frames carry the attitude.
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
+    "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
+    "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
@@ -4497,7 +4536,7 @@ const LOOP_FPS = 12;
 // EXTENDS rather than which way it points, and the rig supplies the
 // direction over the top. That is what lets nine frames read as a climb and
 // a dive instead of needing two sheets that never quite agree at the seam.
-const RIG_PITCH_WITH_BANK = new Set(["cyber", "porcelain", "nacre", "origamist"]);
+const RIG_PITCH_WITH_BANK = new Set(["cyber", "porcelain", "nacre"]);
 // THE FRAMES A GENERATED BANK LOST. Twenty-two of the tap banks were made
 // from one shared motion, and that motion loses the pilot's LOWER BODY at
 // its extremes - hip, haunch and hind leg leave the silhouette entirely and
@@ -4617,7 +4656,9 @@ tapDriven = false,
 // how a tap moves the ascent bank: null = the stock ramp, "velocity" =
 // the freeze-day path, {fwd, back} = the owner's linear dial (see
 // TAP_SHAPE in control-constants; tapShapeFor resolves the beta dial)
-tapShape = null, wake) {
+tapShape = null, wake,
+// Arcflash's electrical wake, now that it flies a rendered bank (its joint rig retired)
+arcWake) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     // Flight's animation frames already wear the Clear dome. Any other helmet
@@ -4630,7 +4671,7 @@ tapShape = null, wake) {
         paintVanguard(ctx, art, x, y, size);
         return;
     }
-    if (suit.id === "arcflash") {
+    if (isArcflashRig(suit.id)) {
         paintArcflash(ctx, art, x, y, size);
         return;
     }
@@ -4963,9 +5004,19 @@ tapShape = null, wake) {
                 { suit: suit.id, bank: bankName, idx: k + 1, v };
             // one registration for both banks: they are rendered on one canvas
             const refT = tapFrames[0].box ?? ref;
+            // a signature wake leaves from the frame's own measured feet, under the pilot
+            const boots = RIG3D_BOOTS[`${suit.id}-${bankName}-${k + 1}`];
+            if (wake && boots && isHighOrbit(suit.id))
+                paintBootWake(ctx, suit.id, boots, refT, x, y, size, wake);
+            if (arcWake && boots)
+                paintArcflashBootWake(ctx, arcWake.state, boots, refT, x, y, size, arcWake.travel);
             drawRigLayer(ctx, frame, refT, x, y, size, 0, undefined, halo);
-            if (!wearsOwnHead(suit))
-                paintDome(ctx, tapFrames[0], "suit:" + suit.id, helmet, x, y, size, art);
+            // every rendered frame carries its own measured helmet anchor (tools/rig3d
+            // anchors.json), read against the bank's first frame like the bank itself
+            if (!wearsOwnHead(suit)) {
+                const pose = `${suit.id}-${bankName}-${k + 1}`;
+                paintDome(ctx, tapFrames[0], DOME[pose] ? pose : "suit:" + suit.id, helmet, x, y, size, art);
+            }
         }
         else if (fullLoop) {
             // THE TAP TRIGGERS IT, NOT A CLOCK (owner, 9 Sep 2026: "the critters
@@ -5121,7 +5172,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     const frameKey = (flapping ? "flap-" : "idle-") + (idx + 1);
     const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
     const flagship = suit.id === "vanguard";
-    const arcflash = suit.id === "arcflash";
+    const arcflash = isArcflashRig(suit.id);
     const orbit = isHighOrbitRig(suit.id);
     const independentRig = flagship || arcflash || orbit;
     if (flagship)
@@ -5224,7 +5275,9 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
         paintIllustrated(ctx, spr, 0, 2, 52, helm, suit, w.time, art, frameKey, frames[nxt] ?? null, keyNext, blend, w.flight === "tunnel" ? "light" : skyLuma(w) > 0.42 ? "dark" : "light", w.tailA, w.tapAnimT,
         // Cryostar and Verdant now share Eclipse's heading mapping by owner
         // request. All three use the same smoother, pose curve and frame index.
-        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed, lean, NaN, true, tapShapeFor(save, suit.id), effects && isPremiumSuit(suit.id) ? { state: w.highOrbit, travel: w.distance / localScale } : undefined);
+        w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed, lean, NaN, true, tapShapeFor(save, suit.id),
+        // the High Orbit five fly rendered banks now (CUT_RIG_RETIRED); their wake rides the bank
+        effects && (isPremiumSuit(suit.id) || CUT_RIG_RETIRED.has(suit.id)) ? { state: w.highOrbit, travel: w.distance / localScale } : undefined, effects && suit.id === "arcflash" && !arcflash ? { state: w.arcflash, travel: { x: x / localScale, y: y / localScale, travel: w.distance / localScale } } : undefined);
     if (flagship && w.shieldCharges > 0)
         paintVanguardShield(ctx, 0, 0, w.time);
     ctx.restore();
@@ -5415,7 +5468,7 @@ sweep = false,
 pitch = 0) {
     if (!art)
         return;
-    if (suit.id === "arcflash") {
+    if (isArcflashRig(suit.id)) {
         paintArcflash(ctx, art, cx, cy, size, arcflashPreview(ctx, t), undefined, true, pitch);
         return;
     }
@@ -5549,7 +5602,8 @@ pitch = 0) {
     const pop = 1 + (articulated ? 0 : kick * 0.05);
     ctx.scale(pop, pop);
     paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art, (flapping ? "flap-" : "idle-") + (idx + 1), frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend, "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean, sweptPose, false, tapShapeFor(null, suit.id), // the table only: a preview has no save
-    isPremiumSuit(suit.id) ? { state: premiumWakePreview(ctx, suit.id, t, vy), travel: t * 300 } : undefined);
+    isPremiumSuit(suit.id) ? { state: premiumWakePreview(ctx, suit.id, t, vy), travel: t * 300 }
+        : CUT_RIG_RETIRED.has(suit.id) && isHighOrbit(suit.id) ? { state: highOrbitPreview(ctx, suit.id, t), travel: t * 300 } : undefined, suit.id === "arcflash" && !isArcflashRig(suit.id) ? { state: arcflashPreview(ctx, t) } : undefined);
     ctx.restore();
 }
 export function paintPalPreview(ctx, art, id, cx, cy, size) {

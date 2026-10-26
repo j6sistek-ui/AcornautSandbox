@@ -1,9 +1,10 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=309";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED, IS_BETA } from "./catalog.js?v=309";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=309";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=309";
-import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumSuit, isHighOrbitRig } from "./high-orbit-config.js?v=309";
-import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=309";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=317";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=317";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=317";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=317";
+import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumFrames, isHighOrbitRig } from "./high-orbit-config.js?v=317";
+import { isArcflashRig } from "./arcflash.js?v=317";
+import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=317";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -142,7 +143,7 @@ function asSprite(img) {
     s.coreX = m.coreX;
     s.coreY = m.coreY;
     const still = typeof img.src === "string" ? img.src.match(/\/suits\/([^/]+)\.png(?:\?|$)/)?.[1] : undefined;
-    if (still && isPremiumSuit(still))
+    if (still && isPremiumFrames(still))
         bindSpriteDetails([{ sprite: s, path: `suits/hd/${still}.png` }], path => loadImg(artUrl(path)));
     return s;
 }
@@ -325,7 +326,7 @@ export function drawSprite(ctx, spr, x, y, size, fit = "box", halo, haloOpacity 
 // still touches its plume in the source, but the guarded mainline cut is
 // safer than the earlier colour split and remains an active rig.
 const RIGGED_SUITS = [
-    "flight",
+    // flight left with the 3D lineup (26 Oct 2026): it flies a rendered bank
     // The natural-flight nine use whole-frame banks and matching neutral
     // portraits. Their historical split parts are no longer requested.
     // alien is NOT rigged any more: its new spiral-tail master has no neck
@@ -338,12 +339,14 @@ const RIGGED_SUITS = [
     // asc-1 has no neck to cut (neck-cut.py refused it), and it flies a
     // full bank - the static master is its loading fallback, like alien.
     "catsuit",
-    "verdant", "cryostar", "eclipse", "volt",
+    // verdant, cryostar and eclipse left with the 3D lineup (26 Oct 2026)
+    "volt",
     // Cyber is NOT beta-gated any more. It started beta-only, then the shop
     // overhaul sold it on production in two bundles - and its rig stayed
     // behind this flag, so a pilot who bought it flew a flat sticker while
     // the beta page flew the animation. A suit's art must follow the suit.
-    "cyber", "porcelain", "nacre", "origamist",
+    "cyber", "porcelain", "nacre",
+    // origamist left with the 3D lineup (26 Oct 2026): it flies a rendered bank
     // High Orbit uses its own eleven-part atlases below.
 ];
 const TAP_BANKS = {
@@ -355,12 +358,17 @@ const TAP_BANKS = {
     // not on beta. A painted frame has no such thing: the pose IS the art.
     // Every one of these banks already shipped in the production art folder;
     // only this list kept production from asking for them.
-    robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
-    flight: 16,
-    // THE 3D TEST (owner, 25 Oct 2026: "12 tap, 4 dive, try something new.
-    // drop it in beta"): rendered by tools/rig3d from a rigged model, a
-    // twelve-frame tap and a four-frame dive, no climb. Beta-only suit.
-    pinky: 12,
+    robo: 16, bigbooty: 16, catsuit: 16, volt: 16,
+    // THE 3D LINEUP (owner, 26 Oct 2026: "here are the replacements, DIRECT
+    // replace"): ten suits re-made from rigged 3D squirrels by tools/rig3d -
+    // a twelve-frame tap and a four-frame dive (the dive table below), no climb, the
+    // same motion on every one. See the tapDive branch in draw.ts.
+    ember: 12, voidsuit: 12, groveguard: 12, cinderforge: 12, sunforged: 12,
+    abyssal: 12, gemmie: 12, iontrim: 12, sammie: 12, cosmic: 12,
+    // and the next two on the same rendered skeleton, then four on their own rigs
+    flight: 12, frost: 12, leviathan: 12, copper: 12, alien: 12, hedgehog: 12,
+    arcflash: 12, origamist: 12, eclipse: 12, cryostar: 12, verdant: 12,
+    ferret: 12, raccoon: 12,
     // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
     // retired: their GENERATED motion lost the pilot's lower body at its
     // extremes, and each flies a painted ascent/descent ramp now -
@@ -372,7 +380,8 @@ const TAP_BANKS = {
     // The five unreleased suits' obsolete tap banks are retired with their
     // owner-requested 8/8 replacement sheets (7 Sep 2026).
 };
-const TAIL_TAP_BANKS = { eclipse: 12 };
+// eclipse's tail-tap bank retired with its painted art (3D lineup, 26 Oct 2026)
+const TAIL_TAP_BANKS = {};
 const BOUNCE_BANKS = { volt: 16 };
 // Alien descends on SEVEN frames, deliberately: the delivered desc-7 was a
 // heavy black tail-swirl that would flash on colored skies, so the owner
@@ -392,30 +401,27 @@ const BOUNCE_BANKS = { volt: 16 };
 // "large frame in rotation" the owner could see but not name. Dropped and
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
-const ASC_BANKS = { eclipse: 8, flight: 3, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, iontrim: 8, copper: 8,
-    // THE ALIENS SWAPPED after the owner's A/B: the standard-spec bank
-    // won and flies production "alien" at 8/8; the custom-posed bank
-    // retired to the beta shelf as "Alien 1" at 7/7 (the owner's two
-    // frame cuts - the black desc swirl and the bled-over spiral asc).
-    voidsuit: 8, alien: 8,
-    ember: 8,
-    cryostar: 8, verdant: 8, gemmie: 8,
-    sammie: 8, frost: 8, ghost: 8, leviathan: 8,
+const ASC_BANKS = { cyber: 9, porcelain: 9, nacre: 9, seraph: 8,
+    // alien, copper and leviathan left for the 3D lineup (26 Oct 2026)
+    ghost: 8,
     // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
     briellacat: 7,
 };
-const DESC_BANKS = { eclipse: 8, flight: 5, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, iontrim: 8, copper: 8,
-    voidsuit: 8, alien: 8,
-    ember: 8,
-    cryostar: 8, verdant: 8, gemmie: 8,
-    sammie: 8, frost: 8, ghost: 8, leviathan: 8,
+const DESC_BANKS = { cyber: 9, porcelain: 9, nacre: 9, seraph: 8,
+    ghost: 8,
     briellacat: 4,
-    // the 3D test's dive, paired with its tap bank (see TAP_BANKS)
-    pinky: 4,
+    // the 3D lineup's dives, paired with their twelve-frame taps above
+    ember: 4, voidsuit: 4, groveguard: 4, cinderforge: 4, sunforged: 4,
+    abyssal: 4, gemmie: 4, iontrim: 4, sammie: 4, cosmic: 4,
+    flight: 4, frost: 4, leviathan: 4, copper: 4, alien: 4, hedgehog: 4,
+    arcflash: 4, origamist: 4, eclipse: 4, cryostar: 4, verdant: 4,
+    ferret: 4, raccoon: 4,
 };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
-const LOOP_BANKS = { raccoon: 16, ferret: 16, hedgehog: 16 };
+// all three critters left for the 3D lineup (26 Oct 2026): Quill, then Noodle and Bandit.
+// The loop path stays for the next sheet that needs it.
+const LOOP_BANKS = {};
 const LAZY_SUIT_IDS = [...new Set([
         "vanguard",
         // Arcflash is SOLD on production (7 Sep 2026): its parts atlas must load
@@ -449,7 +455,7 @@ export function loadSuitBank(bank, id) {
             }
             return;
         }
-        if (id === "arcflash") {
+        if (isArcflashRig(id)) {
             try {
                 const atlas = await loadImg(`${base}/suits/arcflash/parts.png?v=${ART_VER}`);
                 if (atlas.naturalWidth !== 1024 || atlas.naturalHeight !== 768) {
@@ -507,9 +513,9 @@ export function loadSuitBank(bank, id) {
             bank.suitBounce[id] = bounce;
         // The remastered trio must not compress a missing pose out of its ramp.
         // Publish both complete banks together, retaining the still on failure.
-        const completeMotion = !isPremiumSuit(id) || (asc.length === ASC_BANKS[id] && desc.length === DESC_BANKS[id]
+        const completeMotion = !isPremiumFrames(id) || (asc.length === ASC_BANKS[id] && desc.length === DESC_BANKS[id]
             && [...asc, ...desc].every(frame => frame.width === 256 && frame.height === 256));
-        if (isPremiumSuit(id)) {
+        if (isPremiumFrames(id)) {
             const detail = (path) => loadImg(artUrl(path));
             if (tail && body)
                 bindSpriteDetails([
@@ -544,7 +550,7 @@ export function loadSuitBank(bank, id) {
             (LOOP_BANKS[id] && !loop.length) ||
             (ASC_BANKS[id] && !asc.length) ||
             (DESC_BANKS[id] && !desc.length);
-        if (shortBank || !completeMotion || (isPremiumSuit(id) && (!tail || !body)))
+        if (shortBank || !completeMotion || (isPremiumFrames(id) && (!tail || !body)))
             suitBankLoads.delete(id);
     })();
     suitBankLoads.set(id, p);
@@ -699,8 +705,6 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
         // 2026), so its sheet loads there rather than only on the beta host
         "briellacat",
-        // the 3D test (25 Oct 2026) is a beta-only suit, so its still is too
-        ...(IS_BETA ? ["pinky"] : []),
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     const hyperRunIds = [
@@ -712,7 +716,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
     async function named(ids, folder, suffix = "", required = false, extension = "png") {
         const out = {};
         await Promise.all(ids.map(async (id) => {
-            const path = folder === "suits" && id === "arcflash" && !suffix
+            const path = folder === "suits" && isArcflashRig(id) && !suffix
                 ? "suits/arcflash/body.png" : `${folder}/${id}${suffix}.${extension}`;
             const src = `${base}/${path}?v=${ART_VER}`;
             try {

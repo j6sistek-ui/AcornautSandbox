@@ -1,4 +1,4 @@
-import type {PremiumSuitId} from './high-orbit-config';
+import type {HighOrbitId,PremiumSuitId} from './high-orbit-config';
 import type {HighOrbitMotion} from './high-orbit-motion';
 import {paintHighOrbitEffect} from './high-orbit-effects';
 import {CYBER_TRIO_REGISTRATION} from './cyber-trio-registration';
@@ -10,7 +10,13 @@ export type PremiumBankWake={state:HighOrbitMotion;travel:number};
 export function paintPremiumBankWake(ctx:CanvasRenderingContext2D,id:PremiumSuitId,
  bank:'asc'|'desc',index:number,ref:{x:number;y:number;w:number;h:number},
  x:number,y:number,size:number,wake:PremiumBankWake){
-  const boots=CYBER_TRIO_REGISTRATION[id][bank][index].emitters;
+  paintBootWake(ctx,id,CYBER_TRIO_REGISTRATION[id][bank][index].emitters,ref,x,y,size,wake);
+}
+/** The same wake from any frame's emitters, in that frame's own pixel space - the
+ * rendered 3D banks measure theirs at the hind feet (rig3d-boots.ts). */
+export function paintBootWake(ctx:CanvasRenderingContext2D,id:HighOrbitId,
+ boots:readonly (readonly [number,number])[],ref:{x:number;y:number;w:number;h:number},
+ x:number,y:number,size:number,wake:PremiumBankWake){
   // a context without getTransform (a recording stub in the harness, an
   // old WebView) paints the wake in the painter's own space rather than
   // crashing the preview (exposed 13 Sep 2026 when the cheaper trio reached
@@ -21,7 +27,9 @@ export function paintPremiumBankWake(ctx:CanvasRenderingContext2D,id:PremiumSuit
   const scale=Math.hypot(m.a,m.b),effectSize=size*scale;
   if(effectSize<=0)return;
   const cx=m.a*x+m.c*y+m.e,cy=m.b*x+m.d*y+m.f;
-  const emitters=boots.map(([ex,ey]):readonly [number,number]=>{
+  // the wake runs two lanes; a rig that found one hind foot lends it a twin a few pixels below
+  const lanes=boots.length>1?boots:[boots[0],[boots[0][0]-2,boots[0][1]+4] as const];
+  const emitters=lanes.map(([ex,ey]):readonly [number,number]=>{
     const bx=(ex-ref.x-ref.w/2)*unit,by=(ey-ref.y-ref.h/2)*unit;
     return [128+(m.a*bx+m.c*by)*192/effectSize,128+(m.b*bx+m.d*by)*192/effectSize];
   });

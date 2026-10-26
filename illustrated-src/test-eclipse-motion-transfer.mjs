@@ -16,7 +16,7 @@ writeFileSync(join(scratch,'package.json'),'{"type":"module"}');
 for(const file of readdirSync(join(scratch,'js')).filter(x=>x.endsWith('.js'))){
  const path=join(scratch,'js',file);let code=readFileSync(path,'utf8').replace(/(\.js)\?v=[^"']+/g,'$1');
  if(file==='draw.js')code+='\nexport {paintIllustrated, drawPilot, DOME};\n';
- if(file==='art.js')code+='\nexport {asSprite, ASC_BANKS, DESC_BANKS};\n';
+ if(file==='art.js')code+='\nexport {asSprite, ASC_BANKS, DESC_BANKS, TAP_BANKS};\n';
  writeFileSync(path,code);
 }
 const labels=new WeakMap();
@@ -27,6 +27,13 @@ globalThis.localStorage={getItem:()=>null,setItem(){},removeItem(){}};
 const mod=file=>import(pathToFileURL(join(scratch,'js',file+'.js')).href);
 const [D,A,C,Sim,S,Control]=await Promise.all(['draw','art','catalog','sim','save','control-constants'].map(mod));
 const suits=['eclipse','cryostar','verdant'],art=A.emptyArt();
+// THE ECLIPSE FAMILY JOINED THE 3D LINEUP (owner, 26 Oct 2026): all three fly rendered tap and
+// dive banks, so the painted ramp transfer this pinned is retired. Confirm it, and stop.
+if(suits.every(id=>!A.ASC_BANKS[id])){
+ for(const id of suits){assert.equal(A.TAP_BANKS[id],12,id+' twelve-frame tap');assert.equal(A.DESC_BANKS[id],4,id+' four-frame dive');}
+ console.log('Eclipse family: retired to rendered 3D banks; the painted transfer is not applicable');
+ rmSync(scratch,{recursive:true,force:true});process.exit(0);
+}
 async function sprite(file){const im=await loadImage(join(root,'docs/art',file));Object.defineProperty(im,'src',{get:()=>file});labels.set(im,file);return A.asSprite(im);}
 for(const s of suits){
  assert.equal(A.ASC_BANKS[s],8);assert.equal(A.DESC_BANKS[s],8);

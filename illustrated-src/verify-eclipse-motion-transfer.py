@@ -12,6 +12,17 @@ import numpy as np
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# THE ECLIPSE FAMILY JOINED THE 3D LINEUP (owner, 26 Oct 2026): Eclipse, Cryostar and Verdant
+# fly rendered tap and dive banks, so the painted frames this checks are retired. Confirm that,
+# and stop; the check stays for the archive pass.
+import re as _re
+_art = (Path(__file__).resolve().parents[1] / 'illustrated-src/game/art.ts').read_text()
+_tap = _re.search(r'const TAP_BANKS[^{]*\{([^}]*)\}', _art, _re.S).group(1)
+_tap = dict((k, int(v)) for k, v in _re.findall(r'(\w+):\s*(\d+)', _re.sub(r'//[^\n]*', '', _tap)))
+if all(_tap.get(s) == 12 for s in ('eclipse', 'cryostar', 'verdant')):
+    print('Eclipse family: retired to rendered 3D banks (12 tap, 4 dive); painted-frame checks not applicable')
+    raise SystemExit(0)
 SOURCE = ROOT / 'art-src/eclipse-motion-transfer'
 ART = ROOT / 'docs/art/suits'
 

@@ -101,7 +101,8 @@ assert.equal(e.buyTrail('arcflashwake'),'equip');assert.equal(e.save.equippedTra
 assert.equal(e.buyTrail('vanguardwake'),'locked');assert.equal(e.buyTrail('ion'),'locked');
 e.open('hangar');e.setShopTab('trails');
 assert(app.textContent.includes('Arcflash carries its own blue electrical wake'));
-e.setShopTab('helmets');assert(app.textContent.includes("Arcflash's blue eyes and bare head"));
+// Arcflash wears the pilot's helmet since its 3D model (owner, 26 Oct 2026): no bare-head lock
+e.setShopTab('helmets');assert(!app.textContent.includes("Arcflash's blue eyes and bare head"));
 assert(['buy','equip'].includes(e.buySuit('flight')));
 assert.equal(Cat.trailWornBy(e.save.equippedTrail,e.save.equippedSuit),'ion');
 e.save.equippedSuit='arcflash';
@@ -163,6 +164,10 @@ for(let i=0;i<6;i++)Sim.updateWorld(small,e.save,1/60);
 assert.equal(small.arcflash.phase,'dive','accepted drop drives the descending suit');
 const imageUrls=[];
 globalThis.Image=class {naturalWidth=1024;naturalHeight=768;set src(v){imageUrls.push(v);queueMicrotask(()=>this.onload?.());}};
-const isolatedArt=await import('../docs/js/art.js?arcflash-loader-check');const bank={};await isolatedArt.loadSuitBank(bank,'arcflash');assert.equal(bank.arcflash?.naturalWidth,1024);assert(imageUrls.some(v=>v.includes(`/suits/arcflash/parts.png?v=${Cat.ART_VER}`)));
-console.log('beta: equip/menu/trail preservation, no particle RNG, accepted input, phase, pause/freeze/warp/stuck, reset/tutorial isolation, Hyper Run hold/drop and authority isolation, atlas loading passed');
+// the joint rig retired with the 3D lineup (26 Oct 2026): Arcflash streams its rendered tap and
+// dive banks, never the parts atlas
+const isolatedArt=await import('../docs/js/art.js?arcflash-loader-check');const bank=isolatedArt.emptyArt();await isolatedArt.loadSuitBank(bank,'arcflash');
+assert(!imageUrls.some(v=>v.includes('/suits/arcflash/parts.png')),'no parts atlas');
+for(const f of ['arcflash-tap-1','arcflash-tap-12','arcflash-desc-4'])assert(imageUrls.some(v=>v.includes(`/suits/${f}.png?v=${Cat.ART_VER}`)),f+' requested');
+console.log('beta: equip/menu/trail preservation, no particle RNG, accepted input, phase, pause/freeze/warp/stuck, reset/tutorial isolation, Hyper Run hold/drop and authority isolation, rendered bank loading passed');
 process.exit(0);

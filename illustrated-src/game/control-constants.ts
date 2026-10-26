@@ -53,12 +53,10 @@ export const TAP_SHAPE_MIN = 0.1, TAP_SHAPE_MAX = 1.0;
 // their own ("its artwork, its frame work"). High Orbit, AcorNut and
 // Arcflash have their own controllers.
 export const TAP_SHAPE: Record<string, TapShape | "velocity"> = {
-  eclipse: "velocity", cryostar: "velocity", verdant: "velocity", cyber: "velocity", seraph: "velocity",
-  alien: "velocity", flight: "velocity", briellacat: "velocity", iontrim: "velocity", copper: "velocity",
-  voidsuit: "velocity", ember: "velocity", frost: "velocity", ghost: "velocity", gemmie: "velocity",
-  sammie: "velocity", leviathan: "velocity",
+  cyber: "velocity", seraph: "velocity",
+  briellacat: "velocity", ghost: "velocity",
   // Owner-requested replacement banks follow Cyber's exact live path.
-  porcelain: "velocity", nacre: "velocity", origamist: "velocity",
+  porcelain: "velocity", nacre: "velocity",
 };
 
 /** THE TAIL SPRING, per suit. The plume on a suit with its own tail layer
@@ -74,7 +72,7 @@ export type TailSpring = { stiff: number; damp: number; kick: number };
 export const TAIL_SPRING_MIN = 0.25, TAIL_SPRING_MAX = 3;
 export const TAIL_SPRING_ONE: TailSpring = { stiff: 1, damp: 1, kick: 1 };
 export const TAIL_SPRING: Record<string, TailSpring> = {};
-export const TAIL_SPRING_SUITS = ["flight", "robo", "bigbooty", "catsuit", "verdant", "cryostar", "eclipse", "volt", "cyber", "porcelain", "nacre", "origamist"];
+export const TAIL_SPRING_SUITS = ["robo", "bigbooty", "catsuit", "volt", "cyber", "porcelain", "nacre"];
 
 /** THE TAP ACCENT, LIVE (owner, 12 Sep 2026: "enable it in game ... by
  *  default 1x is good"). The 167 ms ignition and the body reaction on every
@@ -190,35 +188,17 @@ export const SUIT_LEAN_DEFAULT: SuitLean = { up: 0.8, down: 0.3 };
 export const SUIT_LEAN: Record<string, SuitLean> = {
   vanguard:    { up: 0, down: 0 }, // drawn attitudes; no extra body tipping
   arcflash:    { up: 0, down: 0 }, // its own joint controller owns body attitude
-  // the standard, and the reference every other suit is read against
-  flight:      { up: 0.8, down: 0.3 },
+  // flight was the reference here at the default; it joined the 3D lineup below
 
   // --- rigged suits: these carry the velocity bank AND the heading pitch,
   //     so they are the ones most likely to read as over-tipped
-  iontrim:     { up: 0.8, down: 0.3 },
-  copper:      { up: 0.8, down: 0.3 },
-  frost:       { up: 0.8, down: 0.3 },
-  voidsuit:    { up: 0.8, down: 0.3 },
-  ember:       { up: 0.8, down: 0.3 },
   ghost:       { up: 0.8, down: 0.3 },
-  gemmie:      { up: 0.8, down: 0.3 },
-  sammie:      { up: 0.8, down: 0.3 },
   seraph:      { up: 0.8, down: 0.3 },
-  leviathan:   { up: 0.8, down: 0.3 },
-  verdant:     { up: 0.8, down: 0.3 },
-  cryostar:    { up: 0.8, down: 0.3 },
-  cinderforge: { up: 0.8, down: 0.3 },
-  groveguard:  { up: 0.8, down: 0.3 },
-  cosmic:      { up: 0.8, down: 0.3 },
-  sunforged:   { up: 0.8, down: 0.3 },
-  abyssal:     { up: 0.8, down: 0.3 },
   porcelain:   { up: 0.8, down: 0.3 },
   nacre:       { up: 0.8, down: 0.3 },
-  origamist:   { up: 0.8, down: 0.3 },
 
   // --- custom ANIMATION suits. Their frames are the owner's and are not to
   //     be touched; their LEAN is a dial like everyone else's.
-  eclipse:     { up: 0.8, down: 0.3 },
   volt:        { up: 0.8, down: 0.3 },
   bigbooty:    { up: 0.8, down: 0.3 },
   robo:        { up: 0.8, down: 0.3 },
@@ -226,18 +206,35 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   // Briella's Cat flies its still until its sprite sheet lands
   briellacat:  { up: 0.8, down: 0.3 },
   // the critters fly their painted tap banks with the standard lean
-  raccoon:     { up: 0.8, down: 0.3 },
-  ferret:      { up: 0.8, down: 0.3 },
-  hedgehog:    { up: 0.8, down: 0.3 },
 
   // --- declared shape exceptions
   cyber:       { up: 0.8, down: 0.3 },
   // both aliens fly with NO lean: the owner zeroed climb and dive -
   // "the animation does the work", the painted attitudes are the pitch
   alien:       { up: 0, down: 0 },
-  // the 3D test flies with no lean either: its rendered dive frames carry
-  // the attitude, as the aliens' painted ones do
-  pinky:       { up: 0, down: 0 },
+  // THE 3D LINEUP (26 Oct 2026) flies with no lean either: its rendered dive
+  // frames carry the attitude, as the aliens' painted ones do
+  ember:       { up: 0, down: 0 },
+  voidsuit:    { up: 0, down: 0 },
+  groveguard:  { up: 0, down: 0 },
+  cinderforge: { up: 0, down: 0 },
+  sunforged:   { up: 0, down: 0 },
+  abyssal:     { up: 0, down: 0 },
+  gemmie:      { up: 0, down: 0 },
+  iontrim:     { up: 0, down: 0 },
+  sammie:      { up: 0, down: 0 },
+  cosmic:      { up: 0, down: 0 },
+  flight:      { up: 0, down: 0 },
+  frost:       { up: 0, down: 0 },
+  leviathan:   { up: 0, down: 0 },
+  copper:      { up: 0, down: 0 },
+  hedgehog:    { up: 0, down: 0 },
+  origamist:   { up: 0, down: 0 },
+  eclipse:     { up: 0, down: 0 },
+  cryostar:    { up: 0, down: 0 },
+  verdant:     { up: 0, down: 0 },
+  raccoon:     { up: 0, down: 0 },
+  ferret:      { up: 0, down: 0 },
 };
 
 /** The dial for a suit, or the default for one that has none yet. */

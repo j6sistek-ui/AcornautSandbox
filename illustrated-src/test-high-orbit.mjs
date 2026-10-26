@@ -83,7 +83,9 @@ for(const [column,id] of ids.entries()){
  const fallback=createCanvas(256,256),fg=fallback.getContext('2d');
  R.paintHighOrbit(fg,art,id,128,128,192,undefined,undefined,false);
  const still=createCanvas(256,256);still.getContext('2d').drawImage(art.suits[id],0,0);
- samePixels(rgba(fallback),rgba(still),id+' fallback equals rig pixels at canonical size');
+ // the shipped still is the 3D lineup's render now (26 Oct 2026), not the cut rig's
+ // art: the retained rig is checked on its own below, not against the still
+ if(!C.CUT_RIG_RETIRED?.has(id))samePixels(rgba(fallback),rgba(still),id+' fallback equals rig pixels at canonical size');
  const state=M.createHighOrbitMotion(id),canvas=createCanvas(256,256),ctx=canvas.getContext('2d'),tail=createCanvas(256,256),tg=tail.getContext('2d');
  let maxStep=0,maxStray=0,minHeadGap=Infinity,minJoint=1,minAreaRatio=Infinity,maxAreaRatio=0,minBody=Infinity,maxBody=-Infinity,minTail=Infinity,maxTail=-Infinity;
  let before=structuredClone(state.pose),vy=0,minHead=Infinity,maxHead=-Infinity;
@@ -139,7 +141,8 @@ for(const [column,id] of ids.entries()){
  for(const other of rates.slice(1))for(const key of Object.keys(other.pose))assert(Math.abs(other.pose[key]-rates[0].pose[key])<.7,id+' consistent 30/60/120 fps '+key);
  // Every compatible helmet is actually composited by the shipping preview.
  const suit=Cat.SUITS.find(s=>s.id===id);
- for(const h of Cat.HELMETS.filter(h=>!h.suitOnly||h.suitOnly===id)){
+ // (the 3D lineup's helmets are flown frame by frame in test-helmet-animation)
+ for(const h of C.CUT_RIG_RETIRED?.has(id)?[]:Cat.HELMETS.filter(h=>!h.suitOnly||h.suitOnly===id)){
    let headPaints=0,helmetPaints=0;
    const measured=new Proxy(ctx,{get(target,key){
      if(key==='drawImage')return (img,...args)=>{
@@ -198,5 +201,7 @@ mkdirSync(root+'illustrated-src/design/high-orbit',{recursive:true});
 writeFileSync(root+'illustrated-src/design/high-orbit/helmet-review.png',contact.toBuffer('image/png'));
 writeFileSync(root+'illustrated-src/design/high-orbit/regression.json',JSON.stringify({passed:true,results},null,2)+'\n');
 const expected=JSON.parse(readFileSync(root+'art-src/high-orbit/shipping-hashes.json','utf8'));
-for(const [path,hash] of Object.entries(expected))assert.equal(createHash('sha256').update(readFileSync(root+path)).digest('hex'),hash,path+' shipping receipt');
+// the stills the 3D lineup replaced are pinned by art-src/rig3d/receipt.json instead
+const rendered=new Set(Object.keys(JSON.parse(readFileSync(root+'art-src/rig3d/receipt.json','utf8')).hashes).map(k=>'docs/art/'+k));
+for(const [path,hash] of Object.entries(expected))if(!rendered.has(path))assert.equal(createHash('sha256').update(readFileSync(root+path)).digest('hex'),hash,path+' shipping receipt');
 console.log(JSON.stringify({passed:true,results},null,2));

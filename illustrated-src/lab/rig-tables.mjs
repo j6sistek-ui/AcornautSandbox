@@ -148,8 +148,11 @@ export function buildTables(root) {
   const played = (sid, kind, n) => {
     if (kind === "bounce") return !!bounceN[sid];
     const ramp = !!(ascN[sid] && descN[sid]);
-    if (kind === "asc" || kind === "desc") return ramp;
-    if (kind === "tap") return !ramp && tapN[sid] === 16 && !(skips[sid] || []).includes(Number(n));
+    // the 3D lineup (26 Oct 2026): a tap bank and a dive bank, no climb - both play in full
+    const tapDive = !ascN[sid] && !!tapN[sid] && !!descN[sid];
+    if (kind === "asc") return ramp;
+    if (kind === "desc") return ramp || tapDive;
+    if (kind === "tap") return tapDive || (!ramp && tapN[sid] === 16 && !(skips[sid] || []).includes(Number(n)));
     return false;
   };
   const KIND_ORDER = ["asc", "desc", "tap", "bounce"];

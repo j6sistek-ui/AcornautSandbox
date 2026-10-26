@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=309";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=309";
-import { IS_BETA, PALS } from "./catalog.js?v=309";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=309";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=317";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=317";
+import { IS_BETA, PALS } from "./catalog.js?v=317";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=317";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -538,7 +538,7 @@ export const STAR_REWARDS = [
     { stars: 50, kind: "acorns", name: "170 Acorns", desc: "Spending acorns for the hangar.", amount: 170 },
     { stars: 55, kind: "trail", id: "bloom", name: "Nebula Bloom", desc: "Petals of nebula light." },
     { stars: 60, kind: "helmet", id: "sammie", name: "Samurai Helmet", desc: "Earned on the Star Chart." },
-    { stars: 65, kind: "suit", id: "sammie", name: "Sammie Suit", desc: "Earned on the Star Chart." },
+    { stars: 65, kind: "suit", id: "sammie", name: "Stone Suit", desc: "Earned on the Star Chart." },
     { stars: 70, kind: "mod", id: "flightmods", name: "Flight Mods", desc: "Steady Gates and Thrill Seeker unlock in the hangar." },
     { stars: 75, kind: "acorns", name: "240 Acorns", desc: "Spending acorns for the hangar.", amount: 240 },
     { stars: 80, kind: "trail", id: "comet", name: "Comet Booster", desc: "Burn like the real thing." },
@@ -563,7 +563,7 @@ export const STAR_REWARDS = [
     { stars: 175, kind: "acorns", name: "520 Acorns", desc: "Spending acorns for the hangar.", amount: 520 },
     { stars: 180, kind: "trail", id: "frost", name: "Frostbite", desc: "A wake of hoarfrost." },
     { stars: 185, kind: "helmet", id: "cosmic", name: "Cosmic Helmet", desc: "Nebula glass. Arrives with the suit." },
-    { stars: 190, kind: "suit", id: "cosmic", name: "Cosmic", desc: "Violet nebula weave." },
+    { stars: 190, kind: "suit", id: "cosmic", name: "Cupcake", desc: "Frosted pink, sprinkles and all." },
     { stars: 195, kind: "dust", name: "40 Star Dust", desc: "Premium dust for the shop.", amount: 40 },
     { stars: 200, kind: "acorns", name: "590 Acorns", desc: "Spending acorns for the hangar.", amount: 590 },
     { stars: 205, kind: "trail", id: "voidsmoke", name: "Void Smoke", desc: "What the dark exhales." },

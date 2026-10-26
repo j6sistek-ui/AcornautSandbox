@@ -27,10 +27,12 @@ for(const model of manifest.models){const project=makeProject(manifest,model);as
   const at=clone(a.animation);seekSimulation(a,8.25);assert.deepEqual(a.animation,at,'pause changes a pose');
   seekSimulation(a,project.pattern.duration+8.25);assert.deepEqual(a.animation,at,'repeat differs from first pass');
 }
-// 35 with the 3D test (pinky, beta, 25 Oct 2026)
-assert.equal(manifest.models.length,35);const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
+assert.equal(manifest.models.length,34);const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
 assert.deepEqual(rigs.map(m=>m.id).sort(),['abyssal','arcflash','cinderforge','cosmic','groveguard','sunforged','vanguard'],'all seven original cut rigs remain available');
-const premium=manifest.models.filter(m=>['porcelain','nacre','origamist'].includes(m.id));assert.equal(premium.length,3);
+// Patriot flies a rendered tap/dive bank since its 3D model (owner, 26 Oct 2026); Percy and Envoy keep Cyber's
+const patriot=manifest.models.find(m=>m.id==='origamist');
+assert.equal(patriot.family,'bank');assert.equal(patriot.banks.tap.length,12);assert.equal(patriot.banks.desc.length,4);assert.equal(patriot.banks.asc.length,0);assert(!patriot.sheet);
+const premium=manifest.models.filter(m=>['porcelain','nacre'].includes(m.id));assert.equal(premium.length,2);
 const cyber=manifest.models.find(m=>m.id==='cyber'),cyberProfile=makeProject(manifest,cyber).profile;
 for(const model of premium){
   assert.equal(model.family,'bank');assert.equal(model.atlas,null);assert(!model.sheet);
@@ -56,7 +58,8 @@ for(const model of premium){
     assert.equal(tuned.frame,8-original.frame,'each selected climb painting uses the reversed order');
   }
 }
-const ion=manifest.models.find(m=>m.id==='iontrim'),p=makeProject(manifest,ion).profile;
+// Ghost is the ascent-bank fixture since Ion, then Copper, became 3D tap+dive suits (26 Oct 2026)
+const ion=manifest.models.find(m=>m.id==='ghost'),p=makeProject(manifest,ion).profile;
 assert.equal(p.tapSource,'asc');
 assert.equal(p.tapPath,'out-back');
 const returning=createAnimation(ion);acceptTap(returning,p);for(let i=0;i<120;i++)stepAnimation(returning,p,STEP,-300);assert.equal(returning.frame,0,'out-and-back must finish at neutral');
@@ -81,9 +84,8 @@ assert.ok(Math.abs(y.animation.output.pose.nearArm-x.animation.output.pose.nearA
 assert.ok(Math.abs(y.animation.output.pose.tailTip-x.animation.output.pose.tailTip)>10);
 assert.equal(y.animation.output.pose.head,x.animation.output.pose.head,'arm edit changes head');
 assert.equal(y.y,x.y,'visual tuning changes flight path');assert.equal(y.vy,x.vy);
-const companion=manifest.models.find(m=>m.id==='hedgehog'),cp=makeProject(manifest,companion).profile,cs=createAnimation(companion);acceptTap(cs,cp);
-for(let i=0;i<150;i++)stepAnimation(cs,cp,STEP,300);assert.equal(cs.frame,0,'companion must rest after its tap clip');
-cp.loopContinuous=true;stepAnimation(cs,cp,STEP,300);assert.ok(cs.frame>0,'continuous option not honored');
+// The critters' looping companions all joined the 3D lineup (26 Oct 2026): no model loops now
+assert(manifest.models.every(m=>m.family==='premium-flight'||!m.banks.loop.length),'no model ships a loop bank');
 const t={time:3,anchor:1000,speed:.5,playing:true};assert.equal(transportTime(t,3000),4);assert.equal(transportTime({...t,playing:false},9000),3);
 for(const edit of [v=>v.version=99,v=>v.profile.tapSeconds=0,v=>v.profile.parts.head.offset=Infinity,v=>v.profile.tapOrder=[99],v=>v.pattern.events=[{at:5,type:'tap'},{at:2,type:'tap'}],v=>v.profile.descentFull=20,v=>v.view.scale=10000]){const bad=clone(base);edit(bad);assert.throws(()=>validateProject(bad,manifest));}
 const changed=clone(base);changed.model.assets={};assert.equal(validateProject(changed,manifest).warnings.length,1);

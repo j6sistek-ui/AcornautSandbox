@@ -155,6 +155,25 @@ function jets(ctx:CanvasRenderingContext2D,s:ArcflashMotion,nozzles:Nozzle[]) {
   ctx.restore();
 }
 
+/** Arcflash flies a rendered tap/dive bank (owner, 26 Oct 2026) and wears the pilot's helmet.
+ * Its electrical wake stays, leaving from the rendered frame's feet (paintArcflashBootWake); the
+ * joint rig, its parts atlas and cockpit crop are kept, unused, for the archive pass. */
+export const ARCFLASH_RIG_RETIRED = true;
+export const isArcflashRig = (id:string) => id === 'arcflash' && !ARCFLASH_RIG_RETIRED;
+/** The same electrical wake from a rendered frame's emitters ([x, y] in that frame's pixels,
+ * rig3d-boots.ts), streaming aft; drawn in the bank painter's space like the frame itself. */
+export function paintArcflashBootWake(ctx:CanvasRenderingContext2D,s:ArcflashMotion,
+ boots:readonly (readonly [number,number])[],ref:{x:number;y:number;w:number;h:number},
+ x:number,y:number,size:number,travel?:ArcflashTravel) {
+  const unit=size/ARCFLASH_ANATOMY.displaySpan,k=size/Math.max(1,ref.w,ref.h);
+  // the wake runs two lanes; a rig that found one hind foot lends it a twin a few pixels below
+  const lanes=boots.length>1?boots:[boots[0],[boots[0][0]-2,boots[0][1]+4] as const];
+  const nozzles=lanes.map(([ex,ey]):Nozzle=>({point:[(ex-ref.x-ref.w/2)*k/unit,(ey-ref.y-ref.h/2)*k/unit],direction:[-.97,.24]}));
+  ctx.save();ctx.translate(x,y);
+  wake(ctx,s,size,nozzles,travel??{x,y,travel:s.time*size*2.6});
+  ctx.restore();
+}
+
 const still=createArcflashMotion();
 /** The ship cockpit needs this suit's bare face, not Flight's helmet crop. */
 export function paintArcflashCockpit(ctx:CanvasRenderingContext2D,art:ArtBank,x:number,y:number,rx:number,ry:number) {

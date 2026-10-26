@@ -1,10 +1,14 @@
-import { paintHighOrbitEffect } from './high-orbit-effects.js?v=309';
-import { CYBER_TRIO_REGISTRATION } from './cyber-trio-registration.js?v=309';
+import { paintHighOrbitEffect } from './high-orbit-effects.js?v=317';
+import { CYBER_TRIO_REGISTRATION } from './cyber-trio-registration.js?v=317';
 /** Place the existing signature wake at the selected painting's boots.
  * Resolve the painter's full transform before drawing the wake in screen
  * coordinates, so previously emitted samples do not bank with the pilot. */
 export function paintPremiumBankWake(ctx, id, bank, index, ref, x, y, size, wake) {
-    const boots = CYBER_TRIO_REGISTRATION[id][bank][index].emitters;
+    paintBootWake(ctx, id, CYBER_TRIO_REGISTRATION[id][bank][index].emitters, ref, x, y, size, wake);
+}
+/** The same wake from any frame's emitters, in that frame's own pixel space - the
+ * rendered 3D banks measure theirs at the hind feet (rig3d-boots.ts). */
+export function paintBootWake(ctx, id, boots, ref, x, y, size, wake) {
     // a context without getTransform (a recording stub in the harness, an
     // old WebView) paints the wake in the painter's own space rather than
     // crashing the preview (exposed 13 Sep 2026 when the cheaper trio reached
@@ -16,7 +20,9 @@ export function paintPremiumBankWake(ctx, id, bank, index, ref, x, y, size, wake
     if (effectSize <= 0)
         return;
     const cx = m.a * x + m.c * y + m.e, cy = m.b * x + m.d * y + m.f;
-    const emitters = boots.map(([ex, ey]) => {
+    // the wake runs two lanes; a rig that found one hind foot lends it a twin a few pixels below
+    const lanes = boots.length > 1 ? boots : [boots[0], [boots[0][0] - 2, boots[0][1] + 4]];
+    const emitters = lanes.map(([ex, ey]) => {
         const bx = (ex - ref.x - ref.w / 2) * unit, by = (ey - ref.y - ref.h / 2) * unit;
         return [128 + (m.a * bx + m.c * by) * 192 / effectSize, 128 + (m.b * bx + m.d * by) * 192 / effectSize];
     });

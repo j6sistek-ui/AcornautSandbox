@@ -21,9 +21,12 @@ regfile = ART/'natural-export.json' if os.environ.get('NATURAL_FLIGHT_OUTPUT') e
 reg = json.loads(regfile.read_text())
 draw = (ROOT/'illustrated-src/game/draw.ts').read_text()
 dome = {k: [float(x) for x in v.split(',')] for k,v in re.findall(r'"((?:suit:)?[a-z]+(?:-(?:asc|desc)-\d+)?)":\s*\[([^\]]+)\]',draw)}
-loops = {'hedgehog','ferret','raccoon'}
-expected = {'iontrim','copper','voidsuit','sammie','gemmie','leviathan','ember','frost','ghost'} | loops
-assert set(reg['report']) == expected, 'exact requested twelve-character scope'
+loops: set = set()  # Noodle and Bandit joined the 3D lineup (26 Oct 2026)
+# eight of the nine, and Quill's loop, retired with the 3D lineup (26 Oct 2026): their
+# reviewed frames are gone
+RETIRED = {'iontrim','voidsuit','sammie','gemmie','ember','frost','copper','leviathan','hedgehog','ferret','raccoon'}
+expected = {'ghost'} | loops
+assert set(reg['report']) - RETIRED == expected, 'exact requested character scope'
 hashfile=SOURCE/'frame-hashes.json'
 hashes=json.loads(hashfile.read_text()) if hashfile.exists() else {}
 yy,xx=np.mgrid[:256,:256]
@@ -48,6 +51,7 @@ def eye_center(rgba, head, target=None):
     return min(groups,key=lambda p:np.linalg.norm(p-aim))
 
 for suit,frames in reg['report'].items():
+    if suit in RETIRED: continue
     arrays=[];heads=np.array([f['head'] for f in frames]);eyes=[];areas=[];crowns=[]
     neutral_rgba=np.asarray(Image.open(ART/(frames[0]['key']+'.png')))
     for i,f in enumerate(frames):
@@ -105,8 +109,9 @@ for suit,frames in reg['report'].items():
     if hashes.get('suits/'+portrait.name)!=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest():failures.append(suit+': portrait hash changed')
     print(suit,json.dumps(metrics),flush=True)
 receipt=json.loads((SOURCE/'companion-export-receipt.json').read_text())
-assert receipt['excluded']=='panda' and set(receipt['characters'])==loops
+assert receipt['excluded']=='panda' and set(receipt['characters'])-RETIRED==loops
 for suit,frames in receipt['characters'].items():
+    if suit in RETIRED: continue
     assert len(frames)==16
     for f in frames:
         assert f['outsideRepairChanges']==0
@@ -115,4 +120,4 @@ out={'method':__doc__.strip(),'suits':results,'failures':failures}
 if os.environ.get('NATURAL_FLIGHT_REPORT'):Path(os.environ['NATURAL_FLIGHT_REPORT']).write_text(json.dumps(out,indent=2)+'\n')
 if failures:
     print('FAIL: '+'; '.join(failures));raise SystemExit(1)
-print('Natural-flight pixels passed: 192 poses, nine fixed skulls and tail-work boundaries, plus three owner-approved companion loops with localized Quill repair.')
+print(f'Natural-flight pixels passed: {len(results)} suits ({", ".join(sorted(results))}); the rest retired with the 3D lineup.')

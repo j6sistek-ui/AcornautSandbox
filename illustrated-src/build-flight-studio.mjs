@@ -39,7 +39,8 @@ const models=tables.suits.filter(s=>!s.frame).map(s=>{
   if(s.id==='arcflash')s={...s,file:'suits/arcflash/body.png'};
   // A registered ascent/descent bank supersedes the archived premium atlas.
   // Percy, Envoy and Patriot now take exactly Cyber's standard bank family.
-  const sheet=banks.asc[s.id]&&banks.desc[s.id]?undefined:PREMIUM_FLIGHT_FRAMES[s.id];
+  // So does a rendered tap/dive bank (Patriot, 26 Oct 2026).
+  const sheet=banks.asc[s.id]&&banks.desc[s.id]||banks.tap[s.id]?undefined:PREMIUM_FLIGHT_FRAMES[s.id];
   const family=sheet?'premium-flight':orbit.includes(s.id)?'high-orbit':s.id==='arcflash'?'arcflash':s.id==='vanguard'?'acornut':'bank';
   const lists={};
   for(const [kind,counts] of Object.entries(banks))lists[kind]=Array.from({length:counts[s.id]||0},(_,i)=>`suits/${s.id}-${kind}-${i+1}.png`);

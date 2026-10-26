@@ -1,0 +1,217 @@
+{
+ "note": "Future models (owner, 26 Oct 2026): validated with tools/rig3d, NOT live. Names are placeholders. Each folder holds the 12-frame tap, 4-frame dive, the still, helmet anchors and wake feet, ready to install when one is picked.",
+ "command": "node tools/rig3d/render.mjs Future<n>.glb --id future<n> --frames tap:12,desc:4,asc:0 [--head <bone>] [--tail <bone>]",
+ "models": {
+  "future1": {
+   "name": "Snowdrift",
+   "kind": "squirrel",
+   "source": "Future1.glb",
+   "rig": {
+    "head": "bone_20",
+    "front": 2,
+    "hind": 1,
+    "tail": 8
+   },
+   "framing": {
+    "left": -0.17,
+    "right": -0.16,
+    "top": -0.38,
+    "bottom": -0.14
+   },
+   "helmetRadius": 26.96,
+   "note": "on Ion's exact skeleton: same frames as the lineup"
+  },
+  "future2": {
+   "name": "Moonstone",
+   "kind": "squirrel",
+   "source": "Future2.glb",
+   "rig": {
+    "head": "tripoHead_2",
+    "front": 2,
+    "hind": 2,
+    "tail": 8
+   },
+   "framing": {
+    "left": -0.35,
+    "right": -0.22,
+    "top": -0.36,
+    "bottom": -0.32
+   },
+   "helmetRadius": 27.51
+  },
+  "future3": {
+   "name": "Koi",
+   "kind": "squirrel",
+   "source": "Future3.glb",
+   "rig": {
+    "head": "tripoHead_1",
+    "front": 2,
+    "hind": 2,
+    "tail": 2
+   },
+   "framing": {
+    "left": -0.29,
+    "right": -0.18,
+    "top": -0.37,
+    "bottom": -0.28
+   },
+   "helmetRadius": 26.87,
+   "note": "two-bone fin tail: a small swing"
+  },
+  "future4": {
+   "name": "Thornback",
+   "kind": "squirrel",
+   "source": "Future4.glb",
+   "head": "tripoHead_1",
+   "rig": {
+    "head": "tripoHead_1",
+    "front": 2,
+    "hind": 2,
+    "tail": 3
+   },
+   "framing": {
+    "left": -0.35,
+    "right": -0.24,
+    "top": -0.34,
+    "bottom": -0.25
+   },
+   "helmetRadius": 34.92,
+   "note": "Tripo hung the spiky tail on one heavy bone the head pick took; head pinned"
+  },
+  "future5": {
+   "name": "Blossom",
+   "kind": "squirrel",
+   "source": "Future5.glb",
+   "rig": {
+    "head": "tripoHead_2",
+    "front": 2,
+    "hind": 2,
+    "tail": 9
+   },
+   "framing": {
+    "left": -0.08,
+    "right": -0.24,
+    "top": -0.25,
+    "bottom": -0.14
+   },
+   "helmetRadius": 27.89
+  },
+  "future6": {
+   "name": "Dune",
+   "kind": "non-squirrel",
+   "source": "Future6.glb",
+   "rig": {
+    "head": "tripoHead_1",
+    "front": 2,
+    "hind": 2,
+    "tail": 5
+   },
+   "framing": {
+    "left": -0.71,
+    "right": -0.22,
+    "top": -0.46,
+    "bottom": -0.59
+   },
+   "helmetRadius": 20.8,
+   "note": "a front leg outweighed the tail and flew as it (owner: \"backwards\"); tail pinned. Sits small in frame",
+   "tail": "tripoTail_0"
+  },
+  "future7": {
+   "name": "Wyrm",
+   "kind": "non-squirrel",
+   "source": "Future7.glb",
+   "rig": {
+    "head": "tripoHead_1",
+    "front": 2,
+    "hind": 2,
+    "tail": 26
+   },
+   "framing": {
+    "left": -0.31,
+    "right": -0.2,
+    "top": -0.32,
+    "bottom": -0.18
+   },
+   "helmetRadius": 28.01,
+   "note": "wings ride the body; no wing flap without custom rigging"
+  },
+  "future8": {
+   "name": "Mystic",
+   "kind": "non-squirrel",
+   "source": "Future8.glb",
+   "rig": {
+    "head": "tripoHead_1",
+    "front": 2,
+    "hind": 2,
+    "tail": 5
+   },
+   "framing": {
+    "left": -0.74,
+    "right": -0.23,
+    "top": -0.44,
+    "bottom": -0.48
+   },
+   "helmetRadius": 22.35,
+   "note": "a front leg outweighed the tail and flew as it (owner: \"backwards\"); tail pinned. Sits small in frame",
+   "tail": "tripoTail_0"
+  },
+  "future9": {
+   "name": "Umbra",
+   "kind": "squirrel",
+   "source": "Future9.glb",
+   "rig": {
+    "head": "bone_31",
+    "front": 2,
+    "hind": 0,
+    "tail": 16
+   },
+   "framing": {
+    "left": -0.07,
+    "right": -0.25,
+    "top": -0.26,
+    "bottom": -0.12
+   },
+   "helmetRadius": 41.19,
+   "note": "hind legs were swallowed into the tail chain: they stay still"
+  },
+  "future10": {
+   "name": "Prism",
+   "kind": "squirrel",
+   "source": "Future10.glb",
+   "head": "Head",
+   "rig": {
+    "head": "Head",
+    "front": 2,
+    "hind": 1,
+    "tail": 9
+   },
+   "framing": {
+    "left": -0.79,
+    "right": -0.16,
+    "top": -0.38,
+    "bottom": -0.43
+   },
+   "helmetRadius": 40.95,
+   "note": "humanoid-named rig whose rainbow tail is skinned to the Pelvis, the bone the hind legs hang from: the tail cannot swing on its own. Needs custom rigging (owner: \"backwards\"); head pinned to Head",
+   "needsCustomRig": true
+  },
+  "future11": {
+   "name": "Geode",
+   "kind": "squirrel",
+   "source": "Future11.glb",
+   "rig": {
+    "head": "bone_22",
+    "front": 2,
+    "hind": 1,
+    "tail": 4
+   },
+   "framing": {
+    "left": -0.28,
+    "right": -0.16,
+    "top": -0.31,
+    "bottom": -0.35
+   },
+   "helmetRadius": 38.99
+  }
+ }
+}

@@ -1,6 +1,6 @@
-import { ARCFLASH_PARTS } from './arcflash-parts.js?v=309';
-import { arcflashTailAngles, createArcflashMotion } from './arcflash-motion.js?v=309';
-import { rigLimbFit, rigPartMatrix } from './rig-limb-fit.js?v=309';
+import { ARCFLASH_PARTS } from './arcflash-parts.js?v=317';
+import { arcflashTailAngles, createArcflashMotion } from './arcflash-motion.js?v=317';
+import { rigLimbFit, rigPartMatrix } from './rig-limb-fit.js?v=317';
 const DEG = Math.PI / 180;
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 const mix = (a, b, t) => a + (b - a) * t;
@@ -201,6 +201,23 @@ function jets(ctx, s, nozzles) {
         ctx.fillRect(-width * 3.2, -width * 3.2, width * 6.4, width * 6.4);
         ctx.restore();
     }
+    ctx.restore();
+}
+/** Arcflash flies a rendered tap/dive bank (owner, 26 Oct 2026) and wears the pilot's helmet.
+ * Its electrical wake stays, leaving from the rendered frame's feet (paintArcflashBootWake); the
+ * joint rig, its parts atlas and cockpit crop are kept, unused, for the archive pass. */
+export const ARCFLASH_RIG_RETIRED = true;
+export const isArcflashRig = (id) => id === 'arcflash' && !ARCFLASH_RIG_RETIRED;
+/** The same electrical wake from a rendered frame's emitters ([x, y] in that frame's pixels,
+ * rig3d-boots.ts), streaming aft; drawn in the bank painter's space like the frame itself. */
+export function paintArcflashBootWake(ctx, s, boots, ref, x, y, size, travel) {
+    const unit = size / ARCFLASH_ANATOMY.displaySpan, k = size / Math.max(1, ref.w, ref.h);
+    // the wake runs two lanes; a rig that found one hind foot lends it a twin a few pixels below
+    const lanes = boots.length > 1 ? boots : [boots[0], [boots[0][0] - 2, boots[0][1] + 4]];
+    const nozzles = lanes.map(([ex, ey]) => ({ point: [(ex - ref.x - ref.w / 2) * k / unit, (ey - ref.y - ref.h / 2) * k / unit], direction: [-.97, .24] }));
+    ctx.save();
+    ctx.translate(x, y);
+    wake(ctx, s, size, nozzles, travel ?? { x, y, travel: s.time * size * 2.6 });
     ctx.restore();
 }
 const still = createArcflashMotion();
