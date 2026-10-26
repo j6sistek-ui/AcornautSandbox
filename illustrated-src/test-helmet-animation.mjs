@@ -99,15 +99,19 @@ try {
   // Owner,12 Sep2026: these existing own-head pilots now use Cyber's9/9
   // banks and loading rig. Their head policies are checked in the trio suite.
   const CYBER_TRIO=['porcelain','nacre','origamist'];
+  // The 3D lineup (owner, 26 Oct 2026: "here are the replacements, DIRECT
+  // replace"): ten suits re-made as rendered tap and dive banks, helmets kept.
+  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic"];
   const suits=NewCat.SUITS.filter(suit=>!NewCat.wearsOwnHead(suit));
   assert.equal(suits.length,21,'all twenty-one production suits with wearable helmets are covered');
-  const promoted=suits.filter(suit=>HIGH_ORBIT.includes(suit.id));
+  const promoted=suits.filter(suit=>HIGH_ORBIT.includes(suit.id)&&!THREE_D_TEST.includes(suit.id));
+  const lineup=suits.filter(suit=>THREE_D_TEST.includes(suit.id));
   const TRANSFERRED=['cryostar','verdant'];
   const transferred=suits.filter(suit=>TRANSFERRED.includes(suit.id));
   const transferHashes=JSON.parse(readFileSync(join(root,'art-src/eclipse-motion-transfer/frame-hashes.json'),'utf8'));
   const orbitHashes=JSON.parse(readFileSync(join(root,'art-src/high-orbit/shipping-hashes.json'),'utf8'));
   const NATURAL=['iontrim','copper','voidsuit','sammie','gemmie','leviathan','ember','frost','ghost'];
-  const natural=suits.filter(suit=>NATURAL.includes(suit.id));
+  const natural=suits.filter(suit=>NATURAL.includes(suit.id)&&!THREE_D_TEST.includes(suit.id));
   const naturalHashes=JSON.parse(readFileSync(join(root,'art-src/natural-flight/frame-hashes.json'),'utf8'));
   // e8bf123 replaced these five suits' flights outright and gave them brand new
   // dome anchors, so there is no pre-repair rendering of them to diff against:
@@ -116,12 +120,10 @@ try {
   // The owner-requested Eclipse transfers now have different art and flight
   // mapping. Exercise them on the current painter; the dedicated transfer test
   // compares their live frame/transform trace directly against Eclipse.
-  const legacy=suits.filter(suit=>!HIGH_ORBIT.includes(suit.id)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id));
-  assert.deepEqual(legacy,OldCat.SUITS.filter(suit=>!OldCat.wearsOwnHead(suit)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id)),'helmet fitting does not change the pre-existing suit roster');
-  assert.deepEqual(promoted.map(suit=>suit.id),HIGH_ORBIT,'HIGH ORBIT promotions are the only roster additions');
-  // The 3D lineup (owner, 26 Oct 2026: "here are the replacements, DIRECT
-  // replace"): ten suits re-made as rendered tap and dive banks, helmets kept.
-  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic"];
+  const legacy=suits.filter(suit=>!HIGH_ORBIT.includes(suit.id)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id)&&!THREE_D_TEST.includes(suit.id));
+  assert.deepEqual(legacy,OldCat.SUITS.filter(suit=>!OldCat.wearsOwnHead(suit)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id)&&!THREE_D_TEST.includes(suit.id)),'helmet fitting does not change the pre-existing suit roster');
+  assert.deepEqual([...promoted,...lineup.filter(s=>HIGH_ORBIT.includes(s.id))].map(suit=>suit.id).sort(),[...HIGH_ORBIT].sort(),'HIGH ORBIT promotions are the only roster additions');
+  assert.deepEqual(lineup.map(s=>s.id).sort(),[...THREE_D_TEST].sort(),'the whole 3D lineup ships with a wearable helmet');
   const authorized=id=>HIGH_ORBIT.includes(id)||CYBER_TRIO.includes(id)||THREE_D_TEST.includes(id);
   const withoutAuthorizedRigs=table=>Array.isArray(table) ? table.filter(id=>!authorized(id))
     : Object.fromEntries(Object.entries(table).filter(([id])=>!authorized(id)));
@@ -134,7 +136,7 @@ try {
   }
   for(const name of ['RIGGED_SUITS','TAP_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS','ASC_BANKS','DESC_BANKS']) {
     const old=name==='RIGGED_SUITS'?OldArt[name].filter(id=>!NATURAL.includes(id)):OldArt[name];
-    assert.deepEqual(withoutAuthorizedRigs(NewArt[name]),old,`${name}: only the recorded owner-authorized rig changes`);
+    assert.deepEqual(withoutAuthorizedRigs(NewArt[name]),withoutAuthorizedRigs(old),`${name}: only the recorded owner-authorized rig changes`);
   }
   for(const id of CYBER_TRIO){
     assert(NewArt.RIGGED_SUITS.includes(id),id+' Cyber-style loading rig');
@@ -142,7 +144,8 @@ try {
     for(const name of ['TAP_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS'])assert.equal(NewArt[name][id],undefined,id+' has no extra '+name);
     assert(NewCat.wearsOwnHead(NewCat.SUITS.find(s=>s.id===id)),id+' no interchangeable helmet');
   }
-  for(const id of HIGH_ORBIT) {
+  // the 3D lineup re-made the five (26 Oct 2026): their rendered banks are checked above
+  for(const id of HIGH_ORBIT.filter(id=>!THREE_D_TEST.includes(id))) {
     assert.equal(NewArt.ASC_BANKS[id],undefined,`${id}: old ascent repaint bank is retired`);
     assert.equal(NewArt.DESC_BANKS[id],undefined,`${id}: old descent repaint bank is retired`);
     for(const name of ['RIGGED_SUITS','TAP_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS'])
@@ -157,6 +160,7 @@ try {
   // continuous helmet glass". Artwork the baseline never held is pinned to the
   // revision that shipped it, so every image on screen still has an exact hash.
   const shipped=tree(process.env.ACORNAUT_HELMET_SHIPPED || 'e8bf1230c765df5f34a6168be8b183c5be626e8d');
+  const threeDHashes=JSON.parse(readFileSync(join(root,'art-src/rig3d/receipt.json'),'utf8')).hashes;
   const loaded=new Map();
   const glassRepairs=new Set();
   async function sprite(path) {
@@ -180,6 +184,8 @@ try {
         }
       } else if(/^suits\/(cryostar|verdant)-(asc|desc)-[1-8]\.png$/.test(path)) {
         assert.equal(hash,transferHashes[path],`${path}: reviewed Eclipse transfer art`);
+      } else if(threeDHashes[path]) {
+        assert.equal(hash,threeDHashes[path],`${path}: rendered 3D lineup art (art-src/rig3d/receipt.json)`);
       } else if(orbitHashes[full]) {
         assert.equal(createHash('sha256').update(bytes).digest('hex'),orbitHashes[full],`${path}: High Orbit cut-rig art receipt`);
       } else if(naturalHashes[path]) {
@@ -380,6 +386,21 @@ try {
   // its whole 8/8 ascent and descent, land the frame the pose asks for, keep a
   // body on screen at both scales and wear exactly one helmet - loading art for
   // them is not enough, a bare-headed or non-rendering promotion fails here.
+  // THE 3D LINEUP flies its twelve tap frames (the loadout sweep's climb half) and
+  // four dive frames, each landing on its own frame with one helmet at both sizes
+  for(const suit of lineup) {
+    const id=suit.id;
+    for(const [property,bank,sign,expect] of [['suitTap','tap',-1,12],['suitDesc','desc',1,4]]) {
+      const n=art[property][id]?.length || 0;
+      assert.equal(n,expect,`${id}: the rendered ${bank} bank loads all ${expect} frames`);
+      for(let i=0;i<n;i++) for(const size of [52,256]) {
+        const pose=i===0 && sign>0 ? 1e-6 : sign*i/Math.max(1,n-1);
+        solo(`${id} ${bank}-${i+1} size ${size}`,(renderer,ctx)=>illustrated(renderer,ctx,suit,art,
+          {pose,size,pitch:size===52?-.21:.32}),{frame:{suit:id,bank,idx:i+1}});
+        counts.motionFrames++;
+      }
+    }
+  }
   for(const suit of [...promoted,...transferred,...natural]) {
     const id=suit.id;
     for(const [property,bank,sign] of [['suitAsc','asc',-1],['suitDesc','desc',1]]) {
@@ -441,7 +462,7 @@ try {
   // The five promoted suits also have to survive a real flight on the shipped
   // sim: taps accepted, a dive taken, and a pilot painted with one helmet on
   // every frame of the run - the gameplay path the legacy loop above covers.
-  for(const suit of [...promoted,...transferred,...natural]) {
+  for(const suit of [...promoted,...transferred,...natural,...lineup]) {
     const run=makeRun(NewSim,NewSave,suit.id);
     const taps=new Set([0,11,22,33,44]);
     for(let tick=0;tick<120;tick++) {
@@ -459,6 +480,7 @@ try {
     sourceImagesChecked:loaded.size,sourceImagesUnchanged:[...loaded.keys()].filter(path=>!glassRepairs.has(path)&&!transferHashes[path]&&!naturalHashes[path]).length,
     eclipseTransfers:transferred.map(s=>s.id),
     naturalFlights:natural.map(s=>s.id),
+    threeDLineup:lineup.map(s=>s.id),
     repaintedGlass:[...glassRepairs],...counts,limitation:'Native Canvas regression proves unchanged body animation; helmet fit still requires visual review.'},null,2));
 } finally {
   rmSync(scratch,{recursive:true,force:true});

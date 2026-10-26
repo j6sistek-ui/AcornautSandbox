@@ -40,18 +40,22 @@ win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasEle
 
 const S=await import('../docs/js/save.js'),C=await import('../docs/js/catalog.js');
 const H=await import('../docs/js/high-orbit-config.js');
-// Exactly one transparent atlas per requested suit, no historical pose banks.
+// THE 3D LINEUP (26 Oct 2026) re-made the five as rendered tap and dive banks: each
+// asks for its twelve tap and four dive frames, and never for its retired parts atlas.
 const inactiveImage=globalThis.Image;
-const urls=[];let broken=true;
-globalThis.Image=class {naturalWidth=1024;naturalHeight=768;set src(v){urls.push(v);queueMicrotask(()=>broken?this.onerror?.():this.onload?.());}};
+const urls=[];
+globalThis.Image=class {naturalWidth=256;naturalHeight=256;width=256;height=256;set src(v){urls.push(v);queueMicrotask(()=>this.onerror?.());}};
 const Art=await import('../docs/js/art.js?high-orbit-loader');
-const bank=Art.emptyArt();await Art.loadSuitBank(bank,H.HIGH_ORBIT_IDS[0]);
-assert(!bank.highOrbit?.[H.HIGH_ORBIT_IDS[0]],'failure keeps fallback instead of publishing partial art');
-broken=false;
-for(const id of H.HIGH_ORBIT_IDS){await Art.loadSuitBank(bank,id);assert.equal(bank.highOrbit[id].naturalWidth,1024);}
-assert.equal(urls.length,6,'one failed request is retried; five atlases loaded');
-assert(urls.every(url=>/suits\/(cinderforge|groveguard|cosmic|sunforged|abyssal)\/parts\.png/.test(url)),'retired banks never requested');
-assert(urls.every(url=>url.endsWith('?v='+C.ART_VER)),'all atlas URLs are stamped');
+const bank=Art.emptyArt();
+for(const id of H.HIGH_ORBIT_IDS){
+  assert(H.CUT_RIG_RETIRED.has(id)&&!H.isHighOrbitRig(id),id+' no longer draws with the cut rig');
+  await Art.loadSuitBank(bank,id);
+  const mine=urls.filter(u=>u.includes(`suits/${id}`));
+  for(let i=1;i<=12;i++)assert(mine.some(u=>u.includes(`suits/${id}-tap-${i}.png`)),`${id} requests tap-${i}`);
+  for(let i=1;i<=4;i++)assert(mine.some(u=>u.includes(`suits/${id}-desc-${i}.png`)),`${id} requests desc-${i}`);
+  assert(!mine.some(u=>/parts\.png/.test(u)),id+' never requests its retired parts atlas');
+}
+assert(urls.every(url=>url.endsWith('?v='+C.ART_VER)),'all bank URLs are stamped');
 globalThis.Image=inactiveImage;
 
 const initial=S.defaultSave();Object.assign(initial,{tutorialDone:true,guide:'done',introOff:true,musicOff:true,sfxOff:true,motionOff:true});

@@ -55,7 +55,8 @@ for(const model of premium){
     assert.equal(tuned.frame,8-original.frame,'each selected climb painting uses the reversed order');
   }
 }
-const ion=manifest.models.find(m=>m.id==='iontrim'),p=makeProject(manifest,ion).profile;
+// Copper is the ascent-bank fixture since Ion became a 3D tap+dive suit (26 Oct 2026)
+const ion=manifest.models.find(m=>m.id==='copper'),p=makeProject(manifest,ion).profile;
 assert.equal(p.tapSource,'asc');
 assert.equal(p.tapPath,'out-back');
 const returning=createAnimation(ion);acceptTap(returning,p);for(let i=0;i<120;i++)stepAnimation(returning,p,STEP,-300);assert.equal(returning.frame,0,'out-and-back must finish at neutral');

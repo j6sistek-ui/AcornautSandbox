@@ -10,7 +10,8 @@ const root=new URL('../',import.meta.url).pathname;
 const t=buildTables(root);
 const draw=readFileSync(root+'illustrated-src/game/draw.ts','utf8');
 const natural=[...draw.match(/NATURAL_FLIGHT_SUITS\s*=\s*new Set\(\[([^\]]*)\]/)[1].matchAll(/"([^"]+)"/g)].map(m=>m[1]);
-assert(natural.length>=9,'the standard series is listed in draw.ts');
+// four since the 3D lineup (26 Oct 2026) took Ion, Void, Ember, Gemmie and Sammie
+assert(natural.length>=4,'the standard series is listed in draw.ts');
 for(const s of t.suits){
   const base=s.id.replace(/-(asc|desc|tap|bounce)-\d+$/,'');
   if(natural.includes(base))assert.deepEqual(s.box,[32,32,192,192],`${s.id} carries the game's fixed box`);
