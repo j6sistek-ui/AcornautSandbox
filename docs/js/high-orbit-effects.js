@@ -1,4 +1,4 @@
-import { HIGH_ORBIT_PROFILES } from './high-orbit-config.js?v=311';
+import { HIGH_ORBIT_PROFILES } from './high-orbit-config.js?v=312';
 const history = new WeakMap();
 const TAU = Math.PI * 2;
 function glow(ctx, x, y, r, color, alpha) {

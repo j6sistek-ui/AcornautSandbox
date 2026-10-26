@@ -10,23 +10,24 @@ const root=new URL('../',import.meta.url).pathname;
 const t=buildTables(root);
 const draw=readFileSync(root+'illustrated-src/game/draw.ts','utf8');
 const natural=[...draw.match(/NATURAL_FLIGHT_SUITS\s*=\s*new Set\(\[([^\]]*)\]/)[1].matchAll(/"([^"]+)"/g)].map(m=>m[1]);
-// four since the 3D lineup (26 Oct 2026) took Ion, Void, Ember, Gemmie and Sammie
-assert(natural.length>=4,'the standard series is listed in draw.ts');
+// three since the 3D lineup (26 Oct 2026) took Ion, Void, Ember, Gemmie, Sammie and Frost
+assert(natural.length>=3,'the standard series is listed in draw.ts');
 for(const s of t.suits){
   const base=s.id.replace(/-(asc|desc|tap|bounce)-\d+$/,'');
   if(natural.includes(base))assert.deepEqual(s.box,[32,32,192,192],`${s.id} carries the game's fixed box`);
   else assert.equal(s.box,null,`${s.id} is measured like the game measures it`);
 }
 const still=t.suits.find(s=>s.key==='suit:flight');assert(still&&!still.frame);
-// only the frames the game plays: a ramp outranks a tap bank, so Flight's
-// and Eclipse's tap frames never draw and get no row; Robo's tap bank is
-// what Robo flies, so its sixteen are there
+// only the frames the game plays: a ramp outranks a tap bank, so Eclipse's
+// tap frames never draw and get no row; Robo's tap bank is what Robo flies,
+// so its sixteen are there, and Flight (3D lineup, 26 Oct 2026) flies its
+// rendered twelve-frame tap and four-frame dive
 const ids=t.suits.filter(s=>s.played!==false).map(s=>s.id);
-assert.deepEqual(ids.filter(i=>i.startsWith('flight-')),['flight-asc-1','flight-asc-2','flight-asc-3','flight-desc-1','flight-desc-2','flight-desc-3','flight-desc-4','flight-desc-5'],'Flight shows its 3/5 ramp and nothing else');
+assert.deepEqual(ids.filter(i=>i.startsWith('flight-')).sort(),[...Array.from({length:12},(_,i)=>'flight-tap-'+(i+1)),...Array.from({length:4},(_,i)=>'flight-desc-'+(i+1))].sort(),'Flight shows its 12 tap and 4 dive frames and nothing else');
 assert.equal(ids.filter(i=>i.startsWith('eclipse-tap-')).length,0,'Eclipse flies its ramp, not its tap bank');
 assert.equal(t.suits.filter(s=>s.id.startsWith('eclipse-tap-')&&s.played===false).length,16,'but its tap anchors stay in the table for the Studio and the game');
 assert.equal(ids.filter(i=>i.startsWith('robo-tap-')).length,16,'Robo flies its tap bank');
-assert(t.suits.filter(s=>s.id.startsWith('flight-asc-')).every(s=>!s.seeded),'real DOME rows are not seeded');
+assert(t.suits.filter(s=>s.id.startsWith('flight-tap-')).every(s=>!s.seeded),'real DOME rows are not seeded');
 const seeded=t.suits.filter(s=>s.seeded);
 assert(seeded.every(s=>{const st=t.suits.find(x=>!x.frame&&x.id===s.id.replace(/-tap-\d+$/,''));return st&&s.dome.join()===st.dome.join();}),'seeded tap rows start on their still');
 assert(t.helmets.find(h=>h.id==='clear').seat[2]===95,'HELMET_SEATS parsed');

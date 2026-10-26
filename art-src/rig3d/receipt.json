@@ -34,6 +34,12 @@
   },
   "cosmic": {
    "model": "cupcake"
+  },
+  "flight": {
+   "model": "flight3d"
+  },
+  "frost": {
+   "model": "frost3d"
   }
  },
  "hashes": {
@@ -206,6 +212,40 @@
   "suits/cosmic-tap-7.png": "093e14c800c8679cb8ce303fc28e85c2005f183a",
   "suits/cosmic-tap-8.png": "5dfd12f47cd15a1acf779af5f82d89764a096382",
   "suits/cosmic-tap-9.png": "843555716d18382245a7236f014819fae59ce19c",
-  "suits/cosmic.png": "88af0604dc7396fe1c86e64427b1b6cfd82dac91"
+  "suits/cosmic.png": "88af0604dc7396fe1c86e64427b1b6cfd82dac91",
+  "suits/flight-desc-1.png": "46228c277e2c291d2a5ee7fac138b9bf38945a3d",
+  "suits/flight-desc-2.png": "bce45ece768fcd876a72708b11aa3c4ea47f2f10",
+  "suits/flight-desc-3.png": "3ee7980031e3a42c8760d6b629a1f9689bc92430",
+  "suits/flight-desc-4.png": "48077fe43149cf56ca9f5cccdfc6b8a07d898523",
+  "suits/flight-tap-1.png": "46228c277e2c291d2a5ee7fac138b9bf38945a3d",
+  "suits/flight-tap-2.png": "05b55b4b1a35bc5cab8f82cf2388c94d146009da",
+  "suits/flight-tap-3.png": "157ff29f86e5364a803eff6595ab82790fd3dc4f",
+  "suits/flight-tap-4.png": "6c27ae3d6f29aad572121ff43e21a71e7306809e",
+  "suits/flight-tap-5.png": "3f6cd1f76d5196197620cd21e579b1c295c05885",
+  "suits/flight-tap-6.png": "b1a6a57e9051acd02cf8be96c9b7f081f3c653ae",
+  "suits/flight-tap-7.png": "9f4e1b8e788d610b76ee8ba059e7f088f5d91ab7",
+  "suits/flight-tap-8.png": "2725782797e826f2d13ccfb4a6432f35430da673",
+  "suits/flight-tap-9.png": "1d4dd61540c03ef6b49185b2fdfa8538f82e9d10",
+  "suits/flight-tap-10.png": "0322af8493fbbbb8c00e219c91604da9d9d1d6cc",
+  "suits/flight-tap-11.png": "abd4f4da1e4d1da8280c43c43292d5f92fbdfffc",
+  "suits/flight-tap-12.png": "932ff594196cf1e53c5e92c68cddaed14d6ab560",
+  "suits/flight.png": "46228c277e2c291d2a5ee7fac138b9bf38945a3d",
+  "suits/frost-desc-1.png": "f859c2f3a39c5d15156de8fd914b41754984b0aa",
+  "suits/frost-desc-2.png": "eb8a440c7a24f3fad3c376ee14f6836f19f69856",
+  "suits/frost-desc-3.png": "cd6ef98f45ddeb7da1d671e184f70aab8d33a9c5",
+  "suits/frost-desc-4.png": "6a07ac6de859e91f996db39d4845cd498f7a8dd1",
+  "suits/frost-tap-1.png": "f859c2f3a39c5d15156de8fd914b41754984b0aa",
+  "suits/frost-tap-2.png": "d2b56f77e1f43d5e47d9f6f42671d5bd7889c6db",
+  "suits/frost-tap-3.png": "165fe8cc8d067a35c319f5b575cdcb2af2a84cd3",
+  "suits/frost-tap-4.png": "9edb8a38d89f4cc04f8ecbff31c21887afade1d3",
+  "suits/frost-tap-5.png": "2b813b9b3198eaf9f7b471688334bbf27e167866",
+  "suits/frost-tap-6.png": "88148c70ebd24a33ac666d2dc9bb1eaea58069d7",
+  "suits/frost-tap-7.png": "6d80cb26a0e3fef6c8f1d4ef5b728964fb0f1f8e",
+  "suits/frost-tap-8.png": "03eb2b2c65a87ef8919edcd2f66fe40be12c2e82",
+  "suits/frost-tap-9.png": "5107497301165f9707414dff174084cad992fef7",
+  "suits/frost-tap-10.png": "f6a99755c0a5b99ea85f49e42ad146ef79ea8eac",
+  "suits/frost-tap-11.png": "622baeb41a5308c4d6362bc3a7c35e2a41bdd78a",
+  "suits/frost-tap-12.png": "beb156f779883b81180d64e6f6578edc4c0bee10",
+  "suits/frost.png": "f859c2f3a39c5d15156de8fd914b41754984b0aa"
  }
 }

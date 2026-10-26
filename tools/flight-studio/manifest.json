@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "311",
-  "sourceCommit": "299dd9fe8187f4d1f9cbb90e4b63867ee740bf17",
+  "artVer": "312",
+  "sourceCommit": "0458af90ec329befbe705be419c92a30c8b5f54c",
   "models": [
     {
       "id": "flight",
@@ -9,10 +9,10 @@
       "key": "suit:flight",
       "file": "suits/flight.png",
       "dome": [
-        184,
-        91,
-        31.17,
-        5
+        186.2,
+        112.62,
+        26.96,
+        1.82
       ],
       "box": null,
       "ownHead": false,
@@ -33,52 +33,35 @@
           "suits/flight-tap-9.png",
           "suits/flight-tap-10.png",
           "suits/flight-tap-11.png",
-          "suits/flight-tap-12.png",
-          "suits/flight-tap-13.png",
-          "suits/flight-tap-14.png",
-          "suits/flight-tap-15.png",
-          "suits/flight-tap-16.png"
+          "suits/flight-tap-12.png"
         ],
-        "asc": [
-          "suits/flight-asc-1.png",
-          "suits/flight-asc-2.png",
-          "suits/flight-asc-3.png"
-        ],
+        "asc": [],
         "desc": [
           "suits/flight-desc-1.png",
           "suits/flight-desc-2.png",
           "suits/flight-desc-3.png",
-          "suits/flight-desc-4.png",
-          "suits/flight-desc-5.png"
+          "suits/flight-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/flight.png": "479293686ff8c33b00bd00664818c3413cc75de78e5a0dead9bf5a18dcdf3dc8",
-        "suits/flight-tap-1.png": "fcce88aae3e335a8b200595ef2d318142b90be66f35d66cdb03f8c132ac2e52b",
-        "suits/flight-tap-2.png": "ed29d2a98e1b8ce9ebf5b55b082ebb79bf66e26c004cc4c717ee34adad73fe08",
-        "suits/flight-tap-3.png": "1ce3972ed2bb6c87dd76a2bbce215541c1f5a808c26567076e2b16a26510a540",
-        "suits/flight-tap-4.png": "71b32cc1ad1660afe0fafc5220961ff045cf0b51d3944e2c8a6c1671b964d7c4",
-        "suits/flight-tap-5.png": "693eff6d7326cf56be6838e90bbf3bfc15e4c7ee30d6f1af6efb524a39218e66",
-        "suits/flight-tap-6.png": "e14493ea84852606c7ce8f699436b1899abb2fa8bdac590aa6bfd8e77c327161",
-        "suits/flight-tap-7.png": "93ac7bd98e2b2cb92e4f871a8e1ecc47f0d7ceb61e05acbd42376dd3b021f6d9",
-        "suits/flight-tap-8.png": "d82081f530f9987d071503e9428c39eed1d1d78b22a07705664faf18d6e4bd61",
-        "suits/flight-tap-9.png": "d63b9a6139c271c7b03cb42253214ed30a868cf45ab9d4f7b9fd932d3e73571c",
-        "suits/flight-tap-10.png": "25db492c6433846d2b49653087d3692ba39b2d0c69c3d8fa90c4d59cae9f4a19",
-        "suits/flight-tap-11.png": "432bee1f618f59e6dfeb86dc180333086e7f1ad2b8ed84ded4c62be3018c8b4a",
-        "suits/flight-tap-12.png": "76e799b8b6bb2faa931fdc1c296dea0815894d1cb6a907860ec44be9c6be6dde",
-        "suits/flight-tap-13.png": "fc9283dcd6ccc4232694c72db732b864d499043b6c0d852daa925c0921594fed",
-        "suits/flight-tap-14.png": "7bbd8eed2558f02392fc8c2dd6bd14713258f8a7a470bcd46bf8e50325d8fde5",
-        "suits/flight-tap-15.png": "c812531ff0599dd7d66d17ea9ce4aa391baa9f808baff10e6b292b7553623cb4",
-        "suits/flight-tap-16.png": "fcce88aae3e335a8b200595ef2d318142b90be66f35d66cdb03f8c132ac2e52b",
-        "suits/flight-asc-1.png": "d3ba1a697e154d17a01dc26b72acf31107180901087815ace1085e6c34191600",
-        "suits/flight-asc-2.png": "026d7b6f9dfac9d25206b6f26628c52abf2865770164b9e63fe33b3bdad382d7",
-        "suits/flight-asc-3.png": "7f3ca53d39a123699abb09f8ce15a23ceb492bb1b78a22c159ede6e46ba66814",
-        "suits/flight-desc-1.png": "cbe9b6a69ed045df56436307549f7d8ebaeab8220deb73cc797604e7233e43e1",
-        "suits/flight-desc-2.png": "324b9e55a19e9c6790f02536e124ff8a21d0ce59e0047dfc803a17c819ade500",
-        "suits/flight-desc-3.png": "141dc6a0fa04899446752cf3c354826785c7006e520c15d42beeb4d664f608a0",
-        "suits/flight-desc-4.png": "6ced1d13e6cf7ee09ed0d4b7ae56da7b4ed8747dbce857059e34a459cc82340c",
-        "suits/flight-desc-5.png": "009b37bef9be231ca2df2bf0474add8714e43bc63841fea95da9df36b50d2bde"
+        "suits/flight.png": "6360ca60dde1f0b902659a679331a3ab317589f8595653bb27cd95820a16e92e",
+        "suits/flight-tap-1.png": "6360ca60dde1f0b902659a679331a3ab317589f8595653bb27cd95820a16e92e",
+        "suits/flight-tap-2.png": "2efa171e35fdf63a2903f915f47a5ca36ad87f5add853b29f9f55947d224df93",
+        "suits/flight-tap-3.png": "49bf3754c5248f35a04acf2622896f65a06b12c9be76d83a16146f060b426792",
+        "suits/flight-tap-4.png": "b03bd7eaa6ae3f4ab872f75ad3bd52fa594c1b9c1e45e98a7b4827f6006e9d02",
+        "suits/flight-tap-5.png": "d8b5d682a9c5d09340b5f36bc5c00d75a0989c30289fd660cb235c1e3bd1bc81",
+        "suits/flight-tap-6.png": "d9f0e3fb14367e2ff5030146bc9f9f965e2279f206cdca602990be18b86defa6",
+        "suits/flight-tap-7.png": "76759f7f0d441fc9ef044f578477b31876d6a8ba6562c3a03ddd9240a1fb3fb1",
+        "suits/flight-tap-8.png": "d6cde7e4e2e2499465baa293be4e022cc18732960351a0ba786394405e086875",
+        "suits/flight-tap-9.png": "8a588eda37c093cb9990607566a0f95bf551552aeae5ff1573c3f63c65fef578",
+        "suits/flight-tap-10.png": "188808e521b7396df73583ba4bf6915c299d3367f16714d073d987d6840f861f",
+        "suits/flight-tap-11.png": "9d2b51e6dd3673e5a5bedaf4db68d06808384cc12647c76e0ec7db706dba2ff7",
+        "suits/flight-tap-12.png": "0c9533577933cd4eef8221b5a978f6cef79ada80120bdb8ee21cbbb31f67eafa",
+        "suits/flight-desc-1.png": "6360ca60dde1f0b902659a679331a3ab317589f8595653bb27cd95820a16e92e",
+        "suits/flight-desc-2.png": "886f33240403e109f4b5d37730c914db0964605ff1d560ee2f29a00d50ea1666",
+        "suits/flight-desc-3.png": "f0c7a2cad29f9d7442b3a502c174f0f2e9160bd22db1100e0d584547b6eab6cb",
+        "suits/flight-desc-4.png": "458f2f52f66b2d1850816d45a2a9fc0d03b67ab0c82a63e95777ad18e84d5ee3"
       }
     },
     {
@@ -517,63 +500,59 @@
       "key": "suit:frost",
       "file": "suits/frost.png",
       "dome": [
-        210,
-        106,
-        30.73
+        186.2,
+        112.62,
+        26.96,
+        1.82
       ],
-      "box": [
-        32,
-        32,
-        192,
-        192
-      ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/frost-asc-1.png",
-          "suits/frost-asc-2.png",
-          "suits/frost-asc-3.png",
-          "suits/frost-asc-4.png",
-          "suits/frost-asc-5.png",
-          "suits/frost-asc-6.png",
-          "suits/frost-asc-7.png",
-          "suits/frost-asc-8.png"
+        "tap": [
+          "suits/frost-tap-1.png",
+          "suits/frost-tap-2.png",
+          "suits/frost-tap-3.png",
+          "suits/frost-tap-4.png",
+          "suits/frost-tap-5.png",
+          "suits/frost-tap-6.png",
+          "suits/frost-tap-7.png",
+          "suits/frost-tap-8.png",
+          "suits/frost-tap-9.png",
+          "suits/frost-tap-10.png",
+          "suits/frost-tap-11.png",
+          "suits/frost-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/frost-desc-1.png",
           "suits/frost-desc-2.png",
           "suits/frost-desc-3.png",
-          "suits/frost-desc-4.png",
-          "suits/frost-desc-5.png",
-          "suits/frost-desc-6.png",
-          "suits/frost-desc-7.png",
-          "suits/frost-desc-8.png"
+          "suits/frost-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/frost.png": "84a4855138173249b6880d1f4be7d556fe1c1cffdbf846244119609dc0f3b52d",
-        "suits/frost-asc-1.png": "84a4855138173249b6880d1f4be7d556fe1c1cffdbf846244119609dc0f3b52d",
-        "suits/frost-asc-2.png": "d635298773d65ab390237265a0796a528e4cb150e721e863093594f08d77c671",
-        "suits/frost-asc-3.png": "b3bbaeb28f40ab16f58b788f84e9c73b55fda4944d6eadaab0c9b633e7d9e658",
-        "suits/frost-asc-4.png": "4a832d18ae950fa50cc8adc971af3060f6d49a2eb8db76631025e720321a6f02",
-        "suits/frost-asc-5.png": "47d6b5c3891980050f795850a677e59cd1e878827691b3c8e66fdc3e4013138d",
-        "suits/frost-asc-6.png": "935cd10593187a2d03cf2a8198d786ac70a907b133911b63da9007054f26fb10",
-        "suits/frost-asc-7.png": "4f8571cc4152c66eb89418955fa349a868b6be3f9d4250c2ef58ac7e7442008a",
-        "suits/frost-asc-8.png": "6c98c204b36b1d51fe6a4e74c07482ece48dc7ff361b76ad506f1f4f06ac345f",
-        "suits/frost-desc-1.png": "84a4855138173249b6880d1f4be7d556fe1c1cffdbf846244119609dc0f3b52d",
-        "suits/frost-desc-2.png": "cb6f7e41899564552c4c5a1308c3d5a46814d4fab0adf7ce4e5453ea00bdc1dc",
-        "suits/frost-desc-3.png": "420ae8bb7db44b16defcf114bfc0f712cf780982dfb679c0f1dd58703f59833b",
-        "suits/frost-desc-4.png": "4c672e1aa633cefb829fe88418eff4d0b4d258c1284c17177cfd678e455960ab",
-        "suits/frost-desc-5.png": "debd4d9f1e75f254f4a9d277d16267bb0db2bf4a167377b385b50e2f5a3eaa03",
-        "suits/frost-desc-6.png": "b0c265e0db23f551f93f90a7408344e0a5791887090efd4f72d02c684ac23fd6",
-        "suits/frost-desc-7.png": "be93d718c1b7e16a1da74f5b4f14df8a0e6c700134c9cabdb97e9e9e048e4e89",
-        "suits/frost-desc-8.png": "c090921326d9ae5a3f5e9650dd1737c0b72d57285afd3493b9828f04c83ddb04"
+        "suits/frost.png": "59cc22d75d04433f7ec352ed3f88a7aead7c916d36baf234b2e23df305f9b471",
+        "suits/frost-tap-1.png": "59cc22d75d04433f7ec352ed3f88a7aead7c916d36baf234b2e23df305f9b471",
+        "suits/frost-tap-2.png": "91966fb0cd3e947405d433e4eacd8f28e97ecd62033e4240c09414903e72487c",
+        "suits/frost-tap-3.png": "566cb55f94d957fba67588bb26a2efc1ca4dd9989ae28499db10af92240d2790",
+        "suits/frost-tap-4.png": "bfcda440d8a3e1f7c37c4e3e65ef29b02c9e3d16b72ae3ff4f1daabd480f7cd3",
+        "suits/frost-tap-5.png": "2df005e4403ab7b35727c2f7a99d127e0e2f4866356acb0feec9c1dbf4e511c0",
+        "suits/frost-tap-6.png": "ccac23eb4d4f86729ea6d3b0df70e12ba1c0bd20585ae559380babaa5ca8b5a6",
+        "suits/frost-tap-7.png": "227081258f419cc8f36e2cddf3eb213433183cbf8f4325eba11e784257562f59",
+        "suits/frost-tap-8.png": "30e46da8082fcf320a359e9cebf44c06d5e404e6e3c5a72297ff6a65c60c4490",
+        "suits/frost-tap-9.png": "e1f0dd77c583101722b2a41c3d8eebe03fabc265bf2da365054c8d4f27098ad1",
+        "suits/frost-tap-10.png": "57d96e0867b95b9eaeca97d0cf9632e6c47864592ea31cdf3c8d218ec8b29a47",
+        "suits/frost-tap-11.png": "cef37daa5473db094a29a3f3dfdb5340ac5eae1cc03393e298c15055d7d305ad",
+        "suits/frost-tap-12.png": "d30df3018032abaa11b42d605a60f90e32b2ad3e12e75a95b13639b4035aeaa6",
+        "suits/frost-desc-1.png": "59cc22d75d04433f7ec352ed3f88a7aead7c916d36baf234b2e23df305f9b471",
+        "suits/frost-desc-2.png": "937137d7fdd327f2545f10da60c215616e2c6f761aae580b42b0579299fb640a",
+        "suits/frost-desc-3.png": "fd76a57c5044757603f84171479e8de871c1507688150c854c3e7e882d495bd1",
+        "suits/frost-desc-4.png": "859d6702a5ba98c999687ea36076f365232d4a593b8ec10604a2957d286a05a5"
       }
     },
     {
@@ -2659,10 +2638,10 @@
   ],
   "anchors": {
     "suit:flight": [
-      184,
-      91,
-      31.17,
-      5
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "suit:vanguard": [
       128,
@@ -2702,9 +2681,10 @@
       3
     ],
     "suit:frost": [
-      210,
-      106,
-      30.73
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "suit:voidsuit": [
       182.69,
@@ -3712,134 +3692,197 @@
       38.88,
       5.84
     ],
-    "flight-asc-1": [
-      175.1,
-      97.5,
-      26.21,
-      -7
-    ],
-    "flight-asc-2": [
-      176.6,
-      99.6,
-      26.21,
-      -5
-    ],
-    "flight-asc-3": [
-      175.1,
-      98.1,
-      26.21,
-      -7
-    ],
     "flight-desc-1": [
-      180,
-      102,
-      26.21
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "flight-desc-2": [
-      179.4,
-      104.6,
-      26.21,
-      3
+      188.58,
+      124.69,
+      26.96,
+      15.58
     ],
     "flight-desc-3": [
-      174.9,
-      119.8,
-      26.21,
-      2
+      187.99,
+      138.17,
+      26.96,
+      28.78
     ],
     "flight-desc-4": [
-      172.8,
-      122.7,
-      26.21,
-      4
+      184.8,
+      150.86,
+      26.96,
+      41.25
     ],
-    "flight-desc-5": [
-      166.2,
-      147.4,
-      26.21,
-      11
+    "flight-tap-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
-    "frost-asc-1": [
-      210,
-      106,
-      30.73
+    "flight-tap-2": [
+      184.49,
+      109.48,
+      26.96,
+      -1.87
     ],
-    "frost-asc-2": [
-      210,
-      105.3,
-      30.73
+    "flight-tap-3": [
+      183.33,
+      108.02,
+      26.96,
+      -4.22
     ],
-    "frost-asc-3": [
-      210,
-      104.5,
-      30.73
+    "flight-tap-4": [
+      183.18,
+      108.46,
+      26.96,
+      -4.6
     ],
-    "frost-asc-4": [
-      210,
-      103.6,
-      30.73
+    "flight-tap-5": [
+      184.07,
+      110.69,
+      26.96,
+      -2.9
     ],
-    "frost-asc-5": [
-      210,
-      102.5,
-      30.73
+    "flight-tap-6": [
+      185.56,
+      114.27,
+      26.96,
+      0.41
     ],
-    "frost-asc-6": [
-      210,
-      101.3,
-      30.73
+    "flight-tap-7": [
+      187.13,
+      118.34,
+      26.96,
+      4.44
     ],
-    "frost-asc-7": [
-      210,
-      100,
-      30.73,
-      -5
+    "flight-tap-8": [
+      188.4,
+      121.78,
+      26.96,
+      8.1
     ],
-    "frost-asc-8": [
-      210,
-      99,
-      30.73,
-      -5
+    "flight-tap-9": [
+      189.19,
+      123.57,
+      26.96,
+      10.41
+    ],
+    "flight-tap-10": [
+      189.41,
+      123.16,
+      26.96,
+      10.79
+    ],
+    "flight-tap-11": [
+      188.98,
+      120.63,
+      26.96,
+      9.12
+    ],
+    "flight-tap-12": [
+      187.85,
+      116.72,
+      26.96,
+      5.84
     ],
     "frost-desc-1": [
-      210,
-      106,
-      30.73
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "frost-desc-2": [
-      210,
-      106.8,
-      30.73
+      188.58,
+      124.69,
+      26.96,
+      15.58
     ],
     "frost-desc-3": [
-      210,
-      107.8,
-      30.73
+      187.99,
+      138.17,
+      26.96,
+      28.78
     ],
     "frost-desc-4": [
-      210,
-      109,
-      30.73
+      184.8,
+      150.86,
+      26.96,
+      41.25
     ],
-    "frost-desc-5": [
-      210,
-      110.2,
-      30.73
+    "frost-tap-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
-    "frost-desc-6": [
-      210,
-      111.6,
-      30.73
+    "frost-tap-2": [
+      184.49,
+      109.48,
+      26.96,
+      -1.87
     ],
-    "frost-desc-7": [
-      210,
-      113,
-      30.73
+    "frost-tap-3": [
+      183.33,
+      108.02,
+      26.96,
+      -4.22
     ],
-    "frost-desc-8": [
-      210,
-      114,
-      30.73
+    "frost-tap-4": [
+      183.18,
+      108.46,
+      26.96,
+      -4.6
+    ],
+    "frost-tap-5": [
+      184.07,
+      110.69,
+      26.96,
+      -2.9
+    ],
+    "frost-tap-6": [
+      185.56,
+      114.27,
+      26.96,
+      0.41
+    ],
+    "frost-tap-7": [
+      187.13,
+      118.34,
+      26.96,
+      4.44
+    ],
+    "frost-tap-8": [
+      188.4,
+      121.78,
+      26.96,
+      8.1
+    ],
+    "frost-tap-9": [
+      189.19,
+      123.57,
+      26.96,
+      10.41
+    ],
+    "frost-tap-10": [
+      189.41,
+      123.16,
+      26.96,
+      10.79
+    ],
+    "frost-tap-11": [
+      188.98,
+      120.63,
+      26.96,
+      9.12
+    ],
+    "frost-tap-12": [
+      187.85,
+      116.72,
+      26.96,
+      5.84
     ],
     "gemmie-desc-1": [
       183.43,
@@ -5637,7 +5680,7 @@
     "arcflash": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "741f8628949b782ef3994c0908dccbca05a274a69ea02e24ceca2d3dd81944bc",
+    "control-constants": "c76e2c0fe33ad3eda1f58edc68d97d93adb6e8a47d6a1809b2e9fc732e17049e",
     "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",

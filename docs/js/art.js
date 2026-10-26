@@ -1,9 +1,9 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=311";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=311";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=311";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=311";
-import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumSuit, isHighOrbitRig } from "./high-orbit-config.js?v=311";
-import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=311";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=312";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=312";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=312";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=312";
+import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumSuit, isHighOrbitRig } from "./high-orbit-config.js?v=312";
+import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=312";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -325,7 +325,7 @@ export function drawSprite(ctx, spr, x, y, size, fit = "box", halo, haloOpacity 
 // still touches its plume in the source, but the guarded mainline cut is
 // safer than the earlier colour split and remains an active rig.
 const RIGGED_SUITS = [
-    "flight",
+    // flight left with the 3D lineup (26 Oct 2026): it flies a rendered bank
     // The natural-flight nine use whole-frame banks and matching neutral
     // portraits. Their historical split parts are no longer requested.
     // alien is NOT rigged any more: its new spiral-tail master has no neck
@@ -356,13 +356,14 @@ const TAP_BANKS = {
     // Every one of these banks already shipped in the production art folder;
     // only this list kept production from asking for them.
     robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
-    flight: 16,
     // THE 3D LINEUP (owner, 26 Oct 2026: "here are the replacements, DIRECT
     // replace"): ten suits re-made from rigged 3D squirrels by tools/rig3d -
     // a twelve-frame tap and a four-frame dive (the dive table below), no climb, the
     // same motion on every one. See the tapDive branch in draw.ts.
     ember: 12, voidsuit: 12, groveguard: 12, cinderforge: 12, sunforged: 12,
     abyssal: 12, gemmie: 12, iontrim: 12, sammie: 12, cosmic: 12,
+    // and the next two on the same rendered skeleton
+    flight: 12, frost: 12,
     // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
     // retired: their GENERATED motion lost the pilot's lower body at its
     // extremes, and each flies a painted ascent/descent ramp now -
@@ -394,23 +395,24 @@ const BOUNCE_BANKS = { volt: 16 };
 // "large frame in rotation" the owner could see but not name. Dropped and
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
-const ASC_BANKS = { eclipse: 8, flight: 3, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, copper: 8,
+const ASC_BANKS = { eclipse: 8, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, copper: 8,
     // THE ALIENS SWAPPED after the owner's A/B: the standard-spec bank
     // won and flies production "alien" at 8/8; the custom-posed bank
     // retired to the beta shelf as "Alien 1" at 7/7 (the owner's two
     // frame cuts - the black desc swirl and the bled-over spiral asc).
     alien: 8,
-    cryostar: 8, verdant: 8, frost: 8, ghost: 8, leviathan: 8,
+    cryostar: 8, verdant: 8, ghost: 8, leviathan: 8,
     // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
     briellacat: 7,
 };
-const DESC_BANKS = { eclipse: 8, flight: 5, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, copper: 8,
+const DESC_BANKS = { eclipse: 8, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, copper: 8,
     alien: 8,
-    cryostar: 8, verdant: 8, frost: 8, ghost: 8, leviathan: 8,
+    cryostar: 8, verdant: 8, ghost: 8, leviathan: 8,
     briellacat: 4,
     // the 3D lineup's dives, paired with their twelve-frame taps above
     ember: 4, voidsuit: 4, groveguard: 4, cinderforge: 4, sunforged: 4,
     abyssal: 4, gemmie: 4, iontrim: 4, sammie: 4, cosmic: 4,
+    flight: 4, frost: 4,
 };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.

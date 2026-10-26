@@ -33,9 +33,9 @@ const mod=f=>import(pathToFileURL(join(scratch,'js',f+'.js')).href);
 const [D,A,Sim,S,C,Control]=await Promise.all(['draw','art','sim','save','catalog','control-constants'].map(mod));
 
 // --- the tables: exactly what the owner asked for, nothing more ----------
-// iontrim, voidsuit, ember, gemmie and sammie left with the 3D lineup (26 Oct 2026): a
-// rendered tap and dive, no ascent bank for velocity to walk
-const VELOCITY=['eclipse','cryostar','verdant','cyber','seraph','alien','flight','briellacat','copper','frost','ghost','leviathan','porcelain','nacre','origamist'];
+// iontrim, voidsuit, ember, gemmie and sammie left with the 3D lineup (26 Oct 2026),
+// flight and frost after them: a rendered tap and dive, no ascent bank for velocity to walk
+const VELOCITY=['eclipse','cryostar','verdant','cyber','seraph','alien','briellacat','copper','ghost','leviathan','porcelain','nacre','origamist'];
 assert.deepEqual(Object.keys(Control.TAP_SHAPE).sort(),[...VELOCITY].sort(),'TAP_SHAPE: every ascent-bank suit, and only those (owner, 12 Sep 2026: "everything I don\'t name otherwise, gets velocity rewind")');
 assert(Object.values(Control.TAP_SHAPE).every(v=>v==='velocity'),'and all of them are on velocity');
 assert.deepEqual([...VELOCITY].sort(),[...new Set([...Object.keys(A.ASC_BANKS)])].sort(),'the velocity roster is exactly the suits with an ascent bank');
@@ -127,7 +127,7 @@ assert.equal(S.tapShapeFor({tapShape:{}},'eclipse'),'velocity');
 assert.deepEqual(S.tapShapeFor({tapShape:{eclipse:{fwd:.5,back:.5}}},'eclipse'),{fwd:.5,back:.5});
 assert.equal(S.tapShapeFor({tapShape:{eclipse:'default'}},'eclipse'),null);
 assert.equal(S.tapShapeFor(null,'robo'),null,'a suit off the table (a frozen one) is the stock ramp');
-assert.equal(S.tapShapeFor(null,'flight'),'velocity','flight is on the velocity table per the 12 Sep ruling');
+assert.equal(S.tapShapeFor(null,'flight'),null,'flight left the velocity table with the 3D lineup: it has no ascent bank to walk');
 
 // --- the body reaction spring behind the tap accent (sim side) -----------
 {

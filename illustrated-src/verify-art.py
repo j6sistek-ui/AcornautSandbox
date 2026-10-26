@@ -59,12 +59,11 @@ STRICT_256_DIRS = {
 # canvas. Keep every alpha-bearing pixel near the main painting so the
 # runtime content box cannot silently double in height again.
 COMPACT_PALS = {"cometsprite", "pocketmoon"}
-# iontrim, voidsuit and ember left with the 3D lineup (26 Oct 2026): their helmet
-# size is measured from the rendered head, not fitted to painted art
+# iontrim, voidsuit and ember left with the 3D lineup (26 Oct 2026), flight and
+# frost after them: their helmet size is measured from the rendered head, not
+# fitted to painted art
 BASE_SUIT_IDS = (
-    "flight",
     "copper",
-    "frost",
     "robo",
     "ghost",
     "bigbooty",
@@ -78,21 +77,18 @@ CALIBRATED_HELMET_SCALES = {
     # Flight refitted by the owner's eye on the rig editor, 5 Oct 2026: the
     # 40.32 still sat 14% over its own frames and well over the painted
     # skull ("it's helmet is huge"). This row follows the owner's number.
-    "flight": 31.17 / 184,
     "copper": 0.2538,     # 50 / 197
-    "frost": 0.2308,      # 39 / 169
     "robo": 36.12 / 189,
     "ghost": 0.2178,      # 49 / 225
     "bigbooty": 28 / 187,
 }
 CALIBRATED_HELMET_TOLERANCE = 0.05
-NATURAL_FLIGHT_SUITS = {"copper", "leviathan", "frost", "ghost"}
+NATURAL_FLIGHT_SUITS = {"copper", "leviathan", "ghost"}
 # Owner-requested skull normalization uses a shared 192px presentation box.
 CALIBRATED_HELMET_SCALES.update({suit: 36 / 192 for suit in NATURAL_FLIGHT_SUITS})
 # Suits the owner has refitted by eye on the rig editor leave the shared
 # 36px template; each row below is the owner's number.
 CALIBRATED_HELMET_SCALES["copper"] = 31.97 / 192    # 5 Oct 2026
-CALIBRATED_HELMET_SCALES["frost"] = 30.73 / 192     # 5 Oct 2026
 CALIBRATED_HELMET_SCALES["ghost"] = 30.73 / 192     # 5 Oct 2026
 CALIBRATED_HELMET_SCALES["robo"] = 32.71 / 189      # 5 Oct 2026, owner refit (was 36.12)
 CALIBRATED_HELMET_SCALES["leviathan"] = 29.53 / 192 # 6 Oct 2026
@@ -1292,8 +1288,6 @@ def sprite_pitch(path: Path) -> float | None:
 # recorded here rather than failing the build - but a NEW suit that does it
 # still fails, which is the point.
 MOTION_TAP_OVERLAP = {
-    "flight": "616 KB that loads and never draws. Harmless, purely wasted; "
-              "drop it when the folder is next rewritten.",
     "eclipse": "1.5 MB, and tied to the open question of whether Eclipse keeps "
                "its asc/desc experiment at all. Resolving that resolves this.",
 }

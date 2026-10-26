@@ -19,13 +19,14 @@ assert.equal(c.suits.length,flightRows.length,'every real Flight row is a change
 assert(c.suits.every(s=>s.key.startsWith('suit:flight')||s.key.startsWith('flight-')));
 const ts=R.reportTS();
 for(const s of flightRows)assert(ts.includes(`"${s.key}":`),`${s.key} printed`);
-assert(!ts.includes('flight-tap-'),'seeded tap rows that still match the still are not printed');
+// Flight flies its rendered tap and dive banks (3D lineup, 26 Oct 2026): those rows are real and move with it
+assert(ts.includes('"flight-tap-1":')&&ts.includes('"flight-desc-4":'),'its played tap and dive rows are printed');
 assert.equal(ts.split('\n').length,1+flightRows.length,'one header, one line per row');
 // then one frame on its own, and the still moved away from the taps
-R.S.reach='frame';R.S.row='flight-asc-2';R.moveHead(0,5);
-assert(R.reportTS().includes('"flight-asc-2"'));
+R.S.reach='frame';R.S.row='flight-desc-2';R.moveHead(0,5);
+assert(R.reportTS().includes('"flight-desc-2"'));
 R.S.row='suit:flight';R.moveHead(1,0);
-assert.equal(R.changes().suits.length,flightRows.length,'still the same rows: Flight has no tap rows because the game never plays its tap bank');
+assert.equal(R.changes().suits.length,flightRows.length,'still the same rows: moving one frame or the still adds none');
 // a suit whose tap bank IS what it flies lists those frames, and they move with the suit
 R.S.row='suit:robo';R.S.suit='robo';R.S.reach='suit';R.moveHead(0,1);
 assert.equal(R.changes().suits.filter(s=>s.key.startsWith('robo-tap-')).length,16,'Robo tap frames move with the still');

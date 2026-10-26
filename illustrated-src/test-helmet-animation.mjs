@@ -100,8 +100,9 @@ try {
   // banks and loading rig. Their head policies are checked in the trio suite.
   const CYBER_TRIO=['porcelain','nacre','origamist'];
   // The 3D lineup (owner, 26 Oct 2026: "here are the replacements, DIRECT
-  // replace"): ten suits re-made as rendered tap and dive banks, helmets kept.
-  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic"];
+  // replace"): suits re-made as rendered tap and dive banks, helmets kept -
+  // the first ten, then Flight and Frost on Ion's skeleton.
+  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic","flight","frost"];
   const suits=NewCat.SUITS.filter(suit=>!NewCat.wearsOwnHead(suit));
   assert.equal(suits.length,21,'all twenty-one production suits with wearable helmets are covered');
   const promoted=suits.filter(suit=>HIGH_ORBIT.includes(suit.id)&&!THREE_D_TEST.includes(suit.id));

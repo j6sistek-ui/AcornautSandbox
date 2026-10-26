@@ -26,15 +26,15 @@ export const TAP_SHAPE_MIN = 0.1, TAP_SHAPE_MAX = 1.0;
 // Arcflash have their own controllers.
 export const TAP_SHAPE = {
     eclipse: "velocity", cryostar: "velocity", verdant: "velocity", cyber: "velocity", seraph: "velocity",
-    alien: "velocity", flight: "velocity", briellacat: "velocity", copper: "velocity",
-    frost: "velocity", ghost: "velocity", leviathan: "velocity",
+    alien: "velocity", briellacat: "velocity", copper: "velocity",
+    ghost: "velocity", leviathan: "velocity",
     // Owner-requested replacement banks follow Cyber's exact live path.
     porcelain: "velocity", nacre: "velocity", origamist: "velocity",
 };
 export const TAIL_SPRING_MIN = 0.25, TAIL_SPRING_MAX = 3;
 export const TAIL_SPRING_ONE = { stiff: 1, damp: 1, kick: 1 };
 export const TAIL_SPRING = {};
-export const TAIL_SPRING_SUITS = ["flight", "robo", "bigbooty", "catsuit", "verdant", "cryostar", "eclipse", "volt", "cyber", "porcelain", "nacre", "origamist"];
+export const TAIL_SPRING_SUITS = ["robo", "bigbooty", "catsuit", "verdant", "cryostar", "eclipse", "volt", "cyber", "porcelain", "nacre", "origamist"];
 /** THE TAP ACCENT, LIVE (owner, 12 Sep 2026: "enable it in game ... by
  *  default 1x is good"). The 167 ms ignition and the body reaction on every
  *  accepted tap, on both pages, with a per-suit strength: a multiplier on
@@ -109,12 +109,10 @@ export const SUIT_LEAN_DEFAULT = { up: 0.8, down: 0.3 };
 export const SUIT_LEAN = {
     vanguard: { up: 0, down: 0 }, // drawn attitudes; no extra body tipping
     arcflash: { up: 0, down: 0 }, // its own joint controller owns body attitude
-    // the standard, and the reference every other suit is read against
-    flight: { up: 0.8, down: 0.3 },
+    // flight was the reference here at the default; it joined the 3D lineup below
     // --- rigged suits: these carry the velocity bank AND the heading pitch,
     //     so they are the ones most likely to read as over-tipped
     copper: { up: 0.8, down: 0.3 },
-    frost: { up: 0.8, down: 0.3 },
     ghost: { up: 0.8, down: 0.3 },
     seraph: { up: 0.8, down: 0.3 },
     leviathan: { up: 0.8, down: 0.3 },
@@ -153,6 +151,8 @@ export const SUIT_LEAN = {
     iontrim: { up: 0, down: 0 },
     sammie: { up: 0, down: 0 },
     cosmic: { up: 0, down: 0 },
+    flight: { up: 0, down: 0 },
+    frost: { up: 0, down: 0 },
 };
 /** The dial for a suit, or the default for one that has none yet. */
 export function suitLean(id) {

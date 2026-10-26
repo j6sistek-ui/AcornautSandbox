@@ -22,9 +22,9 @@ reg = json.loads(regfile.read_text())
 draw = (ROOT/'illustrated-src/game/draw.ts').read_text()
 dome = {k: [float(x) for x in v.split(',')] for k,v in re.findall(r'"((?:suit:)?[a-z]+(?:-(?:asc|desc)-\d+)?)":\s*\[([^\]]+)\]',draw)}
 loops = {'hedgehog','ferret','raccoon'}
-# five of the nine retired with the 3D lineup (26 Oct 2026): their reviewed frames are gone
-RETIRED = {'iontrim','voidsuit','sammie','gemmie','ember'}
-expected = {'copper','leviathan','frost','ghost'} | loops
+# six of the nine retired with the 3D lineup (26 Oct 2026): their reviewed frames are gone
+RETIRED = {'iontrim','voidsuit','sammie','gemmie','ember','frost'}
+expected = {'copper','leviathan','ghost'} | loops
 assert set(reg['report']) - RETIRED == expected, 'exact requested character scope'
 hashfile=SOURCE/'frame-hashes.json'
 hashes=json.loads(hashfile.read_text()) if hashfile.exists() else {}
