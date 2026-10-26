@@ -30,9 +30,9 @@ for(const model of manifest.models){const project=makeProject(manifest,model);as
 assert.equal(manifest.models.length,34);const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
 assert.deepEqual(rigs.map(m=>m.id).sort(),['abyssal','arcflash','cinderforge','cosmic','groveguard','sunforged','vanguard'],'all seven original cut rigs remain available');
 // Patriot flies a rendered tap/dive bank since its 3D model (owner, 26 Oct 2026); Percy and Envoy keep Cyber's
-const patriot=manifest.models.find(m=>m.id==='origamist');
-assert.equal(patriot.family,'bank');assert.equal(patriot.banks.tap.length,12);assert.equal(patriot.banks.desc.length,4);assert.equal(patriot.banks.asc.length,0);assert(!patriot.sheet);
-const premium=manifest.models.filter(m=>['porcelain','nacre'].includes(m.id));assert.equal(premium.length,2);
+for(const id of ['origamist','porcelain']){const m=manifest.models.find(x=>x.id===id);
+  assert.equal(m.family,'bank');assert.equal(m.banks.tap.length,12);assert.equal(m.banks.desc.length,4);assert.equal(m.banks.asc.length,0);assert(!m.sheet);}
+const premium=manifest.models.filter(m=>['nacre'].includes(m.id));assert.equal(premium.length,1);
 const cyber=manifest.models.find(m=>m.id==='cyber'),cyberProfile=makeProject(manifest,cyber).profile;
 for(const model of premium){
   assert.equal(model.family,'bank');assert.equal(model.atlas,null);assert(!model.sheet);

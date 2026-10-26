@@ -11,7 +11,7 @@ import {fileURLToPath} from 'node:url';
 const mode=process.argv[2],root=fileURLToPath(new URL('../',import.meta.url));
 // Patriot left the fixed-head frames for a rendered 3D bank and the pilot's helmet (owner,
 // 26 Oct 2026); it stays a premium pilot with its wake, checked on its own below
-const ids=['porcelain','nacre'],TRIO=[...ids,'origamist'];
+const ids=['nacre'],TRIO=[...ids,'origamist','porcelain'];
 if(!mode){
   for(const page of ['render','production','beta'])execFileSync(process.execPath,[fileURLToPath(import.meta.url),page],{stdio:'inherit'});
   process.exit(0);
@@ -110,15 +110,16 @@ async function integrationChecks(){
     assert(small.highOrbit.time>0&&small.highOrbit.frames===undefined,id+' race wake never activates retired playback');
     results.push({id,price,headPolicy:suit.headPolicy,wake:trail});
   }
-  {
-    const id='origamist',suit=C.SUITS.find(s=>s.id===id),trail=Config.HIGH_ORBIT_PROFILES[id].trail;
-    assert(C.FIXED_SHOP_SUIT_IDS.includes(id)&&C.IAP_ITEMS.includes(id),'Patriot is still sold as a premium pilot');
-    assert(!C.wearsOwnHead(suit)&&!suit.headPolicy&&!suit.fixedHelmet,'Patriot wears the pilot helmet');
-    for(const other of C.SUITS)assert.equal(C.canWearTrail(trail,other.id),other.id===id,'Patriot wake exclusive');
-    e.save.purchased.push(id);e.save.equipped='ion';assert.equal(e.buySuit(id),'equip');assert.equal(e.buyHelmet('ion'),'equip','Patriot takes a helmet');
+  // Percy followed Patriot onto a rendered 3D bank (owner, 27 Oct 2026)
+  for(const id of ['origamist','porcelain']){
+    const suit=C.SUITS.find(s=>s.id===id),trail=Config.HIGH_ORBIT_PROFILES[id].trail;
+    assert(C.FIXED_SHOP_SUIT_IDS.includes(id)&&C.IAP_ITEMS.includes(id),id+' is still sold as a premium pilot');
+    assert(!C.wearsOwnHead(suit)&&!suit.headPolicy&&!suit.fixedHelmet,id+' wears the pilot helmet');
+    for(const other of C.SUITS)assert.equal(C.canWearTrail(trail,other.id),other.id===id,id+' wake exclusive');
+    e.save.purchased.push(id);e.save.equipped='ion';assert.equal(e.buySuit(id),'equip');assert.equal(e.buyHelmet('ion'),'equip',id+' takes a helmet');
     const w=Sim.makeWorld(390,5000);Sim.resetRun(w,e.save,'fly',false);Sim.updateWorld(w,e.save,1/60);
     assert.equal(w.highOrbit.id,id);assert.equal(Sim.flap(w,e.save),'flap');for(let i=0;i<18;i++)Sim.updateWorld(w,e.save,1/60);
-    assert(w.highOrbit.time>.25&&w.tapAnimT>=0,'Patriot taps drive its rendered bank and its wake');
+    assert(w.highOrbit.time>.25&&w.tapAnimT>=0,id+' taps drive its rendered bank and its wake');
     e.save.purchased=e.save.purchased.filter(x=>x!==id);
   }
   // A previously selected matched helmet also survives a fixed-head detour.

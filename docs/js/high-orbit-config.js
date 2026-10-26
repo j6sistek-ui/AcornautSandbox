@@ -13,7 +13,8 @@ export const CUT_RIG_RETIRED = new Set(HIGH_ORBIT_IDS);
 /** Patriot flies a rendered tap/dive bank too (owner, 26 Oct 2026) and wears the pilot's
  * helmet: its premium identity and Foldspace Ribbon wake stay; its painted 9/9 frames and
  * integrated head retire. Percy and Envoy keep both. */
-export const PREMIUM_FRAMES_RETIRED = new Set(['origamist']);
+// Percy followed (owner, 27 Oct 2026: "I never replaced Percy ... use number 2 (moon tail)")
+export const PREMIUM_FRAMES_RETIRED = new Set(['origamist', 'porcelain']);
 export const isPremiumFrames = (id) => isPremiumSuit(id) && !PREMIUM_FRAMES_RETIRED.has(id);
 export const isHighOrbitRig = (id) => HIGH_ORBIT_RIG_IDS.includes(id) && !CUT_RIG_RETIRED.has(id);
 export const HIGH_ORBIT_HEAD_RADIUS = 36;

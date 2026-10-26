@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "318",
-  "sourceCommit": "ddd4be2a5720ca86d28e64819b4de757abbbf7cf",
+  "artVer": "319",
+  "sourceCommit": "06038ab72a5fff22a62bcd2c5d187deb127a3145",
   "models": [
     {
       "id": "flight",
@@ -159,81 +159,59 @@
       "key": "suit:porcelain",
       "file": "suits/porcelain.png",
       "dome": [
-        180,
-        84,
-        35.3465
+        185.99,
+        116.93,
+        27.51,
+        1.8
       ],
       "box": null,
-      "ownHead": true,
+      "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/porcelain-asc-1.png",
-          "suits/porcelain-asc-2.png",
-          "suits/porcelain-asc-3.png",
-          "suits/porcelain-asc-4.png",
-          "suits/porcelain-asc-5.png",
-          "suits/porcelain-asc-6.png",
-          "suits/porcelain-asc-7.png",
-          "suits/porcelain-asc-8.png",
-          "suits/porcelain-asc-9.png"
+        "tap": [
+          "suits/porcelain-tap-1.png",
+          "suits/porcelain-tap-2.png",
+          "suits/porcelain-tap-3.png",
+          "suits/porcelain-tap-4.png",
+          "suits/porcelain-tap-5.png",
+          "suits/porcelain-tap-6.png",
+          "suits/porcelain-tap-7.png",
+          "suits/porcelain-tap-8.png",
+          "suits/porcelain-tap-9.png",
+          "suits/porcelain-tap-10.png",
+          "suits/porcelain-tap-11.png",
+          "suits/porcelain-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/porcelain-desc-1.png",
           "suits/porcelain-desc-2.png",
           "suits/porcelain-desc-3.png",
-          "suits/porcelain-desc-4.png",
-          "suits/porcelain-desc-5.png",
-          "suits/porcelain-desc-6.png",
-          "suits/porcelain-desc-7.png",
-          "suits/porcelain-desc-8.png",
-          "suits/porcelain-desc-9.png"
+          "suits/porcelain-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/porcelain.png": "ee2d1852945db463768bc83d0a4e9475100fb804adc032e666c2ff33cf647eec",
-        "suits/porcelain-asc-1.png": "ee2d1852945db463768bc83d0a4e9475100fb804adc032e666c2ff33cf647eec",
-        "suits/porcelain-asc-2.png": "138b3688858eed41144253bf2b7dc21f79f90169c7ddfc92acc8b0e9509d56a4",
-        "suits/porcelain-asc-3.png": "65d3de5c3f43c3882e6c643d41f009446e7504ce79a52698778166bb2c0d9910",
-        "suits/porcelain-asc-4.png": "fe9ae5a1b3fa061059652d8e64c2ce814e042531b64dcd325d09bf92ac0307de",
-        "suits/porcelain-asc-5.png": "e0eed660b132a609c90649dfe434d4f894eafbd1ebfd4e2b87e8238c24b3915c",
-        "suits/porcelain-asc-6.png": "50de57cbb2070b80c054727c01b908dab3ff04128de44f6c3364bdc886000222",
-        "suits/porcelain-asc-7.png": "b2dfc5dcf8ae198a5da0cc277dd30b2839d408e29222235565e9fe5de5d2060a",
-        "suits/porcelain-asc-8.png": "03544bf7e3a7a80cb2a24944ec316e4eb9c01e8b8c9e564fe932b5c935719a65",
-        "suits/porcelain-asc-9.png": "257f31fc42adc44e231184724bce4543c0fc82b75b73976ee042c296116539cc",
-        "suits/porcelain-desc-1.png": "4877cb9427ef65fa6fab7b45d294c4bf8fff2e608680c7caebfbed927c18be9d",
-        "suits/porcelain-desc-2.png": "2dba1d554a268694ebe555a9abfd710d2c16e006586b08c0d15b0e1c9bdaf70f",
-        "suits/porcelain-desc-3.png": "a107f3e8ff925c6d47b210bc3bd2dc3305cb79e5e99c3128a232290705808c2f",
-        "suits/porcelain-desc-4.png": "190c77e1258bda5df0c5bfa76c0e221ad21082f348374143fbc61af77205e3c2",
-        "suits/porcelain-desc-5.png": "23d82b8fc597942339d67cfa31c5cfeb10b65a6019dc8be20b3eafeb9ceed0fd",
-        "suits/porcelain-desc-6.png": "6631b5ab7d8c28ff58c1bbb0c91f4b023d51b9b950e8220d61c51081c8effd74",
-        "suits/porcelain-desc-7.png": "79b36f4c1bfc6745c914ca0d54e40a9ed216e26289365d94d772027b3ae83058",
-        "suits/porcelain-desc-8.png": "7872c5906488b9e706adbdfe108e60379694bed2bccdeacb124b823048dc6647",
-        "suits/porcelain-desc-9.png": "52db8b05248e0d487fe0a5c082698a55dffc15c48e1ff6de59c73034629f00f2",
-        "suits/hd/porcelain.png": "da6b0c9d0f0fad701996c65a5acd6a4ea46eddfa683bb8cbee90a2df50e2c3a6",
-        "suits/hd/porcelain-asc-1.png": "da6b0c9d0f0fad701996c65a5acd6a4ea46eddfa683bb8cbee90a2df50e2c3a6",
-        "suits/hd/porcelain-asc-2.png": "e563b68da0158d1f1751a6691a352342ffed5788eed34de97198af1c6e09855f",
-        "suits/hd/porcelain-asc-3.png": "abe5f18b2726fbf517d6758fe0027444555640e6ab3b8e06c94ecee422c4f22b",
-        "suits/hd/porcelain-asc-4.png": "7d294ae2df4b41a3a9a00f1aa1b4bc5047f4924a1825f36b8f9bb182a050cb09",
-        "suits/hd/porcelain-asc-5.png": "407007805754a536aba90d4c746df7b769f5309d765c8adbcfedf396b5523219",
-        "suits/hd/porcelain-asc-6.png": "a7c332e7dc152d736ce2f6fd8c8b6e647fbf6128baa068851df659ef01c5b997",
-        "suits/hd/porcelain-asc-7.png": "55a1ee125fe1d8f34830a5f66c5eaa97524cb90e87b9b9585ac35989360ca78b",
-        "suits/hd/porcelain-asc-8.png": "0527db701e317ccef984df93de0eb8471fb72d790503195eb6e11e4b46abbb44",
-        "suits/hd/porcelain-asc-9.png": "a528b65a6401fe04dd9e8b3c94c3ba49537f7a06c1917f9664d263dd6e41db43",
-        "suits/hd/porcelain-desc-1.png": "c20a00eba86d3edb06c78b4050a8fac61215adca325a63750ebfaac85413a287",
-        "suits/hd/porcelain-desc-2.png": "4f7b3e8a84fb61d236fabb1f741271284ae452e2e7b344e60bf9c72b185cb0fa",
-        "suits/hd/porcelain-desc-3.png": "dca09128e3394e276effcdb5e0d66859953a14f1db1f35aa81b9cacdc67ec1d2",
-        "suits/hd/porcelain-desc-4.png": "fa97e54bbf27b47e967cf63b622ee32880badc22596be1a7987de20de19869b2",
-        "suits/hd/porcelain-desc-5.png": "243f8a2ba1c43615bed7f14842a3e9e1b0c45e9f912b7b66e93b44486b113159",
-        "suits/hd/porcelain-desc-6.png": "afe82b24964294b960f62cd35d1f6850b8500732bf02a3630b1baa13eac17dea",
-        "suits/hd/porcelain-desc-7.png": "cf32ba7e3df776a342c192b3c93aad17ac3e485dad07103e27fd8986fb965276",
-        "suits/hd/porcelain-desc-8.png": "7167ce1d348a8d78fc2184cf81edfd05fbb4e0cbb6387288af565d914f3ded7c",
-        "suits/hd/porcelain-desc-9.png": "e536fa0e147c9bd3e9c63cdad12ef20cba2aecdc3af18e91431cc23c744eda37"
+        "suits/porcelain.png": "129d5a8479193367b867ae14f5fc156b53f187e03fe88c33d6fe0ca6bf27f865",
+        "suits/porcelain-tap-1.png": "129d5a8479193367b867ae14f5fc156b53f187e03fe88c33d6fe0ca6bf27f865",
+        "suits/porcelain-tap-2.png": "ff4174e5a96749fc08c21df09011d7861bb21b24d7be1144d4d46d873754922d",
+        "suits/porcelain-tap-3.png": "98f3d00182b76f30c05700b85f6e11b98684a22888d405fd4dc682931a7a952e",
+        "suits/porcelain-tap-4.png": "ca1b1b545bce52926730f697e90b8fdee5bef7aa41ade8e561ae7f848ff492ee",
+        "suits/porcelain-tap-5.png": "c25273b94c49b6f35f03a15214aaf63dedc356414f4c6866075f27d2254f815f",
+        "suits/porcelain-tap-6.png": "009ed4bdf64ebbe8f0e6232f396c501cf6335ab3227744dac90d83b93b41b90e",
+        "suits/porcelain-tap-7.png": "e58bcc11de5f92bec1e990cf93ef5c07526db4220a921ea6dd33caad613a9018",
+        "suits/porcelain-tap-8.png": "7f947432760d03e5b3ec18a3f25d16a48cf6a909c046bb396f47bd855440e443",
+        "suits/porcelain-tap-9.png": "934b7e07372980ba5097a9a6ed2ad221295cb2e35665040343945b4d65d1d84c",
+        "suits/porcelain-tap-10.png": "ef8f4a5e2f2590997af8773f2e4e011fb8ad3064b48fd161de8f4326dcef8e6c",
+        "suits/porcelain-tap-11.png": "c1053aaef9392e7d1fbb92124aa53732532e1e969183628bc3dfff26acc9d6c8",
+        "suits/porcelain-tap-12.png": "9bd938ea4867e33154883497e35bffb4ed5bfaefa8758ff3c01eed21e8fa25bb",
+        "suits/porcelain-desc-1.png": "129d5a8479193367b867ae14f5fc156b53f187e03fe88c33d6fe0ca6bf27f865",
+        "suits/porcelain-desc-2.png": "eccc24e0ba0ecfee43d1be57e35b4d9f53880f206a78f6f04e2d621698b47e95",
+        "suits/porcelain-desc-3.png": "69ae987cdf77585470f5fddf51792db8f12107462da9a28a70fd30ec17662cc8",
+        "suits/porcelain-desc-4.png": "e51a04233eb4ed20bc02317e215037681a5d983aa83de5b9ddfd50cf6cc6ed33"
       }
     },
     {
@@ -2635,9 +2613,10 @@
       1.82
     ],
     "suit:porcelain": [
-      180,
-      84,
-      35.3465
+      185.99,
+      116.93,
+      27.51,
+      1.8
     ],
     "suit:nacre": [
       180,
@@ -4539,6 +4518,102 @@
       26.96,
       5.84
     ],
+    "porcelain-desc-1": [
+      185.99,
+      116.93,
+      27.51,
+      1.8
+    ],
+    "porcelain-desc-2": [
+      186.2,
+      129.65,
+      27.51,
+      15.51
+    ],
+    "porcelain-desc-3": [
+      184.06,
+      141.78,
+      27.51,
+      28.7
+    ],
+    "porcelain-desc-4": [
+      179.67,
+      153.11,
+      27.51,
+      41.16
+    ],
+    "porcelain-tap-1": [
+      185.99,
+      116.93,
+      27.51,
+      1.8
+    ],
+    "porcelain-tap-2": [
+      185.27,
+      114.46,
+      27.51,
+      -1.88
+    ],
+    "porcelain-tap-3": [
+      184.7,
+      113.33,
+      27.51,
+      -4.23
+    ],
+    "porcelain-tap-4": [
+      184.5,
+      113.75,
+      27.51,
+      -4.6
+    ],
+    "porcelain-tap-5": [
+      184.72,
+      115.59,
+      27.51,
+      -2.92
+    ],
+    "porcelain-tap-6": [
+      185.17,
+      118.43,
+      27.51,
+      0.39
+    ],
+    "porcelain-tap-7": [
+      185.65,
+      121.57,
+      27.51,
+      4.4
+    ],
+    "porcelain-tap-8": [
+      186.39,
+      124.24,
+      27.51,
+      8.05
+    ],
+    "porcelain-tap-9": [
+      186.99,
+      125.61,
+      27.51,
+      10.36
+    ],
+    "porcelain-tap-10": [
+      187.3,
+      125.26,
+      27.51,
+      10.74
+    ],
+    "porcelain-tap-11": [
+      187.2,
+      123.25,
+      27.51,
+      9.07
+    ],
+    "porcelain-tap-12": [
+      186.61,
+      120.16,
+      27.51,
+      5.81
+    ],
     "robo-tap-1": [
       193,
       102,
@@ -5350,96 +5425,6 @@
       128,
       40
     ],
-    "porcelain-asc-1": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-asc-2": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-asc-3": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-asc-4": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-asc-5": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-asc-6": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-asc-7": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-asc-8": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-asc-9": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-desc-1": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-desc-2": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-desc-3": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-desc-4": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-desc-5": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-desc-6": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-desc-7": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-desc-8": [
-      128,
-      128,
-      40
-    ],
-    "porcelain-desc-9": [
-      128,
-      128,
-      40
-    ],
     "catsuit-tap-1": [
       128,
       128,
@@ -5865,12 +5850,12 @@
     "arcflash": "e3311622176da38faba697d12c9b2a471084681e7192d539da559e6336028b38",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "259fd3aca49d513fcaa808c2053c677c7b5c5d627ea0fb7c65cdf2bb04b2cb33",
-    "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
+    "control-constants": "4e25fda28b50f075e3b0f7d76db5f326938110e28febc202c828db645484651c",
+    "cyber-trio-registration": "015faf2a34603b2ed1ed653b79ae2c10139ae7ee083efa48a3d68288eadbc08c",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
     "high-orbit": "0a4d14f1e6b76eb8d83aeb1f08ac09a633ef0bfc4449c91dabcf5aa00a78738c",
-    "high-orbit-config": "8a67b26a56d21bf65a1a65ff831901b40617b1047d61dc2399b046759173231c",
+    "high-orbit-config": "3fd7f4caca5a7cdbd04e597cf36605957af8dfb892d2db89ec25d463614f07ed",
     "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
     "high-orbit-motion": "08e7ec309a2bb197950773b427d01b1fe181f0c8503ed4886d9eb96f1e6064e2",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",

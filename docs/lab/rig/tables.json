@@ -1,5 +1,5 @@
 {
- "artVer": "318",
+ "artVer": "319",
  "suits": [
   {
    "id": "flight",
@@ -54,12 +54,13 @@
    "key": "suit:porcelain",
    "file": "suits/porcelain.png",
    "dome": [
-    180,
-    84,
-    35.3465
+    185.99,
+    116.93,
+    27.51,
+    1.8
    ],
    "box": null,
-   "ownHead": true,
+   "ownHead": false,
    "bakedDome": false,
    "frame": false
   },
@@ -5518,6 +5519,278 @@
   },
   {
    "played": true,
+   "id": "porcelain-desc-1",
+   "name": "Percy desc 1",
+   "key": "porcelain-desc-1",
+   "file": "suits/porcelain-desc-1.png",
+   "dome": [
+    185.99,
+    116.93,
+    27.51,
+    1.8
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-desc-2",
+   "name": "Percy desc 2",
+   "key": "porcelain-desc-2",
+   "file": "suits/porcelain-desc-2.png",
+   "dome": [
+    186.2,
+    129.65,
+    27.51,
+    15.51
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-desc-3",
+   "name": "Percy desc 3",
+   "key": "porcelain-desc-3",
+   "file": "suits/porcelain-desc-3.png",
+   "dome": [
+    184.06,
+    141.78,
+    27.51,
+    28.7
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-desc-4",
+   "name": "Percy desc 4",
+   "key": "porcelain-desc-4",
+   "file": "suits/porcelain-desc-4.png",
+   "dome": [
+    179.67,
+    153.11,
+    27.51,
+    41.16
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-1",
+   "name": "Percy tap 1",
+   "key": "porcelain-tap-1",
+   "file": "suits/porcelain-tap-1.png",
+   "dome": [
+    185.99,
+    116.93,
+    27.51,
+    1.8
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-2",
+   "name": "Percy tap 2",
+   "key": "porcelain-tap-2",
+   "file": "suits/porcelain-tap-2.png",
+   "dome": [
+    185.27,
+    114.46,
+    27.51,
+    -1.88
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-3",
+   "name": "Percy tap 3",
+   "key": "porcelain-tap-3",
+   "file": "suits/porcelain-tap-3.png",
+   "dome": [
+    184.7,
+    113.33,
+    27.51,
+    -4.23
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-4",
+   "name": "Percy tap 4",
+   "key": "porcelain-tap-4",
+   "file": "suits/porcelain-tap-4.png",
+   "dome": [
+    184.5,
+    113.75,
+    27.51,
+    -4.6
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-5",
+   "name": "Percy tap 5",
+   "key": "porcelain-tap-5",
+   "file": "suits/porcelain-tap-5.png",
+   "dome": [
+    184.72,
+    115.59,
+    27.51,
+    -2.92
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-6",
+   "name": "Percy tap 6",
+   "key": "porcelain-tap-6",
+   "file": "suits/porcelain-tap-6.png",
+   "dome": [
+    185.17,
+    118.43,
+    27.51,
+    0.39
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-7",
+   "name": "Percy tap 7",
+   "key": "porcelain-tap-7",
+   "file": "suits/porcelain-tap-7.png",
+   "dome": [
+    185.65,
+    121.57,
+    27.51,
+    4.4
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-8",
+   "name": "Percy tap 8",
+   "key": "porcelain-tap-8",
+   "file": "suits/porcelain-tap-8.png",
+   "dome": [
+    186.39,
+    124.24,
+    27.51,
+    8.05
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-9",
+   "name": "Percy tap 9",
+   "key": "porcelain-tap-9",
+   "file": "suits/porcelain-tap-9.png",
+   "dome": [
+    186.99,
+    125.61,
+    27.51,
+    10.36
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-10",
+   "name": "Percy tap 10",
+   "key": "porcelain-tap-10",
+   "file": "suits/porcelain-tap-10.png",
+   "dome": [
+    187.3,
+    125.26,
+    27.51,
+    10.74
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-11",
+   "name": "Percy tap 11",
+   "key": "porcelain-tap-11",
+   "file": "suits/porcelain-tap-11.png",
+   "dome": [
+    187.2,
+    123.25,
+    27.51,
+    9.07
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "porcelain-tap-12",
+   "name": "Percy tap 12",
+   "key": "porcelain-tap-12",
+   "file": "suits/porcelain-tap-12.png",
+   "dome": [
+    186.61,
+    120.16,
+    27.51,
+    5.81
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
    "id": "robo-tap-1",
    "name": "Robo tap 1",
    "key": "robo-tap-1",
@@ -7843,276 +8116,6 @@
    "name": "Envoy desc 9",
    "key": "nacre-desc-9",
    "file": "suits/nacre-desc-9.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-asc-1",
-   "name": "Percy asc 1",
-   "key": "porcelain-asc-1",
-   "file": "suits/porcelain-asc-1.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-asc-2",
-   "name": "Percy asc 2",
-   "key": "porcelain-asc-2",
-   "file": "suits/porcelain-asc-2.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-asc-3",
-   "name": "Percy asc 3",
-   "key": "porcelain-asc-3",
-   "file": "suits/porcelain-asc-3.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-asc-4",
-   "name": "Percy asc 4",
-   "key": "porcelain-asc-4",
-   "file": "suits/porcelain-asc-4.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-asc-5",
-   "name": "Percy asc 5",
-   "key": "porcelain-asc-5",
-   "file": "suits/porcelain-asc-5.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-asc-6",
-   "name": "Percy asc 6",
-   "key": "porcelain-asc-6",
-   "file": "suits/porcelain-asc-6.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-asc-7",
-   "name": "Percy asc 7",
-   "key": "porcelain-asc-7",
-   "file": "suits/porcelain-asc-7.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-asc-8",
-   "name": "Percy asc 8",
-   "key": "porcelain-asc-8",
-   "file": "suits/porcelain-asc-8.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-asc-9",
-   "name": "Percy asc 9",
-   "key": "porcelain-asc-9",
-   "file": "suits/porcelain-asc-9.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-desc-1",
-   "name": "Percy desc 1",
-   "key": "porcelain-desc-1",
-   "file": "suits/porcelain-desc-1.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-desc-2",
-   "name": "Percy desc 2",
-   "key": "porcelain-desc-2",
-   "file": "suits/porcelain-desc-2.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-desc-3",
-   "name": "Percy desc 3",
-   "key": "porcelain-desc-3",
-   "file": "suits/porcelain-desc-3.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-desc-4",
-   "name": "Percy desc 4",
-   "key": "porcelain-desc-4",
-   "file": "suits/porcelain-desc-4.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-desc-5",
-   "name": "Percy desc 5",
-   "key": "porcelain-desc-5",
-   "file": "suits/porcelain-desc-5.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-desc-6",
-   "name": "Percy desc 6",
-   "key": "porcelain-desc-6",
-   "file": "suits/porcelain-desc-6.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-desc-7",
-   "name": "Percy desc 7",
-   "key": "porcelain-desc-7",
-   "file": "suits/porcelain-desc-7.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-desc-8",
-   "name": "Percy desc 8",
-   "key": "porcelain-desc-8",
-   "file": "suits/porcelain-desc-8.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "porcelain-desc-9",
-   "name": "Percy desc 9",
-   "key": "porcelain-desc-9",
-   "file": "suits/porcelain-desc-9.png",
    "dome": [
     128,
     128,

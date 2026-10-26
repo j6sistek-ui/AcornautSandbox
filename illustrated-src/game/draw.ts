@@ -3551,7 +3551,6 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "suit:catsuit": [212, 86, 50],
   "suit:phoenix": [207, 92, 41],
   "suit:seraph": [205, 131, 27.89, 2],
-  "suit:porcelain": [180, 84, 35.3465],
   "suit:nacre": [180, 84, 32.0492],
   // robo — pose-specific head and collar registration.
   "robo-tap-1": [193, 102, 34.24, 0],
@@ -3777,6 +3776,23 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
   "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
   "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+  "suit:porcelain": [185.99, 116.93, 27.51, 1.8],
+  "porcelain-tap-1": [185.99, 116.93, 27.51, 1.8],
+  "porcelain-tap-2": [185.27, 114.46, 27.51, -1.88],
+  "porcelain-tap-3": [184.7, 113.33, 27.51, -4.23],
+  "porcelain-tap-4": [184.5, 113.75, 27.51, -4.6],
+  "porcelain-tap-5": [184.72, 115.59, 27.51, -2.92],
+  "porcelain-tap-6": [185.17, 118.43, 27.51, 0.39],
+  "porcelain-tap-7": [185.65, 121.57, 27.51, 4.4],
+  "porcelain-tap-8": [186.39, 124.24, 27.51, 8.05],
+  "porcelain-tap-9": [186.99, 125.61, 27.51, 10.36],
+  "porcelain-tap-10": [187.3, 125.26, 27.51, 10.74],
+  "porcelain-tap-11": [187.2, 123.25, 27.51, 9.07],
+  "porcelain-tap-12": [186.61, 120.16, 27.51, 5.81],
+  "porcelain-desc-1": [185.99, 116.93, 27.51, 1.8],
+  "porcelain-desc-2": [186.2, 129.65, 27.51, 15.51],
+  "porcelain-desc-3": [184.06, 141.78, 27.51, 28.7],
+  "porcelain-desc-4": [179.67, 153.11, 27.51, 41.16],
   "suit:bigbooty": [197.85, 110.52, 26.23, 1.25],
   "bigbooty-tap-1": [197.85, 110.52, 26.23, 1.25],
   "bigbooty-tap-2": [196.78, 108.28, 26.23, -1.34],
@@ -4053,9 +4069,8 @@ const TAIL_PIVOT: Record<string, [number, number]> = {
   // is why a swing tore a piece off the animal instead of sweeping along
   // it. Re-cut the art and these must be re-read from the same run.
   cyber: [101, 125],
-  porcelain: [...CYBER_TRIO_REGISTRATION.porcelain.tailPivot],
+  // Percy and Patriot left the painted trio for rendered 3D banks (no split tail to pivot)
   nacre: [...CYBER_TRIO_REGISTRATION.nacre.tailPivot],
-  origamist: [...CYBER_TRIO_REGISTRATION.origamist.tailPivot],
   bigbooty: [92, 129],
   catsuit: [74, 149],
   copper: [108, 142],
@@ -4644,7 +4659,7 @@ const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail 
 // The 3D lineup too (26 Oct 2026): its rendered dive frames carry the attitude.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
   "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
-  "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant"]);
+  "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant", "porcelain"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
@@ -4653,7 +4668,7 @@ const LOOP_FPS = 12;
 // EXTENDS rather than which way it points, and the rig supplies the
 // direction over the top. That is what lets nine frames read as a climb and
 // a dive instead of needing two sheets that never quite agree at the seam.
-const RIG_PITCH_WITH_BANK = new Set(["cyber", "porcelain", "nacre"]);
+const RIG_PITCH_WITH_BANK = new Set(["cyber", "nacre"]);
 
 // THE FRAMES A GENERATED BANK LOST. Twenty-two of the tap banks were made
 // from one shared motion, and that motion loses the pilot's LOWER BODY at

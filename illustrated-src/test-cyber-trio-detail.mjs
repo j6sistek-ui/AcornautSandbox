@@ -46,7 +46,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 async function requested(count){for(let i=0;i<20&&requests.length<count;i++)await tick();assert.equal(requests.length,count);}
 // Patriot left the trio's painted 9/9 frames for a rendered 3D bank (owner, 26 Oct 2026);
 // Percy and Envoy keep them and their lazy detail tier
-const FRAMED_TRIO=['porcelain','nacre'];
+const FRAMED_TRIO=['nacre'];  // Percy followed Patriot (27 Oct 2026)
 const loadedBanks={};
 for(const id of FRAMED_TRIO){
   const art=A.emptyArt(),start=requests.length,promise=A.loadSuitBank(art,id);

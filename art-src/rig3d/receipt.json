@@ -81,6 +81,10 @@
    "head": "tripoHead_0",
    "args": "--yaw 45 --body 0.6 --jiggle \"bone_39|bone_42\" --jup 0.6 --jfloor 0.5 --jreach 1.45 --jf 2 --jdet 0.25 --jk 1.4 --jkw 0.12 --jg 1.7 --jz 0.09 --tailamp 0.55",
    "note": "owner, 27 Oct 2026: yaw 45 no pitch; jiggle \"medium\" (two cheek springs rippling out of step, flap push spread over the first 12% of the tap); tail swing at 55% so it clears the legs"
+  },
+  "porcelain": {
+   "model": "Future2.glb (Moonstone)",
+   "note": "owner, 27 Oct 2026: Percy from future model #2 (moon tail)"
   }
  },
  "hashes": {
@@ -491,6 +495,23 @@
   "suits/bigbooty-tap-10.png": "0a88c83d6741aceb438e7f75c9d777f126eb84b7",
   "suits/bigbooty-tap-11.png": "0dda1fc236a4c3fbbff45fc7e24b8feb6fffc8dc",
   "suits/bigbooty-tap-12.png": "f1010d60be1cca97f8b2cf9805c4de0328f840c2",
-  "suits/bigbooty.png": "3ba2c26f6aa4ab2aba7a2a01b2c42bc401835114"
+  "suits/bigbooty.png": "3ba2c26f6aa4ab2aba7a2a01b2c42bc401835114",
+  "suits/porcelain-desc-1.png": "9431794e7be871e1db32cb3bf0d602075814aaee",
+  "suits/porcelain-desc-2.png": "84973754e4bb806203b50a2d8fb513020b009b3b",
+  "suits/porcelain-desc-3.png": "7e04733bee500d0ac2cc324238cab97b247f1483",
+  "suits/porcelain-desc-4.png": "a33f0a4484f62610745c3a5d8a9bbda4b9cf3679",
+  "suits/porcelain-tap-1.png": "9431794e7be871e1db32cb3bf0d602075814aaee",
+  "suits/porcelain-tap-2.png": "bc83fe562a40203833f987b26b70a47771b88173",
+  "suits/porcelain-tap-3.png": "a4c68271b579d95be26dc84b65e5a50848fd12d1",
+  "suits/porcelain-tap-4.png": "675897616e0de7c6af46e4d927fd5b24011d8e68",
+  "suits/porcelain-tap-5.png": "6e2c30538734797a691b00044a1600d1b5fc73c5",
+  "suits/porcelain-tap-6.png": "eb1a5e8402b7449a450c949f12b9323fcd42f365",
+  "suits/porcelain-tap-7.png": "73053f71cc845186014dbce836003cfbc83422e7",
+  "suits/porcelain-tap-8.png": "97111e6adddab37cf2f459aabc25511233c22aab",
+  "suits/porcelain-tap-9.png": "20136fd66bea438a83f586de92a9aa2d5d93e8fa",
+  "suits/porcelain-tap-10.png": "664c2d31584353259498c64a42b00530b49a0b21",
+  "suits/porcelain-tap-11.png": "11fb408c815ab7447240e17038418f9dd3451278",
+  "suits/porcelain-tap-12.png": "93e7bdf4f401b8b7eef59a06ad5964959397f677",
+  "suits/porcelain.png": "9431794e7be871e1db32cb3bf0d602075814aaee"
  }
 }

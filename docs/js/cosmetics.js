@@ -1,8 +1,8 @@
 // @ts-nocheck
 // Ported from live Acornaut character/hangar renderer.
 // One astronaut + pal + trail preview drives hangar and flight.
-import { STAR_CHART_TRAILS } from "./catalog.js?v=318";
-import { paintStarTrailPreview } from "./star-trails.js?v=318";
+import { STAR_CHART_TRAILS } from "./catalog.js?v=319";
+import { paintStarTrailPreview } from "./star-trails.js?v=319";
 let ctx;
 function use(c) {
     ctx = c;

@@ -28,12 +28,12 @@ export const TAP_SHAPE = {
     cyber: "velocity", seraph: "velocity",
     briellacat: "velocity", ghost: "velocity",
     // Owner-requested replacement banks follow Cyber's exact live path.
-    porcelain: "velocity", nacre: "velocity",
+    nacre: "velocity",
 };
 export const TAIL_SPRING_MIN = 0.25, TAIL_SPRING_MAX = 3;
 export const TAIL_SPRING_ONE = { stiff: 1, damp: 1, kick: 1 };
 export const TAIL_SPRING = {};
-export const TAIL_SPRING_SUITS = ["robo", "catsuit", "volt", "cyber", "porcelain", "nacre"];
+export const TAIL_SPRING_SUITS = ["robo", "catsuit", "volt", "cyber", "nacre"];
 /** THE TAP ACCENT, LIVE (owner, 12 Sep 2026: "enable it in game ... by
  *  default 1x is good"). The 167 ms ignition and the body reaction on every
  *  accepted tap, on both pages, with a per-suit strength: a multiplier on
@@ -113,7 +113,6 @@ export const SUIT_LEAN = {
     //     so they are the ones most likely to read as over-tipped
     ghost: { up: 0.8, down: 0.3 },
     seraph: { up: 0.8, down: 0.3 },
-    porcelain: { up: 0.8, down: 0.3 },
     nacre: { up: 0.8, down: 0.3 },
     // --- custom ANIMATION suits. Their frames are the owner's and are not to
     //     be touched; their LEAN is a dial like everyone else's.
@@ -152,6 +151,7 @@ export const SUIT_LEAN = {
     raccoon: { up: 0, down: 0 },
     ferret: { up: 0, down: 0 },
     bigbooty: { up: 0, down: 0 },
+    porcelain: { up: 0, down: 0 },
 };
 /** The dial for a suit, or the default for one that has none yet. */
 export function suitLean(id) {
