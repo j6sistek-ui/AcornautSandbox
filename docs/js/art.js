@@ -1,9 +1,10 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=313";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=313";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=313";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=313";
-import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumSuit, isHighOrbitRig } from "./high-orbit-config.js?v=313";
-import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=313";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=314";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=314";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=314";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=314";
+import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumFrames, isHighOrbitRig } from "./high-orbit-config.js?v=314";
+import { isArcflashRig } from "./arcflash.js?v=314";
+import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=314";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -142,7 +143,7 @@ function asSprite(img) {
     s.coreX = m.coreX;
     s.coreY = m.coreY;
     const still = typeof img.src === "string" ? img.src.match(/\/suits\/([^/]+)\.png(?:\?|$)/)?.[1] : undefined;
-    if (still && isPremiumSuit(still))
+    if (still && isPremiumFrames(still))
         bindSpriteDetails([{ sprite: s, path: `suits/hd/${still}.png` }], path => loadImg(artUrl(path)));
     return s;
 }
@@ -343,7 +344,8 @@ const RIGGED_SUITS = [
     // overhaul sold it on production in two bundles - and its rig stayed
     // behind this flag, so a pilot who bought it flew a flat sticker while
     // the beta page flew the animation. A suit's art must follow the suit.
-    "cyber", "porcelain", "nacre", "origamist",
+    "cyber", "porcelain", "nacre",
+    // origamist left with the 3D lineup (26 Oct 2026): it flies a rendered bank
     // High Orbit uses its own eleven-part atlases below.
 ];
 const TAP_BANKS = {
@@ -364,6 +366,7 @@ const TAP_BANKS = {
     abyssal: 12, gemmie: 12, iontrim: 12, sammie: 12, cosmic: 12,
     // and the next two on the same rendered skeleton, then four on their own rigs
     flight: 12, frost: 12, leviathan: 12, copper: 12, alien: 12, hedgehog: 12,
+    arcflash: 12, origamist: 12,
     // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
     // retired: their GENERATED motion lost the pilot's lower body at its
     // extremes, and each flies a painted ascent/descent ramp now -
@@ -395,19 +398,20 @@ const BOUNCE_BANKS = { volt: 16 };
 // "large frame in rotation" the owner could see but not name. Dropped and
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
-const ASC_BANKS = { eclipse: 8, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8,
+const ASC_BANKS = { eclipse: 8, cyber: 9, porcelain: 9, nacre: 9, seraph: 8,
     // alien, copper and leviathan left for the 3D lineup (26 Oct 2026)
     cryostar: 8, verdant: 8, ghost: 8,
     // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
     briellacat: 7,
 };
-const DESC_BANKS = { eclipse: 8, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8,
+const DESC_BANKS = { eclipse: 8, cyber: 9, porcelain: 9, nacre: 9, seraph: 8,
     cryostar: 8, verdant: 8, ghost: 8,
     briellacat: 4,
     // the 3D lineup's dives, paired with their twelve-frame taps above
     ember: 4, voidsuit: 4, groveguard: 4, cinderforge: 4, sunforged: 4,
     abyssal: 4, gemmie: 4, iontrim: 4, sammie: 4, cosmic: 4,
     flight: 4, frost: 4, leviathan: 4, copper: 4, alien: 4, hedgehog: 4,
+    arcflash: 4, origamist: 4,
 };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
@@ -446,7 +450,7 @@ export function loadSuitBank(bank, id) {
             }
             return;
         }
-        if (id === "arcflash") {
+        if (isArcflashRig(id)) {
             try {
                 const atlas = await loadImg(`${base}/suits/arcflash/parts.png?v=${ART_VER}`);
                 if (atlas.naturalWidth !== 1024 || atlas.naturalHeight !== 768) {
@@ -504,9 +508,9 @@ export function loadSuitBank(bank, id) {
             bank.suitBounce[id] = bounce;
         // The remastered trio must not compress a missing pose out of its ramp.
         // Publish both complete banks together, retaining the still on failure.
-        const completeMotion = !isPremiumSuit(id) || (asc.length === ASC_BANKS[id] && desc.length === DESC_BANKS[id]
+        const completeMotion = !isPremiumFrames(id) || (asc.length === ASC_BANKS[id] && desc.length === DESC_BANKS[id]
             && [...asc, ...desc].every(frame => frame.width === 256 && frame.height === 256));
-        if (isPremiumSuit(id)) {
+        if (isPremiumFrames(id)) {
             const detail = (path) => loadImg(artUrl(path));
             if (tail && body)
                 bindSpriteDetails([
@@ -541,7 +545,7 @@ export function loadSuitBank(bank, id) {
             (LOOP_BANKS[id] && !loop.length) ||
             (ASC_BANKS[id] && !asc.length) ||
             (DESC_BANKS[id] && !desc.length);
-        if (shortBank || !completeMotion || (isPremiumSuit(id) && (!tail || !body)))
+        if (shortBank || !completeMotion || (isPremiumFrames(id) && (!tail || !body)))
             suitBankLoads.delete(id);
     })();
     suitBankLoads.set(id, p);
@@ -707,7 +711,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
     async function named(ids, folder, suffix = "", required = false, extension = "png") {
         const out = {};
         await Promise.all(ids.map(async (id) => {
-            const path = folder === "suits" && id === "arcflash" && !suffix
+            const path = folder === "suits" && isArcflashRig(id) && !suffix
                 ? "suits/arcflash/body.png" : `${folder}/${id}${suffix}.${extension}`;
             const src = `${base}/${path}?v=${ART_VER}`;
             try {

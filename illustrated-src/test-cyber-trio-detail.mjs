@@ -44,8 +44,11 @@ document.createElement=()=>{
 };
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
 async function requested(count){for(let i=0;i<20&&requests.length<count;i++)await tick();assert.equal(requests.length,count);}
+// Patriot left the trio's painted 9/9 frames for a rendered 3D bank (owner, 26 Oct 2026);
+// Percy and Envoy keep them and their lazy detail tier
+const FRAMED_TRIO=['porcelain','nacre'];
 const loadedBanks={};
-for(const id of ['porcelain','nacre','origamist']){
+for(const id of FRAMED_TRIO){
   const art=A.emptyArt(),start=requests.length,promise=A.loadSuitBank(art,id);
   await requested(start+2);requests.slice(start).forEach(image=>image.ok());
   await requested(start+20);requests.slice(start+2).forEach(image=>image.ok());await promise;
@@ -92,7 +95,7 @@ async function sprite(path){
   labels.set(hd,path);details.push([image,hd]);return image;
 }
 const art=A.emptyArt();
-for(const id of ['porcelain','nacre','origamist']){
+for(const id of FRAMED_TRIO){
   art.suits[id]=await sprite(`suits/${id}.png`);
   art.suitAsc[id]=await Promise.all(Array.from({length:9},(_,i)=>sprite(`suits/${id}-asc-${i+1}.png`)));
   art.suitDesc[id]=await Promise.all(Array.from({length:9},(_,i)=>sprite(`suits/${id}-desc-${i+1}.png`)));
@@ -116,7 +119,7 @@ function samePlacement(sd,hd,label){
     assert.deepEqual(sd[i].args,args,label+' unchanged logical destination and correctly doubled source crop');
   }
 }
-for(const id of ['porcelain','nacre','origamist']){
+for(const id of FRAMED_TRIO){
   const suit=C.SUITS.find(s=>s.id===id),helmet=C.HELMETS.find(h=>h.id==='clear');
   for(const [label,paint] of [
     ['portrait',ctx=>D.paintPortrait(ctx,art,helmet,suit,200,200,158)],

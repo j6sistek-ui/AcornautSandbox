@@ -50,8 +50,9 @@ for(const suit of r.cat.SUITS){
  }
  for(const h of helmets){ac.clearRect(0,0,256,256);r.draw.paintPortrait(ac,r.bank,h,suit,100,128,100);assert(ac.getImageData(0,0,256,256).data.some((v,i)=>i%4===3&&v>0),suit.id+'/'+h.id+' actual portrait rendered');}
 }
-// 597: Alien wears a helmet since its 3D model (26 Oct 2026), its 27 pairings added to 570
-assert.equal(pairs,597,'no valid pairing was omitted');
+// 651: Alien, Arcflash and Patriot wear helmets since their 3D models (26 Oct 2026), 27
+// pairings each added to 570
+assert.equal(pairs,651,'no valid pairing was omitted');
 // Imported Studio presets may contain an exclusive helmet from another suit.
 // Load the same Clear fallback that paint() uses, even on a cold tool session.
 const cold=new StudioRenderer(manifest),loaded=[];cold.load=async path=>loaded.push(path);

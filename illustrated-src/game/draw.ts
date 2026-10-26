@@ -3,11 +3,11 @@ import { clipHelmetGlass } from "./helmet-openings";
 import { paintFittedHelmet } from "./helmet-fit";
 import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash";
-import { arcflashPreview } from "./arcflash-motion";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig, type ArcflashTravel } from "./arcflash";
+import { arcflashPreview, type ArcflashMotion } from "./arcflash-motion";
 import { paintLiveStarTrail } from "./star-trails";
 import { trailWornBy } from "./catalog";
-import {isHighOrbit,isHighOrbitRig,isPremiumSuit,highOrbitTrailSuit,CUT_RIG_RETIRED,type HighOrbitId} from "./high-orbit-config";
+import {isHighOrbit,isHighOrbitRig,isPremiumSuit,isPremiumFrames,highOrbitTrailSuit,CUT_RIG_RETIRED,type HighOrbitId} from "./high-orbit-config";
 import {paintHighOrbit,paintHighOrbitCockpit} from "./high-orbit";
 import {highOrbitPreview,premiumWakePreview,type HighOrbitMotion} from "./high-orbit-motion";
 import {paintPremiumBankWake,paintBootWake,type PremiumBankWake} from "./premium-bank-wake";
@@ -1871,14 +1871,14 @@ function paintSpillHead(ctx: CanvasRenderingContext2D, art: ArtBank, save: SaveD
     paintHighOrbitCockpit(ctx,art,suit.id,hole.cx,hole.cy,hole.rx,hole.ry);
     return;
   }
-  if (suit.id === "arcflash") {
+  if (isArcflashRig(suit.id)) {
     paintArcflashCockpit(ctx,art,hole.cx,hole.cy,hole.rx,hole.ry);
     return;
   }
   const body = art.suits[suit.id] ?? art.squirrelIdle[0];
   if (!body) return;
   const key = art.suits[suit.id] ? `suit:${suit.id}` : "idle-1";
-  const anchor = isPremiumSuit(suit.id) ? CYBER_TRIO_REGISTRATION[suit.id].head : DOME[key] ?? DOME["suit:flight"];
+  const anchor = isPremiumFrames(suit.id) ? CYBER_TRIO_REGISTRATION[suit.id].head : DOME[key] ?? DOME["suit:flight"];
   const helmet = helmetWornBy(save.equipped, suit.id);
   const b = naturalFlightKey(key) ? NATURAL_FLIGHT_BOX : body.box;
   const scale = hole.rx * 0.94 / anchor[2];
@@ -1887,7 +1887,7 @@ function paintSpillHead(ctx: CanvasRenderingContext2D, art: ArtBank, save: SaveD
   ctx.save(); ctx.beginPath();
   ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2); ctx.clip();
   ctx.drawImage(body, hole.cx - anchor[0] * scale, hole.cy - anchor[1] * scale, body.width * scale, body.height * scale);
-  if (!isPremiumSuit(suit.id)) paintDome(ctx, body, key, helmet, x, y, Math.max(b.w, b.h) * scale, art);
+  if (!isPremiumFrames(suit.id)) paintDome(ctx, body, key, helmet, x, y, Math.max(b.w, b.h) * scale, art);
   ctx.restore();
 }
 
@@ -3557,7 +3557,6 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "suit:eclipse": [205, 89, 41.2, -5],
   "suit:porcelain": [180, 84, 35.3465],
   "suit:nacre": [180, 84, 32.0492],
-  "suit:origamist": [180, 84, 35],
   // robo — pose-specific head and collar registration.
   "robo-tap-1": [193, 102, 34.24, 0],
   "robo-tap-2": [193, 102, 34.24, 0],
@@ -3866,6 +3865,40 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
   "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
   "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+  "suit:arcflash": [186.2, 112.62, 26.96, 1.82],
+  "arcflash-tap-1": [186.2, 112.62, 26.96, 1.82],
+  "arcflash-tap-2": [184.49, 109.48, 26.96, -1.87],
+  "arcflash-tap-3": [183.33, 108.02, 26.96, -4.22],
+  "arcflash-tap-4": [183.18, 108.46, 26.96, -4.6],
+  "arcflash-tap-5": [184.07, 110.69, 26.96, -2.9],
+  "arcflash-tap-6": [185.56, 114.27, 26.96, 0.41],
+  "arcflash-tap-7": [187.13, 118.34, 26.96, 4.44],
+  "arcflash-tap-8": [188.4, 121.78, 26.96, 8.1],
+  "arcflash-tap-9": [189.19, 123.57, 26.96, 10.41],
+  "arcflash-tap-10": [189.41, 123.16, 26.96, 10.79],
+  "arcflash-tap-11": [188.98, 120.63, 26.96, 9.12],
+  "arcflash-tap-12": [187.85, 116.72, 26.96, 5.84],
+  "arcflash-desc-1": [186.2, 112.62, 26.96, 1.82],
+  "arcflash-desc-2": [188.58, 124.69, 26.96, 15.58],
+  "arcflash-desc-3": [187.99, 138.17, 26.96, 28.78],
+  "arcflash-desc-4": [184.8, 150.86, 26.96, 41.25],
+  "suit:origamist": [186.2, 112.62, 26.96, 1.82],
+  "origamist-tap-1": [186.2, 112.62, 26.96, 1.82],
+  "origamist-tap-2": [184.49, 109.48, 26.96, -1.87],
+  "origamist-tap-3": [183.33, 108.02, 26.96, -4.22],
+  "origamist-tap-4": [183.18, 108.46, 26.96, -4.6],
+  "origamist-tap-5": [184.07, 110.69, 26.96, -2.9],
+  "origamist-tap-6": [185.56, 114.27, 26.96, 0.41],
+  "origamist-tap-7": [187.13, 118.34, 26.96, 4.44],
+  "origamist-tap-8": [188.4, 121.78, 26.96, 8.1],
+  "origamist-tap-9": [189.19, 123.57, 26.96, 10.41],
+  "origamist-tap-10": [189.41, 123.16, 26.96, 10.79],
+  "origamist-tap-11": [188.98, 120.63, 26.96, 9.12],
+  "origamist-tap-12": [187.85, 116.72, 26.96, 5.84],
+  "origamist-desc-1": [186.2, 112.62, 26.96, 1.82],
+  "origamist-desc-2": [188.58, 124.69, 26.96, 15.58],
+  "origamist-desc-3": [187.99, 138.17, 26.96, 28.78],
+  "origamist-desc-4": [184.8, 150.86, 26.96, 41.25],
   "suit:leviathan": [186.86, 102.5, 24.93, 1.8],
   "leviathan-tap-1": [186.86, 102.5, 24.93, 1.8],
   "leviathan-tap-2": [185.3, 99.36, 24.93, -1.93],
@@ -4630,7 +4663,7 @@ const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail 
 // The 3D lineup too (26 Oct 2026): its rendered dive frames carry the attitude.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
   "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
-  "flight", "frost", "leviathan", "copper"]);
+  "flight", "frost", "leviathan", "copper", "arcflash", "origamist"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
@@ -4639,7 +4672,7 @@ const LOOP_FPS = 12;
 // EXTENDS rather than which way it points, and the rig supplies the
 // direction over the top. That is what lets nine frames read as a climb and
 // a dive instead of needing two sheets that never quite agree at the seam.
-const RIG_PITCH_WITH_BANK = new Set(["cyber", "porcelain", "nacre", "origamist"]);
+const RIG_PITCH_WITH_BANK = new Set(["cyber", "porcelain", "nacre"]);
 
 // THE FRAMES A GENERATED BANK LOST. Twenty-two of the tap banks were made
 // from one shared motion, and that motion loses the pilot's LOWER BODY at
@@ -4783,6 +4816,8 @@ function paintIllustrated(
   // TAP_SHAPE in control-constants; tapShapeFor resolves the beta dial)
   tapShape: TapShape | "velocity" | null = null,
   wake?: PremiumBankWake,
+  // Arcflash's electrical wake, now that it flies a rendered bank (its joint rig retired)
+  arcWake?: { state: ArcflashMotion; travel?: ArcflashTravel },
 ) {
   // the equipped suit IS the body: its painted render replaces the
   // default flight frames, carried by the pilot's motion
@@ -4796,7 +4831,7 @@ function paintIllustrated(
     paintVanguard(ctx, art, x, y, size);
     return;
   }
-  if (suit.id === "arcflash") {
+  if (isArcflashRig(suit.id)) {
     paintArcflash(ctx, art, x, y, size);
     return;
   }
@@ -5108,6 +5143,7 @@ function paintIllustrated(
       // a signature wake leaves from the frame's own measured feet, under the pilot
       const boots = RIG3D_BOOTS[`${suit.id}-${bankName}-${k + 1}`];
       if (wake && boots && isHighOrbit(suit.id)) paintBootWake(ctx, suit.id, boots, refT, x, y, size, wake);
+      if (arcWake && boots) paintArcflashBootWake(ctx, arcWake.state, boots, refT, x, y, size, arcWake.travel);
       drawRigLayer(ctx, frame, refT, x, y, size, 0, undefined, halo);
       // every rendered frame carries its own measured helmet anchor (tools/rig3d
       // anchors.json), read against the bank's first frame like the bank itself
@@ -5268,7 +5304,7 @@ function drawPilot(
   const frameKey = (flapping ? "flap-" : "idle-") + (idx + 1);
   const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
   const flagship = suit.id === "vanguard";
-  const arcflash = suit.id === "arcflash";
+  const arcflash = isArcflashRig(suit.id);
   const orbit = isHighOrbitRig(suit.id);
   const independentRig = flagship || arcflash || orbit;
   if (flagship) paintVanguardContacts(ctx, w.vanguard);
@@ -5371,7 +5407,8 @@ function drawPilot(
     w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed,
     lean, NaN, true, tapShapeFor(save, suit.id),
     // the High Orbit five fly rendered banks now (CUT_RIG_RETIRED); their wake rides the bank
-    effects && (isPremiumSuit(suit.id) || CUT_RIG_RETIRED.has(suit.id)) ? {state:w.highOrbit,travel:w.distance/localScale} : undefined);
+    effects && (isPremiumSuit(suit.id) || CUT_RIG_RETIRED.has(suit.id)) ? {state:w.highOrbit,travel:w.distance/localScale} : undefined,
+    effects && suit.id === "arcflash" && !arcflash ? {state:w.arcflash,travel:{x:x/localScale,y:y/localScale,travel:w.distance/localScale}} : undefined);
   if (flagship && w.shieldCharges > 0) paintVanguardShield(ctx, 0, 0, w.time);
   ctx.restore();
 }
@@ -5583,7 +5620,7 @@ export function paintFlightPreview(
   pitch = 0,
 ) {
   if (!art) return;
-  if (suit.id === "arcflash") {
+  if (isArcflashRig(suit.id)) {
     paintArcflash(ctx, art, cx, cy, size, arcflashPreview(ctx,t), undefined, true, pitch);
     return;
   }
@@ -5723,7 +5760,8 @@ export function paintFlightPreview(
     "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean, sweptPose, false,
     tapShapeFor(null, suit.id),   // the table only: a preview has no save
     isPremiumSuit(suit.id) ? {state:premiumWakePreview(ctx,suit.id,t,vy),travel:t*300}
-      : CUT_RIG_RETIRED.has(suit.id) && isHighOrbit(suit.id) ? {state:highOrbitPreview(ctx,suit.id,t),travel:t*300} : undefined);
+      : CUT_RIG_RETIRED.has(suit.id) && isHighOrbit(suit.id) ? {state:highOrbitPreview(ctx,suit.id,t),travel:t*300} : undefined,
+    suit.id === "arcflash" && !isArcflashRig(suit.id) ? {state:arcflashPreview(ctx,t)} : undefined);
   ctx.restore();
 }
 

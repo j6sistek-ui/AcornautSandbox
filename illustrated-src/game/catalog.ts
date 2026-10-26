@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "313";
+export const ART_VER = "314";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -261,14 +261,15 @@ export const SUITS: Suit[] = [
   // acorns, remove from star chart"). The flagship left the 570-star rung
   // for the Loadout shelf at this price; the tutorial still borrows him.
   { id: "vanguard", name: "AcorNut", cost: 1000, ownHead: true, fur: "#c4783e", furDark: "#593b28", belly: "#f6e7d1", suit: "#dcdedb", suitLite: "#fff8e8", suitDark: "#28303b", trim: "#d6ae63", glow: "#85edff", dust: null },
-  // Carbon armour, blue eyes and a blue electrical wake; its articulated
-  // bare-headed pilot is one integrated look with independent flight motion.
+  // Carbon armour, blue eyes and a blue electrical wake. Since the 3D lineup
+  // (owner, 26 Oct 2026) it flies a rendered bank and wears the pilot's helmet;
+  // the wake stays, leaving from its feet.
   // ARCFLASH IS SOLD (owner, 7 Sep 2026): production, 1,850 star dust,
   // its blue electrical wake built in - see bundle-arcflash and DUST_STICKER.
-  { id: "arcflash", name: "Arcflash", cost: 0, ownHead: true, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
+  { id: "arcflash", name: "Arcflash", cost: 0, fur: "#c9702f", furDark: "#693715", belly: "#f4d4a4", suit: "#151c28", suitLite: "#536174", suitDark: "#080d16", trim: "#2587ff", glow: "#38caff", dust: null },
   { id: "porcelain", name: "Percy", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Sovereign Shell", fur: "#c7ccd3", furDark: "#767e8d", belly: "#fff8e9", suit: "#efe8d7", suitLite: "#fffdf3", suitDark: "#38567b", trim: "#466bb4", glow: "#b9d8ff", dust: null },
   { id: "nacre", name: "Envoy", cost: 0, ownHead: true, headPolicy: "helmetless", fur: "#cfb1df", furDark: "#8e709f", belly: "#f5d8dc", suit: "#e4d6dc", suitLite: "#fff0df", suitDark: "#4a315d", trim: "#d4a2d8", glow: "#e5a8ed", dust: null },
-  { id: "origamist", name: "Patriot", cost: 0, ownHead: true, headPolicy: "integrated", fixedHelmet: "Facet Shell", fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
+  { id: "origamist", name: "Patriot", cost: 0, fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
   { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
   { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
   { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },

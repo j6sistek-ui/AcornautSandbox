@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "313",
-  "sourceCommit": "8850859b677fede1c8a6591410fc63231111a232",
+  "artVer": "314",
+  "sourceCommit": "8e43047fb47f7accca4033a001042fd328876294",
   "models": [
     {
       "id": "flight",
@@ -97,24 +97,59 @@
       "key": "suit:arcflash",
       "file": "suits/arcflash/body.png",
       "dome": [
-        128,
-        128,
-        40
+        186.2,
+        112.62,
+        26.96,
+        1.82
       ],
       "box": null,
-      "ownHead": true,
+      "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "arcflash",
       "atlas": "suits/arcflash/parts.png",
       "banks": {
-        "tap": [],
+        "tap": [
+          "suits/arcflash-tap-1.png",
+          "suits/arcflash-tap-2.png",
+          "suits/arcflash-tap-3.png",
+          "suits/arcflash-tap-4.png",
+          "suits/arcflash-tap-5.png",
+          "suits/arcflash-tap-6.png",
+          "suits/arcflash-tap-7.png",
+          "suits/arcflash-tap-8.png",
+          "suits/arcflash-tap-9.png",
+          "suits/arcflash-tap-10.png",
+          "suits/arcflash-tap-11.png",
+          "suits/arcflash-tap-12.png"
+        ],
         "asc": [],
-        "desc": [],
+        "desc": [
+          "suits/arcflash-desc-1.png",
+          "suits/arcflash-desc-2.png",
+          "suits/arcflash-desc-3.png",
+          "suits/arcflash-desc-4.png"
+        ],
         "loop": []
       },
       "hashes": {
         "suits/arcflash/body.png": "1c7f0c52e4ba575169ce4af23022ad6de4fe8cd4591d195384729b50cf636be6",
+        "suits/arcflash-tap-1.png": "9464dccd6d99ddb1aa780c484bc64b7c667bf83fd7eced0df28ede34801441bf",
+        "suits/arcflash-tap-2.png": "3fac5f9a60cc9dfd69204c8aad4df85ccf374d87550bfb66325e047f845c612a",
+        "suits/arcflash-tap-3.png": "4d97ede5ca66e06cc0ec3f7de02042eeb1997efc304357c8ef49c9c662561f88",
+        "suits/arcflash-tap-4.png": "63912725e6baead531d4e758e27bdec24477f4892bc8fdda693575db2962e36b",
+        "suits/arcflash-tap-5.png": "b2a274d31d6861a3b61df6aeef8b8e9c423fa59eca617eafc0bf61c32d2417f4",
+        "suits/arcflash-tap-6.png": "190c4617d797c2d0c61f5cd263f4bd5450e551529638292ff644e4de78123cf4",
+        "suits/arcflash-tap-7.png": "bac756b3c7f9da7397f3b23cace9ba175520e57e61c86d34796f67c9f8baef7f",
+        "suits/arcflash-tap-8.png": "32d3f062dff06235c54471de92c681ef32de44b1a45e37acaa34e24b5f846958",
+        "suits/arcflash-tap-9.png": "80e674f9c1f2fd5734781d437a1da40697b84f0f8c4b4f86d088ffe726020934",
+        "suits/arcflash-tap-10.png": "4c8892e5ec3832b441cc9087a2b04652a176b52817fa033b14b00b58220b1d3a",
+        "suits/arcflash-tap-11.png": "fde4db62caf0f9112debdb323bd288600a583c1b80352c3e6ff025d0e39578a7",
+        "suits/arcflash-tap-12.png": "69f41ff34791052f7ec0855eb32ba2b54adde94fa74d015f9468e2c722c513c9",
+        "suits/arcflash-desc-1.png": "9464dccd6d99ddb1aa780c484bc64b7c667bf83fd7eced0df28ede34801441bf",
+        "suits/arcflash-desc-2.png": "35afd5bb34287036b76de50c4895a68c06798cdf9c202ddfcabdcb82be671a0f",
+        "suits/arcflash-desc-3.png": "e6c2e68282b41c4296da34477f238b4b5e5764322b1a46036592ea4c5f559d12",
+        "suits/arcflash-desc-4.png": "1c0c88a8c00b50288ed6fd6478df9744b1db6a799af449e1c4550fb05280655e",
         "suits/arcflash/parts.png": "3b243a739643dedd4f7e27c650e7a2071473aeac99111f46a91f20afa963f0aa"
       }
     },
@@ -290,81 +325,64 @@
       "key": "suit:origamist",
       "file": "suits/origamist.png",
       "dome": [
-        180,
-        84,
-        35
+        186.2,
+        112.62,
+        26.96,
+        1.82
       ],
       "box": null,
-      "ownHead": true,
+      "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/origamist-asc-1.png",
-          "suits/origamist-asc-2.png",
-          "suits/origamist-asc-3.png",
-          "suits/origamist-asc-4.png",
-          "suits/origamist-asc-5.png",
-          "suits/origamist-asc-6.png",
-          "suits/origamist-asc-7.png",
-          "suits/origamist-asc-8.png",
-          "suits/origamist-asc-9.png"
+        "tap": [
+          "suits/origamist-tap-1.png",
+          "suits/origamist-tap-2.png",
+          "suits/origamist-tap-3.png",
+          "suits/origamist-tap-4.png",
+          "suits/origamist-tap-5.png",
+          "suits/origamist-tap-6.png",
+          "suits/origamist-tap-7.png",
+          "suits/origamist-tap-8.png",
+          "suits/origamist-tap-9.png",
+          "suits/origamist-tap-10.png",
+          "suits/origamist-tap-11.png",
+          "suits/origamist-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/origamist-desc-1.png",
           "suits/origamist-desc-2.png",
           "suits/origamist-desc-3.png",
-          "suits/origamist-desc-4.png",
-          "suits/origamist-desc-5.png",
-          "suits/origamist-desc-6.png",
-          "suits/origamist-desc-7.png",
-          "suits/origamist-desc-8.png",
-          "suits/origamist-desc-9.png"
+          "suits/origamist-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
         "suits/origamist.png": "bc13b96bdfbfd528ee67ce9dde62f3ff6f48f04167a5a079c7f06987492e8ae9",
-        "suits/origamist-asc-1.png": "bc13b96bdfbfd528ee67ce9dde62f3ff6f48f04167a5a079c7f06987492e8ae9",
-        "suits/origamist-asc-2.png": "0666b405c5cde0fba17c78cb4b49a8b943c591498e85961077cde589292602ba",
-        "suits/origamist-asc-3.png": "a011d22fca4264a6fe8b3204234beb0793d3c6b02d7e7d0f8b28a868846c2d7a",
-        "suits/origamist-asc-4.png": "0ec4f8d3c3d7941dc38525ed14c82196085eda9bb6dc8cbb83d5292e58c8010d",
-        "suits/origamist-asc-5.png": "f37f8a439ac5bb0886fd9a7d0753932773806a8070e3ed327d7ab6f90374ca7a",
-        "suits/origamist-asc-6.png": "8f2db069ef481b7f51a679b01758e7bec3c8fee9d5f91dd7a6071dfdd5ba54c5",
-        "suits/origamist-asc-7.png": "0a2cdc1e44e0b5f8c5cdbd6253427188863e16413caa95e86d7736475cca60a2",
-        "suits/origamist-asc-8.png": "62be2df29859e8f515c39f4370cfc9ef8eb59564a13cf78c681790adb63796ae",
-        "suits/origamist-asc-9.png": "9b7f7c828351488e39477f90eb5cf57d4de6cea660be6b470fc552ea8dfe2d2b",
+        "suits/origamist-tap-1.png": "52ba56591d233b809ece2f374d45297f4d6c84a19fb609d9b5f981305a43e0db",
+        "suits/origamist-tap-2.png": "fa3c3a88cd39e258418512e2e2c5a31cfbe8a2948184b80fa2cef1ad36c8611c",
+        "suits/origamist-tap-3.png": "6aaca1a84a3302efd2db5550e61f5606ec398385437853daad041a8861ee4541",
+        "suits/origamist-tap-4.png": "b93bac45bd0256e171a3544be46438cef976038f1c19d49ea8a4e8b737c644fa",
+        "suits/origamist-tap-5.png": "e2d65bb0ef219764990eb18176da752b93d5c3b90e3874e2e5128385191eedaa",
+        "suits/origamist-tap-6.png": "476a1d1f0a25599a211fa2bdb1c550d3b5ad3212014a3507162aec377afdbf91",
+        "suits/origamist-tap-7.png": "f8c805f1e0c5bb7016664f0ee06a54d690cf12753f5e31e6e8ffe8f95173ceb5",
+        "suits/origamist-tap-8.png": "edda01e98599e2e345182230a4a26c81fbcfd9032ff2e4b73a3e961098deba56",
+        "suits/origamist-tap-9.png": "8459b59f0dee28d6016b7174a943fce755d8ed7b5eeb0315b5f2fc283dd35dd7",
+        "suits/origamist-tap-10.png": "cb3c352c1d6059106f327662dccb13947a59f1ce3d5c00b565df0d7d60a46239",
+        "suits/origamist-tap-11.png": "f642e11208ede5dbb92b4f76f20961ac1660f845c800b1d6df84dbe2388bdeb2",
+        "suits/origamist-tap-12.png": "47a067a189ced6da99373270df14b632e2ff29f6374041446c01d2572da0eccf",
         "suits/origamist-desc-1.png": "5060df5cea22b6c4d46c69b6cc1bd7b275946a71f14b9481ad05ddbbca5867f9",
         "suits/origamist-desc-2.png": "c1a160e76819fac52645d41e30c698180421dff8eb7c32f4c7de5da31225e305",
         "suits/origamist-desc-3.png": "3b7dfcfbfade1d4eb13253f8ed1e949c07dab96de59e88e456b3b264704b11db",
         "suits/origamist-desc-4.png": "4663e0b52bd70dddb515702238446737d131d35b35ec41370d4bfbeb49c71417",
-        "suits/origamist-desc-5.png": "d4d5e8f30b8cf26d03f682a3ae02e93fc2fa3457a4df46c4562256a571258da8",
-        "suits/origamist-desc-6.png": "b5797281270310733c31adff0bd54f818fd325767d4ca2f18a0143d1f938e4b3",
-        "suits/origamist-desc-7.png": "6698d9b9d208150e5b9f19d5e9d5e1485dc3da9074ae42713934e9305164dacd",
-        "suits/origamist-desc-8.png": "a38d7cd2287fce1ee00d506f3eb1d0937853e050836de5ff55e29092c89ea1cf",
-        "suits/origamist-desc-9.png": "ff6b759a8e6c32f7798ea9fd51e38ff1cb7137cac89dbd9af3591c5732d05eab",
         "suits/hd/origamist.png": "4bcb1dea363f02644dc14448aacff557e0d400ee8397f0bf7dcc3fd022a28ba8",
-        "suits/hd/origamist-asc-1.png": "4bcb1dea363f02644dc14448aacff557e0d400ee8397f0bf7dcc3fd022a28ba8",
-        "suits/hd/origamist-asc-2.png": "39a02d824adf76f5373e336f602904082e4068e1c8c1740eb1a9519a444aa293",
-        "suits/hd/origamist-asc-3.png": "9b51f56f5d2c1ddfc2abb1c93dc37e6f4add1eac1b084bbf46be9178261216bf",
-        "suits/hd/origamist-asc-4.png": "09337c21fa2d6373d83262c40b562e81148ac7b5976e19a6527248654afb8a34",
-        "suits/hd/origamist-asc-5.png": "7e24aa04aba761ef628093db79507f109538a9ef095593212697ff94add8bf52",
-        "suits/hd/origamist-asc-6.png": "cf9537d8abd81ac968275b52cb8484e8c2dc99e21bbe27a52939f1b030c12c4f",
-        "suits/hd/origamist-asc-7.png": "d11d3035e1b37a726908e7e30723fe55b2527f4c774aaea3a39180470aa7c053",
-        "suits/hd/origamist-asc-8.png": "fc072b66787fa9b2266ca51a984eadaf9de480f0e863b660d3f655f22bf442a2",
-        "suits/hd/origamist-asc-9.png": "6112e81bb6ed80f97eb705bd59a8966a170957d0f9e00f9a3c7e128119cb70df",
         "suits/hd/origamist-desc-1.png": "cc55f795772163fa508ac2b1cc8790e7573573da6fea56131efdaa492b39edc7",
         "suits/hd/origamist-desc-2.png": "9df36fc47352df57ca17461c493c767aea9a83ca8e633e57a0c34f211da3bfbc",
         "suits/hd/origamist-desc-3.png": "a1d266c73be346bab1ae8d9132a11b6510b5b21a5820bc2623b69be7c9f99537",
-        "suits/hd/origamist-desc-4.png": "0d95e93cbb4d14f1ee44e0ba4a92a2860d7ee19d4b052e8cc05e052bebcb1152",
-        "suits/hd/origamist-desc-5.png": "8baf59ce9946301f4afe8979c4fb9968de15832cd5684af913c558e796edc7fe",
-        "suits/hd/origamist-desc-6.png": "cf49e8d963572cc3c3b307f5707f771c349872fb11bc909986941d2b3a9f3561",
-        "suits/hd/origamist-desc-7.png": "4ee118f5e2303dd54fb5db06fb57ba9a47630a2fdfe1a50294d3fa83e06107bc",
-        "suits/hd/origamist-desc-8.png": "343f20aaae72aabe2074c42b8e28e94d9872e120b5317b78e9c19df12b5e1a1b",
-        "suits/hd/origamist-desc-9.png": "4442ae9aae4c15030c3bbd9500fbebc30283bdc4fad30f0ca962203cd1240040"
+        "suits/hd/origamist-desc-4.png": "0d95e93cbb4d14f1ee44e0ba4a92a2860d7ee19d4b052e8cc05e052bebcb1152"
       }
     },
     {
@@ -2641,9 +2659,10 @@
       40
     ],
     "suit:arcflash": [
-      128,
-      128,
-      40
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "suit:porcelain": [
       180,
@@ -2656,9 +2675,10 @@
       32.0492
     ],
     "suit:origamist": [
-      180,
-      84,
-      35
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "suit:iontrim": [
       186.2,
@@ -3012,6 +3032,102 @@
       125.09,
       22.29,
       5.82
+    ],
+    "arcflash-desc-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
+    ],
+    "arcflash-desc-2": [
+      188.58,
+      124.69,
+      26.96,
+      15.58
+    ],
+    "arcflash-desc-3": [
+      187.99,
+      138.17,
+      26.96,
+      28.78
+    ],
+    "arcflash-desc-4": [
+      184.8,
+      150.86,
+      26.96,
+      41.25
+    ],
+    "arcflash-tap-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
+    ],
+    "arcflash-tap-2": [
+      184.49,
+      109.48,
+      26.96,
+      -1.87
+    ],
+    "arcflash-tap-3": [
+      183.33,
+      108.02,
+      26.96,
+      -4.22
+    ],
+    "arcflash-tap-4": [
+      183.18,
+      108.46,
+      26.96,
+      -4.6
+    ],
+    "arcflash-tap-5": [
+      184.07,
+      110.69,
+      26.96,
+      -2.9
+    ],
+    "arcflash-tap-6": [
+      185.56,
+      114.27,
+      26.96,
+      0.41
+    ],
+    "arcflash-tap-7": [
+      187.13,
+      118.34,
+      26.96,
+      4.44
+    ],
+    "arcflash-tap-8": [
+      188.4,
+      121.78,
+      26.96,
+      8.1
+    ],
+    "arcflash-tap-9": [
+      189.19,
+      123.57,
+      26.96,
+      10.41
+    ],
+    "arcflash-tap-10": [
+      189.41,
+      123.16,
+      26.96,
+      10.79
+    ],
+    "arcflash-tap-11": [
+      188.98,
+      120.63,
+      26.96,
+      9.12
+    ],
+    "arcflash-tap-12": [
+      187.85,
+      116.72,
+      26.96,
+      5.84
     ],
     "bigbooty-tap-1": [
       207,
@@ -4453,6 +4569,102 @@
       24.93,
       5.87
     ],
+    "origamist-desc-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
+    ],
+    "origamist-desc-2": [
+      188.58,
+      124.69,
+      26.96,
+      15.58
+    ],
+    "origamist-desc-3": [
+      187.99,
+      138.17,
+      26.96,
+      28.78
+    ],
+    "origamist-desc-4": [
+      184.8,
+      150.86,
+      26.96,
+      41.25
+    ],
+    "origamist-tap-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
+    ],
+    "origamist-tap-2": [
+      184.49,
+      109.48,
+      26.96,
+      -1.87
+    ],
+    "origamist-tap-3": [
+      183.33,
+      108.02,
+      26.96,
+      -4.22
+    ],
+    "origamist-tap-4": [
+      183.18,
+      108.46,
+      26.96,
+      -4.6
+    ],
+    "origamist-tap-5": [
+      184.07,
+      110.69,
+      26.96,
+      -2.9
+    ],
+    "origamist-tap-6": [
+      185.56,
+      114.27,
+      26.96,
+      0.41
+    ],
+    "origamist-tap-7": [
+      187.13,
+      118.34,
+      26.96,
+      4.44
+    ],
+    "origamist-tap-8": [
+      188.4,
+      121.78,
+      26.96,
+      8.1
+    ],
+    "origamist-tap-9": [
+      189.19,
+      123.57,
+      26.96,
+      10.41
+    ],
+    "origamist-tap-10": [
+      189.41,
+      123.16,
+      26.96,
+      10.79
+    ],
+    "origamist-tap-11": [
+      188.98,
+      120.63,
+      26.96,
+      9.12
+    ],
+    "origamist-tap-12": [
+      187.85,
+      116.72,
+      26.96,
+      5.84
+    ],
     "robo-tap-1": [
       193,
       102,
@@ -5264,96 +5476,6 @@
       128,
       40
     ],
-    "origamist-asc-1": [
-      128,
-      128,
-      40
-    ],
-    "origamist-asc-2": [
-      128,
-      128,
-      40
-    ],
-    "origamist-asc-3": [
-      128,
-      128,
-      40
-    ],
-    "origamist-asc-4": [
-      128,
-      128,
-      40
-    ],
-    "origamist-asc-5": [
-      128,
-      128,
-      40
-    ],
-    "origamist-asc-6": [
-      128,
-      128,
-      40
-    ],
-    "origamist-asc-7": [
-      128,
-      128,
-      40
-    ],
-    "origamist-asc-8": [
-      128,
-      128,
-      40
-    ],
-    "origamist-asc-9": [
-      128,
-      128,
-      40
-    ],
-    "origamist-desc-1": [
-      128,
-      128,
-      40
-    ],
-    "origamist-desc-2": [
-      128,
-      128,
-      40
-    ],
-    "origamist-desc-3": [
-      128,
-      128,
-      40
-    ],
-    "origamist-desc-4": [
-      128,
-      128,
-      40
-    ],
-    "origamist-desc-5": [
-      128,
-      128,
-      40
-    ],
-    "origamist-desc-6": [
-      128,
-      128,
-      40
-    ],
-    "origamist-desc-7": [
-      128,
-      128,
-      40
-    ],
-    "origamist-desc-8": [
-      128,
-      128,
-      40
-    ],
-    "origamist-desc-9": [
-      128,
-      128,
-      40
-    ],
     "porcelain-asc-1": [
       128,
       128,
@@ -5746,15 +5868,15 @@
     ]
   },
   "painterHashes": {
-    "arcflash": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
+    "arcflash": "e3311622176da38faba697d12c9b2a471084681e7192d539da559e6336028b38",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "12e6f01bd8f2779583114098202cf90d13157a63f234e140f6de4a81d976cc1e",
+    "control-constants": "4fd218c2cb1a02334eae0fd17119eb212dec6d20f2784a0ac64a1b9206ff0673",
     "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
     "high-orbit": "0a4d14f1e6b76eb8d83aeb1f08ac09a633ef0bfc4449c91dabcf5aa00a78738c",
-    "high-orbit-config": "57b5c13748e1dc8ff222661ffc43038a878b6733b0f7e6a55be1433a063127f0",
+    "high-orbit-config": "8a67b26a56d21bf65a1a65ff831901b40617b1047d61dc2399b046759173231c",
     "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
     "high-orbit-motion": "08e7ec309a2bb197950773b427d01b1fe181f0c8503ed4886d9eb96f1e6064e2",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",

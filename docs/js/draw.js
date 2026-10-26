@@ -1,38 +1,38 @@
-import { spillDockTravelDuration } from "./spill.js?v=313";
-import { clipHelmetGlass } from "./helmet-openings.js?v=313";
-import { paintFittedHelmet } from "./helmet-fit.js?v=313";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=313";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=313";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=313";
-import { arcflashPreview } from "./arcflash-motion.js?v=313";
-import { paintLiveStarTrail } from "./star-trails.js?v=313";
-import { trailWornBy } from "./catalog.js?v=313";
-import { isHighOrbit, isHighOrbitRig, isPremiumSuit, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=313";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=313";
-import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=313";
-import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=313";
-import { RIG3D_BOOTS } from "./rig3d-boots.js?v=313";
-import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=313";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=313";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=313";
-import { spillAppearance } from "./spill-appearance.js?v=313";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=313";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=313";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=313";
-import { goalHud } from "./campaign.js?v=313";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=313";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=313";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=313";
-import { spriteImageFor } from "./sprite-detail.js?v=313";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=313";
-import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=313";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=313";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=313";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=313";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=313";
-import { spillEngineColor } from "./spill-content.js?v=313";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=313";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=313";
+import { spillDockTravelDuration } from "./spill.js?v=314";
+import { clipHelmetGlass } from "./helmet-openings.js?v=314";
+import { paintFittedHelmet } from "./helmet-fit.js?v=314";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=314";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=314";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=314";
+import { arcflashPreview } from "./arcflash-motion.js?v=314";
+import { paintLiveStarTrail } from "./star-trails.js?v=314";
+import { trailWornBy } from "./catalog.js?v=314";
+import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=314";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=314";
+import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=314";
+import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=314";
+import { RIG3D_BOOTS } from "./rig3d-boots.js?v=314";
+import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=314";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=314";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=314";
+import { spillAppearance } from "./spill-appearance.js?v=314";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=314";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=314";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=314";
+import { goalHud } from "./campaign.js?v=314";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=314";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=314";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=314";
+import { spriteImageFor } from "./sprite-detail.js?v=314";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=314";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=314";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=314";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=314";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=314";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=314";
+import { spillEngineColor } from "./spill-content.js?v=314";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=314";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=314";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -1697,7 +1697,7 @@ function paintSpillHead(ctx, art, save, hole) {
         paintHighOrbitCockpit(ctx, art, suit.id, hole.cx, hole.cy, hole.rx, hole.ry);
         return;
     }
-    if (suit.id === "arcflash") {
+    if (isArcflashRig(suit.id)) {
         paintArcflashCockpit(ctx, art, hole.cx, hole.cy, hole.rx, hole.ry);
         return;
     }
@@ -1705,7 +1705,7 @@ function paintSpillHead(ctx, art, save, hole) {
     if (!body)
         return;
     const key = art.suits[suit.id] ? `suit:${suit.id}` : "idle-1";
-    const anchor = isPremiumSuit(suit.id) ? CYBER_TRIO_REGISTRATION[suit.id].head : DOME[key] ?? DOME["suit:flight"];
+    const anchor = isPremiumFrames(suit.id) ? CYBER_TRIO_REGISTRATION[suit.id].head : DOME[key] ?? DOME["suit:flight"];
     const helmet = helmetWornBy(save.equipped, suit.id);
     const b = naturalFlightKey(key) ? NATURAL_FLIGHT_BOX : body.box;
     const scale = hole.rx * 0.94 / anchor[2];
@@ -1716,7 +1716,7 @@ function paintSpillHead(ctx, art, save, hole) {
     ctx.ellipse(hole.cx, hole.cy, hole.rx, hole.ry, 0, 0, Math.PI * 2);
     ctx.clip();
     ctx.drawImage(body, hole.cx - anchor[0] * scale, hole.cy - anchor[1] * scale, body.width * scale, body.height * scale);
-    if (!isPremiumSuit(suit.id))
+    if (!isPremiumFrames(suit.id))
         paintDome(ctx, body, key, helmet, x, y, Math.max(b.w, b.h) * scale, art);
     ctx.restore();
 }
@@ -3525,7 +3525,6 @@ const DOME = {
     "suit:eclipse": [205, 89, 41.2, -5],
     "suit:porcelain": [180, 84, 35.3465],
     "suit:nacre": [180, 84, 32.0492],
-    "suit:origamist": [180, 84, 35],
     // robo — pose-specific head and collar registration.
     "robo-tap-1": [193, 102, 34.24, 0],
     "robo-tap-2": [193, 102, 34.24, 0],
@@ -3834,6 +3833,40 @@ const DOME = {
     "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
     "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
     "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+    "suit:arcflash": [186.2, 112.62, 26.96, 1.82],
+    "arcflash-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "arcflash-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "arcflash-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "arcflash-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "arcflash-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "arcflash-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "arcflash-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "arcflash-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "arcflash-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "arcflash-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "arcflash-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "arcflash-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "arcflash-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "arcflash-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "arcflash-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "arcflash-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:origamist": [186.2, 112.62, 26.96, 1.82],
+    "origamist-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "origamist-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "origamist-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "origamist-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "origamist-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "origamist-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "origamist-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "origamist-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "origamist-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "origamist-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "origamist-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "origamist-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "origamist-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "origamist-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "origamist-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "origamist-desc-4": [184.8, 150.86, 26.96, 41.25],
     "suit:leviathan": [186.86, 102.5, 24.93, 1.8],
     "leviathan-tap-1": [186.86, 102.5, 24.93, 1.8],
     "leviathan-tap-2": [185.3, 99.36, 24.93, -1.93],
@@ -4513,7 +4546,7 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // The 3D lineup too (26 Oct 2026): its rendered dive frames carry the attitude.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
     "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
-    "flight", "frost", "leviathan", "copper"]);
+    "flight", "frost", "leviathan", "copper", "arcflash", "origamist"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
@@ -4522,7 +4555,7 @@ const LOOP_FPS = 12;
 // EXTENDS rather than which way it points, and the rig supplies the
 // direction over the top. That is what lets nine frames read as a climb and
 // a dive instead of needing two sheets that never quite agree at the seam.
-const RIG_PITCH_WITH_BANK = new Set(["cyber", "porcelain", "nacre", "origamist"]);
+const RIG_PITCH_WITH_BANK = new Set(["cyber", "porcelain", "nacre"]);
 // THE FRAMES A GENERATED BANK LOST. Twenty-two of the tap banks were made
 // from one shared motion, and that motion loses the pilot's LOWER BODY at
 // its extremes - hip, haunch and hind leg leave the silhouette entirely and
@@ -4642,7 +4675,9 @@ tapDriven = false,
 // how a tap moves the ascent bank: null = the stock ramp, "velocity" =
 // the freeze-day path, {fwd, back} = the owner's linear dial (see
 // TAP_SHAPE in control-constants; tapShapeFor resolves the beta dial)
-tapShape = null, wake) {
+tapShape = null, wake,
+// Arcflash's electrical wake, now that it flies a rendered bank (its joint rig retired)
+arcWake) {
     // the equipped suit IS the body: its painted render replaces the
     // default flight frames, carried by the pilot's motion
     // Flight's animation frames already wear the Clear dome. Any other helmet
@@ -4655,7 +4690,7 @@ tapShape = null, wake) {
         paintVanguard(ctx, art, x, y, size);
         return;
     }
-    if (suit.id === "arcflash") {
+    if (isArcflashRig(suit.id)) {
         paintArcflash(ctx, art, x, y, size);
         return;
     }
@@ -4992,6 +5027,8 @@ tapShape = null, wake) {
             const boots = RIG3D_BOOTS[`${suit.id}-${bankName}-${k + 1}`];
             if (wake && boots && isHighOrbit(suit.id))
                 paintBootWake(ctx, suit.id, boots, refT, x, y, size, wake);
+            if (arcWake && boots)
+                paintArcflashBootWake(ctx, arcWake.state, boots, refT, x, y, size, arcWake.travel);
             drawRigLayer(ctx, frame, refT, x, y, size, 0, undefined, halo);
             // every rendered frame carries its own measured helmet anchor (tools/rig3d
             // anchors.json), read against the bank's first frame like the bank itself
@@ -5154,7 +5191,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
     const frameKey = (flapping ? "flap-" : "idle-") + (idx + 1);
     const keyNext = (flapping ? "flap-" : "idle-") + (nxt + 1);
     const flagship = suit.id === "vanguard";
-    const arcflash = suit.id === "arcflash";
+    const arcflash = isArcflashRig(suit.id);
     const orbit = isHighOrbitRig(suit.id);
     const independentRig = flagship || arcflash || orbit;
     if (flagship)
@@ -5259,7 +5296,7 @@ function drawPilot(ctx, w, save, art, xOverride, localScale = 1, yOverride, bank
         // request. All three use the same smoother, pose curve and frame index.
         w.bounceAnimT, w.bounceAnimDir, w.bounceAnimStrength, w.squirrel.vy, ECLIPSE_FLIGHT_SUITS.has(suit.id) ? 2 : 0, w.speed, lean, NaN, true, tapShapeFor(save, suit.id),
         // the High Orbit five fly rendered banks now (CUT_RIG_RETIRED); their wake rides the bank
-        effects && (isPremiumSuit(suit.id) || CUT_RIG_RETIRED.has(suit.id)) ? { state: w.highOrbit, travel: w.distance / localScale } : undefined);
+        effects && (isPremiumSuit(suit.id) || CUT_RIG_RETIRED.has(suit.id)) ? { state: w.highOrbit, travel: w.distance / localScale } : undefined, effects && suit.id === "arcflash" && !arcflash ? { state: w.arcflash, travel: { x: x / localScale, y: y / localScale, travel: w.distance / localScale } } : undefined);
     if (flagship && w.shieldCharges > 0)
         paintVanguardShield(ctx, 0, 0, w.time);
     ctx.restore();
@@ -5450,7 +5487,7 @@ sweep = false,
 pitch = 0) {
     if (!art)
         return;
-    if (suit.id === "arcflash") {
+    if (isArcflashRig(suit.id)) {
         paintArcflash(ctx, art, cx, cy, size, arcflashPreview(ctx, t), undefined, true, pitch);
         return;
     }
@@ -5585,7 +5622,7 @@ pitch = 0) {
     ctx.scale(pop, pop);
     paintIllustrated(ctx, frames?.[idx] ?? null, 0, 2, 52, helmet, suit, t, art, (flapping ? "flap-" : "idle-") + (idx + 1), frames?.[nxt] ?? null, (flapping ? "flap-" : "idle-") + (nxt + 1), blend, "light", previewTailAngle(p, BEAT), tapAnimT, -1, 0, 0, vy, 2, 300, lean, sweptPose, false, tapShapeFor(null, suit.id), // the table only: a preview has no save
     isPremiumSuit(suit.id) ? { state: premiumWakePreview(ctx, suit.id, t, vy), travel: t * 300 }
-        : CUT_RIG_RETIRED.has(suit.id) && isHighOrbit(suit.id) ? { state: highOrbitPreview(ctx, suit.id, t), travel: t * 300 } : undefined);
+        : CUT_RIG_RETIRED.has(suit.id) && isHighOrbit(suit.id) ? { state: highOrbitPreview(ctx, suit.id, t), travel: t * 300 } : undefined, suit.id === "arcflash" && !isArcflashRig(suit.id) ? { state: arcflashPreview(ctx, t) } : undefined);
     ctx.restore();
 }
 export function paintPalPreview(ctx, art, id, cx, cy, size) {

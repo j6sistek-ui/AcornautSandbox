@@ -2,7 +2,7 @@ import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash,
 import { platform } from "./platform";
 import { beginFlightTest, type FlightTestPattern } from "./sim";
 import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX, type TapShape, type TailSpring } from "./control-constants";
-import { isPremiumSuit } from "./high-orbit-config";
+import { isPremiumFrames } from "./high-orbit-config";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, rewardId } from "./campaign-progress";
 import { reachedGate } from "./campaign";
@@ -979,7 +979,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // the Loadout's rule, not the premium list's: every own-head suit
     // (Arcflash, AcorNut, Alien, the critters) keeps its head
     const worn = SUITS.find((u) => u.id === save.equippedSuit);
-    if (isPremiumSuit(save.equippedSuit) || (worn && wearsOwnHead(worn))) return "fixedHead";
+    if (isPremiumFrames(save.equippedSuit) || (worn && wearsOwnHead(worn))) return "fixedHead";
     // a matched-set helmet only goes on its own suit
     if (item.suitOnly && save.equippedSuit !== item.suitOnly) return "suitOnly";
     if (!helmetRevealed(save, id)) return "locked";
@@ -1047,7 +1047,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   // on purpose stays.
   function dropOrphanedHelmet() {
     // These pilots hide the previous visor without replacing its save choice.
-    if (isPremiumSuit(save.equippedSuit)) return;
+    if (isPremiumFrames(save.equippedSuit)) return;
     const h = HELMETS.find((x) => x.id === save.equipped);
     if (h?.suitOnly && h.suitOnly !== save.equippedSuit) save.equipped = "clear";
     if (save.equipped === "clear") {

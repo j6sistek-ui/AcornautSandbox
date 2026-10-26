@@ -372,7 +372,8 @@ try{
         if(item.kind==='suit'){
           const suit=C.SUITS.find(s=>s.id===item.id),sources=surfaceOf(preview).sources;
           if(bundle.items.some(i=>i.kind==='helm'&&i.id===item.id)&&!C.wearsOwnHead(suit))assert(sources.has(`/art/helms/${item.id}.png`),item.id+' review wears its matching included helmet');
-          if(['porcelain','nacre','origamist'].includes(item.id))assert(![...sources].some(path=>path.startsWith('/art/helms/')),item.id+' review retains its authored head without an external helmet');
+          // Patriot wears the pilot helmet since its 3D model (26 Oct 2026)
+          if(['porcelain','nacre'].includes(item.id))assert(![...sources].some(path=>path.startsWith('/art/helms/')),item.id+' review retains its authored head without an external helmet');
         }
         if(item.kind==='pal')assert(sheet().textContent.includes(C.PALS.find(p=>p.id===item.id).desc),item.id+' review describes its actual gameplay effect');
         assert(sheet().querySelector('.ac-featurebuy'),itemKey(item)+' keeps bundle checkout alongside preview');

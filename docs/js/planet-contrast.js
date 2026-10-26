@@ -1,4 +1,4 @@
-import { PLANET_RGB, sep } from "./catalog.js?v=313";
+import { PLANET_RGB, sep } from "./catalog.js?v=314";
 /** Fade separation out when hue or brightness already defines the planet.
  * At its strongest this uses the existing faint cached sprite halo. */
 export function planetHalo(kind, background) {

@@ -53,6 +53,12 @@
   },
   "hedgehog": {
    "model": "hedgehog3d"
+  },
+  "arcflash": {
+   "model": "arcflash3d"
+  },
+  "origamist": {
+   "model": "patriot-pbr"
   }
  },
  "hashes": {
@@ -327,6 +333,40 @@
   "suits/hedgehog-tap-10.png": "a183668ebbe0dedaa143fda8e1f3e63ac5e33423",
   "suits/hedgehog-tap-11.png": "f3aa66254780068f7f82a707c09d9a2150bfe756",
   "suits/hedgehog-tap-12.png": "99c377808c8354d1103a2c62c94594bc3edb2634",
-  "suits/hedgehog.png": "2008f03717a57646b8061e39ebe32e309614a0e6"
+  "suits/hedgehog.png": "2008f03717a57646b8061e39ebe32e309614a0e6",
+  "suits/arcflash-desc-1.png": "7766d270fd698a574bcdd87649d229be1a3d7950",
+  "suits/arcflash-desc-2.png": "49593fc549a4a2d37bee6277b98b51e57dbf1e3a",
+  "suits/arcflash-desc-3.png": "abb4d51e4810d1a627cfc6271d4d8ee0cede2d74",
+  "suits/arcflash-desc-4.png": "f0d7458fc822574ffe0c6cb4bc2fecffd76407f8",
+  "suits/arcflash-tap-1.png": "7766d270fd698a574bcdd87649d229be1a3d7950",
+  "suits/arcflash-tap-2.png": "224ed1424ca52fb34fd3c415837f24fec0840926",
+  "suits/arcflash-tap-3.png": "f70e599c843918d5c4a0197b8043a5f37c542a6b",
+  "suits/arcflash-tap-4.png": "5f568070f6d161f810abd4496f80e908c3c232d6",
+  "suits/arcflash-tap-5.png": "e7429c6bfec034feb00197bf01495c01bfc3e476",
+  "suits/arcflash-tap-6.png": "3eff7211dcfb6601c9111ef1008924bf2db22273",
+  "suits/arcflash-tap-7.png": "34b2ffc86c692de0f43c63e570930c938d826e0a",
+  "suits/arcflash-tap-8.png": "4cb854044512e78fbcb5c0abcb51ba255fae6acb",
+  "suits/arcflash-tap-9.png": "c66aeb0ff37b7c782e1deb34ac060c61309fe0bd",
+  "suits/arcflash-tap-10.png": "07580047cd5c815ce2c224dfc5a926faa0ab9f1e",
+  "suits/arcflash-tap-11.png": "e7ed9eeb22d2a039894a8edadf4a668af955772a",
+  "suits/arcflash-tap-12.png": "8db9a565d81392b025128f8252830fb20e4aed31",
+  "suits/arcflash.png": "7766d270fd698a574bcdd87649d229be1a3d7950",
+  "suits/origamist-desc-1.png": "07fceffe8c52fb9c4d7abc9094dc413200c04c08",
+  "suits/origamist-desc-2.png": "9c3297e4eba8f49fa4f5100de6084a137faf9e5c",
+  "suits/origamist-desc-3.png": "6b38b368c69f9dcbaf76c9223db72c0eee295b90",
+  "suits/origamist-desc-4.png": "dfb4f36fa10d723451b36b6ddf8c285a56198fda",
+  "suits/origamist-tap-1.png": "5c753275ae42a3fa911cce9b8a88126399e63ddc",
+  "suits/origamist-tap-2.png": "0d7ebf7151e21b76295ed5afdafab5ea50dac316",
+  "suits/origamist-tap-3.png": "1b368025008396a69096b6c2c9fd9ec9caa73dc3",
+  "suits/origamist-tap-4.png": "893296088b5db048296228573d4b225d40dd5a6d",
+  "suits/origamist-tap-5.png": "5f93e17f9a02843aaae0deaf3215434d5ebcc02b",
+  "suits/origamist-tap-6.png": "f55c5050bd4e948f46c396a62b222f6b69cf9382",
+  "suits/origamist-tap-7.png": "5d316f21dd4bde362964cb4f46d527a8333a1c7b",
+  "suits/origamist-tap-8.png": "e9ce53f8b9d8653193cd7a040f467224cc1164bc",
+  "suits/origamist-tap-9.png": "027ec84e7f7b9d21bfcec178662b28089be8bd31",
+  "suits/origamist-tap-10.png": "85bdf07b64277778ee8d12f02853857cd10550ab",
+  "suits/origamist-tap-11.png": "55dd59895fd9f0cb2ed621b28d533d3338befa2d",
+  "suits/origamist-tap-12.png": "063c1072aad92e764e928882718351f4bd1883cc",
+  "suits/origamist.png": "1bb8536ca3582e12bdf7fd185250d821d03172ae"
  }
 }

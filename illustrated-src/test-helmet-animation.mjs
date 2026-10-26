@@ -98,14 +98,15 @@ try {
   const HIGH_ORBIT=['cinderforge','groveguard','cosmic','sunforged','abyssal'];
   // Owner,12 Sep2026: these existing own-head pilots now use Cyber's9/9
   // banks and loading rig. Their head policies are checked in the trio suite.
-  const CYBER_TRIO=['porcelain','nacre','origamist'];
+  // Patriot left the trio's painted frames for the 3D lineup (26 Oct 2026)
+  const CYBER_TRIO=['porcelain','nacre'];
   // The 3D lineup (owner, 26 Oct 2026: "here are the replacements, DIRECT
   // replace"): suits re-made as rendered tap and dive banks, helmets kept -
   // the first ten, Flight and Frost on Ion's skeleton, then Leviathan, Copper and
   // Alien on their own rigs (Alien wears a helmet now: owner, 26 Oct 2026).
-  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic","flight","frost","leviathan","copper","alien"];
+  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic","flight","frost","leviathan","copper","alien","arcflash","origamist"];
   const suits=NewCat.SUITS.filter(suit=>!NewCat.wearsOwnHead(suit));
-  assert.equal(suits.length,22,'all twenty-two production suits with wearable helmets are covered (Alien joined, 26 Oct 2026)');
+  assert.equal(suits.length,24,'all twenty-four production suits with wearable helmets are covered (Alien, Arcflash and Patriot joined, 26 Oct 2026)');
   const promoted=suits.filter(suit=>HIGH_ORBIT.includes(suit.id)&&!THREE_D_TEST.includes(suit.id));
   const lineup=suits.filter(suit=>THREE_D_TEST.includes(suit.id));
   const TRANSFERRED=['cryostar','verdant'];
