@@ -49,6 +49,13 @@ export async function loadRig(url, opts = {}) {
   // "the most direct children", which held until a cat whose rig hangs its front legs off a
   // neck bone tied three bones for it and picked the pelvis
   let head = map.head != null ? byName(map.head) : count.reduce((best, n, i) => i !== root && n > count[best] ? i : best, root === 0 ? 1 : 0);
+  // a near tie (the stone creature's tail carries a rock as heavy as its skull): when a bone
+  // Tripo NAMED as head carries within 15% as much, trust the name. On the first model the
+  // "Head" chain was the tail, but there it carried 31% less, so a clear winner still wins
+  if (map.head == null) {
+    const named = count.map((n, i) => [n, i]).filter(([n, i]) => /head/i.test(bones[i].name) && i !== head).sort((a, b) => b[0] - a[0])[0];
+    if (named && named[0] >= 0.85 * count[head]) head = named[1];
+  }
   const pathToRoot = i => { const p = []; while (i >= 0) { p.unshift(i); i = parent[i]; } return p; };
   const spinePath = pathToRoot(head);
   const onSpine = new Set(spinePath);
@@ -59,7 +66,8 @@ export async function loadRig(url, opts = {}) {
   // both hind legs AND a tail): split it into its sub-chains. Toes fork too, but short, so a
   // paw stays with its leg
   const depth = i => 1 + Math.max(0, ...kids[i].map(depth));
-  const addChain = c => { const long = kids[c].filter(k => depth(k) >= 3); if (long.length >= 2) kids[c].forEach(addChain); else chains.push(subtree(c)); };
+  // the fork can sit a few bones down the branch (pelvis bones first): follow single children to it
+  const addChain = c => { let f = c; while (kids[f].length === 1) f = kids[f][0]; const long = kids[f].filter(k => depth(k) >= 3); if (long.length >= 2) kids[f].forEach(addChain); else chains.push(subtree(c)); };
   for (const s of spinePath) if (s !== head) for (const c of kids[s]) if (!onSpine.has(c)) addChain(c);
   const tipY = ch => Math.min(...ch.map(i => wpos(bones[i]).y));
   const verts = ch => ch.reduce((a, i) => a + count[i], 0);

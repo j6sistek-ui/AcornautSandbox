@@ -3,6 +3,7 @@
 //
 //   node tools/rig3d/render.mjs <model.glb> --id <suit-id> [--out <dir>] [--size 512] [--seconds 2]
 //                               [--frames tap:12,desc:4,asc:0]   (per-bank counts; 0 drops a bank)
+//                               [--head <bone name>]             (pins the head when a model fools the classifier)
 //
 // Writes, for the suit id:
 //   <out>/<id>-tap-1..16.png  <id>-asc-1..8.png  <id>-desc-1..8.png   256 px, the game's size
@@ -27,7 +28,7 @@ const modelPath = args.find(a => a.endsWith('.glb'));
 const id = opt('id');
 if (!modelPath || !id) { console.error('usage: node render.mjs <model.glb> --id <suit-id> [--out dir] [--size 512] [--seconds 2] [--frames tap:12,desc:4,asc:0]'); process.exit(2); }
 const out = path.resolve(opt('out', `rig3d-out/${id}`));
-const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', '');
+const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', ''), HEAD = opt('head', '');
 for (const d of ['', 'hd', 'sheets', 'preview']) fs.mkdirSync(path.join(out, d), { recursive: true });
 
 // playwright: local install, then the PLAYWRIGHT_MODULE env var, then a global path
@@ -60,7 +61,7 @@ page.on('pageerror', e => { console.error('page error:', e.message); failed = e.
 page.on('crash', () => { console.error('the page crashed'); process.exit(1); });
 let closing = false;
 browser.on('disconnected', () => { if (closing) return; console.error('the browser went away'); process.exit(1); });
-await page.goto(`http://localhost:${port}/studio.html?model=/model.glb&size=${SIZE}&frames=${encodeURIComponent(FRAMES)}`);
+await page.goto(`http://localhost:${port}/studio.html?model=/model.glb&size=${SIZE}&frames=${encodeURIComponent(FRAMES)}&head=${encodeURIComponent(HEAD)}`);
 await Promise.race([
   page.waitForFunction(() => window.studioReady, null, { timeout: 600000 }),
   (async () => { while (!failed) await new Promise(r => setTimeout(r, 200)); })(),
@@ -77,10 +78,12 @@ const sheet = (urls, cols, cell) => page.evaluate(async ([urls, cols, cell]) => 
 
 const moves = await page.evaluate(() => window.studio.moves);
 const hasFfmpeg = (() => { try { execFileSync('ffmpeg', ['-version'], { stdio: 'ignore' }); return true; } catch { return false; } })();
+const anchors = {};
 for (const [move, m] of Object.entries(moves)) {
   const urls = [];
   for (let i = 0; i < m.frames; i++) {
     const hd = await page.evaluate(([mv, i]) => window.studio.bank(mv, i), [move, i]);
+    anchors[`${id}-${move}-${i + 1}`] = await page.evaluate(() => window.studio.anchor());
     urls.push(hd);
     save(path.join(out, 'hd', `${id}-${move}-${i + 1}.png`), hd);
     save(path.join(out, `${id}-${move}-${i + 1}.png`), await resize(hd, 256));
@@ -95,6 +98,8 @@ for (const [move, m] of Object.entries(moves)) {
   } else fs.renameSync(tmp, path.join(out, 'preview', move));
   console.log(`${move}: ${m.frames} bank frames, ${n}-frame preview`);
 }
+// helmet anchors per frame, [x, y, r, deg] in 256 px frame space (the game's DOME format)
+fs.writeFileSync(path.join(out, 'anchors.json'), JSON.stringify(anchors, null, 1));
 save(path.join(out, `${id}-rig.glb`), 'data:;base64,' + await page.evaluate(([s, f]) => window.studio.glb(s, f), [SECONDS, FPS]));
 console.log('wrote', out);
 closing = true; await browser.close(); server.close();

@@ -25,7 +25,7 @@ R.setPixelRatio(1); R.setSize(SIZE, SIZE);
 R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
 document.body.appendChild(R.domElement);
 
-const rig = await loadRig(q.get('model'), RIG_OPTS || {});
+const rig = await loadRig(q.get('model'), { ...(RIG_OPTS || {}), ...(q.get('head') ? { map: { head: q.get('head') } } : {}) });
 const scene = new THREE.Scene(); scene.add(rig.pivot);
 // a soft studio room for metal to reflect: Tripo's materials are metallic-roughness, and with
 // nothing around them their metal parts rendered near black
@@ -56,6 +56,25 @@ cam.position.copy(target).addScaledVector(dir, dist); cam.up.copy(rig.UP); cam.l
 key.position.copy(target).addScaledVector(dir, 3).addScaledVector(rig.UP, 2.5).addScaledVector(rig.FWD, 1.5);
 rim.position.copy(target).addScaledVector(dir, -2).addScaledVector(rig.UP, 1.5);
 
+// THE HELMET ANCHOR, measured, not placed by eye: the head bone's own vertices projected
+// through the camera give the head's centre and size on the frame, and its forward vector
+// gives the tilt. [x, y, r, deg] in 256 px frame space, the game's DOME format.
+const headBone = rig.mesh.skeleton.bones.find(b => b.name === rig.info.head);
+const headIdx = rig.mesh.skeleton.bones.indexOf(headBone);
+const hsi = rig.mesh.geometry.attributes.skinIndex, hsw = rig.mesh.geometry.attributes.skinWeight, headVerts = [];
+for (let i = 0; i < hsi.count; i++) { let b = -1, w = 0; for (let k = 0; k < 4; k++) if (hsw.getComponent(i, k) > w) { w = hsw.getComponent(i, k); b = hsi.getComponent(i, k); } if (b === headIdx) headVerts.push(i); }
+const hstep = Math.max(1, Math.floor(headVerts.length / 800));
+function headAnchor() {
+  rig.mesh.updateMatrixWorld(true); const pv = new THREE.Vector3(); let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+  for (let n = 0; n < headVerts.length; n += hstep) { rig.mesh.getVertexPosition(headVerts[n], pv).applyMatrix4(rig.mesh.matrixWorld).project(cam);
+    const px = (pv.x + 1) / 2 * 256, py = (1 - pv.y) / 2 * 256; x0 = Math.min(x0, px); x1 = Math.max(x1, px); y0 = Math.min(y0, py); y1 = Math.max(y1, py); }
+  const q = headBone.getWorldQuaternion(new THREE.Quaternion());
+  const fw = rig.FWD.clone().applyQuaternion(q.clone().multiply(headRest.clone().invert())), o = rig.centre.clone(), t = o.clone().add(fw);
+  o.project(cam); t.project(cam); const deg = Math.atan2(-(t.y - o.y), t.x - o.x) * 180 / Math.PI;
+  return [+((x0 + x1) / 2).toFixed(2), +((y0 + y1) / 2).toFixed(2), +(Math.max(x1 - x0, y1 - y0) / 2).toFixed(2), +deg.toFixed(2)];
+}
+rig.apply({ ...MOVES.tap ? MOVES.tap.pose(0) : {}, lift: 0 }); rig.pivot.updateMatrixWorld(true);
+const headRest = headBone.getWorldQuaternion(new THREE.Quaternion());
 function frame(move, u, lift) { const p = MOVES[move].pose(u); if (!lift) p.lift = 0; rig.apply(p); R.render(scene, cam); return R.domElement.toDataURL('image/png'); }
 
 window.studio = {
@@ -63,6 +82,8 @@ window.studio = {
   moves: Object.fromEntries(Object.entries(MOVES).map(([k, m]) => [k, { frames: m.frames, loop: m.loop }])),
   // bank frame i of a move, as the game will see it (sprite stays centred; the game moves it)
   bank(move, i) { const m = MOVES[move]; return frame(move, m.loop ? i / m.frames : i / (m.frames - 1), false); },
+  // the helmet anchor of the frame bank() just drew
+  anchor() { return headAnchor(); },
   // a sample at any u, with the move's own lift so a preview shows the motion
   sample(move, u) { return frame(move, u, true); },
   // the rig with every move baked in as a clip `seconds` long, for Blender or any glTF viewer
