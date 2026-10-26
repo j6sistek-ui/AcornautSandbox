@@ -47,9 +47,22 @@ for (const m of Object.values(MOVES)) for (let i = 0; i <= 10; i++) {
   for (let k = 0; k < pos.count; k += step) { rig.mesh.getVertexPosition(k, v).applyMatrix4(rig.mesh.matrixWorld);
     const r = v.dot(right), u = v.dot(up), d = v.dot(dir); minR = Math.min(minR, r); maxR = Math.max(maxR, r); minU = Math.min(minU, u); maxU = Math.max(maxU, u); minD = Math.min(minD, d); maxD = Math.max(maxD, d); }
 }
-rig.apply({ ...MOVES.tap.pose(0), lift: 0 });
-const target = right.clone().multiplyScalar((minR + maxR) / 2).addScaledVector(up, (minU + maxU) / 2).addScaledVector(dir, (minD + maxD) / 2);
-const half = Math.max(maxR - minR, maxU - minU) / 2 * 1.06, FOV = 28;
+// FRAMED BY THE BODY, so every model's body lands the same size in the same place: the
+// body's own length (head to rump, no tail) sets the scale, and its centre sits a fixed
+// distance right of the frame's centre, leaving the tail room behind it. The extents of
+// every pose are still measured, to report anything the frame clips.
+const tailIdx = new Set(rig.tailBones.map(b => rig.mesh.skeleton.bones.indexOf(b)));
+const tsi = rig.mesh.geometry.attributes.skinIndex, tsw = rig.mesh.geometry.attributes.skinWeight, bodyVerts = [];
+for (let k = 0; k < pos.count; k += step) { let t = 0; for (let c = 0; c < 4; c++) if (tailIdx.has(tsi.getComponent(k, c))) t += tsw.getComponent(k, c); if (t < 0.5) bodyVerts.push(k); }
+rig.apply({ ...MOVES.tap.pose(0), lift: 0 }); rig.mesh.updateMatrixWorld(true);
+let b0 = Infinity, b1 = -Infinity, c0 = Infinity, c1 = -Infinity, dd = 0;
+for (const k of bodyVerts) { rig.mesh.getVertexPosition(k, v).applyMatrix4(rig.mesh.matrixWorld); const r = v.dot(right), u = v.dot(up); b0 = Math.min(b0, r); b1 = Math.max(b1, r); c0 = Math.min(c0, u); c1 = Math.max(c1, u); dd += v.dot(dir); }
+const BODY = +(q.get('body') || 0.42), RIGHT = +(q.get('right') || 0.16), FOV = 28;   // body length as a share of the frame; its centre's offset right
+const half = (b1 - b0) / 2 / BODY;
+const target = right.clone().multiplyScalar((b0 + b1) / 2 - RIGHT * 2 * half).addScaledVector(up, (c0 + c1) / 2).addScaledVector(dir, dd / bodyVerts.length);
+// how far each pose reaches past each frame edge, as a share of half the frame (> 0 = clipped)
+const tr = target.dot(right), tu = target.dot(up), past = x => +(x / half).toFixed(2);
+const framing = { bodyShare: BODY, past: { left: past(tr - half - minR), right: past(maxR - tr - half), top: past(maxU - tu - half), bottom: past(tu - half - minU) } };
 const cam = new THREE.PerspectiveCamera(FOV, 1, 0.01, 100);
 const dist = half / Math.tan(THREE.MathUtils.degToRad(FOV / 2)) + (maxD - minD) / 2;
 cam.position.copy(target).addScaledVector(dir, dist); cam.up.copy(rig.UP); cam.lookAt(target);
@@ -78,7 +91,7 @@ const headRest = headBone.getWorldQuaternion(new THREE.Quaternion());
 function frame(move, u, lift) { const p = MOVES[move].pose(u); if (!lift) p.lift = 0; rig.apply(p); R.render(scene, cam); return R.domElement.toDataURL('image/png'); }
 
 window.studio = {
-  info: rig.info,
+  info: { ...rig.info, framing },
   moves: Object.fromEntries(Object.entries(MOVES).map(([k, m]) => [k, { frames: m.frames, loop: m.loop }])),
   // bank frame i of a move, as the game will see it (sprite stays centred; the game moves it)
   bank(move, i) { const m = MOVES[move]; return frame(move, m.loop ? i / m.frames : i / (m.frames - 1), false); },

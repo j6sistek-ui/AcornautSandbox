@@ -14,12 +14,15 @@
 // opening its curl only as it swings out, and only a few degrees of whip run down it.
 const TAU = Math.PI * 2;
 
-// WHERE THE TAIL POINTS: tailAim [w, to] blends the tail's axis from the sculpt's own angle
-// toward `to`, in plain degrees (180 straight out behind, 90 straight up, past 180 below), so
-// every model's tail visits the same places however it was sculpted.
+// WHERE THE TAIL POINTS: tailAim [w, to] aims the tail's axis at `to`, in plain degrees (180
+// straight out behind, 90 straight up, past 180 below); w < 1 would blend from the sculpt.
 const OUT = 180, UP = 100;
-// the level pose every bank starts from: a touch toward straight out
-export const LEVEL = { pitch: 0, spine: 0, head: 0, ears: 0, front: 6, paw: 0, hind: -6, hindLow: 0, tailAim: [0.25, OUT] };
+// THE SAME FRAMES FOR EVERY MODEL (owner: "i'd expect every frame to be identical for all"):
+// every aim is absolute (w = 1), so frame 1 puts every tail at REST however it was sculpted,
+// and every frame after visits the same angles. Only the curl's own shape still differs.
+const REST = 130;
+// the level pose every bank starts from: the tail up and back, at REST
+export const LEVEL = { pitch: 0, spine: 0, head: 0, ears: 0, front: 6, paw: 0, hind: -6, hindLow: 0, tailAim: [1, REST] };
 // how far past straight out the dive lays the tail, so it lines up with the body as it tips
 const DIVE_TO = OUT + 18;
 // THE TAP'S TAIL, keyed to Robo's painted bank (owner, 26 Oct 2026: "the tail movement on
@@ -29,9 +32,9 @@ const DIVE_TO = OUT + 18;
 // whole time that's the issue"): straightened by `unf` out there, curled at rest and up top -
 // never unrolled at rest, which smeared the scroll. Keys are [u, w, to, unf], eased between,
 // so they read the same at 12 frames or 16.
-const TAP_KEYS = [[0, 0.25, OUT, 0], [0.08, 1, OUT + 7, 0.69], [0.16, 1, OUT + 20, 0.85], [0.36, 1, OUT + 20, 0.85],
-  [0.46, 0.55, OUT, 0.26], [0.56, 1, UP, 0], [0.62, 1, UP, 0], [0.72, 0.95, OUT, 0.6], [0.8, 1, OUT + 10, 0.75],
-  [0.9, 0.6, OUT, 0.29], [1, 0.25, OUT, 0]];
+const TAP_KEYS = [[0, 1, REST, 0], [0.08, 1, OUT + 7, 0.69], [0.16, 1, OUT + 20, 0.85], [0.36, 1, OUT + 20, 0.85],
+  [0.46, 1, 157, 0.26], [0.56, 1, UP, 0], [0.62, 1, UP, 0], [0.72, 1, 178, 0.6], [0.8, 1, OUT + 10, 0.75],
+  [0.9, 1, 160, 0.29], [1, 1, REST, 0]];
 const keyed = (keys, u) => {
   let i = 1; while (i < keys.length - 1 && u > keys[i][0]) i++;
   const A = keys[i - 1], B = keys[i], x = Math.min(1, Math.max(0, (u - A[0]) / (B[0] - A[0]))), e = x * x * (3 - 2 * x);
@@ -76,7 +79,7 @@ export const MOVES = {
         spine: 6 * e, head: -9 * e, ears: 14 * e,
         front: LEVEL.front + 34 * e, paw: 10 * e,
         hind: LEVEL.hind - 30 * e, hindLow: 10 * e,
-        tailAim: [LEVEL.tailAim[0] + 0.35 * e, OUT],
+        tailAim: [1, REST + 25 * e],
       };
     },
   },
@@ -90,7 +93,7 @@ export const MOVES = {
         spine: -6 * e, head: 18 * e, ears: 32 * e,
         front: LEVEL.front + 66 * e, paw: -10 * e,
         hind: LEVEL.hind - 40 * e, hindLow: 18 * e,
-        tailAim: [LEVEL.tailAim[0] + (1 - LEVEL.tailAim[0]) * t, OUT + (DIVE_TO - OUT) * t], unfurl: UNFURL_OUT * t,
+        tailAim: [1, REST + (DIVE_TO - REST) * t], unfurl: UNFURL_OUT * t,
       };
     },
   },
