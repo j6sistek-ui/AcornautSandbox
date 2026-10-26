@@ -53,9 +53,15 @@ const browser = await chromium.launch({
   args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
 });
 const page = await browser.newPage();
-page.on('pageerror', e => console.error('page error:', e.message));
+// a model the rig cannot use (no skeleton, say) fails at once instead of waiting out the timeout
+let failed = null;
+page.on('pageerror', e => { console.error('page error:', e.message); failed = e.message; });
 await page.goto(`http://localhost:${port}/studio.html?model=/model.glb&size=${SIZE}&frames=${encodeURIComponent(FRAMES)}`);
-await page.waitForFunction(() => window.studioReady, null, { timeout: 600000 });
+await Promise.race([
+  page.waitForFunction(() => window.studioReady, null, { timeout: 600000 }),
+  (async () => { while (!failed) await new Promise(r => setTimeout(r, 200)); })(),
+]);
+if (failed) { console.error(`cannot render ${path.basename(modelPath)}: ${failed}`); await browser.close(); server.close(); process.exit(1); }
 const info = await page.evaluate(() => window.studio.info);
 fs.writeFileSync(path.join(out, 'rig.json'), JSON.stringify(info, null, 2));
 console.log('rig:', JSON.stringify({ head: info.head, front: info.front.length, hind: info.hind.length, tail: info.tail.length, cutFaces: info.cutFaces, loose: info.looseTailPieces }));
