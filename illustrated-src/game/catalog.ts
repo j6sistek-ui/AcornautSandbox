@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "308";
+export const ART_VER = "309";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -307,6 +307,11 @@ export const SUITS: Suit[] = [
   { id: "briellacat", name: "Briella's Cat", cost: 999, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
   { id: "sunforged", name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
   { id: "abyssal", name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
+  // THE 3D TEST (owner, 25 Oct 2026: "drop it in beta. see how it works...
+  // let me see how it looks in general or if it just doesn't fit"). A
+  // rendered model, not a painting: tools/rig3d made its twelve tap and four
+  // dive frames. Its own head, so no helmet is fitted. Beta only.
+  { id: "pinky", name: "Pinky 3D", cost: 0, beta: true, ownHead: true, fur: "#f07ab8", furDark: "#b84482", belly: "#fde3ef", suit: "#f59ac8", suitLite: "#ffd1e8", suitDark: "#a8336f", trim: "#7fd3ff", glow: null, dust: null },
   { id: "cyber", name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
 ];
 // Beta-only suits are stripped from production entirely. Anything a PACK
@@ -1060,6 +1065,8 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   // rewards where gaps are missing... all tap animations fixed so they can
   // go live now"): the five former beta suits fill the ladder above 300.
   { title: "HIGH ORBIT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
+  // the 3D test (25 Oct 2026); its suit is beta-only, so this row is too
+  ...(IS_BETA ? [{ title: "3D TEST", ids: ["pinky"] }] : []),
 ];
 
 // The helmet wall groups by what the GLASS does, because that is how a

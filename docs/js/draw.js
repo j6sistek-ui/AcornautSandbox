@@ -1,37 +1,37 @@
-import { spillDockTravelDuration } from "./spill.js?v=308";
-import { clipHelmetGlass } from "./helmet-openings.js?v=308";
-import { paintFittedHelmet } from "./helmet-fit.js?v=308";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=308";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=308";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=308";
-import { arcflashPreview } from "./arcflash-motion.js?v=308";
-import { paintLiveStarTrail } from "./star-trails.js?v=308";
-import { trailWornBy } from "./catalog.js?v=308";
-import { isHighOrbitRig, isPremiumSuit, highOrbitTrailSuit } from "./high-orbit-config.js?v=308";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=308";
-import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=308";
-import { paintPremiumBankWake } from "./premium-bank-wake.js?v=308";
-import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=308";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=308";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=308";
-import { spillAppearance } from "./spill-appearance.js?v=308";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=308";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=308";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=308";
-import { goalHud } from "./campaign.js?v=308";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=308";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=308";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=308";
-import { spriteImageFor } from "./sprite-detail.js?v=308";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=308";
-import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=308";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=308";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=308";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=308";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=308";
-import { spillEngineColor } from "./spill-content.js?v=308";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=308";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=308";
+import { spillDockTravelDuration } from "./spill.js?v=309";
+import { clipHelmetGlass } from "./helmet-openings.js?v=309";
+import { paintFittedHelmet } from "./helmet-fit.js?v=309";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=309";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=309";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit } from "./arcflash.js?v=309";
+import { arcflashPreview } from "./arcflash-motion.js?v=309";
+import { paintLiveStarTrail } from "./star-trails.js?v=309";
+import { trailWornBy } from "./catalog.js?v=309";
+import { isHighOrbitRig, isPremiumSuit, highOrbitTrailSuit } from "./high-orbit-config.js?v=309";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=309";
+import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=309";
+import { paintPremiumBankWake } from "./premium-bank-wake.js?v=309";
+import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=309";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=309";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=309";
+import { spillAppearance } from "./spill-appearance.js?v=309";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=309";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=309";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=309";
+import { goalHud } from "./campaign.js?v=309";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=309";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=309";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=309";
+import { spriteImageFor } from "./sprite-detail.js?v=309";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=309";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=309";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=309";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=309";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=309";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=309";
+import { spillEngineColor } from "./spill-content.js?v=309";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=309";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=309";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -4487,7 +4487,8 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // painted HEAD-UP at -22 - 36 degrees the other side of the family - so a
 // climb tipped it back until it sat upright in the sky rather than
 // climbing, which is what the owner saw as leading with its head.
-const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog"]);
+// The 3D test (pinky) too: its rendered dive frames carry the attitude.
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog", "pinky"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
@@ -4656,9 +4657,13 @@ tapShape = null, wake) {
     // A flight CYCLE is a ticket in for the same reason (the critters,
     // 7 Sep 2026): sixteen whole-character frames, no rig cut, and the gate
     // was holding them to the static sprite - the owner's sheets never moved.
+    // A tap bank with a dive bank and no climb (the 3D test, 25 Oct 2026) is a
+    // ticket in on the same terms: whole-character frames, no rig cut.
     const bankReady = suited
         ? ((art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0)
             || (art?.suitLoop?.[suit.id]?.length ?? 0) > 0
+            || (!(art?.suitAsc?.[suit.id]?.length) && (art?.suitTap?.[suit.id]?.length ?? 0) > 0
+                && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0)
         : false;
     // The regenerated neutral is the exact first frame. While the banks load,
     // keep its normalized head/helmet fit instead of flashing the old split rig.
@@ -4710,6 +4715,12 @@ tapShape = null, wake) {
         // so during the burst the frame IS the pilot: no rig tail, no body
         // layer, no pulse. Smaller banks keep the layered treatment below.
         const fullTap = tapAnimT >= 0 && tapFrames.length === 16;
+        // A TAP BANK AND A DIVE BANK, NO CLIMB (owner, 25 Oct 2026: "12 tap, 4
+        // dive, try something new"). Built for rendered 3D banks: the tap plays
+        // its whole gesture on the tap clock, falling walks the dive by velocity,
+        // and between the two the pilot rests on the tap's first frame, which is
+        // also the dive's first. Every frame is the whole character.
+        const tapDive = !fullMotion && tapFrames.length > 0 && descFrames.length > 0;
         // A full-character BOUNCE bank plays the painted planet-contact recoil
         // (impact, discharge, slight overturn, correction) instead of the rig.
         // Contact takes visual priority over any tap in flight.
@@ -4717,7 +4728,7 @@ tapShape = null, wake) {
         const fullBounce = bounceAnimT >= 0 && bounceFrames.length === 16;
         let tailPose = rigT;
         let tailPoseRot = tailRot - rigPitch * RIG_TAIL_TRAIL;
-        if (fullBounce || fullMotion || fullLoop) {
+        if (fullBounce || fullMotion || fullLoop || tapDive) {
             /* these frames carry the whole character, tail included */
         }
         else if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
@@ -4918,6 +4929,43 @@ tapShape = null, wake) {
             if (!wearsOwnHead(suit)) {
                 paintDome(ctx, ascFrames[0], `${suit.id}-${diving ? "desc" : "asc"}-${idxM + 1}`, helmet, x, y, size, art);
             }
+        }
+        else if (tapDive) {
+            let frame;
+            let k = 0;
+            let bankName = "tap";
+            let v = 0;
+            if (Number.isFinite(poseOverride)) {
+                // the loadout's sweep: its climb half scrubs the tap gesture, its
+                // dive half walks the dive
+                v = Math.max(-1, Math.min(1, poseOverride));
+                const bank = v > 0 ? descFrames : tapFrames;
+                k = Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1))));
+                bankName = v > 0 ? "desc" : "tap";
+                frame = bank[k];
+            }
+            else if (tapAnimT >= 0) {
+                // the whole gesture across the whole tap, linearly, like Robo's
+                k = Math.min(tapFrames.length - 1, Math.floor((tapAnimT / TAP_ANIM_DURATION) * tapFrames.length));
+                frame = tapFrames[k];
+                // the dive eases in from level when the gesture ends
+                easeBankPose(_t, 0, true);
+            }
+            else {
+                const sv = smoothMotionVy(_t, motionVy);
+                v = sv > 0 ? Math.pow(Math.min(1, sv / 620), POSE_CURVE) * diveDepthFor(suit.id) : 0;
+                v = easeBankPose(_t, v, false);
+                k = Math.max(0, Math.min(descFrames.length - 1, Math.round(v * (descFrames.length - 1))));
+                bankName = k > 0 ? "desc" : "tap";
+                frame = k > 0 ? descFrames[k] : tapFrames[0];
+            }
+            window.__acornautPose =
+                { suit: suit.id, bank: bankName, idx: k + 1, v };
+            // one registration for both banks: they are rendered on one canvas
+            const refT = tapFrames[0].box ?? ref;
+            drawRigLayer(ctx, frame, refT, x, y, size, 0, undefined, halo);
+            if (!wearsOwnHead(suit))
+                paintDome(ctx, tapFrames[0], "suit:" + suit.id, helmet, x, y, size, art);
         }
         else if (fullLoop) {
             // THE TAP TRIGGERS IT, NOT A CLOCK (owner, 9 Sep 2026: "the critters

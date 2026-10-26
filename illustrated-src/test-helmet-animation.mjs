@@ -119,8 +119,19 @@ try {
   const legacy=suits.filter(suit=>!HIGH_ORBIT.includes(suit.id)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id));
   assert.deepEqual(legacy,OldCat.SUITS.filter(suit=>!OldCat.wearsOwnHead(suit)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id)),'helmet fitting does not change the pre-existing suit roster');
   assert.deepEqual(promoted.map(suit=>suit.id),HIGH_ORBIT,'HIGH ORBIT promotions are the only roster additions');
-  const withoutAuthorizedRigs=table=>Array.isArray(table) ? table.filter(id=>!HIGH_ORBIT.includes(id)&&!CYBER_TRIO.includes(id))
-    : Object.fromEntries(Object.entries(table).filter(([id])=>!HIGH_ORBIT.includes(id)&&!CYBER_TRIO.includes(id)));
+  // The 3D test (owner, 25 Oct 2026: "12 tap, 4 dive, try something new.
+  // drop it in beta"): a rendered tap bank and dive bank, its own head.
+  const THREE_D_TEST=['pinky'];
+  const authorized=id=>HIGH_ORBIT.includes(id)||CYBER_TRIO.includes(id)||THREE_D_TEST.includes(id);
+  const withoutAuthorizedRigs=table=>Array.isArray(table) ? table.filter(id=>!authorized(id))
+    : Object.fromEntries(Object.entries(table).filter(([id])=>!authorized(id)));
+  for(const id of THREE_D_TEST){
+    assert.equal(NewArt.TAP_BANKS[id],12,id+' twelve-frame tap');assert.equal(NewArt.DESC_BANKS[id],4,id+' four-frame dive');
+    for(const name of ['ASC_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS'])assert.equal(NewArt[name][id],undefined,id+' has no '+name);
+    assert(!NewArt.RIGGED_SUITS.includes(id),id+' whole-character frames, no rig cut');
+    // beta only: the production catalog this test loads strips it
+    assert(!NewCat.SUITS.some(s=>s.id===id),id+' stays off the live page');
+  }
   for(const name of ['RIGGED_SUITS','TAP_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS','ASC_BANKS','DESC_BANKS']) {
     const old=name==='RIGGED_SUITS'?OldArt[name].filter(id=>!NATURAL.includes(id)):OldArt[name];
     assert.deepEqual(withoutAuthorizedRigs(NewArt[name]),old,`${name}: only the recorded owner-authorized rig changes`);

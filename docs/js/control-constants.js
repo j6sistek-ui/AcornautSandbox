@@ -152,6 +152,9 @@ export const SUIT_LEAN = {
     // both aliens fly with NO lean: the owner zeroed climb and dive -
     // "the animation does the work", the painted attitudes are the pitch
     alien: { up: 0, down: 0 },
+    // the 3D test flies with no lean either: its rendered dive frames carry
+    // the attitude, as the aliens' painted ones do
+    pinky: { up: 0, down: 0 },
 };
 /** The dial for a suit, or the default for one that has none yet. */
 export function suitLean(id) {

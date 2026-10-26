@@ -4604,7 +4604,8 @@ const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail 
 // painted HEAD-UP at -22 - 36 degrees the other side of the family - so a
 // climb tipped it back until it sat upright in the sky rather than
 // climbing, which is what the owner saw as leading with its head.
-const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog"]);
+// The 3D test (pinky) too: its rendered dive frames carry the attitude.
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog", "pinky"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
@@ -4797,9 +4798,13 @@ function paintIllustrated(
   // A flight CYCLE is a ticket in for the same reason (the critters,
   // 7 Sep 2026): sixteen whole-character frames, no rig cut, and the gate
   // was holding them to the static sprite - the owner's sheets never moved.
+  // A tap bank with a dive bank and no climb (the 3D test, 25 Oct 2026) is a
+  // ticket in on the same terms: whole-character frames, no rig cut.
   const bankReady = suited
     ? ((art?.suitAsc?.[suit.id]?.length ?? 0) > 0 && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0)
       || (art?.suitLoop?.[suit.id]?.length ?? 0) > 0
+      || (!(art?.suitAsc?.[suit.id]?.length) && (art?.suitTap?.[suit.id]?.length ?? 0) > 0
+        && (art?.suitDesc?.[suit.id]?.length ?? 0) > 0)
     : false;
   // The regenerated neutral is the exact first frame. While the banks load,
   // keep its normalized head/helmet fit instead of flashing the old split rig.
@@ -4851,6 +4856,12 @@ function paintIllustrated(
     // so during the burst the frame IS the pilot: no rig tail, no body
     // layer, no pulse. Smaller banks keep the layered treatment below.
     const fullTap = tapAnimT >= 0 && tapFrames.length === 16;
+    // A TAP BANK AND A DIVE BANK, NO CLIMB (owner, 25 Oct 2026: "12 tap, 4
+    // dive, try something new"). Built for rendered 3D banks: the tap plays
+    // its whole gesture on the tap clock, falling walks the dive by velocity,
+    // and between the two the pilot rests on the tap's first frame, which is
+    // also the dive's first. Every frame is the whole character.
+    const tapDive = !fullMotion && tapFrames.length > 0 && descFrames.length > 0;
     // A full-character BOUNCE bank plays the painted planet-contact recoil
     // (impact, discharge, slight overturn, correction) instead of the rig.
     // Contact takes visual priority over any tap in flight.
@@ -4858,7 +4869,7 @@ function paintIllustrated(
     const fullBounce = bounceAnimT >= 0 && bounceFrames.length === 16;
     let tailPose: Sprite | HTMLImageElement = rigT;
     let tailPoseRot = tailRot - rigPitch * RIG_TAIL_TRAIL;
-    if (fullBounce || fullMotion || fullLoop) {
+    if (fullBounce || fullMotion || fullLoop || tapDive) {
       /* these frames carry the whole character, tail included */
     } else if (bounceAnimT >= 0 && suit.id === "eclipse" && pivot) {
       const bend = bounceAnimDir * bounceAnimStrength
@@ -5038,6 +5049,39 @@ function paintIllustrated(
         paintDome(ctx, ascFrames[0], `${suit.id}-${diving ? "desc" : "asc"}-${idxM + 1}`,
           helmet, x, y, size, art);
       }
+    } else if (tapDive) {
+      let frame: Sprite | HTMLImageElement;
+      let k = 0;
+      let bankName = "tap";
+      let v = 0;
+      if (Number.isFinite(poseOverride)) {
+        // the loadout's sweep: its climb half scrubs the tap gesture, its
+        // dive half walks the dive
+        v = Math.max(-1, Math.min(1, poseOverride));
+        const bank = v > 0 ? descFrames : tapFrames;
+        k = Math.max(0, Math.min(bank.length - 1, Math.round(Math.abs(v) * (bank.length - 1))));
+        bankName = v > 0 ? "desc" : "tap";
+        frame = bank[k];
+      } else if (tapAnimT >= 0) {
+        // the whole gesture across the whole tap, linearly, like Robo's
+        k = Math.min(tapFrames.length - 1, Math.floor((tapAnimT / TAP_ANIM_DURATION) * tapFrames.length));
+        frame = tapFrames[k];
+        // the dive eases in from level when the gesture ends
+        easeBankPose(_t, 0, true);
+      } else {
+        const sv = smoothMotionVy(_t, motionVy);
+        v = sv > 0 ? Math.pow(Math.min(1, sv / 620), POSE_CURVE) * diveDepthFor(suit.id) : 0;
+        v = easeBankPose(_t, v, false);
+        k = Math.max(0, Math.min(descFrames.length - 1, Math.round(v * (descFrames.length - 1))));
+        bankName = k > 0 ? "desc" : "tap";
+        frame = k > 0 ? descFrames[k] : tapFrames[0];
+      }
+      (window as unknown as { __acornautPose?: unknown }).__acornautPose =
+        { suit: suit.id, bank: bankName, idx: k + 1, v };
+      // one registration for both banks: they are rendered on one canvas
+      const refT = (tapFrames[0] as Sprite).box ?? ref;
+      drawRigLayer(ctx, frame, refT, x, y, size, 0, undefined, halo);
+      if (!wearsOwnHead(suit)) paintDome(ctx, tapFrames[0], "suit:" + suit.id, helmet, x, y, size, art);
     } else if (fullLoop) {
       // THE TAP TRIGGERS IT, NOT A CLOCK (owner, 9 Sep 2026: "the critters
       // still should activate on tap, not a clock. even if it's not a ascent

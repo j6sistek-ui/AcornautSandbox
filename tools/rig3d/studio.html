@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rig studio</title>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head>
+<body style="margin:0;background:#1d1a2e">
+<script type="module">
+// Headless studio for render.mjs: loads ?model=..., auto-rigs it, frames it once for
+// every move, and exposes window.studio for the renderer to drive.
+import * as THREE from 'three';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { loadRig } from './autorig.js';
+import { MOVES as ALL_MOVES } from './moves.js';
+
+const q = new URLSearchParams(location.search);
+const SIZE = +(q.get('size') || 512);
+// ?frames=tap:12,desc:4,asc:0 overrides a bank's frame count; 0 leaves the move out
+const counts = Object.fromEntries((q.get('frames') || '').split(',').filter(Boolean).map(kv => kv.split(':')).map(([k, v]) => [k, +v]));
+const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames }]));
+const R = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+R.setPixelRatio(1); R.setSize(SIZE, SIZE);
+R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
+document.body.appendChild(R.domElement);
+
+const rig = await loadRig(q.get('model'));
+const scene = new THREE.Scene(); scene.add(rig.pivot);
+scene.add(new THREE.HemisphereLight(0xfff4fb, 0x3a2f55, 2.0));
+const key = new THREE.DirectionalLight(0xffffff, 2.4); scene.add(key);
+const rim = new THREE.DirectionalLight(0xb9a6ff, 1.6); scene.add(rim);
+
+// one frame for all moves: every posed vertex of every move, seen from the camera's side,
+// so all banks share one framing and nothing is cropped
+// three-quarter view, about 33 degrees round toward the face, a touch from above
+const dir = rig.LAT.clone().addScaledVector(rig.FWD, 0.65).addScaledVector(rig.UP, 0.06).normalize();
+const right = new THREE.Vector3().crossVectors(dir.clone().negate(), rig.UP).normalize(), up = new THREE.Vector3().crossVectors(right, dir.clone().negate()).normalize();
+const v = new THREE.Vector3(); let minR = Infinity, maxR = -Infinity, minU = Infinity, maxU = -Infinity, minD = Infinity, maxD = -Infinity;
+const pos = rig.mesh.geometry.attributes.position, step = Math.max(1, Math.floor(pos.count / 6000));
+for (const m of Object.values(MOVES)) for (let i = 0; i <= 10; i++) {
+  rig.apply({ ...m.pose(i / 10), lift: 0 }); rig.mesh.updateMatrixWorld(true);
+  for (let k = 0; k < pos.count; k += step) { rig.mesh.getVertexPosition(k, v).applyMatrix4(rig.mesh.matrixWorld);
+    const r = v.dot(right), u = v.dot(up), d = v.dot(dir); minR = Math.min(minR, r); maxR = Math.max(maxR, r); minU = Math.min(minU, u); maxU = Math.max(maxU, u); minD = Math.min(minD, d); maxD = Math.max(maxD, d); }
+}
+rig.apply({ ...MOVES.tap.pose(0), lift: 0 });
+const target = right.clone().multiplyScalar((minR + maxR) / 2).addScaledVector(up, (minU + maxU) / 2).addScaledVector(dir, (minD + maxD) / 2);
+const half = Math.max(maxR - minR, maxU - minU) / 2 * 1.06, FOV = 28;
+const cam = new THREE.PerspectiveCamera(FOV, 1, 0.01, 100);
+const dist = half / Math.tan(THREE.MathUtils.degToRad(FOV / 2)) + (maxD - minD) / 2;
+cam.position.copy(target).addScaledVector(dir, dist); cam.up.copy(rig.UP); cam.lookAt(target);
+key.position.copy(target).addScaledVector(dir, 3).addScaledVector(rig.UP, 2.5).addScaledVector(rig.FWD, 1.5);
+rim.position.copy(target).addScaledVector(dir, -2).addScaledVector(rig.UP, 1.5);
+
+function frame(move, u, lift) { const p = MOVES[move].pose(u); if (!lift) p.lift = 0; rig.apply(p); R.render(scene, cam); return R.domElement.toDataURL('image/png'); }
+
+window.studio = {
+  info: rig.info,
+  moves: Object.fromEntries(Object.entries(MOVES).map(([k, m]) => [k, { frames: m.frames, loop: m.loop }])),
+  // bank frame i of a move, as the game will see it (sprite stays centred; the game moves it)
+  bank(move, i) { const m = MOVES[move]; return frame(move, m.loop ? i / m.frames : i / (m.frames - 1), false); },
+  // a sample at any u, with the move's own lift so a preview shows the motion
+  sample(move, u) { return frame(move, u, true); },
+  // the rig with every move baked in as a clip `seconds` long, for Blender or any glTF viewer
+  async glb(seconds = 2, fps = 30) {
+    const clips = [];
+    for (const [name, m] of Object.entries(MOVES)) {
+      const n = Math.round(seconds * fps) + 1, times = [], tracks = new Map();
+      for (let i = 0; i < n; i++) {
+        const u = m.loop ? i / (n - 1) : i / (n - 1); rig.apply(m.pose(u)); times.push(seconds * i / (n - 1));
+        for (const b of rig.all) { if (!tracks.has(b)) tracks.set(b, []); tracks.get(b).push(...b.quaternion.toArray()); }
+        if (!tracks.has('pq')) { tracks.set('pq', []); tracks.set('pp', []); }
+        tracks.get('pq').push(...rig.pivot.quaternion.toArray()); tracks.get('pp').push(...rig.pivot.position.toArray());
+      }
+      const kt = [];
+      for (const [b, v] of tracks) if (typeof b !== 'string') kt.push(new THREE.QuaternionKeyframeTrack(b.name + '.quaternion', times, v));
+      kt.push(new THREE.QuaternionKeyframeTrack('flightPivot.quaternion', times, tracks.get('pq')));
+      kt.push(new THREE.VectorKeyframeTrack('flightPivot.position', times, tracks.get('pp')));
+      clips.push(new THREE.AnimationClip(name, seconds, kt));
+    }
+    rig.apply(MOVES.tap.pose(0));
+    const buf = new Uint8Array(await new GLTFExporter().parseAsync(rig.pivot, { binary: true, animations: clips }));
+    let s = ''; for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode(...buf.subarray(i, i + 0x8000));
+    return btoa(s);
+  },
+};
+window.studioReady = true;
+</script>
+</body>
+</html>

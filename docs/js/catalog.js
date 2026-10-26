@@ -1,7 +1,7 @@
-import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=308";
-import { platform } from "./platform.js?v=308";
-import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=308";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=308";
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=309";
+import { platform } from "./platform.js?v=309";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=309";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=309";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -17,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=308";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "308";
+export const ART_VER = "309";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-10-07 04:32 UTC";
+export const BUILD_TIME = "2026-10-26 02:26 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -242,6 +242,11 @@ export const SUITS = [
     { id: "briellacat", name: "Briella's Cat", cost: 999, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
     { id: "sunforged", name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
     { id: "abyssal", name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
+    // THE 3D TEST (owner, 25 Oct 2026: "drop it in beta. see how it works...
+    // let me see how it looks in general or if it just doesn't fit"). A
+    // rendered model, not a painting: tools/rig3d made its twelve tap and four
+    // dive frames. Its own head, so no helmet is fitted. Beta only.
+    { id: "pinky", name: "Pinky 3D", cost: 0, beta: true, ownHead: true, fur: "#f07ab8", furDark: "#b84482", belly: "#fde3ef", suit: "#f59ac8", suitLite: "#ffd1e8", suitDark: "#a8336f", trim: "#7fd3ff", glow: null, dust: null },
     { id: "cyber", name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
 ];
 // Beta-only suits are stripped from production entirely. Anything a PACK
@@ -872,6 +877,8 @@ export const SUIT_SHELF = [
     // rewards where gaps are missing... all tap animations fixed so they can
     // go live now"): the five former beta suits fill the ladder above 300.
     { title: "HIGH ORBIT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
+    // the 3D test (25 Oct 2026); its suit is beta-only, so this row is too
+    ...(IS_BETA ? [{ title: "3D TEST", ids: ["pinky"] }] : []),
 ];
 // The helmet wall groups by what the GLASS does, because that is how a
 // pilot actually chooses one. Suit-locked helmets are not listed anywhere:

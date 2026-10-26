@@ -1,0 +1,8 @@
+{
+  "name": "rig3d",
+  "private": true,
+  "type": "module",
+  "description": "Auto-rig Tripo squirrel models and render the game's tap, rise and dive banks",
+  "scripts": { "render": "node render.mjs" },
+  "dependencies": { "three": "0.170.0" }
+}
