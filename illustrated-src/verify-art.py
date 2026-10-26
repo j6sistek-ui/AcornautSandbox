@@ -59,13 +59,12 @@ STRICT_256_DIRS = {
 # canvas. Keep every alpha-bearing pixel near the main painting so the
 # runtime content box cannot silently double in height again.
 COMPACT_PALS = {"cometsprite", "pocketmoon"}
+# iontrim, voidsuit and ember left with the 3D lineup (26 Oct 2026): their helmet
+# size is measured from the rendered head, not fitted to painted art
 BASE_SUIT_IDS = (
     "flight",
-    "iontrim",
     "copper",
     "frost",
-    "voidsuit",
-    "ember",
     "robo",
     "ghost",
     "bigbooty",
@@ -80,30 +79,22 @@ CALIBRATED_HELMET_SCALES = {
     # 40.32 still sat 14% over its own frames and well over the painted
     # skull ("it's helmet is huge"). This row follows the owner's number.
     "flight": 31.17 / 184,
-    "iontrim": 0.2304,    # 44 / 191
     "copper": 0.2538,     # 50 / 197
     "frost": 0.2308,      # 39 / 169
-    "voidsuit": 0.2312,   # 46 / 199
-    "ember": 0.2367,      # 40 / 169
     "robo": 36.12 / 189,
     "ghost": 0.2178,      # 49 / 225
     "bigbooty": 28 / 187,
 }
 CALIBRATED_HELMET_TOLERANCE = 0.05
-NATURAL_FLIGHT_SUITS = {"iontrim", "copper", "voidsuit", "sammie", "gemmie", "leviathan", "ember", "frost", "ghost"}
+NATURAL_FLIGHT_SUITS = {"copper", "leviathan", "frost", "ghost"}
 # Owner-requested skull normalization uses a shared 192px presentation box.
 CALIBRATED_HELMET_SCALES.update({suit: 36 / 192 for suit in NATURAL_FLIGHT_SUITS})
 # Suits the owner has refitted by eye on the rig editor leave the shared
 # 36px template; each row below is the owner's number.
-CALIBRATED_HELMET_SCALES["iontrim"] = 28.95 / 192   # 5 Oct 2026
 CALIBRATED_HELMET_SCALES["copper"] = 31.97 / 192    # 5 Oct 2026
 CALIBRATED_HELMET_SCALES["frost"] = 30.73 / 192     # 5 Oct 2026
-CALIBRATED_HELMET_SCALES["voidsuit"] = 29.53 / 192  # 5 Oct 2026
-CALIBRATED_HELMET_SCALES["ember"] = 33.26 / 192     # 5 Oct 2026
 CALIBRATED_HELMET_SCALES["ghost"] = 30.73 / 192     # 5 Oct 2026
 CALIBRATED_HELMET_SCALES["robo"] = 32.71 / 189      # 5 Oct 2026, owner refit (was 36.12)
-CALIBRATED_HELMET_SCALES["gemmie"] = 28.39 / 192    # 5 Oct 2026
-CALIBRATED_HELMET_SCALES["sammie"] = 28.95 / 192    # 5 Oct 2026
 CALIBRATED_HELMET_SCALES["leviathan"] = 29.53 / 192 # 6 Oct 2026
 CALIBRATED_HELMET_SCALES["bigbooty"] = 25.36 / 187  # 6 Oct 2026, owner refit (was 28)
 PAL_ALPHA = 15
@@ -712,9 +703,9 @@ def verify_repaired_suit_material_continuity(qa: QA) -> None:
     import colorsys
     import statistics
 
-    specs = {
-        "iontrim": ((0.48, 0.72), 0.025, 0.035),
-    }
+    # Ion's painted bank retired with the 3D lineup (26 Oct 2026); no suit is checked
+    # today, and the check stays for the next repaired bank
+    specs: dict = {}
     problems: list[str] = []
     summaries: list[str] = []
     for suit, (hue_range, saturation_limit, value_limit) in specs.items():
@@ -1057,10 +1048,15 @@ def verify_pose_domes(qa: QA) -> None:
             table.group(1)):
         poses.setdefault(suit, {})[int(n)] = (float(x), float(y), float(r))
     problems: list[str] = []
+    # a bank's own length: sixteen for the painted taps, twelve for the 3D lineup
+    art_src = ART_SOURCE.read_text(encoding="utf8")
+    tap_m = re.search(r"const TAP_BANKS[^{]*\{([^}]*)\}", art_src, re.S)
+    tap_len = {k: int(v) for k, v in re.findall(r"(\w+):\s*(\d+)", re.sub(r"//[^\n]*", "", tap_m.group(1)))} if tap_m else {}
     for suit, frames in sorted(poses.items()):
-        missing = [n for n in range(1, 17) if n not in frames]
+        n_tap = tap_len.get(suit, 16)
+        missing = [n for n in range(1, n_tap + 1) if n not in frames]
         if missing:
-            problems.append(f"{suit} has {len(frames)}/16 pose anchors, missing "
+            problems.append(f"{suit} has {len(frames)}/{n_tap} pose anchors, missing "
                             f"{','.join(map(str, missing))} - those poses fall back "
                             f"to the static anchor and the glass jumps")
         radii = {r for _, _, r in frames.values()}
@@ -1075,7 +1071,7 @@ def verify_pose_domes(qa: QA) -> None:
         qa.fail("pose domes: " + "; ".join(problems))
     else:
         qa.ok(f"per-pose dome tables complete for {len(poses)} suits "
-              f"({16 * len(poses)} anchors, one radius each)")
+              f"({sum(len(f) for f in poses.values())} anchors, one radius each)")
 
 
 # WHICH DEV INSTRUMENTS SHIP WHERE. A panel that exists to tune the game
@@ -1258,10 +1254,6 @@ CUSTOM_FLIGHT_SUITS = {
     "briellacat", # owner-supplied sheet, 6 Sep 2026: Briella's Cat, a whole
                   # pencil character. Twelve poses cut into a 7-frame climb
                   # and a 4-frame dive; its own head, so no dome anchors.
-    "cupcake",      # owner grant, 25 Oct 2026 ("12 tap, 4 dive, try something
-                  # new. drop it in beta"): the 3D test, rendered by
-                  # tools/rig3d. A 12-frame tap bank plus a 4-frame dive and
-                  # no climb; beta only, its own head, no dome anchors.
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.

@@ -54,9 +54,8 @@ export const TAP_SHAPE_MIN = 0.1, TAP_SHAPE_MAX = 1.0;
 // Arcflash have their own controllers.
 export const TAP_SHAPE: Record<string, TapShape | "velocity"> = {
   eclipse: "velocity", cryostar: "velocity", verdant: "velocity", cyber: "velocity", seraph: "velocity",
-  alien: "velocity", flight: "velocity", briellacat: "velocity", iontrim: "velocity", copper: "velocity",
-  voidsuit: "velocity", ember: "velocity", frost: "velocity", ghost: "velocity", gemmie: "velocity",
-  sammie: "velocity", leviathan: "velocity",
+  alien: "velocity", flight: "velocity", briellacat: "velocity", copper: "velocity",
+  frost: "velocity", ghost: "velocity", leviathan: "velocity",
   // Owner-requested replacement banks follow Cyber's exact live path.
   porcelain: "velocity", nacre: "velocity", origamist: "velocity",
 };
@@ -195,23 +194,13 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
 
   // --- rigged suits: these carry the velocity bank AND the heading pitch,
   //     so they are the ones most likely to read as over-tipped
-  iontrim:     { up: 0.8, down: 0.3 },
   copper:      { up: 0.8, down: 0.3 },
   frost:       { up: 0.8, down: 0.3 },
-  voidsuit:    { up: 0.8, down: 0.3 },
-  ember:       { up: 0.8, down: 0.3 },
   ghost:       { up: 0.8, down: 0.3 },
-  gemmie:      { up: 0.8, down: 0.3 },
-  sammie:      { up: 0.8, down: 0.3 },
   seraph:      { up: 0.8, down: 0.3 },
   leviathan:   { up: 0.8, down: 0.3 },
   verdant:     { up: 0.8, down: 0.3 },
   cryostar:    { up: 0.8, down: 0.3 },
-  cinderforge: { up: 0.8, down: 0.3 },
-  groveguard:  { up: 0.8, down: 0.3 },
-  cosmic:      { up: 0.8, down: 0.3 },
-  sunforged:   { up: 0.8, down: 0.3 },
-  abyssal:     { up: 0.8, down: 0.3 },
   porcelain:   { up: 0.8, down: 0.3 },
   nacre:       { up: 0.8, down: 0.3 },
   origamist:   { up: 0.8, down: 0.3 },
@@ -235,9 +224,18 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   // both aliens fly with NO lean: the owner zeroed climb and dive -
   // "the animation does the work", the painted attitudes are the pitch
   alien:       { up: 0, down: 0 },
-  // the 3D test flies with no lean either: its rendered dive frames carry
-  // the attitude, as the aliens' painted ones do
-  cupcake:       { up: 0, down: 0 },
+  // THE 3D LINEUP (26 Oct 2026) flies with no lean either: its rendered dive
+  // frames carry the attitude, as the aliens' painted ones do
+  ember:       { up: 0, down: 0 },
+  voidsuit:    { up: 0, down: 0 },
+  groveguard:  { up: 0, down: 0 },
+  cinderforge: { up: 0, down: 0 },
+  sunforged:   { up: 0, down: 0 },
+  abyssal:     { up: 0, down: 0 },
+  gemmie:      { up: 0, down: 0 },
+  iontrim:     { up: 0, down: 0 },
+  sammie:      { up: 0, down: 0 },
+  cosmic:      { up: 0, down: 0 },
 };
 
 /** The dial for a suit, or the default for one that has none yet. */

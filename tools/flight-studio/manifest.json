@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "310",
-  "sourceCommit": "4df7e9298ff607fd8213b7dff19dff14ebcefc81",
+  "artVer": "311",
+  "sourceCommit": "299dd9fe8187f4d1f9cbb90e4b63867ee740bf17",
   "models": [
     {
       "id": "flight",
@@ -390,64 +390,59 @@
       "key": "suit:iontrim",
       "file": "suits/iontrim.png",
       "dome": [
-        206,
-        109,
-        28.95,
-        6
+        186.2,
+        112.62,
+        26.96,
+        1.82
       ],
-      "box": [
-        32,
-        32,
-        192,
-        192
-      ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/iontrim-asc-1.png",
-          "suits/iontrim-asc-2.png",
-          "suits/iontrim-asc-3.png",
-          "suits/iontrim-asc-4.png",
-          "suits/iontrim-asc-5.png",
-          "suits/iontrim-asc-6.png",
-          "suits/iontrim-asc-7.png",
-          "suits/iontrim-asc-8.png"
+        "tap": [
+          "suits/iontrim-tap-1.png",
+          "suits/iontrim-tap-2.png",
+          "suits/iontrim-tap-3.png",
+          "suits/iontrim-tap-4.png",
+          "suits/iontrim-tap-5.png",
+          "suits/iontrim-tap-6.png",
+          "suits/iontrim-tap-7.png",
+          "suits/iontrim-tap-8.png",
+          "suits/iontrim-tap-9.png",
+          "suits/iontrim-tap-10.png",
+          "suits/iontrim-tap-11.png",
+          "suits/iontrim-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/iontrim-desc-1.png",
           "suits/iontrim-desc-2.png",
           "suits/iontrim-desc-3.png",
-          "suits/iontrim-desc-4.png",
-          "suits/iontrim-desc-5.png",
-          "suits/iontrim-desc-6.png",
-          "suits/iontrim-desc-7.png",
-          "suits/iontrim-desc-8.png"
+          "suits/iontrim-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/iontrim.png": "b00133c457f221dd13362c522865fbcb8e9a2a24c459a15b39156f6330e2df02",
-        "suits/iontrim-asc-1.png": "b00133c457f221dd13362c522865fbcb8e9a2a24c459a15b39156f6330e2df02",
-        "suits/iontrim-asc-2.png": "cfe5d0771f7b1375f98a6f75ef59214403d1ecb6b2cb96edaedff76e33bf36e1",
-        "suits/iontrim-asc-3.png": "ae90279acfb5fa45517b1e4b28c3401f7b1ea9bd2c424fad65d60add1e0a0d70",
-        "suits/iontrim-asc-4.png": "3031c881c61af18d4fd6e9d2701da921d6b4c6b06c0500e39272d84af64ffe3f",
-        "suits/iontrim-asc-5.png": "f2d0f9ff50d24aa392aee90d116882903ca9fe0b43881925e9b9779b36e4d9e3",
-        "suits/iontrim-asc-6.png": "64828812f79941b0db5158d086a438caca52374fc4e971dc83d4d7b4bb9dd5f6",
-        "suits/iontrim-asc-7.png": "8a7e1afc01b2fad62dfb66eb6831d0e158aebffa1de7ff264202d251634d2f7d",
-        "suits/iontrim-asc-8.png": "ecee8d23a32541a31cc130187f78f95d36c5586f9729fbabf56c76a439498401",
-        "suits/iontrim-desc-1.png": "b00133c457f221dd13362c522865fbcb8e9a2a24c459a15b39156f6330e2df02",
-        "suits/iontrim-desc-2.png": "1aa135be089d62272f2f2557858cbb427752c30b59c713f00f1f964bde040e77",
-        "suits/iontrim-desc-3.png": "65f9225516fcc856702f957e603e3be59a18cc3e97e9a7037568877fafac5e9c",
-        "suits/iontrim-desc-4.png": "2f7a256ce77fca4fadcde48457e052827d5af00b9dafdb6a6559a68f6b915c17",
-        "suits/iontrim-desc-5.png": "43f428df01c568d2034e7002b36a503ab5e479b43412c334a8852d38ab5335f0",
-        "suits/iontrim-desc-6.png": "6fc5f044550f56bc7fa1c59bac2b494c52bf5b5f266a34dfe07ab78199c21b76",
-        "suits/iontrim-desc-7.png": "8245215c8d221189c2812a6846ee10b9873e0793f764a671055daf1745100fe0",
-        "suits/iontrim-desc-8.png": "43a48fa8ab7ecf15cf17bf292c24e7701034aa69178271484529e0eda57f9a36"
+        "suits/iontrim.png": "7588187d1b7d402847dc4442628d8eb73ee37d23bdf5111c912dd1869c48bfd8",
+        "suits/iontrim-tap-1.png": "7588187d1b7d402847dc4442628d8eb73ee37d23bdf5111c912dd1869c48bfd8",
+        "suits/iontrim-tap-2.png": "92ddedc41e85767b65d15349310f4c743be3da4b8c67bd66026670e1a1f05a0c",
+        "suits/iontrim-tap-3.png": "991df12718cc594c8f67b1e026e2c3c71c09273c22bdd164857117667fa40fce",
+        "suits/iontrim-tap-4.png": "b8cea733bccf48f64b069d7f678965fafec4766373b6e033142eb265005ed79b",
+        "suits/iontrim-tap-5.png": "c8b72cd8ff649362e4af8a9bffc288b4bb6bce7336e10c64fcd139ce6801eb4d",
+        "suits/iontrim-tap-6.png": "d94bb30187d49e3305b2551f56b6273d0ced2dc66001dd83e87299370f6dc6bc",
+        "suits/iontrim-tap-7.png": "679523a153d550b660f29f73fa0fe95a7c31992b5b322443b125864741798d1f",
+        "suits/iontrim-tap-8.png": "327e8aa629eb948551511b847fbee943443e5569eff1b8840bea0ef1c355a774",
+        "suits/iontrim-tap-9.png": "240228c16e3e443552ef1bff7ce34387d8e81fdca33255343549e4d70615ebdd",
+        "suits/iontrim-tap-10.png": "4306943b45e18e25bfeaa7e6c692305de96917526516a290cf1a412b5409ebe0",
+        "suits/iontrim-tap-11.png": "594ddf5fb33a8b7aa47ace86a61adc6eb962bb7c03dbecdf785ecb074033543f",
+        "suits/iontrim-tap-12.png": "91c1e76f7198b874860d05fc55a948c22fb962d6dfd374d2fb0874a01f62f519",
+        "suits/iontrim-desc-1.png": "7588187d1b7d402847dc4442628d8eb73ee37d23bdf5111c912dd1869c48bfd8",
+        "suits/iontrim-desc-2.png": "b7a30baa51c108c758ec95810e29fe50dd88c9421014c960a02283d30f5be979",
+        "suits/iontrim-desc-3.png": "7a6de69b5ddb58c3aa678146fa3db2808d6b162977ed0ba4104721cc02d90796",
+        "suits/iontrim-desc-4.png": "f3b38d3681139011cc1fb7fbfcbf3c2700450f71e677e17e0683107a5212b6c8"
       }
     },
     {
@@ -587,64 +582,59 @@
       "key": "suit:voidsuit",
       "file": "suits/voidsuit.png",
       "dome": [
-        206,
-        106,
-        29.53,
-        3
+        182.69,
+        112.11,
+        27.72,
+        1.82
       ],
-      "box": [
-        32,
-        32,
-        192,
-        192
-      ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/voidsuit-asc-1.png",
-          "suits/voidsuit-asc-2.png",
-          "suits/voidsuit-asc-3.png",
-          "suits/voidsuit-asc-4.png",
-          "suits/voidsuit-asc-5.png",
-          "suits/voidsuit-asc-6.png",
-          "suits/voidsuit-asc-7.png",
-          "suits/voidsuit-asc-8.png"
+        "tap": [
+          "suits/voidsuit-tap-1.png",
+          "suits/voidsuit-tap-2.png",
+          "suits/voidsuit-tap-3.png",
+          "suits/voidsuit-tap-4.png",
+          "suits/voidsuit-tap-5.png",
+          "suits/voidsuit-tap-6.png",
+          "suits/voidsuit-tap-7.png",
+          "suits/voidsuit-tap-8.png",
+          "suits/voidsuit-tap-9.png",
+          "suits/voidsuit-tap-10.png",
+          "suits/voidsuit-tap-11.png",
+          "suits/voidsuit-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/voidsuit-desc-1.png",
           "suits/voidsuit-desc-2.png",
           "suits/voidsuit-desc-3.png",
-          "suits/voidsuit-desc-4.png",
-          "suits/voidsuit-desc-5.png",
-          "suits/voidsuit-desc-6.png",
-          "suits/voidsuit-desc-7.png",
-          "suits/voidsuit-desc-8.png"
+          "suits/voidsuit-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/voidsuit.png": "6058b57e9aa643379467079a6c578c7e50de2b81f742f919db5a4d634720110e",
-        "suits/voidsuit-asc-1.png": "6058b57e9aa643379467079a6c578c7e50de2b81f742f919db5a4d634720110e",
-        "suits/voidsuit-asc-2.png": "1aaac16e5cb696d8b633ec67bd27fe69bdc27adeed340157d49bbc9ad3d2ed18",
-        "suits/voidsuit-asc-3.png": "198292ce0055630c4a7e2533e6283e1e950ebb29b2a42341a85157d52a226577",
-        "suits/voidsuit-asc-4.png": "b5169986cc2e342756df83a7d048d0326743e51c05ab90cd26a97e34e4f5b67a",
-        "suits/voidsuit-asc-5.png": "3baef1d0fdb9a015a4fe565b6b53bf97106cc89cdfc4155f9c36473a55184276",
-        "suits/voidsuit-asc-6.png": "23a252bf44921d064a804440d72ec3512b2175eb8617474d33a23a9aaafc874d",
-        "suits/voidsuit-asc-7.png": "7128616f2c1b358deb32b795470101587516539c501abd0d814cd35ab69f9ad7",
-        "suits/voidsuit-asc-8.png": "55a5fbd52e7e0b0289573bd90b4131d5c2de574d3b57173957dc3c237d430863",
-        "suits/voidsuit-desc-1.png": "6058b57e9aa643379467079a6c578c7e50de2b81f742f919db5a4d634720110e",
-        "suits/voidsuit-desc-2.png": "b1fdb2a691dc3ff86973bddc4e992cab7b77cc102675b4040a734ff3f8e0c1ea",
-        "suits/voidsuit-desc-3.png": "ccfd6476d98dfc98712c3396ceb65ed09b4ddf0222c607c9df5c2faabeb91a1e",
-        "suits/voidsuit-desc-4.png": "093963b4a85cf3fbff2f63e4cf41f4df3402c97dee1fbc731704fd4b9e078299",
-        "suits/voidsuit-desc-5.png": "b801411d42851c1237000b8413aa1c5107c9ad7d98f2a76318605c8507cd6798",
-        "suits/voidsuit-desc-6.png": "1e12fae148c65ca9d352ca2fbb6246b1a74b437b767c3b4d669d982c138003a6",
-        "suits/voidsuit-desc-7.png": "1f14388eafe0e8624f82953d461abf67aecaeed14103ab221c50a87f5fb6016b",
-        "suits/voidsuit-desc-8.png": "95376cf934c69491eb6c86fc0e8605665a9bcfe9423065bde1ce667cdc224dd1"
+        "suits/voidsuit.png": "322c6f03c734458b5db222e633a78660a4048685c753b32c066d54c69e03df9d",
+        "suits/voidsuit-tap-1.png": "322c6f03c734458b5db222e633a78660a4048685c753b32c066d54c69e03df9d",
+        "suits/voidsuit-tap-2.png": "c902d5f72efda21715e74782f937d60b286c6dda35192b80d479bc11f0d45a46",
+        "suits/voidsuit-tap-3.png": "eae1dd9a925c951885fe504f17760d69bc40b4fcccaf7b0d9dafcede3f4d2648",
+        "suits/voidsuit-tap-4.png": "1739a0a7347d03838c348f0376762cbd7f0eead6794046187f8bcba9fc2af181",
+        "suits/voidsuit-tap-5.png": "fdc305937545ea1bf2cb3c6848a858be59a8b2152efe4b02946eec84cc6bb1dd",
+        "suits/voidsuit-tap-6.png": "eda2f1f1265e95c5dded5de6a917f6c38bcc0d88cc5e21a366794cc06b74a6bd",
+        "suits/voidsuit-tap-7.png": "9f80305d2531e06bd8c43fe6989b9bb1f6b3cddf077bdd144dbc81297917386f",
+        "suits/voidsuit-tap-8.png": "0d8395d8011a1f1a4749927f7f5f1b553676e36e1b66aae96b627f1a1fbaf2ed",
+        "suits/voidsuit-tap-9.png": "560a05dc141029182c8268428ca386f1d4697ad24cfffc9ec47a02c29b4d47c0",
+        "suits/voidsuit-tap-10.png": "ba7533af64431436c7892bbb2ac17207307a42e6c216fc5f624aea3e4fb2400c",
+        "suits/voidsuit-tap-11.png": "42f377ab784fa67804f9035b14858cc44a2d56f4b12225bc1715f5f4032cac98",
+        "suits/voidsuit-tap-12.png": "abb4d54606c62cd55ec652b645a3febd09fdb9a454021a1d64ed39fc4b638a84",
+        "suits/voidsuit-desc-1.png": "322c6f03c734458b5db222e633a78660a4048685c753b32c066d54c69e03df9d",
+        "suits/voidsuit-desc-2.png": "9fd0c3842470144eb70b72dedbe207063dc685ac2c102c115c3c1dce0c655c19",
+        "suits/voidsuit-desc-3.png": "9a524d95ea0abfdb40274c64b3215153d7ab66572b2a5c7a66b363327fd7d1f6",
+        "suits/voidsuit-desc-4.png": "d531a1ad98e1edbddb588ae9d9ce59b704d649a935e5e2439d1ce9cda61814b7"
       }
     },
     {
@@ -653,64 +643,59 @@
       "key": "suit:ember",
       "file": "suits/ember.png",
       "dome": [
-        208,
-        106,
-        33.26,
-        0
+        183.97,
+        101.49,
+        38.88,
+        1.83
       ],
-      "box": [
-        32,
-        32,
-        192,
-        192
-      ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/ember-asc-1.png",
-          "suits/ember-asc-2.png",
-          "suits/ember-asc-3.png",
-          "suits/ember-asc-4.png",
-          "suits/ember-asc-5.png",
-          "suits/ember-asc-6.png",
-          "suits/ember-asc-7.png",
-          "suits/ember-asc-8.png"
+        "tap": [
+          "suits/ember-tap-1.png",
+          "suits/ember-tap-2.png",
+          "suits/ember-tap-3.png",
+          "suits/ember-tap-4.png",
+          "suits/ember-tap-5.png",
+          "suits/ember-tap-6.png",
+          "suits/ember-tap-7.png",
+          "suits/ember-tap-8.png",
+          "suits/ember-tap-9.png",
+          "suits/ember-tap-10.png",
+          "suits/ember-tap-11.png",
+          "suits/ember-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/ember-desc-1.png",
           "suits/ember-desc-2.png",
           "suits/ember-desc-3.png",
-          "suits/ember-desc-4.png",
-          "suits/ember-desc-5.png",
-          "suits/ember-desc-6.png",
-          "suits/ember-desc-7.png",
-          "suits/ember-desc-8.png"
+          "suits/ember-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/ember.png": "df6d435208e347f1ac1326679af9072ad3af1f2f4c4501fa4bd401d9ba2bc078",
-        "suits/ember-asc-1.png": "df6d435208e347f1ac1326679af9072ad3af1f2f4c4501fa4bd401d9ba2bc078",
-        "suits/ember-asc-2.png": "be43f2154c00bbfe0c5f3d12f131da11f5ba1390ebc445ab7e99ba5ce9f8fb35",
-        "suits/ember-asc-3.png": "3c3b4992bd5a6339dd204169453c044ceee92e3f568a87a1668661ec9798920b",
-        "suits/ember-asc-4.png": "e7bb10098299a47853731ab06a98d7f5fb6f267dc84c1278b7672a1e818fbd65",
-        "suits/ember-asc-5.png": "b0ae82283a943d2ba2dc37debdb96f78bf7f5c1f4ad860630240f7af9806d5ab",
-        "suits/ember-asc-6.png": "aceab268c08f3de9c46a40ba99055cfabed82aea7b79af0586438004335f4247",
-        "suits/ember-asc-7.png": "fad13b422a7adce0776c776df6bc855b8b4f8c5214df3f634f3133e6dd55c3fa",
-        "suits/ember-asc-8.png": "36fb3fed5ad5dec96b0bbd12dc6e9f6608420fe1a5f4a4e12848f228df21fde7",
-        "suits/ember-desc-1.png": "df6d435208e347f1ac1326679af9072ad3af1f2f4c4501fa4bd401d9ba2bc078",
-        "suits/ember-desc-2.png": "75fed219d40ab30f7f4380bcb07d090e66ccb8123994c45fa19d2aafe95807af",
-        "suits/ember-desc-3.png": "5011ba9961fe670a010f925b6971e2cfa56e6125361e682e28d1ebc6557da636",
-        "suits/ember-desc-4.png": "a65564b4725a871c2e6446e8c70d6cc8837b01e1de4de8217fc3476b0dd4686b",
-        "suits/ember-desc-5.png": "62f0cd952d10f91e560f3b93f333cdacf3b1048f90836b27bf5bb9d5e1ceae34",
-        "suits/ember-desc-6.png": "5b8f58b21ce7441843a27423484defc2c949d27c5d6eaf726e4da16247925da5",
-        "suits/ember-desc-7.png": "ee80136d94b91a25ca70c377d2eb9f06c65b603d1f8b30c9dc0f5865bc1ec90b",
-        "suits/ember-desc-8.png": "0998a89ac39d6059355fe33b525d12fe246e2b5533dd0abc6813585441fa9d13"
+        "suits/ember.png": "c3d970997d577fba5f09caf7fd9e9871a3338ea4c6751a44818bef8e715286c0",
+        "suits/ember-tap-1.png": "c3d970997d577fba5f09caf7fd9e9871a3338ea4c6751a44818bef8e715286c0",
+        "suits/ember-tap-2.png": "b7b2ccd0b3dac8255e8f2422f3477434ef81459f51d363bc42c0c8ac49d2e95c",
+        "suits/ember-tap-3.png": "6ff2046325f069245e87ee0db95b2084c07011c1ab5be546ff5fd843caffe3b3",
+        "suits/ember-tap-4.png": "9c0a6ff8006b7d63d3bb3ebb54acf44f59a48e1a5796c0435f865b4ed1c62894",
+        "suits/ember-tap-5.png": "566b71411a14b4399000cb67a6178ba86867fb67605380e77f95f485b27ba140",
+        "suits/ember-tap-6.png": "0b1f31438a62ecc24b1914c7b526a2983458678b4d7f797acd8dc13890f8ef66",
+        "suits/ember-tap-7.png": "c48a3d80edb9da1b85eef4bcadd22a5932d7e42f27ef238819cbf2eab366fddf",
+        "suits/ember-tap-8.png": "5e6bc1eb42b3a0ff7d182dd2ed073bfd70ba3c374331230ba75447236df3bf10",
+        "suits/ember-tap-9.png": "f49be416ab0131e4271bd04bba93edf314335d116401e1d65e934bb335b7a097",
+        "suits/ember-tap-10.png": "9cee7beffade46b3a6db1a4985c67c83d41119df47c4fd901d4a15f69ec7609c",
+        "suits/ember-tap-11.png": "082855d209d795f56b8f541b061ada0a6ca81e37468a299fa84bba540909c9ca",
+        "suits/ember-tap-12.png": "05175508c722564113a19d08255d7d006ef992106eda5f236008b98ace532c8e",
+        "suits/ember-desc-1.png": "c3d970997d577fba5f09caf7fd9e9871a3338ea4c6751a44818bef8e715286c0",
+        "suits/ember-desc-2.png": "4b177505ffd62901f97bf164d027527019646ae28f294ccb8d1f2c99721d065a",
+        "suits/ember-desc-3.png": "dfdef51bb11c8542c5054b4bbd1005b7ce0483bb45a97a185223563999fc9415",
+        "suits/ember-desc-4.png": "3f51c3a6cb9d25dcd311c8963ee3e4c432c9306790771fa3bf4d75089b6cfe36"
       }
     },
     {
@@ -1201,130 +1186,120 @@
       "key": "suit:gemmie",
       "file": "suits/gemmie.png",
       "dome": [
-        211,
-        107,
-        28.39,
-        1
+        183.43,
+        99.44,
+        36.18,
+        1.82
       ],
-      "box": [
-        32,
-        32,
-        192,
-        192
-      ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/gemmie-asc-1.png",
-          "suits/gemmie-asc-2.png",
-          "suits/gemmie-asc-3.png",
-          "suits/gemmie-asc-4.png",
-          "suits/gemmie-asc-5.png",
-          "suits/gemmie-asc-6.png",
-          "suits/gemmie-asc-7.png",
-          "suits/gemmie-asc-8.png"
+        "tap": [
+          "suits/gemmie-tap-1.png",
+          "suits/gemmie-tap-2.png",
+          "suits/gemmie-tap-3.png",
+          "suits/gemmie-tap-4.png",
+          "suits/gemmie-tap-5.png",
+          "suits/gemmie-tap-6.png",
+          "suits/gemmie-tap-7.png",
+          "suits/gemmie-tap-8.png",
+          "suits/gemmie-tap-9.png",
+          "suits/gemmie-tap-10.png",
+          "suits/gemmie-tap-11.png",
+          "suits/gemmie-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/gemmie-desc-1.png",
           "suits/gemmie-desc-2.png",
           "suits/gemmie-desc-3.png",
-          "suits/gemmie-desc-4.png",
-          "suits/gemmie-desc-5.png",
-          "suits/gemmie-desc-6.png",
-          "suits/gemmie-desc-7.png",
-          "suits/gemmie-desc-8.png"
+          "suits/gemmie-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/gemmie.png": "6c9d2d7bfac3c101a05512bffbf1175267f915817eefcee1e68c66224e2cb908",
-        "suits/gemmie-asc-1.png": "6c9d2d7bfac3c101a05512bffbf1175267f915817eefcee1e68c66224e2cb908",
-        "suits/gemmie-asc-2.png": "ede03771f7d53cff6ff09049fc4e560ccf7ddf1903911c48b388b4d0486dd729",
-        "suits/gemmie-asc-3.png": "b88c6273679de948e6f8076437c266eaf7232a2480c5888007ffc70d8755d72c",
-        "suits/gemmie-asc-4.png": "83b09202fe7195ee23df38698b15d0968073f0246683b48a381b08da96e6ddcf",
-        "suits/gemmie-asc-5.png": "e962065bfec137643e676b8d7347f42bea9aadd7c865aa118009a58f4ce063ad",
-        "suits/gemmie-asc-6.png": "2506a6707d1f1ecd9b6ee453f82c4da432265d98b7e19a50fb1774f1fbb95053",
-        "suits/gemmie-asc-7.png": "7bba680752e104852f75e6ad1fdb5bdd1be9244939ceed6f8e772d9ef2559eb1",
-        "suits/gemmie-asc-8.png": "cd35c06514781abe8298baa0c30434cd96585767f1f4a4003a847d77c9ae731f",
-        "suits/gemmie-desc-1.png": "6c9d2d7bfac3c101a05512bffbf1175267f915817eefcee1e68c66224e2cb908",
-        "suits/gemmie-desc-2.png": "1f835cae53160f082117a1b32dde0343d4c7373942682d6105b33599ad764f99",
-        "suits/gemmie-desc-3.png": "c362b77fdb7ca51005c7c644f0911d4160d91fc099ef71bee635d404ca99c4aa",
-        "suits/gemmie-desc-4.png": "f7c2ecfa50527ccc4adf9222dac04570002716795fe5010174e1814187ec1670",
-        "suits/gemmie-desc-5.png": "8e68639fe256f1f27a442f752f9131df11a60e1ec3616758447a471de9644739",
-        "suits/gemmie-desc-6.png": "05a47cf9e6390a3c1887c168964272b07671d2459863da6f9bdad622fca8de1f",
-        "suits/gemmie-desc-7.png": "8e19bc9ae625f8b632965b8bc8fc1c048ce424306ffbe5bd21607cbd35a4edc7",
-        "suits/gemmie-desc-8.png": "e67ad5f8f371ec14e4ccb077a5c90480a76a771fed47b63204148097e165d872"
+        "suits/gemmie.png": "93eec54874abdfb45e6bf7db3dbd9754ff17366c99e585372b7204ca63a35c18",
+        "suits/gemmie-tap-1.png": "93eec54874abdfb45e6bf7db3dbd9754ff17366c99e585372b7204ca63a35c18",
+        "suits/gemmie-tap-2.png": "02296a2559b5abd25f66ff6261ef3dce8d10c8e759b4d3cb40f058d2e4a37dbb",
+        "suits/gemmie-tap-3.png": "03be6b30ed0a1c997f8dae3bceaa8e23ad3d638d2d8c15de809c0a699393ea9e",
+        "suits/gemmie-tap-4.png": "3b33da3bb29f39334926c8bea280392d5fed11b6bdf27e15a603cff8907a2748",
+        "suits/gemmie-tap-5.png": "1b27d9a0922a959dbfd28b6f674303c58b731c2d3af01966a13d6f5163b5dbda",
+        "suits/gemmie-tap-6.png": "3e6a5b00a5e022f92c61a555887063862123377cd719d0029d0fca35ae3518ab",
+        "suits/gemmie-tap-7.png": "3530964ce22ab4ad0a332edd148f5ad1b937765d9f7b4ecd2bbcaf28c31b2a99",
+        "suits/gemmie-tap-8.png": "cfe0e75ee466ba172e39329e084c5dfe81c6d28805e034b2ac0aeb62f04d1771",
+        "suits/gemmie-tap-9.png": "7e45e4bb27423661153d8c910d176b1b74e1ff67ac85a094d61ff678c00fd244",
+        "suits/gemmie-tap-10.png": "7ac474fa36504b01332c9fb20e0717f22a3314fc4cb63f558e83a9f4b590f715",
+        "suits/gemmie-tap-11.png": "6952da74f3e822f23026c565944da9a0f901e952c048e8803fe03cedda4f17f2",
+        "suits/gemmie-tap-12.png": "9f827190a8d3b6f6e79eb117fcee2b3a77ec14d46fba0541a4f36608db9f9e4a",
+        "suits/gemmie-desc-1.png": "93eec54874abdfb45e6bf7db3dbd9754ff17366c99e585372b7204ca63a35c18",
+        "suits/gemmie-desc-2.png": "f36254f20534318fbb5f4151e6234b4871c8943d62074b019d7bd9e8b8c75339",
+        "suits/gemmie-desc-3.png": "c4af5683e41ad49d5e93c34ad3e8fcb8693a32a326b7bcc914b38f2afd270e26",
+        "suits/gemmie-desc-4.png": "842c54202a9e786114b41d8ff73cc8a3071d748fd432f1506c3045523d8e46d8"
       }
     },
     {
       "id": "sammie",
-      "name": "Sammie",
+      "name": "Stone",
       "key": "suit:sammie",
       "file": "suits/sammie.png",
       "dome": [
-        208,
-        106,
-        28.95,
-        3
+        185.89,
+        114.58,
+        26.09,
+        1.83
       ],
-      "box": [
-        32,
-        32,
-        192,
-        192
-      ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/sammie-asc-1.png",
-          "suits/sammie-asc-2.png",
-          "suits/sammie-asc-3.png",
-          "suits/sammie-asc-4.png",
-          "suits/sammie-asc-5.png",
-          "suits/sammie-asc-6.png",
-          "suits/sammie-asc-7.png",
-          "suits/sammie-asc-8.png"
+        "tap": [
+          "suits/sammie-tap-1.png",
+          "suits/sammie-tap-2.png",
+          "suits/sammie-tap-3.png",
+          "suits/sammie-tap-4.png",
+          "suits/sammie-tap-5.png",
+          "suits/sammie-tap-6.png",
+          "suits/sammie-tap-7.png",
+          "suits/sammie-tap-8.png",
+          "suits/sammie-tap-9.png",
+          "suits/sammie-tap-10.png",
+          "suits/sammie-tap-11.png",
+          "suits/sammie-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/sammie-desc-1.png",
           "suits/sammie-desc-2.png",
           "suits/sammie-desc-3.png",
-          "suits/sammie-desc-4.png",
-          "suits/sammie-desc-5.png",
-          "suits/sammie-desc-6.png",
-          "suits/sammie-desc-7.png",
-          "suits/sammie-desc-8.png"
+          "suits/sammie-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/sammie.png": "3bc6b8741a631268a4eda316121b01c8ee633a770d69e02258a791bd03415fe1",
-        "suits/sammie-asc-1.png": "3bc6b8741a631268a4eda316121b01c8ee633a770d69e02258a791bd03415fe1",
-        "suits/sammie-asc-2.png": "7ef78092caddfc39dfdbf88fb07c2b58c7fd259d3d8d682f5c73dd235dd83f47",
-        "suits/sammie-asc-3.png": "cf7cb85d120441d4355f79cc4f6e88d886cd40ae47461272a46e53170017b19c",
-        "suits/sammie-asc-4.png": "d0e66fcc16f27fac2d2642cd1fe356e312074117b86f7565a6dc543864f0622a",
-        "suits/sammie-asc-5.png": "26f799bed69f16f5adf79f1760e6606e7a32e322543194dbf9d6206209b20a5c",
-        "suits/sammie-asc-6.png": "3e909ff6d0b35702ae130f383904ed185400c3e2a1617f3a525e257d0b243058",
-        "suits/sammie-asc-7.png": "e97b09360e3807ee8645d63f46cd7d93fb55be78f6f6357f5433f14ab2212ad4",
-        "suits/sammie-asc-8.png": "90f8e43c280175ed8f6e821a8f51831b6bcd8f723dbfe7c2e246191cf52046b2",
-        "suits/sammie-desc-1.png": "3bc6b8741a631268a4eda316121b01c8ee633a770d69e02258a791bd03415fe1",
-        "suits/sammie-desc-2.png": "27ed63a44aa25d884cb2f7ad109085698be30fbbe83b70a685d7c4fbee5c1562",
-        "suits/sammie-desc-3.png": "9c851bd4dc5ea491af80fd82eb25ab69fe266bf92fabd02ed097fc140d7acd30",
-        "suits/sammie-desc-4.png": "24c7bbf289c96657aafae5cd8cf7f00b444d75358be246bb17b70b7b75acca96",
-        "suits/sammie-desc-5.png": "924a1fbba1276003c5d2bb2144ac93251f0cf6bbd6f2fd5f6a4b6b53b2711dd1",
-        "suits/sammie-desc-6.png": "c2e34ab0659451d84379e49d1fcfed0937144c261da78183cfef35aae1f6cfd3",
-        "suits/sammie-desc-7.png": "aeb4489e37a71470a118e47763e9cae06bf02a58de8cd1d9f6382641266f1135",
-        "suits/sammie-desc-8.png": "cee7ad2efb23af4a96b87de932572976606fd4247d17c8b35d18fb90b9185c40"
+        "suits/sammie.png": "003d20bd950d0260e65e4e0852b1dda4f00840f365418fe2629fd1f058c0e8f8",
+        "suits/sammie-tap-1.png": "003d20bd950d0260e65e4e0852b1dda4f00840f365418fe2629fd1f058c0e8f8",
+        "suits/sammie-tap-2.png": "76b769c5a7aac4627576a885cc6c7177795c0d0381c8f5a97ec3b1a559c4e371",
+        "suits/sammie-tap-3.png": "b1336ac32e0bf92fa896513b37819b6577aaa4eddedbd616a7c3384a8d526763",
+        "suits/sammie-tap-4.png": "aacd36e83158892fd100d021e8665f0bb3532b4e343d4586c913cb09cfc00ce3",
+        "suits/sammie-tap-5.png": "2835c92d930177f36beaf5b80b7cb7f811933b51225b90c97760f412952b6991",
+        "suits/sammie-tap-6.png": "fdd9d7ac1dec295343a17daefd1260bc789b2ee1643add5336c1f0e8e0814f66",
+        "suits/sammie-tap-7.png": "d64b27fc1d89af916ba0a5efd525002550365fd7bf8f2aa580b5144c3f8eb2f5",
+        "suits/sammie-tap-8.png": "bec35301f2bad8daf0c650d4e9d2b7740e1af2805971664b89058eaee0f11fb9",
+        "suits/sammie-tap-9.png": "6adbaf0b58548e0d7344ee19a540d0a63493471412d13235ba549c52f8fbe86c",
+        "suits/sammie-tap-10.png": "5a5e458fbd5dada93d14873107ad7df763b9f9e3ccc8cd4890a860a5eb6bfe93",
+        "suits/sammie-tap-11.png": "53f9ee06fca9934645db94ae30b0f62510fc8e94c6bb77acfec9a7c18e2c0ed9",
+        "suits/sammie-tap-12.png": "70dc0019af115e5cdcbea634267dd3ad16f6bdd8e1bc443c716d19eaa0b68d5c",
+        "suits/sammie-desc-1.png": "003d20bd950d0260e65e4e0852b1dda4f00840f365418fe2629fd1f058c0e8f8",
+        "suits/sammie-desc-2.png": "26c367e6db9f3c7af556bf3a9cf2781484c36675188afb944ed5c2668d110a58",
+        "suits/sammie-desc-3.png": "b77419eb352a68657dc29c68a8b9c533144b803e655a6316da97fbf2e10502a3",
+        "suits/sammie-desc-4.png": "9388d3a91da344ef86c94ead6047f69f8e948a139b9a4761915a1830ba2481df"
       }
     },
     {
@@ -1735,10 +1710,10 @@
       "key": "suit:cinderforge",
       "file": "suits/cinderforge.png",
       "dome": [
-        187.73,
-        92.62,
-        31.34,
-        3
+        185.02,
+        106.88,
+        33.97,
+        1.8
       ],
       "box": null,
       "ownHead": false,
@@ -1747,13 +1722,47 @@
       "family": "high-orbit",
       "atlas": "suits/cinderforge/parts.png",
       "banks": {
-        "tap": [],
+        "tap": [
+          "suits/cinderforge-tap-1.png",
+          "suits/cinderforge-tap-2.png",
+          "suits/cinderforge-tap-3.png",
+          "suits/cinderforge-tap-4.png",
+          "suits/cinderforge-tap-5.png",
+          "suits/cinderforge-tap-6.png",
+          "suits/cinderforge-tap-7.png",
+          "suits/cinderforge-tap-8.png",
+          "suits/cinderforge-tap-9.png",
+          "suits/cinderforge-tap-10.png",
+          "suits/cinderforge-tap-11.png",
+          "suits/cinderforge-tap-12.png"
+        ],
         "asc": [],
-        "desc": [],
+        "desc": [
+          "suits/cinderforge-desc-1.png",
+          "suits/cinderforge-desc-2.png",
+          "suits/cinderforge-desc-3.png",
+          "suits/cinderforge-desc-4.png"
+        ],
         "loop": []
       },
       "hashes": {
-        "suits/cinderforge.png": "2d0b9b804520b4381423d2c4f63463f8704c999f1d0c95d693a34f1ad5fece7a",
+        "suits/cinderforge.png": "341e075b89e9469a759bd8b6a41c0d58012715027a7d014f4dc3d2fd2115a403",
+        "suits/cinderforge-tap-1.png": "341e075b89e9469a759bd8b6a41c0d58012715027a7d014f4dc3d2fd2115a403",
+        "suits/cinderforge-tap-2.png": "9d17ab5ed8e08144ee6cb1c1b13e76a38818044e6cb4bca026ac213ce7ac6619",
+        "suits/cinderforge-tap-3.png": "9dfbf49135e4da36ba700ba6923758f9eecc38f2e43181285f7126b8e064c824",
+        "suits/cinderforge-tap-4.png": "cd8abf88d5b4524f84473b1286f3dc9cf45a1851ebd4bd0d637f2b194fe69cfb",
+        "suits/cinderforge-tap-5.png": "1c9b977f178ba2d43e6f78156d778192432207774068ac11f6e33b40f5bc6095",
+        "suits/cinderforge-tap-6.png": "b1999e2c1479dd4bc3edadc73b617baa08b5da4b630199a2277bf6ae24dfa4a0",
+        "suits/cinderforge-tap-7.png": "8900745b645fcf0f1407a02a6b73c1db233f0a74502b01902feaa55597286726",
+        "suits/cinderforge-tap-8.png": "c086993f99d57771a9632cac46169b183892da580306cc2dd8d65a0e116b8827",
+        "suits/cinderforge-tap-9.png": "a5266b6f4b01686959da9626afb64f474b7cae863deaa9ccf09ddb1224217b63",
+        "suits/cinderforge-tap-10.png": "d929c5f960d3bbb73f57f8bd43a3722f85d69f960dea625d773e1fadd440a339",
+        "suits/cinderforge-tap-11.png": "16426394038e299a7132456c94bb1936137ed89e19626171ebd46b589503fb56",
+        "suits/cinderforge-tap-12.png": "2b674fc9f52ed771ad00b00193b8064bffcbbb9cde54953564c2abcb06952561",
+        "suits/cinderforge-desc-1.png": "341e075b89e9469a759bd8b6a41c0d58012715027a7d014f4dc3d2fd2115a403",
+        "suits/cinderforge-desc-2.png": "69d58305298ac1c82202f227f82ebdf939d82bd94d69b9540002b2aeea3ce3c3",
+        "suits/cinderforge-desc-3.png": "43fd6e1bdb159ea44a4bf039aa83f4df83b42ff12da064018e02cee440178a04",
+        "suits/cinderforge-desc-4.png": "8a5ab4471425bc111ff99d7a0f2cdc5243a0ab4e233274e763456c451bd057a4",
         "suits/cinderforge/parts.png": "2668a05d96928c0f7e39a13e52fc667eb3f5d7464441c7260daca2955935c8af"
       }
     },
@@ -1763,9 +1772,10 @@
       "key": "suit:groveguard",
       "file": "suits/groveguard.png",
       "dome": [
-        181,
-        92,
-        31.34
+        187.04,
+        110.31,
+        26.17,
+        1.73
       ],
       "box": null,
       "ownHead": false,
@@ -1774,25 +1784,60 @@
       "family": "high-orbit",
       "atlas": "suits/groveguard/parts.png",
       "banks": {
-        "tap": [],
+        "tap": [
+          "suits/groveguard-tap-1.png",
+          "suits/groveguard-tap-2.png",
+          "suits/groveguard-tap-3.png",
+          "suits/groveguard-tap-4.png",
+          "suits/groveguard-tap-5.png",
+          "suits/groveguard-tap-6.png",
+          "suits/groveguard-tap-7.png",
+          "suits/groveguard-tap-8.png",
+          "suits/groveguard-tap-9.png",
+          "suits/groveguard-tap-10.png",
+          "suits/groveguard-tap-11.png",
+          "suits/groveguard-tap-12.png"
+        ],
         "asc": [],
-        "desc": [],
+        "desc": [
+          "suits/groveguard-desc-1.png",
+          "suits/groveguard-desc-2.png",
+          "suits/groveguard-desc-3.png",
+          "suits/groveguard-desc-4.png"
+        ],
         "loop": []
       },
       "hashes": {
-        "suits/groveguard.png": "9b4f6c635f23a027f5605d3c9c259f89c8cf7a3fd39f2dc85d6a3aae85ddaab0",
+        "suits/groveguard.png": "1b28eeb29e6ab6c5d2de587eab4132fbf9a8d98c0e61581f153d4e05c9e0fbba",
+        "suits/groveguard-tap-1.png": "1b28eeb29e6ab6c5d2de587eab4132fbf9a8d98c0e61581f153d4e05c9e0fbba",
+        "suits/groveguard-tap-2.png": "f205c4236db734eb98745480f61c1edcd5a57f2359ca57678c66af1f2e3b0c8f",
+        "suits/groveguard-tap-3.png": "3fcfed64a6e73b3da8d01838524796452b0f2dadf7d8213dc69c4a6836b63afe",
+        "suits/groveguard-tap-4.png": "f6d551d3b69e9d5f65621faa1ea390f34aa7321324860af62d6bbcad89c995f6",
+        "suits/groveguard-tap-5.png": "32915f8c590297c002725c71013db0da8ce5e3e2c1747fe9bb025b9049276992",
+        "suits/groveguard-tap-6.png": "159eeb38a803f050e40824ce5405506d7881e816a4ad72eccaa9330822168541",
+        "suits/groveguard-tap-7.png": "d4aed379c121e47b23c781fef8634e2b11e7e49fedd9fcf752733bc59a1e44c1",
+        "suits/groveguard-tap-8.png": "1d082fcd15fef6ef7cb9070b429bcc77f52a24bf602e4353e094c2e3de1e2d38",
+        "suits/groveguard-tap-9.png": "c5144c876fbe084b184bf2d7e2ec6c93de0cbb6778e15a5aee94575c86eddd07",
+        "suits/groveguard-tap-10.png": "916a128df67d3cd0861fbc4bbc69c8c210aa2d4e1b00ee63efbc0eebbd1de366",
+        "suits/groveguard-tap-11.png": "facadc8a5076a942fd8093519c5de7e71bd9aac7684a1da1092e58374bfed771",
+        "suits/groveguard-tap-12.png": "5ead2afdb0712551bb8d6ce74056a8846676b22f38f27cb3e6450543c8204991",
+        "suits/groveguard-desc-1.png": "1b28eeb29e6ab6c5d2de587eab4132fbf9a8d98c0e61581f153d4e05c9e0fbba",
+        "suits/groveguard-desc-2.png": "d37f7a02d88539ad8e7790a24e360840b7e121e90a2f6a5e072af7a4bd237afd",
+        "suits/groveguard-desc-3.png": "c3abbadd17f2692869b441900fe27f5bd64c08494fcc13d6e4282cd1dbf93e53",
+        "suits/groveguard-desc-4.png": "7c168812174f4513a87e7994aad1adfd365f71085e9fc6575fe778fdb7fde7f2",
         "suits/groveguard/parts.png": "115fe0bd2d6ae0e8b73fce528badbc7ed8278c3f602580d45201b1b0c3dcddcc"
       }
     },
     {
       "id": "cosmic",
-      "name": "Cosmic",
+      "name": "Cupcake",
       "key": "suit:cosmic",
       "file": "suits/cosmic.png",
       "dome": [
-        182,
-        93,
-        32.61
+        184.32,
+        101.02,
+        35.29,
+        1.83
       ],
       "box": null,
       "ownHead": false,
@@ -1801,13 +1846,47 @@
       "family": "high-orbit",
       "atlas": "suits/cosmic/parts.png",
       "banks": {
-        "tap": [],
+        "tap": [
+          "suits/cosmic-tap-1.png",
+          "suits/cosmic-tap-2.png",
+          "suits/cosmic-tap-3.png",
+          "suits/cosmic-tap-4.png",
+          "suits/cosmic-tap-5.png",
+          "suits/cosmic-tap-6.png",
+          "suits/cosmic-tap-7.png",
+          "suits/cosmic-tap-8.png",
+          "suits/cosmic-tap-9.png",
+          "suits/cosmic-tap-10.png",
+          "suits/cosmic-tap-11.png",
+          "suits/cosmic-tap-12.png"
+        ],
         "asc": [],
-        "desc": [],
+        "desc": [
+          "suits/cosmic-desc-1.png",
+          "suits/cosmic-desc-2.png",
+          "suits/cosmic-desc-3.png",
+          "suits/cosmic-desc-4.png"
+        ],
         "loop": []
       },
       "hashes": {
-        "suits/cosmic.png": "8896e54bcdb971769c887123119873b076bccbcf140a9bcd9f06ece6c5b417ec",
+        "suits/cosmic.png": "508baf17d446b16d8e57ad10c4a175f6a64f164c1ba724757a80a13999b702ff",
+        "suits/cosmic-tap-1.png": "508baf17d446b16d8e57ad10c4a175f6a64f164c1ba724757a80a13999b702ff",
+        "suits/cosmic-tap-2.png": "e5411a10df16afdcbdef14adddabbc908bda59d268df8170882b421d31be1a6e",
+        "suits/cosmic-tap-3.png": "3e5242fdabf61092ae7cb30ff5c6d5b519860180172debca8be17957c4104543",
+        "suits/cosmic-tap-4.png": "ac94a7373cc03fb35367743589c853e344cd67f9fde0847b51d2151908890328",
+        "suits/cosmic-tap-5.png": "5c7b4f3eca9e165f7fc3d70017414474c51fe0b742aefe3c744b34ef8550835c",
+        "suits/cosmic-tap-6.png": "7b9def89d3db50b4076c1d8be285f339b692af3698fa2c3eedb9486d4cc4433a",
+        "suits/cosmic-tap-7.png": "b5b78897e485906dcb63e9c5841cdbb35b11ffb89a9e2869990d53d9b8b6f28f",
+        "suits/cosmic-tap-8.png": "b969eb398dc98a72e8d2e8b2343b53d03026c4ff5604df337d387edb04210034",
+        "suits/cosmic-tap-9.png": "3776d020ca5cbaaa4a51ace908805adeaea2752cf1dd1a31e6a526b3190b6f34",
+        "suits/cosmic-tap-10.png": "763df9f250ed3d131c4bd108fd02ceb91222ed098826300cd2a57191018e4190",
+        "suits/cosmic-tap-11.png": "8a930dc66107e4fcb62ae4397a588fd3229dbf24b6c8d87f8f7479b357e14a68",
+        "suits/cosmic-tap-12.png": "889e28e625bf2594652e37581f077bc9ae5423f12e85023939115463275eaefe",
+        "suits/cosmic-desc-1.png": "508baf17d446b16d8e57ad10c4a175f6a64f164c1ba724757a80a13999b702ff",
+        "suits/cosmic-desc-2.png": "5399c936527e62ac5748e23c40fde1d247d41e0d883b648fc2d673845eae75c8",
+        "suits/cosmic-desc-3.png": "8c7ba7cbbc08cbee0ae83c429d3453684e1954225a0b9d92b3d96770c3485776",
+        "suits/cosmic-desc-4.png": "a1783826f7c0cb108a874a3c310c0e09c6893b078be0063cc6f389abf2adb447",
         "suits/cosmic/parts.png": "06a2cdf2d3a63ff1df2b5f82a2f360a62e79520f7083a2c89799abc65f0c9a13"
       }
     },
@@ -1867,9 +1946,10 @@
       "key": "suit:sunforged",
       "file": "suits/sunforged.png",
       "dome": [
-        184,
-        92,
-        31.34
+        184.69,
+        105.65,
+        33.8,
+        1.79
       ],
       "box": null,
       "ownHead": false,
@@ -1878,13 +1958,47 @@
       "family": "high-orbit",
       "atlas": "suits/sunforged/parts.png",
       "banks": {
-        "tap": [],
+        "tap": [
+          "suits/sunforged-tap-1.png",
+          "suits/sunforged-tap-2.png",
+          "suits/sunforged-tap-3.png",
+          "suits/sunforged-tap-4.png",
+          "suits/sunforged-tap-5.png",
+          "suits/sunforged-tap-6.png",
+          "suits/sunforged-tap-7.png",
+          "suits/sunforged-tap-8.png",
+          "suits/sunforged-tap-9.png",
+          "suits/sunforged-tap-10.png",
+          "suits/sunforged-tap-11.png",
+          "suits/sunforged-tap-12.png"
+        ],
         "asc": [],
-        "desc": [],
+        "desc": [
+          "suits/sunforged-desc-1.png",
+          "suits/sunforged-desc-2.png",
+          "suits/sunforged-desc-3.png",
+          "suits/sunforged-desc-4.png"
+        ],
         "loop": []
       },
       "hashes": {
-        "suits/sunforged.png": "4b6dbeb1bd0911c3a59c00f8d201dda2ca4a9cdaa0cfeac1e9ffa36c4215aaa9",
+        "suits/sunforged.png": "3e39340983572f7f8d3a8b00688be131b7db8f4221d08b262245468f61ab27b0",
+        "suits/sunforged-tap-1.png": "3e39340983572f7f8d3a8b00688be131b7db8f4221d08b262245468f61ab27b0",
+        "suits/sunforged-tap-2.png": "68b62d1a5479379e69cab2a6dbf71a8050dd58dc77e3b1082b569ebd86530a37",
+        "suits/sunforged-tap-3.png": "1642a96b71a18e7deafdd0ad4f66e8923444b05bfdee194ad27386fb7b628d56",
+        "suits/sunforged-tap-4.png": "11788617870c586d82ea9dd992c154bd96239adafc920f51f3033bbd55b3f0c8",
+        "suits/sunforged-tap-5.png": "23ad1938bdbce7aa7b84f378e018f3fb679e9d8a19d99c61d2f5aa8e29b9e66d",
+        "suits/sunforged-tap-6.png": "f9e578b2a86f6575d2e04ea8258864d4a2b7bd3448a9e1f0b3a5080b03dce6d0",
+        "suits/sunforged-tap-7.png": "1b66f04cb2d588944449b110c62238f2217906c55acfa70a20df5f2d5e76a2e0",
+        "suits/sunforged-tap-8.png": "9c514c8ee88007cce9dbb2edf14dac679ae178686eabba64a8b93b5f13fb7f38",
+        "suits/sunforged-tap-9.png": "f40173f21dc48ce200defe731b39245fa031c7fc0319fd6eac7c9f5a785cd9c7",
+        "suits/sunforged-tap-10.png": "3bae32b4fb3be3f59b2654da6460fb34306c21b6335a9131272efd38f39605e8",
+        "suits/sunforged-tap-11.png": "4d440ebc00c9d2031e2dec1980487bf588cfd138383460e2693f45d2041dcde2",
+        "suits/sunforged-tap-12.png": "3e78702b2c6afd243dbe019c1fe99662126860e2498c57844d65a1fab1853907",
+        "suits/sunforged-desc-1.png": "3e39340983572f7f8d3a8b00688be131b7db8f4221d08b262245468f61ab27b0",
+        "suits/sunforged-desc-2.png": "3510a8f0593664d5103146a46bced0e23e8ae5183f3d8409db73e36f530d8885",
+        "suits/sunforged-desc-3.png": "c2f85c1fb9dfa2d5b04d66295f19aff482a867311d595d8d3e26fb2d099b2c05",
+        "suits/sunforged-desc-4.png": "993778ed06dee80c892189baeae496628505589ca2acfefb5a0cfc8bbe04fe8c",
         "suits/sunforged/parts.png": "f68a8b9d56fbd4c8b48f65f782653cd8ba7039a80e3a88217c30e3566edbe2a1"
       }
     },
@@ -1894,9 +2008,10 @@
       "key": "suit:abyssal",
       "file": "suits/abyssal.png",
       "dome": [
-        182,
-        90,
-        30.12
+        184.85,
+        114.5,
+        25.88,
+        1.82
       ],
       "box": null,
       "ownHead": false,
@@ -1905,74 +2020,48 @@
       "family": "high-orbit",
       "atlas": "suits/abyssal/parts.png",
       "banks": {
-        "tap": [],
-        "asc": [],
-        "desc": [],
-        "loop": []
-      },
-      "hashes": {
-        "suits/abyssal.png": "58bd24ac7c7011931f1687a0f33fe9b0309ba9e998b64332439f56ab3f8a4bd1",
-        "suits/abyssal/parts.png": "f2873b1423261c431d0bb87168056a2c0adf117428bc2d3cf4ca75807cf1eb99"
-      }
-    },
-    {
-      "id": "cupcake",
-      "name": "Cupcake",
-      "key": "suit:cupcake",
-      "file": "suits/cupcake.png",
-      "dome": [
-        128,
-        128,
-        40
-      ],
-      "box": null,
-      "ownHead": true,
-      "bakedDome": false,
-      "frame": false,
-      "family": "bank",
-      "atlas": null,
-      "banks": {
         "tap": [
-          "suits/cupcake-tap-1.png",
-          "suits/cupcake-tap-2.png",
-          "suits/cupcake-tap-3.png",
-          "suits/cupcake-tap-4.png",
-          "suits/cupcake-tap-5.png",
-          "suits/cupcake-tap-6.png",
-          "suits/cupcake-tap-7.png",
-          "suits/cupcake-tap-8.png",
-          "suits/cupcake-tap-9.png",
-          "suits/cupcake-tap-10.png",
-          "suits/cupcake-tap-11.png",
-          "suits/cupcake-tap-12.png"
+          "suits/abyssal-tap-1.png",
+          "suits/abyssal-tap-2.png",
+          "suits/abyssal-tap-3.png",
+          "suits/abyssal-tap-4.png",
+          "suits/abyssal-tap-5.png",
+          "suits/abyssal-tap-6.png",
+          "suits/abyssal-tap-7.png",
+          "suits/abyssal-tap-8.png",
+          "suits/abyssal-tap-9.png",
+          "suits/abyssal-tap-10.png",
+          "suits/abyssal-tap-11.png",
+          "suits/abyssal-tap-12.png"
         ],
         "asc": [],
         "desc": [
-          "suits/cupcake-desc-1.png",
-          "suits/cupcake-desc-2.png",
-          "suits/cupcake-desc-3.png",
-          "suits/cupcake-desc-4.png"
+          "suits/abyssal-desc-1.png",
+          "suits/abyssal-desc-2.png",
+          "suits/abyssal-desc-3.png",
+          "suits/abyssal-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/cupcake.png": "89372215d3179a0dc2297398279f595602b1762eba432abdf7d82f9e3dca77bb",
-        "suits/cupcake-tap-1.png": "89372215d3179a0dc2297398279f595602b1762eba432abdf7d82f9e3dca77bb",
-        "suits/cupcake-tap-2.png": "a60cd255da3055883d15c86c65b688f2bf7545018a3ae3f2631135d9761a6c45",
-        "suits/cupcake-tap-3.png": "650dc895ca41429ec4a36c7417d8d203148737e0acf052e13c4e3c5853ea8c55",
-        "suits/cupcake-tap-4.png": "0386d6de42d68486c5dd36d5cb807ecc16a45535c3d715e3bea0e6e7d180c452",
-        "suits/cupcake-tap-5.png": "3252d0d0009a535bdcbe2ba0162ecd17a8cc58ba5c8a7e1d9b8ef6d50a025ffd",
-        "suits/cupcake-tap-6.png": "da2833765a2ace04ccffec20a3cbbed7c4c5477e3bba11d973a8adec2c1dd10c",
-        "suits/cupcake-tap-7.png": "c6011f5ab4696e4da585ccf78361861a4924802eace42776c3edf936b59523f8",
-        "suits/cupcake-tap-8.png": "c6a3d742e78fd351519c70b2a9a27c4e91237ab4ae868995563e38717d65fe88",
-        "suits/cupcake-tap-9.png": "3971f9b10c0776405b813167ee03166f7a320ceade83c831c88294df3a46402a",
-        "suits/cupcake-tap-10.png": "f93bafbac277554ef21304862e7246d468cb14e04a8391a3b6e4a7ac114c2747",
-        "suits/cupcake-tap-11.png": "898fb465600e6563868cf043d251901759e7632d4901bd7fd778a0fd1f2cf7af",
-        "suits/cupcake-tap-12.png": "f38065249656d71db40659568d45209f8d7b2abb7f1be5b181b746692487e00b",
-        "suits/cupcake-desc-1.png": "89372215d3179a0dc2297398279f595602b1762eba432abdf7d82f9e3dca77bb",
-        "suits/cupcake-desc-2.png": "521bae3b3c54d0ad53faa4392be4018688b61bd0ef4fb98768225e337441134d",
-        "suits/cupcake-desc-3.png": "b05ab0a3c60953eb09dd7f5729a0e2196c8601f39cdd747c2d598ba3f15b5529",
-        "suits/cupcake-desc-4.png": "04b12f64f1087c460be0020a0199ad5f1a3ceb6c2a6eda6b305590b42ba5ea68"
+        "suits/abyssal.png": "8d7587adf82a854a5dce94506ab1ef6e8b710d794f4cce734ef8c8de816df7a2",
+        "suits/abyssal-tap-1.png": "8d7587adf82a854a5dce94506ab1ef6e8b710d794f4cce734ef8c8de816df7a2",
+        "suits/abyssal-tap-2.png": "bb5e10e847e45cbf4432d8c78c83f607af88f299fc9f27cbe87726941ec1f527",
+        "suits/abyssal-tap-3.png": "baa4b865e3ea3b27960539a22b43ba048f57abf44f90836a2af29b119f5b0258",
+        "suits/abyssal-tap-4.png": "cf8f43aec2629a43f7c63456bad9e458d0f3b16e159f7848e19939da081f0885",
+        "suits/abyssal-tap-5.png": "000103701b6430b93bf9cdf9e13760bfed0b4e0de453ae1d919d93743a97b6bf",
+        "suits/abyssal-tap-6.png": "de0fcc47a6b183044a807da51aa9432f1d9861b9ca5bddcb479448a8062a5757",
+        "suits/abyssal-tap-7.png": "9388f51925ebadcfd216a6e559cf61741a687e48fe64909296a134741d8bb2cc",
+        "suits/abyssal-tap-8.png": "557c569383a06997f1bcedba359a2fb17c0d2de5e45e22e60c73c1233ff4ac52",
+        "suits/abyssal-tap-9.png": "33379832b23d635bc3977be9b40e874b677d51327e63425f43da86ecd58ed3b9",
+        "suits/abyssal-tap-10.png": "ad49c9bc1116e11d6cd577b5efc04a624f3a84ee43f1bc41d4500cdbfc32a4de",
+        "suits/abyssal-tap-11.png": "6561a9cf71b60a5961dc4fc707309d550f37a8b4522abfc67baf68d3eba70620",
+        "suits/abyssal-tap-12.png": "9fdfd2060f890ab13fdbbc14f2263af55df2f37b4a157814cdf828312581a71b",
+        "suits/abyssal-desc-1.png": "8d7587adf82a854a5dce94506ab1ef6e8b710d794f4cce734ef8c8de816df7a2",
+        "suits/abyssal-desc-2.png": "640e877854c6555f4571909df0e5ac2d11fbe46ac3166fdef69371908065dcc5",
+        "suits/abyssal-desc-3.png": "40a389b0f5f07259b386f4a32499d0b445a96ca7cb11ebdd9c5cae8bedfc8ba4",
+        "suits/abyssal-desc-4.png": "6d3fd4a45337fb21bb25d2e13decea82dd6e2c91740d675b26257580bc0410d6",
+        "suits/abyssal/parts.png": "f2873b1423261c431d0bb87168056a2c0adf117428bc2d3cf4ca75807cf1eb99"
       }
     },
     {
@@ -2601,10 +2690,10 @@
       35
     ],
     "suit:iontrim": [
-      206,
-      109,
-      28.95,
-      6
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "suit:copper": [
       207,
@@ -2618,16 +2707,16 @@
       30.73
     ],
     "suit:voidsuit": [
-      206,
-      106,
-      29.53,
-      3
+      182.69,
+      112.11,
+      27.72,
+      1.82
     ],
     "suit:ember": [
-      208,
-      106,
-      33.26,
-      0
+      183.97,
+      101.49,
+      38.88,
+      1.83
     ],
     "suit:robo": [
       184,
@@ -2673,16 +2762,16 @@
       40
     ],
     "suit:gemmie": [
-      211,
-      107,
-      28.39,
-      1
+      183.43,
+      99.44,
+      36.18,
+      1.82
     ],
     "suit:sammie": [
-      208,
-      106,
-      28.95,
-      3
+      185.89,
+      114.58,
+      26.09,
+      1.83
     ],
     "suit:seraph": [
       205,
@@ -2720,20 +2809,22 @@
       40
     ],
     "suit:cinderforge": [
-      187.73,
-      92.62,
-      31.34,
-      3
+      185.02,
+      106.88,
+      33.97,
+      1.8
     ],
     "suit:groveguard": [
-      181,
-      92,
-      31.34
+      187.04,
+      110.31,
+      26.17,
+      1.73
     ],
     "suit:cosmic": [
-      182,
-      93,
-      32.61
+      184.32,
+      101.02,
+      35.29,
+      1.83
     ],
     "suit:briellacat": [
       128,
@@ -2741,120 +2832,117 @@
       40
     ],
     "suit:sunforged": [
-      184,
-      92,
-      31.34
+      184.69,
+      105.65,
+      33.8,
+      1.79
     ],
     "suit:abyssal": [
-      182,
-      90,
-      30.12
-    ],
-    "suit:cupcake": [
-      128,
-      128,
-      40
+      184.85,
+      114.5,
+      25.88,
+      1.82
     ],
     "suit:cyber": [
       128,
       128,
       40
     ],
-    "abyssal-asc-1": [
-      178.29,
-      105.5,
-      30.8,
-      7.22
-    ],
-    "abyssal-asc-2": [
-      175.89,
-      101.65,
-      30.8,
-      7.36
-    ],
-    "abyssal-asc-3": [
-      173.22,
-      97.98,
-      30.8,
-      4.34
-    ],
-    "abyssal-asc-4": [
-      170.3,
-      94.51,
-      30.8,
-      7.77
-    ],
-    "abyssal-asc-5": [
-      167.15,
-      91.24,
-      30.8,
-      0.16
-    ],
-    "abyssal-asc-6": [
-      163.78,
-      88.21,
-      30.8,
-      -6.79
-    ],
-    "abyssal-asc-7": [
-      160.21,
-      85.41,
-      30.8,
-      -11.57
-    ],
-    "abyssal-asc-8": [
-      156.44,
-      82.88,
-      30.8,
-      -8.27
-    ],
     "abyssal-desc-1": [
-      178.29,
-      105.5,
-      30.8,
-      7.22
+      184.85,
+      114.5,
+      25.88,
+      1.82
     ],
     "abyssal-desc-2": [
-      182.68,
-      114.71,
-      30.8,
-      16.16
+      184.52,
+      127.1,
+      25.88,
+      15.57
     ],
     "abyssal-desc-3": [
-      185.58,
-      124.49,
-      30.8,
-      27.23
+      182.65,
+      139.3,
+      25.88,
+      28.78
     ],
     "abyssal-desc-4": [
-      186.91,
-      134.6,
-      30.8,
-      37.23
+      178.01,
+      150.6,
+      25.88,
+      41.24
     ],
-    "abyssal-desc-5": [
-      186.64,
-      144.79,
-      30.8,
-      43.71
+    "abyssal-tap-1": [
+      184.85,
+      114.5,
+      25.88,
+      1.82
     ],
-    "abyssal-desc-6": [
-      184.79,
-      154.82,
-      30.8,
-      47.05
+    "abyssal-tap-2": [
+      184.07,
+      111.63,
+      25.88,
+      -1.87
     ],
-    "abyssal-desc-7": [
-      181.38,
-      164.44,
-      30.8,
-      61.64
+    "abyssal-tap-3": [
+      183.48,
+      110.17,
+      25.88,
+      -4.22
     ],
-    "abyssal-desc-8": [
-      176.51,
-      173.4,
-      30.8,
-      70.44
+    "abyssal-tap-4": [
+      183.34,
+      110.43,
+      25.88,
+      -4.6
+    ],
+    "abyssal-tap-5": [
+      183.65,
+      112.35,
+      25.88,
+      -2.91
+    ],
+    "abyssal-tap-6": [
+      184.23,
+      115.44,
+      25.88,
+      0.4
+    ],
+    "abyssal-tap-7": [
+      184.74,
+      118.94,
+      25.88,
+      4.43
+    ],
+    "abyssal-tap-8": [
+      185.08,
+      121.89,
+      25.88,
+      8.09
+    ],
+    "abyssal-tap-9": [
+      185.28,
+      123.48,
+      25.88,
+      10.41
+    ],
+    "abyssal-tap-10": [
+      185.48,
+      123.26,
+      25.88,
+      10.78
+    ],
+    "abyssal-tap-11": [
+      185.58,
+      121.28,
+      25.88,
+      9.12
+    ],
+    "abyssal-tap-12": [
+      185.42,
+      118.06,
+      25.88,
+      5.84
     ],
     "bigbooty-tap-1": [
       207,
@@ -2952,101 +3040,101 @@
       29.71,
       10
     ],
-    "cinderforge-asc-1": [
-      178.29,
-      105.5,
-      30.8,
-      13.45
-    ],
-    "cinderforge-asc-2": [
-      175.89,
-      101.65,
-      30.8,
-      12.32
-    ],
-    "cinderforge-asc-3": [
-      173.22,
-      97.98,
-      30.8,
-      16.51
-    ],
-    "cinderforge-asc-4": [
-      170.3,
-      94.51,
-      30.8,
-      17.33
-    ],
-    "cinderforge-asc-5": [
-      167.15,
-      91.24,
-      30.8,
-      1.61
-    ],
-    "cinderforge-asc-6": [
-      163.78,
-      88.21,
-      30.8,
-      9.49
-    ],
-    "cinderforge-asc-7": [
-      160.21,
-      85.41,
-      30.8,
-      4.87
-    ],
-    "cinderforge-asc-8": [
-      156.44,
-      82.88,
-      30.8,
-      17.28
-    ],
     "cinderforge-desc-1": [
-      178.29,
-      105.5,
-      30.8,
-      13.45
+      185.02,
+      106.88,
+      33.97,
+      1.8
     ],
     "cinderforge-desc-2": [
-      182.68,
-      114.71,
-      30.8,
-      10.81
+      188.8,
+      119.63,
+      33.97,
+      15.51
     ],
     "cinderforge-desc-3": [
-      185.58,
-      124.49,
-      30.8,
-      3.92
+      189.89,
+      132.77,
+      33.97,
+      28.69
     ],
     "cinderforge-desc-4": [
+      188.62,
+      146.22,
+      33.97,
+      41.14
+    ],
+    "cinderforge-tap-1": [
+      185.02,
+      106.88,
+      33.97,
+      1.8
+    ],
+    "cinderforge-tap-2": [
+      183.7,
+      104.15,
+      33.97,
+      -1.88
+    ],
+    "cinderforge-tap-3": [
+      182.9,
+      102.97,
+      33.97,
+      -4.22
+    ],
+    "cinderforge-tap-4": [
+      182.69,
+      103.4,
+      33.97,
+      -4.6
+    ],
+    "cinderforge-tap-5": [
+      183.1,
+      105.19,
+      33.97,
+      -2.91
+    ],
+    "cinderforge-tap-6": [
+      183.85,
+      108.2,
+      33.97,
+      0.39
+    ],
+    "cinderforge-tap-7": [
+      185.68,
+      111.58,
+      33.97,
+      4.41
+    ],
+    "cinderforge-tap-8": [
+      187.28,
+      114.16,
+      33.97,
+      8.05
+    ],
+    "cinderforge-tap-9": [
+      188.33,
+      115.42,
+      33.97,
+      10.36
+    ],
+    "cinderforge-tap-10": [
+      188.68,
+      115.06,
+      33.97,
+      10.73
+    ],
+    "cinderforge-tap-11": [
+      188.21,
+      113.11,
+      33.97,
+      9.07
+    ],
+    "cinderforge-tap-12": [
       186.91,
-      134.6,
-      30.8,
-      7.56
-    ],
-    "cinderforge-desc-5": [
-      186.64,
-      144.79,
-      30.8,
-      36.98
-    ],
-    "cinderforge-desc-6": [
-      184.79,
-      154.82,
-      30.8,
-      36.08
-    ],
-    "cinderforge-desc-7": [
-      181.38,
-      164.44,
-      30.8,
-      41.04
-    ],
-    "cinderforge-desc-8": [
-      176.51,
-      173.4,
-      30.8,
-      43.9
+      110.17,
+      33.97,
+      5.81
     ],
     "copper-asc-1": [
       207,
@@ -3144,101 +3232,101 @@
       31.97,
       3
     ],
-    "cosmic-asc-1": [
-      178.29,
-      105.5,
-      30.8,
-      11.19
-    ],
-    "cosmic-asc-2": [
-      175.89,
-      101.65,
-      30.8,
-      5.83
-    ],
-    "cosmic-asc-3": [
-      173.22,
-      97.98,
-      30.8,
-      8.42
-    ],
-    "cosmic-asc-4": [
-      170.3,
-      94.51,
-      30.8,
-      21.33
-    ],
-    "cosmic-asc-5": [
-      167.15,
-      91.24,
-      30.8,
-      0.84
-    ],
-    "cosmic-asc-6": [
-      163.78,
-      88.21,
-      30.8,
-      -4.27
-    ],
-    "cosmic-asc-7": [
-      160.21,
-      85.41,
-      30.8,
-      4.56
-    ],
-    "cosmic-asc-8": [
-      156.44,
-      82.88,
-      30.8,
-      13.32
-    ],
     "cosmic-desc-1": [
-      178.29,
-      105.5,
-      30.8,
-      11.19
+      184.32,
+      101.02,
+      35.29,
+      1.83
     ],
     "cosmic-desc-2": [
-      182.68,
-      114.71,
-      30.8,
-      27.3
+      189.28,
+      113.87,
+      35.29,
+      15.58
     ],
     "cosmic-desc-3": [
-      185.58,
-      124.49,
-      30.8,
-      22.96
+      191.36,
+      128.37,
+      35.29,
+      28.79
     ],
     "cosmic-desc-4": [
-      186.91,
-      134.6,
-      30.8,
-      11.65
+      190.6,
+      142.66,
+      35.29,
+      41.25
     ],
-    "cosmic-desc-5": [
-      186.64,
-      144.79,
-      30.8,
-      29.25
+    "cosmic-tap-1": [
+      184.32,
+      101.02,
+      35.29,
+      1.83
     ],
-    "cosmic-desc-6": [
-      184.79,
-      154.82,
-      30.8,
-      29.96
+    "cosmic-tap-2": [
+      183.15,
+      98.55,
+      35.29,
+      -1.85
     ],
-    "cosmic-desc-7": [
-      181.38,
-      164.44,
-      30.8,
-      33.78
+    "cosmic-tap-3": [
+      182.31,
+      97.42,
+      35.29,
+      -4.21
     ],
-    "cosmic-desc-8": [
-      176.51,
-      173.4,
-      30.8,
-      34.1
+    "cosmic-tap-4": [
+      182.1,
+      97.75,
+      35.29,
+      -4.59
+    ],
+    "cosmic-tap-5": [
+      182.57,
+      99.46,
+      35.29,
+      -2.89
+    ],
+    "cosmic-tap-6": [
+      183.44,
+      102.21,
+      35.29,
+      0.42
+    ],
+    "cosmic-tap-7": [
+      184.99,
+      105.39,
+      35.29,
+      4.45
+    ],
+    "cosmic-tap-8": [
+      187.08,
+      108.2,
+      35.29,
+      8.11
+    ],
+    "cosmic-tap-9": [
+      188.42,
+      109.75,
+      35.29,
+      10.42
+    ],
+    "cosmic-tap-10": [
+      188.8,
+      109.48,
+      35.29,
+      10.8
+    ],
+    "cosmic-tap-11": [
+      188.13,
+      107.45,
+      35.29,
+      9.13
+    ],
+    "cosmic-tap-12": [
+      186.43,
+      104.3,
+      35.29,
+      5.85
     ],
     "cryostar-asc-1": [
       190,
@@ -3528,101 +3616,101 @@
       42.4,
       -5
     ],
-    "ember-asc-1": [
-      208,
-      106,
-      33.26,
-      0
-    ],
-    "ember-asc-2": [
-      208,
-      105.3,
-      33.26,
-      -5
-    ],
-    "ember-asc-3": [
-      208,
-      104.5,
-      33.26,
-      -5
-    ],
-    "ember-asc-4": [
-      208,
-      103.6,
-      33.26,
-      -5
-    ],
-    "ember-asc-5": [
-      208,
-      102.5,
-      33.26,
-      -5
-    ],
-    "ember-asc-6": [
-      208,
-      101.3,
-      33.26,
-      -10
-    ],
-    "ember-asc-7": [
-      208,
-      100,
-      33.26,
-      -5
-    ],
-    "ember-asc-8": [
-      208,
-      99,
-      33.26,
-      -10
-    ],
     "ember-desc-1": [
-      208,
-      106,
-      33.26,
-      0
+      183.97,
+      101.49,
+      38.88,
+      1.83
     ],
     "ember-desc-2": [
-      208,
-      106.8,
-      33.26,
-      -5
+      184.95,
+      115.48,
+      38.88,
+      15.54
     ],
     "ember-desc-3": [
-      208,
-      107.8,
-      33.26,
-      0
+      184.68,
+      129.78,
+      38.88,
+      28.72
     ],
     "ember-desc-4": [
-      208,
-      109,
-      33.26,
-      0
+      181.15,
+      142.71,
+      38.88,
+      41.18
     ],
-    "ember-desc-5": [
-      208,
-      110.2,
-      33.26,
-      0
+    "ember-tap-1": [
+      183.97,
+      101.49,
+      38.88,
+      1.83
     ],
-    "ember-desc-6": [
-      208,
-      111.6,
-      33.26,
-      0
+    "ember-tap-2": [
+      182.77,
+      98.45,
+      38.88,
+      -1.85
     ],
-    "ember-desc-7": [
-      208,
-      113,
-      33.26,
-      5
+    "ember-tap-3": [
+      181.94,
+      96.94,
+      38.88,
+      -4.19
     ],
-    "ember-desc-8": [
-      208,
-      114,
-      33.26,
-      5
+    "ember-tap-4": [
+      181.82,
+      97.21,
+      38.88,
+      -4.57
+    ],
+    "ember-tap-5": [
+      182.4,
+      99.17,
+      38.88,
+      -2.88
+    ],
+    "ember-tap-6": [
+      183.41,
+      102.43,
+      38.88,
+      0.42
+    ],
+    "ember-tap-7": [
+      184.43,
+      106.21,
+      38.88,
+      4.44
+    ],
+    "ember-tap-8": [
+      185.21,
+      109.5,
+      38.88,
+      8.08
+    ],
+    "ember-tap-9": [
+      185.7,
+      111.34,
+      38.88,
+      10.39
+    ],
+    "ember-tap-10": [
+      185.89,
+      111.13,
+      38.88,
+      10.77
+    ],
+    "ember-tap-11": [
+      185.7,
+      108.89,
+      38.88,
+      9.1
+    ],
+    "ember-tap-12": [
+      185.04,
+      105.32,
+      38.88,
+      5.84
     ],
     "flight-asc-1": [
       175.1,
@@ -3753,101 +3841,101 @@
       114,
       30.73
     ],
-    "gemmie-asc-1": [
-      211,
-      107,
-      28.39,
-      1
-    ],
-    "gemmie-asc-2": [
-      211,
-      106.3,
-      28.39,
-      1
-    ],
-    "gemmie-asc-3": [
-      211,
-      105.5,
-      28.39,
-      1
-    ],
-    "gemmie-asc-4": [
-      211,
-      104.6,
-      28.39,
-      1
-    ],
-    "gemmie-asc-5": [
-      211,
-      103.5,
-      28.39,
-      1
-    ],
-    "gemmie-asc-6": [
-      211,
-      102.3,
-      28.39,
-      -1
-    ],
-    "gemmie-asc-7": [
-      211,
-      101,
-      28.39,
-      -4
-    ],
-    "gemmie-asc-8": [
-      210,
-      100,
-      28.39,
-      -11
-    ],
     "gemmie-desc-1": [
-      211,
-      108,
-      27.83,
-      1
+      183.43,
+      99.44,
+      36.18,
+      1.82
     ],
     "gemmie-desc-2": [
-      211,
-      108.8,
-      27.83,
-      1
+      188.66,
+      113.27,
+      36.18,
+      15.55
     ],
     "gemmie-desc-3": [
-      211,
-      108.8,
-      28.39,
-      1
+      190.83,
+      128.76,
+      36.18,
+      28.74
     ],
     "gemmie-desc-4": [
-      211,
-      110,
-      28.39,
-      6
+      189.93,
+      144.01,
+      36.18,
+      41.19
     ],
-    "gemmie-desc-5": [
-      211,
-      111.2,
-      28.39,
-      6
+    "gemmie-tap-1": [
+      183.43,
+      99.44,
+      36.18,
+      1.82
     ],
-    "gemmie-desc-6": [
-      211,
-      112.6,
-      28.39,
-      6
+    "gemmie-tap-2": [
+      182.35,
+      96.36,
+      36.18,
+      -1.86
     ],
-    "gemmie-desc-7": [
-      211,
-      114,
-      28.39,
-      6
+    "gemmie-tap-3": [
+      181.61,
+      94.53,
+      36.18,
+      -4.21
     ],
-    "gemmie-desc-8": [
-      211,
-      115,
-      28.39,
-      6
+    "gemmie-tap-4": [
+      181.5,
+      94.73,
+      36.18,
+      -4.59
+    ],
+    "gemmie-tap-5": [
+      182.03,
+      97.04,
+      36.18,
+      -2.9
+    ],
+    "gemmie-tap-6": [
+      182.94,
+      100.59,
+      36.18,
+      0.41
+    ],
+    "gemmie-tap-7": [
+      184.34,
+      104.23,
+      36.18,
+      4.43
+    ],
+    "gemmie-tap-8": [
+      186.4,
+      107,
+      36.18,
+      8.08
+    ],
+    "gemmie-tap-9": [
+      187.72,
+      108.35,
+      36.18,
+      10.39
+    ],
+    "gemmie-tap-10": [
+      188.03,
+      108.09,
+      36.18,
+      10.77
+    ],
+    "gemmie-tap-11": [
+      187.21,
+      105.92,
+      36.18,
+      9.1
+    ],
+    "gemmie-tap-12": [
+      185.38,
+      102.92,
+      36.18,
+      5.83
     ],
     "ghost-asc-1": [
       208,
@@ -3945,197 +4033,197 @@
       30.73,
       5
     ],
-    "groveguard-asc-1": [
-      178.29,
-      105.5,
-      30.8,
-      17.37
-    ],
-    "groveguard-asc-2": [
-      175.89,
-      101.65,
-      30.8,
-      31.35
-    ],
-    "groveguard-asc-3": [
-      173.22,
-      97.98,
-      30.8,
-      5.28
-    ],
-    "groveguard-asc-4": [
-      170.3,
-      94.51,
-      30.8,
-      13.06
-    ],
-    "groveguard-asc-5": [
-      167.15,
-      91.24,
-      30.8,
-      -0.69
-    ],
-    "groveguard-asc-6": [
-      163.78,
-      88.21,
-      30.8,
-      -8.76
-    ],
-    "groveguard-asc-7": [
-      160.21,
-      85.41,
-      30.8,
-      -22.61
-    ],
-    "groveguard-asc-8": [
-      156.44,
-      82.88,
-      30.8,
-      -14.15
-    ],
     "groveguard-desc-1": [
-      178.29,
-      105.5,
-      30.8,
-      17.37
+      187.04,
+      110.31,
+      26.17,
+      1.73
     ],
     "groveguard-desc-2": [
-      182.68,
-      114.71,
-      30.8,
-      7.93
+      187.89,
+      120.87,
+      26.17,
+      15.42
     ],
     "groveguard-desc-3": [
-      185.58,
-      124.49,
-      30.8,
-      -7.72
+      186.57,
+      132.56,
+      26.17,
+      28.58
     ],
     "groveguard-desc-4": [
-      186.91,
-      134.6,
-      30.8,
-      -2.75
+      183.01,
+      144.6,
+      26.17,
+      41.04
     ],
-    "groveguard-desc-5": [
-      186.64,
-      144.79,
-      30.8,
-      24.89
+    "groveguard-tap-1": [
+      187.04,
+      110.31,
+      26.17,
+      1.73
     ],
-    "groveguard-desc-6": [
-      184.79,
-      154.82,
-      30.8,
-      28.98
+    "groveguard-tap-2": [
+      185.86,
+      108.17,
+      26.17,
+      -1.93
     ],
-    "groveguard-desc-7": [
-      181.38,
-      164.44,
-      30.8,
-      35.05
+    "groveguard-tap-3": [
+      185.03,
+      107.18,
+      26.17,
+      -4.27
     ],
-    "groveguard-desc-8": [
-      176.51,
-      173.4,
-      30.8,
-      49.26
+    "groveguard-tap-4": [
+      184.88,
+      107.51,
+      26.17,
+      -4.65
     ],
-    "iontrim-asc-1": [
-      206,
-      109,
-      28.95,
-      6
+    "groveguard-tap-5": [
+      185.42,
+      109.06,
+      26.17,
+      -2.96
     ],
-    "iontrim-asc-2": [
-      206,
-      108.3,
-      28.95,
-      6
+    "groveguard-tap-6": [
+      186.36,
+      111.5,
+      26.17,
+      0.33
     ],
-    "iontrim-asc-3": [
-      206,
-      107.5,
-      28.95,
-      1
+    "groveguard-tap-7": [
+      187.34,
+      114.26,
+      26.17,
+      4.34
     ],
-    "iontrim-asc-4": [
-      206,
-      106.6,
-      28.95,
-      1
+    "groveguard-tap-8": [
+      188.07,
+      116.58,
+      26.17,
+      7.97
     ],
-    "iontrim-asc-5": [
-      206,
-      105.5,
-      28.95,
-      1
+    "groveguard-tap-9": [
+      188.52,
+      117.79,
+      26.17,
+      10.28
     ],
-    "iontrim-asc-6": [
-      206,
-      104.3,
-      28.95,
-      1
+    "groveguard-tap-10": [
+      188.73,
+      117.5,
+      26.17,
+      10.65
     ],
-    "iontrim-asc-7": [
-      206,
-      103,
-      28.95,
-      1
+    "groveguard-tap-11": [
+      188.64,
+      115.76,
+      26.17,
+      8.99
     ],
-    "iontrim-asc-8": [
-      206,
-      102,
-      28.95,
-      -4
+    "groveguard-tap-12": [
+      188.1,
+      113.09,
+      26.17,
+      5.73
     ],
     "iontrim-desc-1": [
-      206,
-      109,
-      28.95,
-      6
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
     "iontrim-desc-2": [
-      206,
-      109.8,
-      28.95,
-      1
+      188.58,
+      124.69,
+      26.96,
+      15.58
     ],
     "iontrim-desc-3": [
-      206,
-      110.8,
-      28.95,
-      6
+      187.99,
+      138.17,
+      26.96,
+      28.78
     ],
     "iontrim-desc-4": [
-      206,
-      112,
-      28.95,
-      11
+      184.8,
+      150.86,
+      26.96,
+      41.25
     ],
-    "iontrim-desc-5": [
-      206,
-      113.2,
-      28.95,
-      6
+    "iontrim-tap-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
     ],
-    "iontrim-desc-6": [
-      206,
-      114.6,
-      28.95,
-      11
+    "iontrim-tap-2": [
+      184.49,
+      109.48,
+      26.96,
+      -1.87
     ],
-    "iontrim-desc-7": [
-      206,
-      116,
-      28.95,
-      11
+    "iontrim-tap-3": [
+      183.33,
+      108.02,
+      26.96,
+      -4.22
     ],
-    "iontrim-desc-8": [
-      206,
-      117,
-      28.95,
-      16
+    "iontrim-tap-4": [
+      183.18,
+      108.46,
+      26.96,
+      -4.6
+    ],
+    "iontrim-tap-5": [
+      184.07,
+      110.69,
+      26.96,
+      -2.9
+    ],
+    "iontrim-tap-6": [
+      185.56,
+      114.27,
+      26.96,
+      0.41
+    ],
+    "iontrim-tap-7": [
+      187.13,
+      118.34,
+      26.96,
+      4.44
+    ],
+    "iontrim-tap-8": [
+      188.4,
+      121.78,
+      26.96,
+      8.1
+    ],
+    "iontrim-tap-9": [
+      189.19,
+      123.57,
+      26.96,
+      10.41
+    ],
+    "iontrim-tap-10": [
+      189.41,
+      123.16,
+      26.96,
+      10.79
+    ],
+    "iontrim-tap-11": [
+      188.98,
+      120.63,
+      26.96,
+      9.12
+    ],
+    "iontrim-tap-12": [
+      187.85,
+      116.72,
+      26.96,
+      5.84
     ],
     "leviathan-asc-1": [
       208,
@@ -4329,101 +4417,101 @@
       34.24,
       0
     ],
-    "sammie-asc-1": [
-      208,
-      106,
-      28.95,
-      3
-    ],
-    "sammie-asc-2": [
-      208,
-      105.3,
-      28.95,
-      3
-    ],
-    "sammie-asc-3": [
-      208,
-      104.5,
-      28.95,
-      3
-    ],
-    "sammie-asc-4": [
-      208,
-      103.6,
-      28.95,
-      -2
-    ],
-    "sammie-asc-5": [
-      208,
-      102.5,
-      28.95,
-      -2
-    ],
-    "sammie-asc-6": [
-      208,
-      101.3,
-      28.95,
-      -2
-    ],
-    "sammie-asc-7": [
-      208,
-      100,
-      28.95,
-      -1
-    ],
-    "sammie-asc-8": [
-      208,
-      99,
-      28.95,
-      0
-    ],
     "sammie-desc-1": [
-      208,
-      106,
-      28.95,
-      4
+      185.89,
+      114.58,
+      26.09,
+      1.83
     ],
     "sammie-desc-2": [
-      208,
-      106.8,
-      28.95,
-      7
+      186.55,
+      127.66,
+      26.09,
+      15.52
     ],
     "sammie-desc-3": [
-      208,
-      107.8,
-      28.95,
-      5
+      185.53,
+      139.88,
+      26.09,
+      28.68
     ],
     "sammie-desc-4": [
-      208,
-      109,
-      28.95,
-      3
+      181.44,
+      151.15,
+      26.09,
+      41.12
     ],
-    "sammie-desc-5": [
-      208,
-      110.2,
-      28.95,
-      3
+    "sammie-tap-1": [
+      185.89,
+      114.58,
+      26.09,
+      1.83
     ],
-    "sammie-desc-6": [
-      208,
+    "sammie-tap-2": [
+      184.91,
+      112.4,
+      26.09,
+      -1.84
+    ],
+    "sammie-tap-3": [
+      184.22,
+      111.2,
+      26.09,
+      -4.18
+    ],
+    "sammie-tap-4": [
+      184.09,
       111.6,
-      28.95,
-      8
+      26.09,
+      -4.55
     ],
-    "sammie-desc-7": [
-      208,
-      113,
-      28.95,
-      8
+    "sammie-tap-5": [
+      184.54,
+      113.59,
+      26.09,
+      -2.87
     ],
-    "sammie-desc-8": [
-      213,
-      115,
-      28.95,
-      8
+    "sammie-tap-6": [
+      185.3,
+      116.28,
+      26.09,
+      0.43
+    ],
+    "sammie-tap-7": [
+      186.11,
+      119.42,
+      26.09,
+      4.43
+    ],
+    "sammie-tap-8": [
+      186.73,
+      122.42,
+      26.09,
+      8.08
+    ],
+    "sammie-tap-9": [
+      187.15,
+      124.23,
+      26.09,
+      10.38
+    ],
+    "sammie-tap-10": [
+      187.36,
+      123.89,
+      26.09,
+      10.75
+    ],
+    "sammie-tap-11": [
+      187.27,
+      121.55,
+      26.09,
+      9.09
+    ],
+    "sammie-tap-12": [
+      186.77,
+      117.99,
+      26.09,
+      5.83
     ],
     "seraph-asc-1": [
       205,
@@ -4521,101 +4609,101 @@
       27.89,
       62
     ],
-    "sunforged-asc-1": [
-      178.29,
-      105.5,
-      29.4,
-      15.64
-    ],
-    "sunforged-asc-2": [
-      175.89,
-      101.65,
-      29.4,
-      13.37
-    ],
-    "sunforged-asc-3": [
-      173.22,
-      97.98,
-      29.4,
-      21.61
-    ],
-    "sunforged-asc-4": [
-      170.3,
-      94.51,
-      29.4,
-      28.47
-    ],
-    "sunforged-asc-5": [
-      167.15,
-      91.24,
-      29.4,
-      17
-    ],
-    "sunforged-asc-6": [
-      163.78,
-      88.21,
-      29.4,
-      11.48
-    ],
-    "sunforged-asc-7": [
-      160.21,
-      85.41,
-      29.4,
-      15
-    ],
-    "sunforged-asc-8": [
-      156.44,
-      82.88,
-      29.4,
-      15.93
-    ],
     "sunforged-desc-1": [
-      178.29,
-      105.5,
-      29.4,
-      15.64
+      184.69,
+      105.65,
+      33.8,
+      1.79
     ],
     "sunforged-desc-2": [
-      182.68,
-      114.71,
-      29.4,
-      27.97
+      188.8,
+      118.83,
+      33.8,
+      15.52
     ],
     "sunforged-desc-3": [
-      185.58,
-      124.49,
-      29.4,
-      24.72
+      190.08,
+      132.44,
+      33.8,
+      28.71
     ],
     "sunforged-desc-4": [
-      186.91,
-      134.6,
-      29.4,
-      36.86
+      188.1,
+      145.92,
+      33.8,
+      41.18
     ],
-    "sunforged-desc-5": [
-      186.64,
-      144.79,
-      29.4,
-      42.41
+    "sunforged-tap-1": [
+      184.69,
+      105.65,
+      33.8,
+      1.79
     ],
-    "sunforged-desc-6": [
-      184.79,
-      154.82,
-      29.4,
-      51.15
+    "sunforged-tap-2": [
+      183.6,
+      102.96,
+      33.8,
+      -1.89
     ],
-    "sunforged-desc-7": [
-      181.38,
-      164.44,
-      29.4,
-      52.72
+    "sunforged-tap-3": [
+      182.76,
+      101.59,
+      33.8,
+      -4.23
     ],
-    "sunforged-desc-8": [
-      176.51,
-      173.4,
-      29.4,
-      58.01
+    "sunforged-tap-4": [
+      182.48,
+      101.88,
+      33.8,
+      -4.61
+    ],
+    "sunforged-tap-5": [
+      182.82,
+      103.72,
+      33.8,
+      -2.92
+    ],
+    "sunforged-tap-6": [
+      183.56,
+      106.67,
+      33.8,
+      0.38
+    ],
+    "sunforged-tap-7": [
+      185.19,
+      109.97,
+      33.8,
+      4.4
+    ],
+    "sunforged-tap-8": [
+      187.01,
+      112.84,
+      33.8,
+      8.05
+    ],
+    "sunforged-tap-9": [
+      188.16,
+      114.49,
+      33.8,
+      10.37
+    ],
+    "sunforged-tap-10": [
+      188.57,
+      114.32,
+      33.8,
+      10.74
+    ],
+    "sunforged-tap-11": [
+      188.14,
+      112.3,
+      33.8,
+      9.08
+    ],
+    "sunforged-tap-12": [
+      186.8,
+      109.04,
+      33.8,
+      5.81
     ],
     "verdant-asc-1": [
       189.11,
@@ -4713,101 +4801,101 @@
       37.49,
       41
     ],
-    "voidsuit-asc-1": [
-      206,
-      106,
-      29.53,
-      3
-    ],
-    "voidsuit-asc-2": [
-      206,
-      105.3,
-      29.53,
-      3
-    ],
-    "voidsuit-asc-3": [
-      206,
-      104.5,
-      29.53,
-      3
-    ],
-    "voidsuit-asc-4": [
-      206,
-      103.6,
-      29.53,
-      3
-    ],
-    "voidsuit-asc-5": [
-      206,
-      102.5,
-      29.53,
-      3
-    ],
-    "voidsuit-asc-6": [
-      206,
-      101.3,
-      29.53,
-      -2
-    ],
-    "voidsuit-asc-7": [
-      206,
-      100,
-      29.53,
-      -2
-    ],
-    "voidsuit-asc-8": [
-      206,
-      99,
-      29.53,
-      -2
-    ],
     "voidsuit-desc-1": [
-      206,
-      106,
-      29.53,
-      3
+      182.69,
+      112.11,
+      27.72,
+      1.82
     ],
     "voidsuit-desc-2": [
-      206,
-      106.8,
-      29.53,
-      3
+      183.49,
+      123.89,
+      27.72,
+      15.57
     ],
     "voidsuit-desc-3": [
-      206,
-      107.8,
-      29.53,
-      3
+      182.95,
+      135.88,
+      27.72,
+      28.77
     ],
     "voidsuit-desc-4": [
-      206,
-      109,
-      29.53,
-      3
+      179.66,
+      147.47,
+      27.72,
+      41.24
     ],
-    "voidsuit-desc-5": [
-      206,
-      110.2,
-      29.53,
-      3
+    "voidsuit-tap-1": [
+      182.69,
+      112.11,
+      27.72,
+      1.82
     ],
-    "voidsuit-desc-6": [
-      206,
-      111.6,
-      29.53,
-      3
+    "voidsuit-tap-2": [
+      181.35,
+      109.62,
+      27.72,
+      -1.87
     ],
-    "voidsuit-desc-7": [
-      206,
-      113,
-      29.53,
-      8
+    "voidsuit-tap-3": [
+      180.35,
+      108.38,
+      27.72,
+      -4.22
     ],
-    "voidsuit-desc-8": [
-      206,
-      114,
-      29.53,
-      3
+    "voidsuit-tap-4": [
+      180.08,
+      108.59,
+      27.72,
+      -4.6
+    ],
+    "voidsuit-tap-5": [
+      180.57,
+      110.24,
+      27.72,
+      -2.91
+    ],
+    "voidsuit-tap-6": [
+      181.58,
+      112.9,
+      27.72,
+      0.4
+    ],
+    "voidsuit-tap-7": [
+      182.71,
+      116.05,
+      27.72,
+      4.43
+    ],
+    "voidsuit-tap-8": [
+      183.65,
+      118.83,
+      27.72,
+      8.09
+    ],
+    "voidsuit-tap-9": [
+      184.28,
+      120.4,
+      27.72,
+      10.4
+    ],
+    "voidsuit-tap-10": [
+      184.61,
+      120.22,
+      27.72,
+      10.78
+    ],
+    "voidsuit-tap-11": [
+      184.51,
+      118.34,
+      27.72,
+      9.11
+    ],
+    "voidsuit-tap-12": [
+      183.87,
+      115.32,
+      27.72,
+      5.84
     ],
     "alien-asc-1": [
       128,
@@ -5384,66 +5472,6 @@
       128,
       40
     ],
-    "cupcake-tap-1": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-2": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-3": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-4": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-5": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-6": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-7": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-8": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-9": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-10": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-11": [
-      128,
-      128,
-      40
-    ],
-    "cupcake-tap-12": [
-      128,
-      128,
-      40
-    ],
     "volt-tap-1": [
       128,
       128,
@@ -5609,12 +5637,12 @@
     "arcflash": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "e903a827f60bd19b02538cd86a0ba300f069fc250871eb9d2bb2df199ed5d929",
+    "control-constants": "741f8628949b782ef3994c0908dccbca05a274a69ea02e24ceca2d3dd81944bc",
     "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
     "high-orbit": "0a4d14f1e6b76eb8d83aeb1f08ac09a633ef0bfc4449c91dabcf5aa00a78738c",
-    "high-orbit-config": "07ecb9b97faf6a5f65049bb183f095aa97fc5a6139c3db65f32b966ddd7777fc",
+    "high-orbit-config": "57b5c13748e1dc8ff222661ffc43038a878b6733b0f7e6a55be1433a063127f0",
     "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
     "high-orbit-motion": "08e7ec309a2bb197950773b427d01b1fe181f0c8503ed4886d9eb96f1e6064e2",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",

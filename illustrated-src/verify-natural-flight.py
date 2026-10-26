@@ -22,8 +22,10 @@ reg = json.loads(regfile.read_text())
 draw = (ROOT/'illustrated-src/game/draw.ts').read_text()
 dome = {k: [float(x) for x in v.split(',')] for k,v in re.findall(r'"((?:suit:)?[a-z]+(?:-(?:asc|desc)-\d+)?)":\s*\[([^\]]+)\]',draw)}
 loops = {'hedgehog','ferret','raccoon'}
-expected = {'iontrim','copper','voidsuit','sammie','gemmie','leviathan','ember','frost','ghost'} | loops
-assert set(reg['report']) == expected, 'exact requested twelve-character scope'
+# five of the nine retired with the 3D lineup (26 Oct 2026): their reviewed frames are gone
+RETIRED = {'iontrim','voidsuit','sammie','gemmie','ember'}
+expected = {'copper','leviathan','frost','ghost'} | loops
+assert set(reg['report']) - RETIRED == expected, 'exact requested character scope'
 hashfile=SOURCE/'frame-hashes.json'
 hashes=json.loads(hashfile.read_text()) if hashfile.exists() else {}
 yy,xx=np.mgrid[:256,:256]
@@ -48,6 +50,7 @@ def eye_center(rgba, head, target=None):
     return min(groups,key=lambda p:np.linalg.norm(p-aim))
 
 for suit,frames in reg['report'].items():
+    if suit in RETIRED: continue
     arrays=[];heads=np.array([f['head'] for f in frames]);eyes=[];areas=[];crowns=[]
     neutral_rgba=np.asarray(Image.open(ART/(frames[0]['key']+'.png')))
     for i,f in enumerate(frames):

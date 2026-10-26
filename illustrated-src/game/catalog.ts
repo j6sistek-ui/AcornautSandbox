@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "310";
+export const ART_VER = "311";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -291,7 +291,9 @@ export const SUITS: Suit[] = [
   { id: "ferret", name: "Noodle", cost: 0, ownHead: true, fur: "#6b4a3a", furDark: "#3b2418", belly: "#f1e6d6", suit: "#f2b21c", suitLite: "#ffd75a", suitDark: "#8a5f0a", trim: "#2b2b2b", glow: "#ffc83a", dust: "#ffe08a" },
   { id: "hedgehog", name: "Quill", cost: 0, ownHead: true, fur: "#8a6a48", furDark: "#3f2b18", belly: "#e9d6bd", suit: "#6f8f4a", suitLite: "#a8c46e", suitDark: "#37502a", trim: "#ff9a2a", glow: "#ffa53a", dust: "#ffd28a" },
   { id: "gemmie", name: "Gemmie", cost: 0, fur: "#e6cdf2", furDark: "#a98cc4", belly: "#ffffff", suit: "#d9c3ea", suitLite: "#ffffff", suitDark: "#8f7aa8", trim: "#a8e6ff", glow: "#ffb8f0", dust: "#d8f4ff" },
-  { id: "sammie", name: "Sammie", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#5e1418", suitLite: "#a83a2e", suitDark: "#2a080a", trim: "#d4af37", glow: null, dust: null },
+  // RE-MADE AS STONE (owner, 26 Oct 2026): the id stays so every save, bundle and reward
+  // still finds it; the 3D stone creature's banks replace the Samurai art.
+  { id: "sammie", name: "Stone", cost: 0, fur: "#a7a58c", furDark: "#6d6b58", belly: "#d6d3bd", suit: "#8f8d74", suitLite: "#c2bfa5", suitDark: "#4f4e3f", trim: "#5fd36a", glow: null, dust: null },
   { id: "seraph", name: "Seraph", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#fff6e2", suit: "#f2ead8", suitLite: "#ffffff", suitDark: "#b8a882", trim: "#e8c66a", glow: "#ffe9a8", dust: "#fff4cf" },
   { id: "leviathan", name: "Leviathan", cost: 0, fur: "#d98f3d", furDark: "#a8641f", belly: "#f2e0c0", suit: "#127f7d", suitLite: "#3fd8cf", suitDark: "#06413f", trim: "#5ce6dc", glow: "#4fe8dd", dust: "#a8fff6" },
   { id: "verdant", name: "Verdant", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c6844", suitLite: "#45b977", suitDark: "#063e2a", trim: "#d7b85a", glow: "#38ff9a", dust: "#a8ffd1" },
@@ -300,18 +302,15 @@ export const SUITS: Suit[] = [
   { id: "volt", name: "Volt", cost: 0, ownHead: true, fur: "#8a7434", furDark: "#4a3f14", belly: "#c9b06a", suit: "#46421a", suitLite: "#6f6220", suitDark: "#1d1d04", trim: "#6eab3c", glow: "#54ff2e", dust: "#a8ff7a" },
   { id: "cinderforge", name: "Cinderforge", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#2a1114", suitLite: "#7e2f27", suitDark: "#12080a", trim: "#ff4b2f", glow: "#ff3b22", dust: "#ff9470" },
   { id: "groveguard", name: "Groveguard", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#2e5e2d", suitLite: "#719452", suitDark: "#18351c", trim: "#c6a75d", glow: "#65dca1", dust: "#bff0ac" },
-  { id: "cosmic", name: "Cosmic", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#6b4b91", suitLite: "#b978d3", suitDark: "#30214d", trim: "#e4b8ff", glow: "#d687ff", dust: "#f0cfff" },
+  // RE-MADE AS CUPCAKE (owner, 26 Oct 2026): the 3D frosted squirrel replaces the Cosmic
+  // art; the id stays, so its Star Chart rung, helmet and wake all carry over.
+  { id: "cosmic", name: "Cupcake", cost: 0, fur: "#f07ab8", furDark: "#b84482", belly: "#fde3ef", suit: "#f59ac8", suitLite: "#ffd1e8", suitDark: "#a8336f", trim: "#7fd3ff", glow: "#d687ff", dust: "#f0cfff" },
   // BRIELLA'S CAT (owner, 6 Sep 2026): a whole pencil-and-fur character,
   // its own head, no helmet. Ships the still for now; the flight sprite
   // sheet follows and is wired as its bank when it lands. Beta until then.
   { id: "briellacat", name: "Briella's Cat", cost: 999, ownHead: true, fur: "#f4f3f0", furDark: "#b8b6b2", belly: "#ffffff", suit: "#ecebe8", suitLite: "#ffffff", suitDark: "#8c8a86", trim: "#2a2a2a", glow: null, dust: null },
   { id: "sunforged", name: "Sunforged", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#5b4021", suitLite: "#b17b35", suitDark: "#2a1d11", trim: "#ffb83e", glow: "#ffad2b", dust: "#ffd88a" },
   { id: "abyssal", name: "Abyssal", cost: 0, fur: "#d98f3d", furDark: "#9e5719", belly: "#f8e4bd", suit: "#0c4d76", suitLite: "#178eb4", suitDark: "#06263e", trim: "#48d9ff", glow: "#39dcff", dust: "#a8f2ff" },
-  // THE 3D TEST (owner, 25 Oct 2026: "drop it in beta. see how it works...
-  // let me see how it looks in general or if it just doesn't fit"). A
-  // rendered model, not a painting: tools/rig3d made its twelve tap and four
-  // dive frames. Its own head, so no helmet is fitted. Beta only.
-  { id: "cupcake", name: "Cupcake", cost: 0, beta: true, ownHead: true, fur: "#f07ab8", furDark: "#b84482", belly: "#fde3ef", suit: "#f59ac8", suitLite: "#ffd1e8", suitDark: "#a8336f", trim: "#7fd3ff", glow: null, dust: null },
   { id: "cyber", name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
 ];
 // Beta-only suits are stripped from production entirely. Anything a PACK
@@ -1065,8 +1064,6 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   // rewards where gaps are missing... all tap animations fixed so they can
   // go live now"): the five former beta suits fill the ladder above 300.
   { title: "HIGH ORBIT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
-  // the 3D test (25 Oct 2026); its suit is beta-only, so this row is too
-  ...(IS_BETA ? [{ title: "3D TEST", ids: ["cupcake"] }] : []),
 ];
 
 // The helmet wall groups by what the GLASS does, because that is how a

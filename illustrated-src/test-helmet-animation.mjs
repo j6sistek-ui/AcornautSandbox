@@ -119,9 +119,9 @@ try {
   const legacy=suits.filter(suit=>!HIGH_ORBIT.includes(suit.id)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id));
   assert.deepEqual(legacy,OldCat.SUITS.filter(suit=>!OldCat.wearsOwnHead(suit)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id)),'helmet fitting does not change the pre-existing suit roster');
   assert.deepEqual(promoted.map(suit=>suit.id),HIGH_ORBIT,'HIGH ORBIT promotions are the only roster additions');
-  // The 3D test (owner, 25 Oct 2026: "12 tap, 4 dive, try something new.
-  // drop it in beta"): a rendered tap bank and dive bank, its own head.
-  const THREE_D_TEST=['cupcake'];
+  // The 3D lineup (owner, 26 Oct 2026: "here are the replacements, DIRECT
+  // replace"): ten suits re-made as rendered tap and dive banks, helmets kept.
+  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic"];
   const authorized=id=>HIGH_ORBIT.includes(id)||CYBER_TRIO.includes(id)||THREE_D_TEST.includes(id);
   const withoutAuthorizedRigs=table=>Array.isArray(table) ? table.filter(id=>!authorized(id))
     : Object.fromEntries(Object.entries(table).filter(([id])=>!authorized(id)));
@@ -129,8 +129,8 @@ try {
     assert.equal(NewArt.TAP_BANKS[id],12,id+' twelve-frame tap');assert.equal(NewArt.DESC_BANKS[id],4,id+' four-frame dive');
     for(const name of ['ASC_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS'])assert.equal(NewArt[name][id],undefined,id+' has no '+name);
     assert(!NewArt.RIGGED_SUITS.includes(id),id+' whole-character frames, no rig cut');
-    // beta only: the production catalog this test loads strips it
-    assert(!NewCat.SUITS.some(s=>s.id===id),id+' stays off the live page');
+    // production suits that still wear the pilot's helmet
+    const suit=NewCat.SUITS.find(s=>s.id===id);assert(suit,id+' ships');assert(!NewCat.wearsOwnHead(suit),id+' wears a helmet');
   }
   for(const name of ['RIGGED_SUITS','TAP_BANKS','TAIL_TAP_BANKS','BOUNCE_BANKS','ASC_BANKS','DESC_BANKS']) {
     const old=name==='RIGGED_SUITS'?OldArt[name].filter(id=>!NATURAL.includes(id)):OldArt[name];

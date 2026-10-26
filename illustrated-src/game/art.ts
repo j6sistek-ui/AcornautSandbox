@@ -439,10 +439,12 @@ const TAP_BANKS: Record<string, number> = {
   // only this list kept production from asking for them.
   robo: 16, bigbooty: 16, catsuit: 16, eclipse: 16, volt: 16,
   flight: 16,
-  // THE 3D TEST (owner, 25 Oct 2026: "12 tap, 4 dive, try something new.
-  // drop it in beta"): rendered by tools/rig3d from a rigged model, a
-  // twelve-frame tap and a four-frame dive, no climb. Beta-only suit.
-  cupcake: 12,
+  // THE 3D LINEUP (owner, 26 Oct 2026: "here are the replacements, DIRECT
+  // replace"): ten suits re-made from rigged 3D squirrels by tools/rig3d -
+  // a twelve-frame tap and a four-frame dive (the dive table below), no climb, the
+  // same motion on every one. See the tapDive branch in draw.ts.
+  ember: 12, voidsuit: 12, groveguard: 12, cinderforge: 12, sunforged: 12,
+  abyssal: 12, gemmie: 12, iontrim: 12, sammie: 12, cosmic: 12,
   // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
   // retired: their GENERATED motion lost the pilot's lower body at its
   // extremes, and each flies a painted ascent/descent ramp now -
@@ -475,27 +477,24 @@ const BOUNCE_BANKS: Record<string, number> = { volt: 16 };
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
 const ASC_BANKS: Record<string, number> =
-    { eclipse: 8, flight: 3, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, iontrim: 8, copper: 8,
+    { eclipse: 8, flight: 3, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, copper: 8,
         // THE ALIENS SWAPPED after the owner's A/B: the standard-spec bank
         // won and flies production "alien" at 8/8; the custom-posed bank
         // retired to the beta shelf as "Alien 1" at 7/7 (the owner's two
         // frame cuts - the black desc swirl and the bled-over spiral asc).
-        voidsuit: 8, alien: 8,
-        ember: 8,
-        cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8, ghost: 8, leviathan: 8,
+        alien: 8,
+        cryostar: 8, verdant: 8, frost: 8, ghost: 8, leviathan: 8,
         // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
         briellacat: 7,
         };
 const DESC_BANKS: Record<string, number> =
-    { eclipse: 8, flight: 5, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, iontrim: 8, copper: 8,
-        voidsuit: 8, alien: 8,
-        ember: 8,
-        cryostar: 8, verdant: 8, gemmie: 8,
-        sammie: 8, frost: 8, ghost: 8, leviathan: 8,
+    { eclipse: 8, flight: 5, cyber: 9, porcelain: 9, nacre: 9, origamist: 9, seraph: 8, copper: 8,
+        alien: 8,
+        cryostar: 8, verdant: 8, frost: 8, ghost: 8, leviathan: 8,
         briellacat: 4,
-        // the 3D test's dive, paired with its tap bank (see TAP_BANKS)
-        cupcake: 4,
+        // the 3D lineup's dives, paired with their twelve-frame taps above
+        ember: 4, voidsuit: 4, groveguard: 4, cinderforge: 4, sunforged: 4,
+        abyssal: 4, gemmie: 4, iontrim: 4, sammie: 4, cosmic: 4,
         };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
@@ -756,8 +755,6 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
     // 2026), so its sheet loads there rather than only on the beta host
     "briellacat",
-    // the 3D test (25 Oct 2026) is a beta-only suit, so its still is too
-    ...(IS_BETA ? ["cupcake"] : []),
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
   const hyperRunIds = [

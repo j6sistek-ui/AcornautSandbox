@@ -85,9 +85,9 @@ for (const hp of [-1, -0.5, 0.5, 1]) {
   // their own painters own body attitude and a non-zero dial here would be
   // dead weight. Everything else stays on the one calibrated lean, and the
   // loop below still proves each named exception really carries 0/0.
-  // The 3D test (cupcake, beta, 25 Oct 2026) is the aliens' case: its rendered
-  // dive frames carry the attitude.
-  const ZERO_LEAN = new Set(["alien", "vanguard", "arcflash", "cupcake"]);
+  // The 3D lineup (26 Oct 2026) is the aliens' case: its rendered dive frames
+  // carry the attitude.
+  const ZERO_LEAN = new Set(["alien", "vanguard", "arcflash", ...["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic"]]);
   for (const id of ZERO_LEAN) {
     const l = SUIT_LEAN[id];
     ok(!!l && l.up === 0 && l.down === 0,
