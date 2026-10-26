@@ -59,11 +59,10 @@ STRICT_256_DIRS = {
 # canvas. Keep every alpha-bearing pixel near the main painting so the
 # runtime content box cannot silently double in height again.
 COMPACT_PALS = {"cometsprite", "pocketmoon"}
-# iontrim, voidsuit and ember left with the 3D lineup (26 Oct 2026), flight and
-# frost after them: their helmet size is measured from the rendered head, not
+# iontrim, voidsuit and ember left with the 3D lineup (26 Oct 2026), then flight,
+# frost and copper: their helmet size is measured from the rendered head, not
 # fitted to painted art
 BASE_SUIT_IDS = (
-    "copper",
     "robo",
     "ghost",
     "bigbooty",
@@ -77,21 +76,18 @@ CALIBRATED_HELMET_SCALES = {
     # Flight refitted by the owner's eye on the rig editor, 5 Oct 2026: the
     # 40.32 still sat 14% over its own frames and well over the painted
     # skull ("it's helmet is huge"). This row follows the owner's number.
-    "copper": 0.2538,     # 50 / 197
     "robo": 36.12 / 189,
     "ghost": 0.2178,      # 49 / 225
     "bigbooty": 28 / 187,
 }
 CALIBRATED_HELMET_TOLERANCE = 0.05
-NATURAL_FLIGHT_SUITS = {"copper", "leviathan", "ghost"}
+NATURAL_FLIGHT_SUITS = {"ghost"}
 # Owner-requested skull normalization uses a shared 192px presentation box.
 CALIBRATED_HELMET_SCALES.update({suit: 36 / 192 for suit in NATURAL_FLIGHT_SUITS})
 # Suits the owner has refitted by eye on the rig editor leave the shared
 # 36px template; each row below is the owner's number.
-CALIBRATED_HELMET_SCALES["copper"] = 31.97 / 192    # 5 Oct 2026
 CALIBRATED_HELMET_SCALES["ghost"] = 30.73 / 192     # 5 Oct 2026
 CALIBRATED_HELMET_SCALES["robo"] = 32.71 / 189      # 5 Oct 2026, owner refit (was 36.12)
-CALIBRATED_HELMET_SCALES["leviathan"] = 29.53 / 192 # 6 Oct 2026
 CALIBRATED_HELMET_SCALES["bigbooty"] = 25.36 / 187  # 6 Oct 2026, owner refit (was 28)
 PAL_ALPHA = 15
 PAL_MIN_STRAY_AREA = 4
@@ -1247,6 +1243,9 @@ CUSTOM_FLIGHT_SUITS = {
                   # nor pale. Still rigged, unlike the other custom
                   # characters: the neck cut took cleanly at a 13.3% tail
                   # share on the new master.
+    "hedgehog",   # Quill, 26 Oct 2026: owner-approved 3D model (tools/rig3d), a
+                  # 12-frame tap and 4-frame dive like the 3D lineup; its own
+                  # head, so no dome anchors.
     "briellacat", # owner-supplied sheet, 6 Sep 2026: Briella's Cat, a whole
                   # pencil character. Twelve poses cut into a 7-frame climb
                   # and a 4-frame dive; its own head, so no dome anchors.

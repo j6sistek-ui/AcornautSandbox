@@ -34,8 +34,9 @@ const [D,A,Sim,S,C,Control]=await Promise.all(['draw','art','sim','save','catalo
 
 // --- the tables: exactly what the owner asked for, nothing more ----------
 // iontrim, voidsuit, ember, gemmie and sammie left with the 3D lineup (26 Oct 2026),
-// flight and frost after them: a rendered tap and dive, no ascent bank for velocity to walk
-const VELOCITY=['eclipse','cryostar','verdant','cyber','seraph','alien','briellacat','copper','ghost','leviathan','porcelain','nacre','origamist'];
+// then flight, frost, alien, copper and leviathan: a rendered tap and dive, no ascent
+// bank for velocity to walk
+const VELOCITY=['eclipse','cryostar','verdant','cyber','seraph','briellacat','ghost','porcelain','nacre','origamist'];
 assert.deepEqual(Object.keys(Control.TAP_SHAPE).sort(),[...VELOCITY].sort(),'TAP_SHAPE: every ascent-bank suit, and only those (owner, 12 Sep 2026: "everything I don\'t name otherwise, gets velocity rewind")');
 assert(Object.values(Control.TAP_SHAPE).every(v=>v==='velocity'),'and all of them are on velocity');
 assert.deepEqual([...VELOCITY].sort(),[...new Set([...Object.keys(A.ASC_BANKS)])].sort(),'the velocity roster is exactly the suits with an ascent bank');

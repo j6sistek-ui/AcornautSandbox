@@ -1,7 +1,7 @@
-import { ENVS, SKY_RGB } from "./catalog.js?v=312";
-import { artUrl, drawSprite, loadZoneArt } from "./art.js?v=312";
-import { planetHalo } from "./planet-contrast.js?v=312";
-import { mapDebrisIndex, mapPlanetIndex, visualHash, zoneVisual } from "./zone-visuals.js?v=312";
+import { ENVS, SKY_RGB } from "./catalog.js?v=313";
+import { artUrl, drawSprite, loadZoneArt } from "./art.js?v=313";
+import { planetHalo } from "./planet-contrast.js?v=313";
+import { mapDebrisIndex, mapPlanetIndex, visualHash, zoneVisual } from "./zone-visuals.js?v=313";
 /** Scenery belongs to the same stable zone as the mission node. Four mission
  * spacings overlap at each transition; there are no chapter panels or seams. */
 export function addChartScenery(map, levels, pos, step, art) {

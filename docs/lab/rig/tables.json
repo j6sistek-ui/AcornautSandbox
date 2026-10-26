@@ -1,5 +1,5 @@
 {
- "artVer": "312",
+ "artVer": "313",
  "suits": [
   {
    "id": "flight",
@@ -114,17 +114,12 @@
    "key": "suit:copper",
    "file": "suits/copper.png",
    "dome": [
-    207,
-    108,
-    31.97,
-    3
+    185.92,
+    105.99,
+    26.56,
+    1.81
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -199,12 +194,13 @@
    "key": "suit:alien",
    "file": "suits/alien.png",
    "dome": [
-    128,
-    128,
-    40
+    188.74,
+    121.7,
+    22.29,
+    1.82
    ],
    "box": null,
-   "ownHead": true,
+   "ownHead": false,
    "bakedDome": false,
    "frame": false
   },
@@ -359,17 +355,12 @@
    "key": "suit:leviathan",
    "file": "suits/leviathan.png",
    "dome": [
-    208,
-    106,
-    29.53,
-    0
+    186.86,
+    102.5,
+    24.93,
+    1.8
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -813,6 +804,278 @@
     118.06,
     25.88,
     5.84
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-desc-1",
+   "name": "Alien desc 1",
+   "key": "alien-desc-1",
+   "file": "suits/alien-desc-1.png",
+   "dome": [
+    188.74,
+    121.7,
+    22.29,
+    1.82
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-desc-2",
+   "name": "Alien desc 2",
+   "key": "alien-desc-2",
+   "file": "suits/alien-desc-2.png",
+   "dome": [
+    188.54,
+    134.72,
+    22.29,
+    15.5
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-desc-3",
+   "name": "Alien desc 3",
+   "key": "alien-desc-3",
+   "file": "suits/alien-desc-3.png",
+   "dome": [
+    185.29,
+    146.95,
+    22.29,
+    28.66
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-desc-4",
+   "name": "Alien desc 4",
+   "key": "alien-desc-4",
+   "file": "suits/alien-desc-4.png",
+   "dome": [
+    179.25,
+    157.86,
+    22.29,
+    41.1
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-1",
+   "name": "Alien tap 1",
+   "key": "alien-tap-1",
+   "file": "suits/alien-tap-1.png",
+   "dome": [
+    188.74,
+    121.7,
+    22.29,
+    1.82
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-2",
+   "name": "Alien tap 2",
+   "key": "alien-tap-2",
+   "file": "suits/alien-tap-2.png",
+   "dome": [
+    187.8,
+    119.23,
+    22.29,
+    -1.85
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-3",
+   "name": "Alien tap 3",
+   "key": "alien-tap-3",
+   "file": "suits/alien-tap-3.png",
+   "dome": [
+    187.09,
+    118.11,
+    22.29,
+    -4.19
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-4",
+   "name": "Alien tap 4",
+   "key": "alien-tap-4",
+   "file": "suits/alien-tap-4.png",
+   "dome": [
+    186.89,
+    118.53,
+    22.29,
+    -4.57
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-5",
+   "name": "Alien tap 5",
+   "key": "alien-tap-5",
+   "file": "suits/alien-tap-5.png",
+   "dome": [
+    187.23,
+    120.36,
+    22.29,
+    -2.88
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-6",
+   "name": "Alien tap 6",
+   "key": "alien-tap-6",
+   "file": "suits/alien-tap-6.png",
+   "dome": [
+    187.87,
+    123.17,
+    22.29,
+    0.41
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-7",
+   "name": "Alien tap 7",
+   "key": "alien-tap-7",
+   "file": "suits/alien-tap-7.png",
+   "dome": [
+    188.55,
+    126.4,
+    22.29,
+    4.42
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-8",
+   "name": "Alien tap 8",
+   "key": "alien-tap-8",
+   "file": "suits/alien-tap-8.png",
+   "dome": [
+    189.1,
+    129.21,
+    22.29,
+    8.06
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-9",
+   "name": "Alien tap 9",
+   "key": "alien-tap-9",
+   "file": "suits/alien-tap-9.png",
+   "dome": [
+    189.51,
+    130.68,
+    22.29,
+    10.36
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-10",
+   "name": "Alien tap 10",
+   "key": "alien-tap-10",
+   "file": "suits/alien-tap-10.png",
+   "dome": [
+    189.8,
+    130.35,
+    22.29,
+    10.73
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-11",
+   "name": "Alien tap 11",
+   "key": "alien-tap-11",
+   "file": "suits/alien-tap-11.png",
+   "dome": [
+    189.87,
+    128.29,
+    22.29,
+    9.08
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "alien-tap-12",
+   "name": "Alien tap 12",
+   "key": "alien-tap-12",
+   "file": "suits/alien-tap-12.png",
+   "dome": [
+    189.51,
+    125.09,
+    22.29,
+    5.82
    ],
    "box": null,
    "ownHead": false,
@@ -1365,198 +1628,17 @@
   },
   {
    "played": true,
-   "id": "copper-asc-1",
-   "name": "Copper asc 1",
-   "key": "copper-asc-1",
-   "file": "suits/copper-asc-1.png",
-   "dome": [
-    207,
-    108,
-    31.97,
-    3
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "copper-asc-2",
-   "name": "Copper asc 2",
-   "key": "copper-asc-2",
-   "file": "suits/copper-asc-2.png",
-   "dome": [
-    207,
-    107.3,
-    31.97,
-    3
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "copper-asc-3",
-   "name": "Copper asc 3",
-   "key": "copper-asc-3",
-   "file": "suits/copper-asc-3.png",
-   "dome": [
-    207,
-    106.5,
-    31.97,
-    -2
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "copper-asc-4",
-   "name": "Copper asc 4",
-   "key": "copper-asc-4",
-   "file": "suits/copper-asc-4.png",
-   "dome": [
-    207,
-    105.6,
-    31.97,
-    3
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "copper-asc-5",
-   "name": "Copper asc 5",
-   "key": "copper-asc-5",
-   "file": "suits/copper-asc-5.png",
-   "dome": [
-    207,
-    104.5,
-    31.97,
-    3
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "copper-asc-6",
-   "name": "Copper asc 6",
-   "key": "copper-asc-6",
-   "file": "suits/copper-asc-6.png",
-   "dome": [
-    207,
-    103.3,
-    31.97,
-    3
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "copper-asc-7",
-   "name": "Copper asc 7",
-   "key": "copper-asc-7",
-   "file": "suits/copper-asc-7.png",
-   "dome": [
-    207,
-    102,
-    31.97,
-    -2
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "copper-asc-8",
-   "name": "Copper asc 8",
-   "key": "copper-asc-8",
-   "file": "suits/copper-asc-8.png",
-   "dome": [
-    207,
-    101,
-    31.97,
-    3
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
    "id": "copper-desc-1",
    "name": "Copper desc 1",
    "key": "copper-desc-1",
    "file": "suits/copper-desc-1.png",
    "dome": [
-    207,
-    108,
-    31.97,
-    3
+    185.92,
+    105.99,
+    26.56,
+    1.81
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1568,17 +1650,12 @@
    "key": "copper-desc-2",
    "file": "suits/copper-desc-2.png",
    "dome": [
-    207,
-    108.8,
-    31.97,
-    3
+    188.69,
+    119.68,
+    26.56,
+    15.5
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1590,17 +1667,12 @@
    "key": "copper-desc-3",
    "file": "suits/copper-desc-3.png",
    "dome": [
-    207,
-    109.8,
-    31.97,
-    3
+    188.8,
+    133.27,
+    26.56,
+    28.66
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -1612,105 +1684,216 @@
    "key": "copper-desc-4",
    "file": "suits/copper-desc-4.png",
    "dome": [
-    207,
-    111,
-    31.97,
-    8
+    185.84,
+    145.51,
+    26.56,
+    41.11
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "copper-desc-5",
-   "name": "Copper desc 5",
-   "key": "copper-desc-5",
-   "file": "suits/copper-desc-5.png",
+   "id": "copper-tap-1",
+   "name": "Copper tap 1",
+   "key": "copper-tap-1",
+   "file": "suits/copper-tap-1.png",
    "dome": [
-    207,
-    112.2,
-    31.97,
-    3
+    185.92,
+    105.99,
+    26.56,
+    1.81
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "copper-desc-6",
-   "name": "Copper desc 6",
-   "key": "copper-desc-6",
-   "file": "suits/copper-desc-6.png",
+   "id": "copper-tap-2",
+   "name": "Copper tap 2",
+   "key": "copper-tap-2",
+   "file": "suits/copper-tap-2.png",
    "dome": [
-    207,
-    113.6,
-    31.97,
-    3
+    184.32,
+    103.19,
+    26.56,
+    -1.86
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "copper-desc-7",
-   "name": "Copper desc 7",
-   "key": "copper-desc-7",
-   "file": "suits/copper-desc-7.png",
+   "id": "copper-tap-3",
+   "name": "Copper tap 3",
+   "key": "copper-tap-3",
+   "file": "suits/copper-tap-3.png",
    "dome": [
-    207,
-    115,
-    31.97,
-    3
+    183.15,
+    101.84,
+    26.56,
+    -4.2
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "copper-desc-8",
-   "name": "Copper desc 8",
-   "key": "copper-desc-8",
-   "file": "suits/copper-desc-8.png",
+   "id": "copper-tap-4",
+   "name": "Copper tap 4",
+   "key": "copper-tap-4",
+   "file": "suits/copper-tap-4.png",
    "dome": [
-    207,
-    116,
-    31.97,
-    3
+    183,
+    102.18,
+    26.56,
+    -4.57
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "copper-tap-5",
+   "name": "Copper tap 5",
+   "key": "copper-tap-5",
+   "file": "suits/copper-tap-5.png",
+   "dome": [
+    183.84,
+    104.11,
+    26.56,
+    -2.89
    ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "copper-tap-6",
+   "name": "Copper tap 6",
+   "key": "copper-tap-6",
+   "file": "suits/copper-tap-6.png",
+   "dome": [
+    185.39,
+    107.24,
+    26.56,
+    0.4
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "copper-tap-7",
+   "name": "Copper tap 7",
+   "key": "copper-tap-7",
+   "file": "suits/copper-tap-7.png",
+   "dome": [
+    186.65,
+    110.83,
+    26.56,
+    4.41
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "copper-tap-8",
+   "name": "Copper tap 8",
+   "key": "copper-tap-8",
+   "file": "suits/copper-tap-8.png",
+   "dome": [
+    187.71,
+    113.92,
+    26.56,
+    8.05
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "copper-tap-9",
+   "name": "Copper tap 9",
+   "key": "copper-tap-9",
+   "file": "suits/copper-tap-9.png",
+   "dome": [
+    188.59,
+    115.58,
+    26.56,
+    10.36
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "copper-tap-10",
+   "name": "Copper tap 10",
+   "key": "copper-tap-10",
+   "file": "suits/copper-tap-10.png",
+   "dome": [
+    188.79,
+    115.27,
+    26.56,
+    10.73
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "copper-tap-11",
+   "name": "Copper tap 11",
+   "key": "copper-tap-11",
+   "file": "suits/copper-tap-11.png",
+   "dome": [
+    188.23,
+    113.05,
+    26.56,
+    9.07
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "copper-tap-12",
+   "name": "Copper tap 12",
+   "key": "copper-tap-12",
+   "file": "suits/copper-tap-12.png",
+   "dome": [
+    187.24,
+    109.61,
+    26.56,
+    5.81
+   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4789,198 +4972,17 @@
   },
   {
    "played": true,
-   "id": "leviathan-asc-1",
-   "name": "Leviathan asc 1",
-   "key": "leviathan-asc-1",
-   "file": "suits/leviathan-asc-1.png",
-   "dome": [
-    208,
-    106,
-    29.53,
-    0
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "leviathan-asc-2",
-   "name": "Leviathan asc 2",
-   "key": "leviathan-asc-2",
-   "file": "suits/leviathan-asc-2.png",
-   "dome": [
-    208,
-    105.3,
-    29.53,
-    0
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "leviathan-asc-3",
-   "name": "Leviathan asc 3",
-   "key": "leviathan-asc-3",
-   "file": "suits/leviathan-asc-3.png",
-   "dome": [
-    208,
-    104.5,
-    29.53,
-    0
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "leviathan-asc-4",
-   "name": "Leviathan asc 4",
-   "key": "leviathan-asc-4",
-   "file": "suits/leviathan-asc-4.png",
-   "dome": [
-    208,
-    103.6,
-    29.53,
-    0
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "leviathan-asc-5",
-   "name": "Leviathan asc 5",
-   "key": "leviathan-asc-5",
-   "file": "suits/leviathan-asc-5.png",
-   "dome": [
-    208,
-    102.5,
-    29.53,
-    0
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "leviathan-asc-6",
-   "name": "Leviathan asc 6",
-   "key": "leviathan-asc-6",
-   "file": "suits/leviathan-asc-6.png",
-   "dome": [
-    208,
-    101.3,
-    29.53,
-    0
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "leviathan-asc-7",
-   "name": "Leviathan asc 7",
-   "key": "leviathan-asc-7",
-   "file": "suits/leviathan-asc-7.png",
-   "dome": [
-    208,
-    100,
-    29.53,
-    0
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "leviathan-asc-8",
-   "name": "Leviathan asc 8",
-   "key": "leviathan-asc-8",
-   "file": "suits/leviathan-asc-8.png",
-   "dome": [
-    208,
-    99,
-    29.53,
-    0
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
    "id": "leviathan-desc-1",
    "name": "Leviathan desc 1",
    "key": "leviathan-desc-1",
    "file": "suits/leviathan-desc-1.png",
    "dome": [
-    208,
-    106,
-    29.53,
-    0
+    186.86,
+    102.5,
+    24.93,
+    1.8
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4992,17 +4994,12 @@
    "key": "leviathan-desc-2",
    "file": "suits/leviathan-desc-2.png",
    "dome": [
-    208,
-    106.8,
-    29.53,
-    0
+    190,
+    120.7,
+    24.93,
+    15.69
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5014,17 +5011,12 @@
    "key": "leviathan-desc-3",
    "file": "suits/leviathan-desc-3.png",
    "dome": [
-    208,
-    107.8,
-    29.53,
-    0
+    188.79,
+    138.78,
+    24.93,
+    29
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -5036,105 +5028,216 @@
    "key": "leviathan-desc-4",
    "file": "suits/leviathan-desc-4.png",
    "dome": [
-    208,
-    109,
-    29.53,
-    0
+    184.5,
+    156.43,
+    24.93,
+    41.51
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "leviathan-desc-5",
-   "name": "Leviathan desc 5",
-   "key": "leviathan-desc-5",
-   "file": "suits/leviathan-desc-5.png",
+   "id": "leviathan-tap-1",
+   "name": "Leviathan tap 1",
+   "key": "leviathan-tap-1",
+   "file": "suits/leviathan-tap-1.png",
    "dome": [
-    208,
-    110.2,
-    29.53,
-    0
+    186.86,
+    102.5,
+    24.93,
+    1.8
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "leviathan-desc-6",
-   "name": "Leviathan desc 6",
-   "key": "leviathan-desc-6",
-   "file": "suits/leviathan-desc-6.png",
+   "id": "leviathan-tap-2",
+   "name": "Leviathan tap 2",
+   "key": "leviathan-tap-2",
+   "file": "suits/leviathan-tap-2.png",
    "dome": [
-    208,
-    111.6,
-    29.53,
-    0
+    185.3,
+    99.36,
+    24.93,
+    -1.93
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "leviathan-desc-7",
-   "name": "Leviathan desc 7",
-   "key": "leviathan-desc-7",
-   "file": "suits/leviathan-desc-7.png",
+   "id": "leviathan-tap-3",
+   "name": "Leviathan tap 3",
+   "key": "leviathan-tap-3",
+   "file": "suits/leviathan-tap-3.png",
    "dome": [
-    208,
-    113,
-    29.53,
-    0
+    184.38,
+    98.01,
+    24.93,
+    -4.31
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "leviathan-desc-8",
-   "name": "Leviathan desc 8",
-   "key": "leviathan-desc-8",
-   "file": "suits/leviathan-desc-8.png",
+   "id": "leviathan-tap-4",
+   "name": "Leviathan tap 4",
+   "key": "leviathan-tap-4",
+   "file": "suits/leviathan-tap-4.png",
    "dome": [
-    208,
-    114,
-    29.53,
-    0
+    184.44,
+    98.69,
+    24.93,
+    -4.69
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "leviathan-tap-5",
+   "name": "Leviathan tap 5",
+   "key": "leviathan-tap-5",
+   "file": "suits/leviathan-tap-5.png",
+   "dome": [
+    185.43,
+    101.19,
+    24.93,
+    -2.98
    ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "leviathan-tap-6",
+   "name": "Leviathan tap 6",
+   "key": "leviathan-tap-6",
+   "file": "suits/leviathan-tap-6.png",
+   "dome": [
+    186.94,
+    105,
+    24.93,
+    0.37
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "leviathan-tap-7",
+   "name": "Leviathan tap 7",
+   "key": "leviathan-tap-7",
+   "file": "suits/leviathan-tap-7.png",
+   "dome": [
+    188.42,
+    109.22,
+    24.93,
+    4.44
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "leviathan-tap-8",
+   "name": "Leviathan tap 8",
+   "key": "leviathan-tap-8",
+   "file": "suits/leviathan-tap-8.png",
+   "dome": [
+    189.53,
+    112.68,
+    24.93,
+    8.14
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "leviathan-tap-9",
+   "name": "Leviathan tap 9",
+   "key": "leviathan-tap-9",
+   "file": "suits/leviathan-tap-9.png",
+   "dome": [
+    190.12,
+    114.35,
+    24.93,
+    10.48
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "leviathan-tap-10",
+   "name": "Leviathan tap 10",
+   "key": "leviathan-tap-10",
+   "file": "suits/leviathan-tap-10.png",
+   "dome": [
+    190.18,
+    113.68,
+    24.93,
+    10.86
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "leviathan-tap-11",
+   "name": "Leviathan tap 11",
+   "key": "leviathan-tap-11",
+   "file": "suits/leviathan-tap-11.png",
+   "dome": [
+    189.64,
+    110.85,
+    24.93,
+    9.17
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "leviathan-tap-12",
+   "name": "Leviathan tap 12",
+   "key": "leviathan-tap-12",
+   "file": "suits/leviathan-tap-12.png",
+   "dome": [
+    188.46,
+    106.71,
+    24.93,
+    5.87
+   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -6772,246 +6875,6 @@
    "frame": true
   },
   {
-   "id": "alien-asc-1",
-   "name": "Alien asc 1",
-   "key": "alien-asc-1",
-   "file": "suits/alien-asc-1.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-asc-2",
-   "name": "Alien asc 2",
-   "key": "alien-asc-2",
-   "file": "suits/alien-asc-2.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-asc-3",
-   "name": "Alien asc 3",
-   "key": "alien-asc-3",
-   "file": "suits/alien-asc-3.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-asc-4",
-   "name": "Alien asc 4",
-   "key": "alien-asc-4",
-   "file": "suits/alien-asc-4.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-asc-5",
-   "name": "Alien asc 5",
-   "key": "alien-asc-5",
-   "file": "suits/alien-asc-5.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-asc-6",
-   "name": "Alien asc 6",
-   "key": "alien-asc-6",
-   "file": "suits/alien-asc-6.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-asc-7",
-   "name": "Alien asc 7",
-   "key": "alien-asc-7",
-   "file": "suits/alien-asc-7.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-asc-8",
-   "name": "Alien asc 8",
-   "key": "alien-asc-8",
-   "file": "suits/alien-asc-8.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-desc-1",
-   "name": "Alien desc 1",
-   "key": "alien-desc-1",
-   "file": "suits/alien-desc-1.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-desc-2",
-   "name": "Alien desc 2",
-   "key": "alien-desc-2",
-   "file": "suits/alien-desc-2.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-desc-3",
-   "name": "Alien desc 3",
-   "key": "alien-desc-3",
-   "file": "suits/alien-desc-3.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-desc-4",
-   "name": "Alien desc 4",
-   "key": "alien-desc-4",
-   "file": "suits/alien-desc-4.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-desc-5",
-   "name": "Alien desc 5",
-   "key": "alien-desc-5",
-   "file": "suits/alien-desc-5.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-desc-6",
-   "name": "Alien desc 6",
-   "key": "alien-desc-6",
-   "file": "suits/alien-desc-6.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-desc-7",
-   "name": "Alien desc 7",
-   "key": "alien-desc-7",
-   "file": "suits/alien-desc-7.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "id": "alien-desc-8",
-   "name": "Alien desc 8",
-   "key": "alien-desc-8",
-   "file": "suits/alien-desc-8.png",
-   "dome": [
-    128,
-    128,
-    40
-   ],
-   "box": null,
-   "ownHead": true,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
    "id": "briellacat-asc-1",
    "name": "Briella's Cat asc 1",
    "key": "briellacat-asc-1",
@@ -8501,6 +8364,198 @@
    "name": "Cat tap 16",
    "key": "catsuit-tap-16",
    "file": "suits/catsuit-tap-16.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-1",
+   "name": "Quill tap 1",
+   "key": "hedgehog-tap-1",
+   "file": "suits/hedgehog-tap-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-2",
+   "name": "Quill tap 2",
+   "key": "hedgehog-tap-2",
+   "file": "suits/hedgehog-tap-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-3",
+   "name": "Quill tap 3",
+   "key": "hedgehog-tap-3",
+   "file": "suits/hedgehog-tap-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-4",
+   "name": "Quill tap 4",
+   "key": "hedgehog-tap-4",
+   "file": "suits/hedgehog-tap-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-5",
+   "name": "Quill tap 5",
+   "key": "hedgehog-tap-5",
+   "file": "suits/hedgehog-tap-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-6",
+   "name": "Quill tap 6",
+   "key": "hedgehog-tap-6",
+   "file": "suits/hedgehog-tap-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-7",
+   "name": "Quill tap 7",
+   "key": "hedgehog-tap-7",
+   "file": "suits/hedgehog-tap-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-8",
+   "name": "Quill tap 8",
+   "key": "hedgehog-tap-8",
+   "file": "suits/hedgehog-tap-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-9",
+   "name": "Quill tap 9",
+   "key": "hedgehog-tap-9",
+   "file": "suits/hedgehog-tap-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-10",
+   "name": "Quill tap 10",
+   "key": "hedgehog-tap-10",
+   "file": "suits/hedgehog-tap-10.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-11",
+   "name": "Quill tap 11",
+   "key": "hedgehog-tap-11",
+   "file": "suits/hedgehog-tap-11.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "hedgehog-tap-12",
+   "name": "Quill tap 12",
+   "key": "hedgehog-tap-12",
+   "file": "suits/hedgehog-tap-12.png",
    "dome": [
     128,
     128,

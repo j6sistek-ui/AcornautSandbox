@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "312",
-  "sourceCommit": "0458af90ec329befbe705be419c92a30c8b5f54c",
+  "artVer": "313",
+  "sourceCommit": "8850859b677fede1c8a6591410fc63231111a232",
   "models": [
     {
       "id": "flight",
@@ -434,64 +434,59 @@
       "key": "suit:copper",
       "file": "suits/copper.png",
       "dome": [
-        207,
-        108,
-        31.97,
-        3
+        185.92,
+        105.99,
+        26.56,
+        1.81
       ],
-      "box": [
-        32,
-        32,
-        192,
-        192
-      ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/copper-asc-1.png",
-          "suits/copper-asc-2.png",
-          "suits/copper-asc-3.png",
-          "suits/copper-asc-4.png",
-          "suits/copper-asc-5.png",
-          "suits/copper-asc-6.png",
-          "suits/copper-asc-7.png",
-          "suits/copper-asc-8.png"
+        "tap": [
+          "suits/copper-tap-1.png",
+          "suits/copper-tap-2.png",
+          "suits/copper-tap-3.png",
+          "suits/copper-tap-4.png",
+          "suits/copper-tap-5.png",
+          "suits/copper-tap-6.png",
+          "suits/copper-tap-7.png",
+          "suits/copper-tap-8.png",
+          "suits/copper-tap-9.png",
+          "suits/copper-tap-10.png",
+          "suits/copper-tap-11.png",
+          "suits/copper-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/copper-desc-1.png",
           "suits/copper-desc-2.png",
           "suits/copper-desc-3.png",
-          "suits/copper-desc-4.png",
-          "suits/copper-desc-5.png",
-          "suits/copper-desc-6.png",
-          "suits/copper-desc-7.png",
-          "suits/copper-desc-8.png"
+          "suits/copper-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/copper.png": "90efcc59dcbb27844b78f18294250a68914e37af715bf710b04f15a06734015d",
-        "suits/copper-asc-1.png": "90efcc59dcbb27844b78f18294250a68914e37af715bf710b04f15a06734015d",
-        "suits/copper-asc-2.png": "e3f6d3885e07cbae79852d4fa0a95a6fb56ce6c47487d02c1a88bc132c147f75",
-        "suits/copper-asc-3.png": "8c276190031ea88d1739d15a186c92c3bcbc448bf01742c0deee08f7b48d9c1d",
-        "suits/copper-asc-4.png": "b127cad0afa8e3fc7c0a4c577733039d0140174b1a948160f797674da70647cb",
-        "suits/copper-asc-5.png": "7292556f0412f6e97aca16d85f543651a5103dd1ce5632acba6576dead63bc43",
-        "suits/copper-asc-6.png": "649775a73447f1b5f714cbae28bc543bc7782c89b519a18bdb8b0574823b8d62",
-        "suits/copper-asc-7.png": "6d4b1c746dfb6788741181ea67f924ca983f78539ff09b715de73fde5210eec7",
-        "suits/copper-asc-8.png": "f3b447cba339a46676eab1766e27bb27757edc5b3b25aa16ef24baef96974a55",
-        "suits/copper-desc-1.png": "90efcc59dcbb27844b78f18294250a68914e37af715bf710b04f15a06734015d",
-        "suits/copper-desc-2.png": "6236c70682a10695265b7e54928559c8edc2fc4eefefb2ce5e7b39e92b32b998",
-        "suits/copper-desc-3.png": "a10aef830d05788870a576b555e55683463cbc3cf4f9e7bc1b387e3af8f3f317",
-        "suits/copper-desc-4.png": "d0187a841a2f3dc8330beda1a986c2544b9213c84199359c4fd8865e76b75762",
-        "suits/copper-desc-5.png": "67903699a5e6e27fde09ecaae2538d5bacbf3ab4f92370641f736695a3878382",
-        "suits/copper-desc-6.png": "660e93c408d8bda54923871dcfd1ae8c4ad2dbfd7b113d86008620adfea6d82e",
-        "suits/copper-desc-7.png": "13f5d7b00257a3f991fdc80dc3d1f6c4921168d8f96f690bffe1860c5f3735bf",
-        "suits/copper-desc-8.png": "71614c2b24c39d7560826d0a2cf94fbc90cedbbe4b4358e0d23271dde73d047d"
+        "suits/copper.png": "c076f351f2c43e29fa58cd2d3275e8297db9c875883fec185e033e3e614f5e32",
+        "suits/copper-tap-1.png": "c076f351f2c43e29fa58cd2d3275e8297db9c875883fec185e033e3e614f5e32",
+        "suits/copper-tap-2.png": "b18a49cffa4c6eada2af49a8527bc4ffc35c7cfa24fe3455f0140a006c8b60c8",
+        "suits/copper-tap-3.png": "0d3031743a219e4f48e9ce40be207217251380816c03faae1380bb79869f255c",
+        "suits/copper-tap-4.png": "959d33ce289997eb336ed0e68666b4f3acb21c2e6dd0bafbb8fd5fda13a899a3",
+        "suits/copper-tap-5.png": "9755b2e26d62a2c3078749b529c1c568ca657bcf94c1f0ae464ad9c662d5ac77",
+        "suits/copper-tap-6.png": "4808bc70e72600fedad96abefc06046a096bd4e68aa4fa6a20776213ee863dc1",
+        "suits/copper-tap-7.png": "9dbad27e6845cffaa6381cf5f51a2a1283f8354dc6bd485c733e8c6047b222cf",
+        "suits/copper-tap-8.png": "79992fcd0106e8a8454a3959f73dff50e5fe27a64603c76385b52a0685fdeceb",
+        "suits/copper-tap-9.png": "ad431abc43eb6f835a1b838960aa2ffcf61f15d3b548fcdd3a33aec660f41723",
+        "suits/copper-tap-10.png": "f788172f06dcf90fe4e44c82ca2d28cedc071fa78d9d0634b7858c2d6244b261",
+        "suits/copper-tap-11.png": "4058563b2784cb02064974e189b0738198fffbae622d8e24515224ca04cbf654",
+        "suits/copper-tap-12.png": "19b2c97b4113b8f7b43af8f848375c770ed616b7843d31bcfe6e621c49337b0d",
+        "suits/copper-desc-1.png": "c076f351f2c43e29fa58cd2d3275e8297db9c875883fec185e033e3e614f5e32",
+        "suits/copper-desc-2.png": "9d4867ce7aa21fbc9946252eb28a144f63ec144a5b2d2f823a6b7308d4ee175f",
+        "suits/copper-desc-3.png": "ad5d75de9f68e02efd672071d5b419db19fef065ddab0d2f371adce79cfeff44",
+        "suits/copper-desc-4.png": "fc095bddfd02d857ed8939664648ee5ef417bcadf2ab2628e796311e66285a46"
       }
     },
     {
@@ -743,58 +738,59 @@
       "key": "suit:alien",
       "file": "suits/alien.png",
       "dome": [
-        128,
-        128,
-        40
+        188.74,
+        121.7,
+        22.29,
+        1.82
       ],
       "box": null,
-      "ownHead": true,
+      "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/alien-asc-1.png",
-          "suits/alien-asc-2.png",
-          "suits/alien-asc-3.png",
-          "suits/alien-asc-4.png",
-          "suits/alien-asc-5.png",
-          "suits/alien-asc-6.png",
-          "suits/alien-asc-7.png",
-          "suits/alien-asc-8.png"
+        "tap": [
+          "suits/alien-tap-1.png",
+          "suits/alien-tap-2.png",
+          "suits/alien-tap-3.png",
+          "suits/alien-tap-4.png",
+          "suits/alien-tap-5.png",
+          "suits/alien-tap-6.png",
+          "suits/alien-tap-7.png",
+          "suits/alien-tap-8.png",
+          "suits/alien-tap-9.png",
+          "suits/alien-tap-10.png",
+          "suits/alien-tap-11.png",
+          "suits/alien-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/alien-desc-1.png",
           "suits/alien-desc-2.png",
           "suits/alien-desc-3.png",
-          "suits/alien-desc-4.png",
-          "suits/alien-desc-5.png",
-          "suits/alien-desc-6.png",
-          "suits/alien-desc-7.png",
-          "suits/alien-desc-8.png"
+          "suits/alien-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/alien.png": "0716c0e65ef831299ff10d385ef937d2ce8eb03013cd860a25a789e753c502d4",
-        "suits/alien-asc-1.png": "0716c0e65ef831299ff10d385ef937d2ce8eb03013cd860a25a789e753c502d4",
-        "suits/alien-asc-2.png": "7686f92138ebe9d5db326a4c3062f72897db71b98502484efc2729121c58e98c",
-        "suits/alien-asc-3.png": "58aafde0b0ba39e5ddb68a329dc8e293d80d89229fb74b619c74c71ace1105d7",
-        "suits/alien-asc-4.png": "ea6eb77100ccf5cba196d6fc4020d2fcdc717b99630c20b488394500e69cce61",
-        "suits/alien-asc-5.png": "2a2cfd1438bd729cf8ba467ef1cf78d9295584485c8afe1b7d68d3d987197556",
-        "suits/alien-asc-6.png": "42e5582ebb29a41b75f8f2a4686a45e5d2cb95de3eb53e85c70b3dd454f92ae8",
-        "suits/alien-asc-7.png": "467b1b38dd1721ae978b40a0aaae7ca0d978fc6c75fe748ae0f613891218bb8b",
-        "suits/alien-asc-8.png": "1698de81241c629bc91e63cc74985b8ce6f88b855eb68bf64d1f22f3cf6ef7eb",
-        "suits/alien-desc-1.png": "0716c0e65ef831299ff10d385ef937d2ce8eb03013cd860a25a789e753c502d4",
-        "suits/alien-desc-2.png": "9d7e44eae4091cf5ef518240bcdb8f10f9b3951e0715c0c1d9e16490b0e97ce9",
-        "suits/alien-desc-3.png": "34fd40eb536928a04640ce71700e17e7504737a7e0aa6422e69b95b92234297a",
-        "suits/alien-desc-4.png": "20ebafd3e7537775e79b1efe4884536f4e41c8c49da1fac6dbe27dfc34fb66b7",
-        "suits/alien-desc-5.png": "5a014bdd1a47582fa1c4a5dae522e91f29003d4a969d143af0457067b8c083d2",
-        "suits/alien-desc-6.png": "4e01cd5f7b5c2e5f674e0602a919c8061f01cec796c2ac1711976ccd42e75a8f",
-        "suits/alien-desc-7.png": "96eb6638a6a00195b76fb3ec6b513e920eb1aebf5be140e134f13dd7da68c86a",
-        "suits/alien-desc-8.png": "6df88299f86e3aabff010c73deebccce9c144b013efec87cfc93356dff41bac5"
+        "suits/alien.png": "669d77615a24cd816194432463f3ce8994549ccc838bdb36409b9c3c77c3d10c",
+        "suits/alien-tap-1.png": "669d77615a24cd816194432463f3ce8994549ccc838bdb36409b9c3c77c3d10c",
+        "suits/alien-tap-2.png": "74935f211576b357fbbeb141a86817b1c3c2819df23005d5ee91ab84a3db3344",
+        "suits/alien-tap-3.png": "3e3d2be055b6987b79fc5fdb8116a52ccc4edbc2894341f0848aadb117886a40",
+        "suits/alien-tap-4.png": "7920ee999983a7b9c21cd43d80df451ec1c9e5d190ee952891ade0f5d921b11a",
+        "suits/alien-tap-5.png": "19254211f0d12cac3db4a0c127813bc055f13350fba0c0bc9f9d9318c7d4a6f9",
+        "suits/alien-tap-6.png": "291a886ce079c8c6b466e405526e13fa7c8d815ae61b5d91c514dca2ebfa2654",
+        "suits/alien-tap-7.png": "5301675b97f88888923f0d0c0ff75487e38c307592116c9d9069c4ab8cbb4223",
+        "suits/alien-tap-8.png": "797558caa6598c1cd3887d9fce90fb63a709d1b338dc701507cd15a718b44a3c",
+        "suits/alien-tap-9.png": "a212e5bc99fdcf523897b9e7e44000f2e4cd4c1b3c040a6e35a19b57ea39080a",
+        "suits/alien-tap-10.png": "7f1f6c4c148889fc05051d4fd606ea461a1d89a3ef347c2027c81e79d399a864",
+        "suits/alien-tap-11.png": "64434b01112886d3f28491af377282b0bfa3ebdbcf86bc280fca592e14ed039c",
+        "suits/alien-tap-12.png": "5cdc7e5ed023baf353fc1d20819e626e962f93048d40a79dd72678b1b57c24da",
+        "suits/alien-desc-1.png": "669d77615a24cd816194432463f3ce8994549ccc838bdb36409b9c3c77c3d10c",
+        "suits/alien-desc-2.png": "d8bd36ea54da5b6ae9f9616892a409d9dfe01ac6312891a512bacd97f74a53c9",
+        "suits/alien-desc-3.png": "c771e476dc3075c14d69bc70c82ec7f2d40a68f088c498a6b2b0b19b9c4be6e1",
+        "suits/alien-desc-4.png": "e6ac8a7d09ae1621e510eeac81b15073d0cf28e2d0bd9cd2ff12c6b20b1cbb32"
       }
     },
     {
@@ -1117,46 +1113,47 @@
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
+        "tap": [
+          "suits/hedgehog-tap-1.png",
+          "suits/hedgehog-tap-2.png",
+          "suits/hedgehog-tap-3.png",
+          "suits/hedgehog-tap-4.png",
+          "suits/hedgehog-tap-5.png",
+          "suits/hedgehog-tap-6.png",
+          "suits/hedgehog-tap-7.png",
+          "suits/hedgehog-tap-8.png",
+          "suits/hedgehog-tap-9.png",
+          "suits/hedgehog-tap-10.png",
+          "suits/hedgehog-tap-11.png",
+          "suits/hedgehog-tap-12.png"
+        ],
         "asc": [],
-        "desc": [],
-        "loop": [
-          "suits/hedgehog-loop-1.png",
-          "suits/hedgehog-loop-2.png",
-          "suits/hedgehog-loop-3.png",
-          "suits/hedgehog-loop-4.png",
-          "suits/hedgehog-loop-5.png",
-          "suits/hedgehog-loop-6.png",
-          "suits/hedgehog-loop-7.png",
-          "suits/hedgehog-loop-8.png",
-          "suits/hedgehog-loop-9.png",
-          "suits/hedgehog-loop-10.png",
-          "suits/hedgehog-loop-11.png",
-          "suits/hedgehog-loop-12.png",
-          "suits/hedgehog-loop-13.png",
-          "suits/hedgehog-loop-14.png",
-          "suits/hedgehog-loop-15.png",
-          "suits/hedgehog-loop-16.png"
-        ]
+        "desc": [
+          "suits/hedgehog-desc-1.png",
+          "suits/hedgehog-desc-2.png",
+          "suits/hedgehog-desc-3.png",
+          "suits/hedgehog-desc-4.png"
+        ],
+        "loop": []
       },
       "hashes": {
-        "suits/hedgehog.png": "263e77a6f2f892dc590ab7e8ec54b907bcf99e6a6ea534e77bd78e27bd38304f",
-        "suits/hedgehog-loop-1.png": "263e77a6f2f892dc590ab7e8ec54b907bcf99e6a6ea534e77bd78e27bd38304f",
-        "suits/hedgehog-loop-2.png": "fa23424b8002e49e19edd9ebbb8eb06983abf5aed8eaa0bfb1c06101b74523c2",
-        "suits/hedgehog-loop-3.png": "866c395a295cf71a704cb118d80edf24131dfb0d95207247003b3d88dc51d4cb",
-        "suits/hedgehog-loop-4.png": "29ac46b879b256a135666ef12a62708bb94904646765dcdddd41149c274cd3f8",
-        "suits/hedgehog-loop-5.png": "a8f16dd3593d9f15e935071ceec84fb32e206796bdc2e39f698d4e029378c10c",
-        "suits/hedgehog-loop-6.png": "3ce22b6589e5e4093921991a49d1745d719da68d2cdca77dbe3b4dfcff0a3469",
-        "suits/hedgehog-loop-7.png": "982d413b8d15ea6d2dc34d6c8eb296ced0e8aba36fa78b301b443e0642eefdb5",
-        "suits/hedgehog-loop-8.png": "abec9814756db85907f8387c4abb0c50c1e30a8307907d4314e6fbfcebaf508f",
-        "suits/hedgehog-loop-9.png": "0013f98fef926684cc299f4faa10ef9b44ade2fa70de108bf33282d6f687ae09",
-        "suits/hedgehog-loop-10.png": "f12d121093c63ea912967c1884ee5782de890d490aa146d61ab3266017c6f499",
-        "suits/hedgehog-loop-11.png": "0e4627ba6ab43b0852c16321749abeaacba2ee4299efa2f6f098831ffc7f0673",
-        "suits/hedgehog-loop-12.png": "c48a78218e309097dc24425eb3a51bd0b03f8d547e650e4555c950c639efcca6",
-        "suits/hedgehog-loop-13.png": "13b4ccf61004cd232353b202d2d86d596a3a8d08f0fabf609e82a87b28c79f50",
-        "suits/hedgehog-loop-14.png": "af27cf042a4d3f9458eebd5be9261621cefec8990ec70ab786c57633adaa0102",
-        "suits/hedgehog-loop-15.png": "684da0f808674bc72173eb19525f16bdc556368655652e309072592a26a86fa4",
-        "suits/hedgehog-loop-16.png": "18f0da45646628264710262d023ac312809d5460f2ec9c23feb509cb382afcd7"
+        "suits/hedgehog.png": "84a605f51fa8bbf941ef0081083dbaa60f68551d7fea3c06c465c1dab130ea23",
+        "suits/hedgehog-tap-1.png": "84a605f51fa8bbf941ef0081083dbaa60f68551d7fea3c06c465c1dab130ea23",
+        "suits/hedgehog-tap-2.png": "515e6e451051f4ce220dae08b2eea2296d186b9d2d315f220d5e7b59aa84aa70",
+        "suits/hedgehog-tap-3.png": "396082bd40b48c99a59deab4d2181bc750b459f34cc4f044f17697933abf0de4",
+        "suits/hedgehog-tap-4.png": "e7edda4535dc7213cc7ac891de52ff8e3680eac06ca57247bf71adc10b26192c",
+        "suits/hedgehog-tap-5.png": "ff89a1dc6e4118c2578fbc98b2d13ef036a62da1502a7b32153f6ad7289d83ac",
+        "suits/hedgehog-tap-6.png": "8e3c47205de020e0531a6ded77ed8121b08fe9b7a9df8e2d2909a838804276fc",
+        "suits/hedgehog-tap-7.png": "01d9e6008f1ff7ba9ffb920550034c91d36e16e39623c117a09e66336b3ab5d7",
+        "suits/hedgehog-tap-8.png": "a2a2cbe755440a80d199165cbdc46b4ff30abeb93d2adef76165b5a2cc8b73cb",
+        "suits/hedgehog-tap-9.png": "dfbe4c346c4c6e670cae36390327456d9be975a79ace02e445daea75ac3046a3",
+        "suits/hedgehog-tap-10.png": "f452eb65738b13b5d38c26bdbdc266c9b2a6bbafb422c89990994082378f9bd6",
+        "suits/hedgehog-tap-11.png": "177e620978d29062ce4cf99bc5fb2b29fb36538b75a7857750d3b478d30035a9",
+        "suits/hedgehog-tap-12.png": "febfd110e7075a3abad15a7537a833f8eaf70e1ae93fdf66d02930efaefffa24",
+        "suits/hedgehog-desc-1.png": "84a605f51fa8bbf941ef0081083dbaa60f68551d7fea3c06c465c1dab130ea23",
+        "suits/hedgehog-desc-2.png": "ab5c44a35dfe494851d520dca8186f383f4b9b3bf22d78d41adaba3e9f238d7b",
+        "suits/hedgehog-desc-3.png": "c5cb61e3fdb35e1e07811624d52472529d062427f65011c95e2700c8abab69a7",
+        "suits/hedgehog-desc-4.png": "d9f9e43c70e4fe57750e3cd8fe862319e3598a33ba1d42cc1df0c4e7d0d998a2"
       }
     },
     {
@@ -1348,64 +1345,59 @@
       "key": "suit:leviathan",
       "file": "suits/leviathan.png",
       "dome": [
-        208,
-        106,
-        29.53,
-        0
+        186.86,
+        102.5,
+        24.93,
+        1.8
       ],
-      "box": [
-        32,
-        32,
-        192,
-        192
-      ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/leviathan-asc-1.png",
-          "suits/leviathan-asc-2.png",
-          "suits/leviathan-asc-3.png",
-          "suits/leviathan-asc-4.png",
-          "suits/leviathan-asc-5.png",
-          "suits/leviathan-asc-6.png",
-          "suits/leviathan-asc-7.png",
-          "suits/leviathan-asc-8.png"
+        "tap": [
+          "suits/leviathan-tap-1.png",
+          "suits/leviathan-tap-2.png",
+          "suits/leviathan-tap-3.png",
+          "suits/leviathan-tap-4.png",
+          "suits/leviathan-tap-5.png",
+          "suits/leviathan-tap-6.png",
+          "suits/leviathan-tap-7.png",
+          "suits/leviathan-tap-8.png",
+          "suits/leviathan-tap-9.png",
+          "suits/leviathan-tap-10.png",
+          "suits/leviathan-tap-11.png",
+          "suits/leviathan-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/leviathan-desc-1.png",
           "suits/leviathan-desc-2.png",
           "suits/leviathan-desc-3.png",
-          "suits/leviathan-desc-4.png",
-          "suits/leviathan-desc-5.png",
-          "suits/leviathan-desc-6.png",
-          "suits/leviathan-desc-7.png",
-          "suits/leviathan-desc-8.png"
+          "suits/leviathan-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/leviathan.png": "9e2bef51b927fdac4f9766e6e1409e2702468d5a5c5d8875b6008d9ba7c9b346",
-        "suits/leviathan-asc-1.png": "9e2bef51b927fdac4f9766e6e1409e2702468d5a5c5d8875b6008d9ba7c9b346",
-        "suits/leviathan-asc-2.png": "234111bc8cdbe9d018b49bda7dbac2d478e726ade2f04e403b672e0fec75d614",
-        "suits/leviathan-asc-3.png": "4b09a01ad1046e21ce42748e7f272f39d4e8ac374baeb1d7ec4f7ec702371b4e",
-        "suits/leviathan-asc-4.png": "e870fbaf17909d9ea2edd94d19e52c39ced81939ba06e7decc59e82cc0723dfc",
-        "suits/leviathan-asc-5.png": "a3c10868bcce90162f1255ee3debccfa3b220da48ea2dac7ab4c73915e620558",
-        "suits/leviathan-asc-6.png": "ab6ec482b25dff755c25e149f719f99041b12ff3735365c859f3961db1389318",
-        "suits/leviathan-asc-7.png": "2c3e5a2383d47730be4b50cb778fd8c0adfc8be848f8f2bed77ef469e5362237",
-        "suits/leviathan-asc-8.png": "79090b8708d1bfe65a43f21319be6413d08e314139d62f596384019f61550444",
-        "suits/leviathan-desc-1.png": "9e2bef51b927fdac4f9766e6e1409e2702468d5a5c5d8875b6008d9ba7c9b346",
-        "suits/leviathan-desc-2.png": "a59d17eac830eae1b553ddce3dc28cde5e39a057031ce1a6f6c3dbcd7f04e91e",
-        "suits/leviathan-desc-3.png": "a19ac822b5f06cdd556fb4b40d717eaee88bac1603d91b4c25ac3d5cdd211db2",
-        "suits/leviathan-desc-4.png": "c061ce139b770b54725bd5cec8cda2131e4382338c5afead88ee16e2cac0d167",
-        "suits/leviathan-desc-5.png": "a72814a898e91b4bf0d8e1e0527aa8d3e53fee3b0a68518a2cce55f4353e0062",
-        "suits/leviathan-desc-6.png": "267818d7c2b0af1d66abbe7783d5875973b15838b2fb8f4d6472ad661f525272",
-        "suits/leviathan-desc-7.png": "083b78b37fd02f47af5a4c241e4ced91135fa39cdeb9ba701d4e9d7f59ec981c",
-        "suits/leviathan-desc-8.png": "e2da4ff99a57cc84cdc1d8104d5b787e78c3797c2be8a9611c79a56cc87598b6"
+        "suits/leviathan.png": "146a860f262d00a0e587460652ef10fd1fa4598c9615ddeea5bba942988b5b44",
+        "suits/leviathan-tap-1.png": "146a860f262d00a0e587460652ef10fd1fa4598c9615ddeea5bba942988b5b44",
+        "suits/leviathan-tap-2.png": "fac9cb473c74df0dd0a3257c4bde63f774ee9e935376ff724a4f12afdcd269bc",
+        "suits/leviathan-tap-3.png": "ad82da5ca4641cdba69c01bf442c291385052db8d990e0b4f56b93e279e923d4",
+        "suits/leviathan-tap-4.png": "4ab2124a39a8654fb9c8adb9f88582498880cf9be1624c7a5559741c5aec124e",
+        "suits/leviathan-tap-5.png": "62b4558d6ac9c03bc7fb9b12b1e07d31fde4a9b8e747c34be55496e5090270df",
+        "suits/leviathan-tap-6.png": "fb7c640b1a7f75b7dbafdeb96a68deb0cf0a0f7a2eae874117e88b0db00b2231",
+        "suits/leviathan-tap-7.png": "7a3b325be26f2f429f2a6e7afcc94b7aa12c83d0a6e4f9e2cf1f16c49899817e",
+        "suits/leviathan-tap-8.png": "c1b68888f558e51eecfb797848c2fc2cd6947e3fcbc94349716069e9d4a8aadb",
+        "suits/leviathan-tap-9.png": "f27a221b5370cf3b784e6d807be0c0f7ecb4bd2eadd0af1f0f16f8be982925c4",
+        "suits/leviathan-tap-10.png": "5d17ee5b77fd9828e153c4233aca2a01923253819c6218966960a6999098984c",
+        "suits/leviathan-tap-11.png": "d3b0a4fbb8e41511bdc4240fa5ec9aaffd81dcc09a836250ea9384b7c4921873",
+        "suits/leviathan-tap-12.png": "ff19987e216b1cc177163f0b198e1b407c8d1423d344697f11f7d397355bd775",
+        "suits/leviathan-desc-1.png": "146a860f262d00a0e587460652ef10fd1fa4598c9615ddeea5bba942988b5b44",
+        "suits/leviathan-desc-2.png": "33a08d14b8ba14f7621b95871d2865f096c88600f6067d065e831f70b0b3e5e6",
+        "suits/leviathan-desc-3.png": "6d5fb38c441356baa0d92cb6be725bd1e09ccdb97ce8a6f52b1c62503e42c336",
+        "suits/leviathan-desc-4.png": "27f91ade4808c86a00e0401dc505161c0a7aa0d3ea97a03f4a96ca3de875ee56"
       }
     },
     {
@@ -2675,10 +2667,10 @@
       1.82
     ],
     "suit:copper": [
-      207,
-      108,
-      31.97,
-      3
+      185.92,
+      105.99,
+      26.56,
+      1.81
     ],
     "suit:frost": [
       186.2,
@@ -2705,9 +2697,10 @@
       0
     ],
     "suit:alien": [
-      128,
-      128,
-      40
+      188.74,
+      121.7,
+      22.29,
+      1.82
     ],
     "suit:ghost": [
       208,
@@ -2760,10 +2753,10 @@
       2
     ],
     "suit:leviathan": [
-      208,
-      106,
-      29.53,
-      0
+      186.86,
+      102.5,
+      24.93,
+      1.8
     ],
     "suit:verdant": [
       204.19,
@@ -2923,6 +2916,102 @@
       118.06,
       25.88,
       5.84
+    ],
+    "alien-desc-1": [
+      188.74,
+      121.7,
+      22.29,
+      1.82
+    ],
+    "alien-desc-2": [
+      188.54,
+      134.72,
+      22.29,
+      15.5
+    ],
+    "alien-desc-3": [
+      185.29,
+      146.95,
+      22.29,
+      28.66
+    ],
+    "alien-desc-4": [
+      179.25,
+      157.86,
+      22.29,
+      41.1
+    ],
+    "alien-tap-1": [
+      188.74,
+      121.7,
+      22.29,
+      1.82
+    ],
+    "alien-tap-2": [
+      187.8,
+      119.23,
+      22.29,
+      -1.85
+    ],
+    "alien-tap-3": [
+      187.09,
+      118.11,
+      22.29,
+      -4.19
+    ],
+    "alien-tap-4": [
+      186.89,
+      118.53,
+      22.29,
+      -4.57
+    ],
+    "alien-tap-5": [
+      187.23,
+      120.36,
+      22.29,
+      -2.88
+    ],
+    "alien-tap-6": [
+      187.87,
+      123.17,
+      22.29,
+      0.41
+    ],
+    "alien-tap-7": [
+      188.55,
+      126.4,
+      22.29,
+      4.42
+    ],
+    "alien-tap-8": [
+      189.1,
+      129.21,
+      22.29,
+      8.06
+    ],
+    "alien-tap-9": [
+      189.51,
+      130.68,
+      22.29,
+      10.36
+    ],
+    "alien-tap-10": [
+      189.8,
+      130.35,
+      22.29,
+      10.73
+    ],
+    "alien-tap-11": [
+      189.87,
+      128.29,
+      22.29,
+      9.08
+    ],
+    "alien-tap-12": [
+      189.51,
+      125.09,
+      22.29,
+      5.82
     ],
     "bigbooty-tap-1": [
       207,
@@ -3116,101 +3205,101 @@
       33.97,
       5.81
     ],
-    "copper-asc-1": [
-      207,
-      108,
-      31.97,
-      3
-    ],
-    "copper-asc-2": [
-      207,
-      107.3,
-      31.97,
-      3
-    ],
-    "copper-asc-3": [
-      207,
-      106.5,
-      31.97,
-      -2
-    ],
-    "copper-asc-4": [
-      207,
-      105.6,
-      31.97,
-      3
-    ],
-    "copper-asc-5": [
-      207,
-      104.5,
-      31.97,
-      3
-    ],
-    "copper-asc-6": [
-      207,
-      103.3,
-      31.97,
-      3
-    ],
-    "copper-asc-7": [
-      207,
-      102,
-      31.97,
-      -2
-    ],
-    "copper-asc-8": [
-      207,
-      101,
-      31.97,
-      3
-    ],
     "copper-desc-1": [
-      207,
-      108,
-      31.97,
-      3
+      185.92,
+      105.99,
+      26.56,
+      1.81
     ],
     "copper-desc-2": [
-      207,
-      108.8,
-      31.97,
-      3
+      188.69,
+      119.68,
+      26.56,
+      15.5
     ],
     "copper-desc-3": [
-      207,
-      109.8,
-      31.97,
-      3
+      188.8,
+      133.27,
+      26.56,
+      28.66
     ],
     "copper-desc-4": [
-      207,
-      111,
-      31.97,
-      8
+      185.84,
+      145.51,
+      26.56,
+      41.11
     ],
-    "copper-desc-5": [
-      207,
-      112.2,
-      31.97,
-      3
+    "copper-tap-1": [
+      185.92,
+      105.99,
+      26.56,
+      1.81
     ],
-    "copper-desc-6": [
-      207,
-      113.6,
-      31.97,
-      3
+    "copper-tap-2": [
+      184.32,
+      103.19,
+      26.56,
+      -1.86
     ],
-    "copper-desc-7": [
-      207,
-      115,
-      31.97,
-      3
+    "copper-tap-3": [
+      183.15,
+      101.84,
+      26.56,
+      -4.2
     ],
-    "copper-desc-8": [
-      207,
-      116,
-      31.97,
-      3
+    "copper-tap-4": [
+      183,
+      102.18,
+      26.56,
+      -4.57
+    ],
+    "copper-tap-5": [
+      183.84,
+      104.11,
+      26.56,
+      -2.89
+    ],
+    "copper-tap-6": [
+      185.39,
+      107.24,
+      26.56,
+      0.4
+    ],
+    "copper-tap-7": [
+      186.65,
+      110.83,
+      26.56,
+      4.41
+    ],
+    "copper-tap-8": [
+      187.71,
+      113.92,
+      26.56,
+      8.05
+    ],
+    "copper-tap-9": [
+      188.59,
+      115.58,
+      26.56,
+      10.36
+    ],
+    "copper-tap-10": [
+      188.79,
+      115.27,
+      26.56,
+      10.73
+    ],
+    "copper-tap-11": [
+      188.23,
+      113.05,
+      26.56,
+      9.07
+    ],
+    "copper-tap-12": [
+      187.24,
+      109.61,
+      26.56,
+      5.81
     ],
     "cosmic-desc-1": [
       184.32,
@@ -4268,101 +4357,101 @@
       26.96,
       5.84
     ],
-    "leviathan-asc-1": [
-      208,
-      106,
-      29.53,
-      0
-    ],
-    "leviathan-asc-2": [
-      208,
-      105.3,
-      29.53,
-      0
-    ],
-    "leviathan-asc-3": [
-      208,
-      104.5,
-      29.53,
-      0
-    ],
-    "leviathan-asc-4": [
-      208,
-      103.6,
-      29.53,
-      0
-    ],
-    "leviathan-asc-5": [
-      208,
-      102.5,
-      29.53,
-      0
-    ],
-    "leviathan-asc-6": [
-      208,
-      101.3,
-      29.53,
-      0
-    ],
-    "leviathan-asc-7": [
-      208,
-      100,
-      29.53,
-      0
-    ],
-    "leviathan-asc-8": [
-      208,
-      99,
-      29.53,
-      0
-    ],
     "leviathan-desc-1": [
-      208,
-      106,
-      29.53,
-      0
+      186.86,
+      102.5,
+      24.93,
+      1.8
     ],
     "leviathan-desc-2": [
-      208,
-      106.8,
-      29.53,
-      0
+      190,
+      120.7,
+      24.93,
+      15.69
     ],
     "leviathan-desc-3": [
-      208,
-      107.8,
-      29.53,
-      0
+      188.79,
+      138.78,
+      24.93,
+      29
     ],
     "leviathan-desc-4": [
-      208,
-      109,
-      29.53,
-      0
+      184.5,
+      156.43,
+      24.93,
+      41.51
     ],
-    "leviathan-desc-5": [
-      208,
-      110.2,
-      29.53,
-      0
+    "leviathan-tap-1": [
+      186.86,
+      102.5,
+      24.93,
+      1.8
     ],
-    "leviathan-desc-6": [
-      208,
-      111.6,
-      29.53,
-      0
+    "leviathan-tap-2": [
+      185.3,
+      99.36,
+      24.93,
+      -1.93
     ],
-    "leviathan-desc-7": [
-      208,
-      113,
-      29.53,
-      0
+    "leviathan-tap-3": [
+      184.38,
+      98.01,
+      24.93,
+      -4.31
     ],
-    "leviathan-desc-8": [
-      208,
-      114,
-      29.53,
-      0
+    "leviathan-tap-4": [
+      184.44,
+      98.69,
+      24.93,
+      -4.69
+    ],
+    "leviathan-tap-5": [
+      185.43,
+      101.19,
+      24.93,
+      -2.98
+    ],
+    "leviathan-tap-6": [
+      186.94,
+      105,
+      24.93,
+      0.37
+    ],
+    "leviathan-tap-7": [
+      188.42,
+      109.22,
+      24.93,
+      4.44
+    ],
+    "leviathan-tap-8": [
+      189.53,
+      112.68,
+      24.93,
+      8.14
+    ],
+    "leviathan-tap-9": [
+      190.12,
+      114.35,
+      24.93,
+      10.48
+    ],
+    "leviathan-tap-10": [
+      190.18,
+      113.68,
+      24.93,
+      10.86
+    ],
+    "leviathan-tap-11": [
+      189.64,
+      110.85,
+      24.93,
+      9.17
+    ],
+    "leviathan-tap-12": [
+      188.46,
+      106.71,
+      24.93,
+      5.87
     ],
     "robo-tap-1": [
       193,
@@ -4940,86 +5029,6 @@
       27.72,
       5.84
     ],
-    "alien-asc-1": [
-      128,
-      128,
-      40
-    ],
-    "alien-asc-2": [
-      128,
-      128,
-      40
-    ],
-    "alien-asc-3": [
-      128,
-      128,
-      40
-    ],
-    "alien-asc-4": [
-      128,
-      128,
-      40
-    ],
-    "alien-asc-5": [
-      128,
-      128,
-      40
-    ],
-    "alien-asc-6": [
-      128,
-      128,
-      40
-    ],
-    "alien-asc-7": [
-      128,
-      128,
-      40
-    ],
-    "alien-asc-8": [
-      128,
-      128,
-      40
-    ],
-    "alien-desc-1": [
-      128,
-      128,
-      40
-    ],
-    "alien-desc-2": [
-      128,
-      128,
-      40
-    ],
-    "alien-desc-3": [
-      128,
-      128,
-      40
-    ],
-    "alien-desc-4": [
-      128,
-      128,
-      40
-    ],
-    "alien-desc-5": [
-      128,
-      128,
-      40
-    ],
-    "alien-desc-6": [
-      128,
-      128,
-      40
-    ],
-    "alien-desc-7": [
-      128,
-      128,
-      40
-    ],
-    "alien-desc-8": [
-      128,
-      128,
-      40
-    ],
     "briellacat-asc-1": [
       128,
       128,
@@ -5515,6 +5524,66 @@
       128,
       40
     ],
+    "hedgehog-tap-1": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-2": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-3": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-4": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-5": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-6": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-7": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-8": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-9": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-10": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-11": [
+      128,
+      128,
+      40
+    ],
+    "hedgehog-tap-12": [
+      128,
+      128,
+      40
+    ],
     "volt-tap-1": [
       128,
       128,
@@ -5680,7 +5749,7 @@
     "arcflash": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "c76e2c0fe33ad3eda1f58edc68d97d93adb6e8a47d6a1809b2e9fc732e17049e",
+    "control-constants": "12e6f01bd8f2779583114098202cf90d13157a63f234e140f6de4a81d976cc1e",
     "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
@@ -5689,7 +5758,7 @@
     "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
     "high-orbit-motion": "08e7ec309a2bb197950773b427d01b1fe181f0c8503ed4886d9eb96f1e6064e2",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",
-    "premium-bank-wake": "effa86c508ea91c93abc180926b8f5b3fdee3ce3cc5ee2b1eab31ba900310c4b",
+    "premium-bank-wake": "09c990e185e2577f447f97c660f7d2cbf65af52201937be1b9013faa2699c562",
     "premium-flight": "3407656d559b99a152da02554a04e81827109e2dc5c6bd679a201f44cdb646d3",
     "premium-flight-frames": "d130d90ee5ea9c28a2425fe67f269d84c0619b91db5207250fc253675d355e0c",
     "rig-limb-fit": "3a4f500e7f35bdfa2f8a97e21f9457e3bdb846ab8da9ff3d540fb909d1e035f3",

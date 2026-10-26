@@ -55,8 +55,8 @@ for(const model of premium){
     assert.equal(tuned.frame,8-original.frame,'each selected climb painting uses the reversed order');
   }
 }
-// Copper is the ascent-bank fixture since Ion became a 3D tap+dive suit (26 Oct 2026)
-const ion=manifest.models.find(m=>m.id==='copper'),p=makeProject(manifest,ion).profile;
+// Ghost is the ascent-bank fixture since Ion, then Copper, became 3D tap+dive suits (26 Oct 2026)
+const ion=manifest.models.find(m=>m.id==='ghost'),p=makeProject(manifest,ion).profile;
 assert.equal(p.tapSource,'asc');
 assert.equal(p.tapPath,'out-back');
 const returning=createAnimation(ion);acceptTap(returning,p);for(let i=0;i<120;i++)stepAnimation(returning,p,STEP,-300);assert.equal(returning.frame,0,'out-and-back must finish at neutral');
@@ -81,7 +81,8 @@ assert.ok(Math.abs(y.animation.output.pose.nearArm-x.animation.output.pose.nearA
 assert.ok(Math.abs(y.animation.output.pose.tailTip-x.animation.output.pose.tailTip)>10);
 assert.equal(y.animation.output.pose.head,x.animation.output.pose.head,'arm edit changes head');
 assert.equal(y.y,x.y,'visual tuning changes flight path');assert.equal(y.vy,x.vy);
-const companion=manifest.models.find(m=>m.id==='hedgehog'),cp=makeProject(manifest,companion).profile,cs=createAnimation(companion);acceptTap(cs,cp);
+// Noodle is the companion fixture since Quill became a 3D tap+dive suit (26 Oct 2026)
+const companion=manifest.models.find(m=>m.id==='ferret'),cp=makeProject(manifest,companion).profile,cs=createAnimation(companion);acceptTap(cs,cp);
 for(let i=0;i<150;i++)stepAnimation(cs,cp,STEP,300);assert.equal(cs.frame,0,'companion must rest after its tap clip');
 cp.loopContinuous=true;stepAnimation(cs,cp,STEP,300);assert.ok(cs.frame>0,'continuous option not honored');
 const t={time:3,anchor:1000,speed:.5,playing:true};assert.equal(transportTime(t,3000),4);assert.equal(transportTime({...t,playing:false},9000),3);

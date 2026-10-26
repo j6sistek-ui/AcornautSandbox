@@ -26,8 +26,7 @@ export const TAP_SHAPE_MIN = 0.1, TAP_SHAPE_MAX = 1.0;
 // Arcflash have their own controllers.
 export const TAP_SHAPE = {
     eclipse: "velocity", cryostar: "velocity", verdant: "velocity", cyber: "velocity", seraph: "velocity",
-    alien: "velocity", briellacat: "velocity", copper: "velocity",
-    ghost: "velocity", leviathan: "velocity",
+    briellacat: "velocity", ghost: "velocity",
     // Owner-requested replacement banks follow Cyber's exact live path.
     porcelain: "velocity", nacre: "velocity", origamist: "velocity",
 };
@@ -112,10 +111,8 @@ export const SUIT_LEAN = {
     // flight was the reference here at the default; it joined the 3D lineup below
     // --- rigged suits: these carry the velocity bank AND the heading pitch,
     //     so they are the ones most likely to read as over-tipped
-    copper: { up: 0.8, down: 0.3 },
     ghost: { up: 0.8, down: 0.3 },
     seraph: { up: 0.8, down: 0.3 },
-    leviathan: { up: 0.8, down: 0.3 },
     verdant: { up: 0.8, down: 0.3 },
     cryostar: { up: 0.8, down: 0.3 },
     porcelain: { up: 0.8, down: 0.3 },
@@ -133,7 +130,6 @@ export const SUIT_LEAN = {
     // the critters fly their painted tap banks with the standard lean
     raccoon: { up: 0.8, down: 0.3 },
     ferret: { up: 0.8, down: 0.3 },
-    hedgehog: { up: 0.8, down: 0.3 },
     // --- declared shape exceptions
     cyber: { up: 0.8, down: 0.3 },
     // both aliens fly with NO lean: the owner zeroed climb and dive -
@@ -153,6 +149,9 @@ export const SUIT_LEAN = {
     cosmic: { up: 0, down: 0 },
     flight: { up: 0, down: 0 },
     frost: { up: 0, down: 0 },
+    leviathan: { up: 0, down: 0 },
+    copper: { up: 0, down: 0 },
+    hedgehog: { up: 0, down: 0 },
 };
 /** The dial for a suit, or the default for one that has none yet. */
 export function suitLean(id) {

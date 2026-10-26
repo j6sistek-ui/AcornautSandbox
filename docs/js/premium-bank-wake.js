@@ -1,5 +1,5 @@
-import { paintHighOrbitEffect } from './high-orbit-effects.js?v=312';
-import { CYBER_TRIO_REGISTRATION } from './cyber-trio-registration.js?v=312';
+import { paintHighOrbitEffect } from './high-orbit-effects.js?v=313';
+import { CYBER_TRIO_REGISTRATION } from './cyber-trio-registration.js?v=313';
 /** Place the existing signature wake at the selected painting's boots.
  * Resolve the painter's full transform before drawing the wake in screen
  * coordinates, so previously emitted samples do not bank with the pilot. */

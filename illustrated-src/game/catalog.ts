@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "312";
+export const ART_VER = "313";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -275,7 +275,7 @@ export const SUITS: Suit[] = [
   { id: "voidsuit", name: "Void", cost: 240, fur: "#544a63", furDark: "#312a3d", belly: "#8d7fa0", suit: "#241d33", suitLite: "#4f4270", suitDark: "#100c18", trim: "#d4af37", glow: "#b45cff", dust: "#e7b6ff" },
   { id: "ember", name: "Ember", cost: 90, fur: "#b5722f", furDark: "#7c481a", belly: "#eccb96", suit: "#3a2a26", suitLite: "#7a4a3a", suitDark: "#1e1412", trim: "#ff7a2e", glow: "#ff5a1e", dust: "#ffb066" },
   { id: "robo", name: "Robo", cost: 0, robo: true, fur: "#9aa6b4", furDark: "#525d6c", belly: "#cfd8e2", suit: "#37414f", suitLite: "#7f93a6", suitDark: "#1d242e", trim: "#35e0ff", glow: "#35e0ff", dust: "#9be8ff" },
-  { id: "alien", name: "Alien", cost: 0, alien: true, ownHead: true, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
+  { id: "alien", name: "Alien", cost: 0, fur: "#7ed957", furDark: "#3e8a2a", belly: "#d6f7b0", suit: "#2e6b5a", suitLite: "#57b09a", suitDark: "#173a2e", trim: "#c8ff6a", glow: "#7dff4d", dust: "#b6ff8a" },
   // The A/B is DECIDED: the standard bank won and flies "alien" above.
   // This is the retired custom-posed character, kept on the beta shelf as
   // Alien 1 by the owner's call ("alien 1 retires to unreleased").

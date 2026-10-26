@@ -1,12 +1,12 @@
-import { artUrl } from "./art.js?v=312";
-import { spillAppearance } from "./spill-appearance.js?v=312";
-import { SUITS } from "./catalog.js?v=312";
-import { paintShipPreview } from "./draw.js?v=312";
-import { writeSave } from "./save.js?v=312";
-import { SPILL_CONTROL_COLORS } from "./spill-control-art.js?v=312";
-import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillEngineColor, spillContractOffers } from "./spill-content.js?v=312";
-import { spillBuildFromState } from "./spill-presentation.js?v=312";
-import { SPILL_SHOP, spillPrice, spillContractProgress } from "./spill.js?v=312";
+import { artUrl } from "./art.js?v=313";
+import { spillAppearance } from "./spill-appearance.js?v=313";
+import { SUITS } from "./catalog.js?v=313";
+import { paintShipPreview } from "./draw.js?v=313";
+import { writeSave } from "./save.js?v=313";
+import { SPILL_CONTROL_COLORS } from "./spill-control-art.js?v=313";
+import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, spillEngineColor, spillContractOffers } from "./spill-content.js?v=313";
+import { spillBuildFromState } from "./spill-presentation.js?v=313";
+import { SPILL_SHOP, spillPrice, spillContractProgress } from "./spill.js?v=313";
 const el = (tag, cls = "", text = "") => {
     const n = document.createElement(tag);
     n.className = cls;

@@ -3546,14 +3546,12 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "flap-4": [163, 80, 45],
   // Static portraits; each radius fits that painting's head, not its body box.
   // Five beta suits: whole-frame skull registration from beta-flight-refresh.
-  "suit:copper": [207, 108, 31.97, 3],
   "suit:robo": [184, 98, 32.71, 0],
   "suit:ghost": [208, 109, 30.73, 0],
   "suit:bigbooty": [184, 108, 25.36, 10],
   "suit:catsuit": [212, 86, 50],
   "suit:phoenix": [207, 92, 41],
   "suit:seraph": [205, 131, 27.89, 2],
-  "suit:leviathan": [208, 106, 29.53, 0],
   "suit:verdant": [204.19, 98.83, 37.88, 6],
   "suit:cryostar": [202, 99, 38.64, 5],
   "suit:eclipse": [205, 89, 41.2, -5],
@@ -3644,23 +3642,6 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "seraph-desc-6": [203, 148, 27.89, 23],
   "seraph-desc-7": [201, 163, 27.89, 57],
   "seraph-desc-8": [197, 163, 27.89, 62],
-  // copper — pose-specific head and collar registration.
-  "copper-asc-1": [207, 108, 31.97, 3],
-  "copper-asc-2": [207, 107.3, 31.97, 3],
-  "copper-asc-3": [207, 106.5, 31.97, -2],
-  "copper-asc-4": [207, 105.6, 31.97, 3],
-  "copper-asc-5": [207, 104.5, 31.97, 3],
-  "copper-asc-6": [207, 103.3, 31.97, 3],
-  "copper-asc-7": [207, 102, 31.97, -2],
-  "copper-asc-8": [207, 101, 31.97, 3],
-  "copper-desc-1": [207, 108, 31.97, 3],
-  "copper-desc-2": [207, 108.8, 31.97, 3],
-  "copper-desc-3": [207, 109.8, 31.97, 3],
-  "copper-desc-4": [207, 111, 31.97, 8],
-  "copper-desc-5": [207, 112.2, 31.97, 3],
-  "copper-desc-6": [207, 113.6, 31.97, 3],
-  "copper-desc-7": [207, 115, 31.97, 3],
-  "copper-desc-8": [207, 116, 31.97, 3],
   // cryostar — pose-specific head and collar registration.
   "cryostar-asc-1": [190, 83, 36.03, 0],
   "cryostar-asc-2": [190.5, 81.5, 36.03, 0],
@@ -3712,23 +3693,6 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "ghost-desc-6": [208, 114.6, 30.73, 5],
   "ghost-desc-7": [208, 116, 30.73, 5],
   "ghost-desc-8": [208, 117, 30.73, 5],
-  // leviathan — pose-specific head and collar registration.
-  "leviathan-asc-1": [208, 106, 29.53, 0],
-  "leviathan-asc-2": [208, 105.3, 29.53, 0],
-  "leviathan-asc-3": [208, 104.5, 29.53, 0],
-  "leviathan-asc-4": [208, 103.6, 29.53, 0],
-  "leviathan-asc-5": [208, 102.5, 29.53, 0],
-  "leviathan-asc-6": [208, 101.3, 29.53, 0],
-  "leviathan-asc-7": [208, 100, 29.53, 0],
-  "leviathan-asc-8": [208, 99, 29.53, 0],
-  "leviathan-desc-1": [208, 106, 29.53, 0],
-  "leviathan-desc-2": [208, 106.8, 29.53, 0],
-  "leviathan-desc-3": [208, 107.8, 29.53, 0],
-  "leviathan-desc-4": [208, 109, 29.53, 0],
-  "leviathan-desc-5": [208, 110.2, 29.53, 0],
-  "leviathan-desc-6": [208, 111.6, 29.53, 0],
-  "leviathan-desc-7": [208, 113, 29.53, 0],
-  "leviathan-desc-8": [208, 114, 29.53, 0],
   // THE 3D LINEUP (26 Oct 2026): measured, not placed - tools/rig3d projects each
   // frame's 3D head through the render camera (anchors.json). Centre and tilt are
   // per frame; the radius is the suit's median, so the glass never resizes.
@@ -3902,6 +3866,57 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
   "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
   "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+  "suit:leviathan": [186.86, 102.5, 24.93, 1.8],
+  "leviathan-tap-1": [186.86, 102.5, 24.93, 1.8],
+  "leviathan-tap-2": [185.3, 99.36, 24.93, -1.93],
+  "leviathan-tap-3": [184.38, 98.01, 24.93, -4.31],
+  "leviathan-tap-4": [184.44, 98.69, 24.93, -4.69],
+  "leviathan-tap-5": [185.43, 101.19, 24.93, -2.98],
+  "leviathan-tap-6": [186.94, 105, 24.93, 0.37],
+  "leviathan-tap-7": [188.42, 109.22, 24.93, 4.44],
+  "leviathan-tap-8": [189.53, 112.68, 24.93, 8.14],
+  "leviathan-tap-9": [190.12, 114.35, 24.93, 10.48],
+  "leviathan-tap-10": [190.18, 113.68, 24.93, 10.86],
+  "leviathan-tap-11": [189.64, 110.85, 24.93, 9.17],
+  "leviathan-tap-12": [188.46, 106.71, 24.93, 5.87],
+  "leviathan-desc-1": [186.86, 102.5, 24.93, 1.8],
+  "leviathan-desc-2": [190, 120.7, 24.93, 15.69],
+  "leviathan-desc-3": [188.79, 138.78, 24.93, 29],
+  "leviathan-desc-4": [184.5, 156.43, 24.93, 41.51],
+  "suit:copper": [185.92, 105.99, 26.56, 1.81],
+  "copper-tap-1": [185.92, 105.99, 26.56, 1.81],
+  "copper-tap-2": [184.32, 103.19, 26.56, -1.86],
+  "copper-tap-3": [183.15, 101.84, 26.56, -4.2],
+  "copper-tap-4": [183, 102.18, 26.56, -4.57],
+  "copper-tap-5": [183.84, 104.11, 26.56, -2.89],
+  "copper-tap-6": [185.39, 107.24, 26.56, 0.4],
+  "copper-tap-7": [186.65, 110.83, 26.56, 4.41],
+  "copper-tap-8": [187.71, 113.92, 26.56, 8.05],
+  "copper-tap-9": [188.59, 115.58, 26.56, 10.36],
+  "copper-tap-10": [188.79, 115.27, 26.56, 10.73],
+  "copper-tap-11": [188.23, 113.05, 26.56, 9.07],
+  "copper-tap-12": [187.24, 109.61, 26.56, 5.81],
+  "copper-desc-1": [185.92, 105.99, 26.56, 1.81],
+  "copper-desc-2": [188.69, 119.68, 26.56, 15.5],
+  "copper-desc-3": [188.8, 133.27, 26.56, 28.66],
+  "copper-desc-4": [185.84, 145.51, 26.56, 41.11],
+  "suit:alien": [188.74, 121.7, 22.29, 1.82],
+  "alien-tap-1": [188.74, 121.7, 22.29, 1.82],
+  "alien-tap-2": [187.8, 119.23, 22.29, -1.85],
+  "alien-tap-3": [187.09, 118.11, 22.29, -4.19],
+  "alien-tap-4": [186.89, 118.53, 22.29, -4.57],
+  "alien-tap-5": [187.23, 120.36, 22.29, -2.88],
+  "alien-tap-6": [187.87, 123.17, 22.29, 0.41],
+  "alien-tap-7": [188.55, 126.4, 22.29, 4.42],
+  "alien-tap-8": [189.1, 129.21, 22.29, 8.06],
+  "alien-tap-9": [189.51, 130.68, 22.29, 10.36],
+  "alien-tap-10": [189.8, 130.35, 22.29, 10.73],
+  "alien-tap-11": [189.87, 128.29, 22.29, 9.08],
+  "alien-tap-12": [189.51, 125.09, 22.29, 5.82],
+  "alien-desc-1": [188.74, 121.7, 22.29, 1.82],
+  "alien-desc-2": [188.54, 134.72, 22.29, 15.5],
+  "alien-desc-3": [185.29, 146.95, 22.29, 28.66],
+  "alien-desc-4": [179.25, 157.86, 22.29, 41.1],
   "suit:flight": [186.2, 112.62, 26.96, 1.82],
   "flight-tap-1": [186.2, 112.62, 26.96, 1.82],
   "flight-tap-2": [184.49, 109.48, 26.96, -1.87],
@@ -4263,10 +4278,10 @@ function bakedDome(key: string) {
 // and one presentation box. Alpha-box fitting would undo the normalization
 // whenever a tail was longer, making the same helmet a different size.
 export const NATURAL_FLIGHT_SUITS = new Set([
-  "copper", "leviathan", "ghost",
+  "ghost",
   // iontrim, voidsuit, sammie, gemmie and ember left this set with the 3D lineup
-  // (26 Oct 2026), frost after them: their rendered banks register by their own
-  // first tap frame
+  // (26 Oct 2026), then frost, copper and leviathan: their rendered banks register
+  // by their own first tap frame
 ]);
 const NATURAL_FLIGHT_BOX = { x: 32, y: 32, w: 192, h: 192 };
 function naturalFlightKey(key: string) {
@@ -4615,7 +4630,7 @@ const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail 
 // The 3D lineup too (26 Oct 2026): its rendered dive frames carry the attitude.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
   "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
-  "flight", "frost"]);
+  "flight", "frost", "leviathan", "copper"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
