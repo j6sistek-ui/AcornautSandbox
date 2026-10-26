@@ -27,7 +27,8 @@ for(const model of manifest.models){const project=makeProject(manifest,model);as
   const at=clone(a.animation);seekSimulation(a,8.25);assert.deepEqual(a.animation,at,'pause changes a pose');
   seekSimulation(a,project.pattern.duration+8.25);assert.deepEqual(a.animation,at,'repeat differs from first pass');
 }
-assert.equal(manifest.models.length,34);const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
+// 35 with the 3D test (pinky, beta, 25 Oct 2026)
+assert.equal(manifest.models.length,35);const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
 assert.deepEqual(rigs.map(m=>m.id).sort(),['abyssal','arcflash','cinderforge','cosmic','groveguard','sunforged','vanguard'],'all seven original cut rigs remain available');
 const premium=manifest.models.filter(m=>['porcelain','nacre','origamist'].includes(m.id));assert.equal(premium.length,3);
 const cyber=manifest.models.find(m=>m.id==='cyber'),cyberProfile=makeProject(manifest,cyber).profile;

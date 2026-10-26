@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "308",
-  "sourceCommit": "651811187165987e4f7c8f8c34ad12cea71f93a3",
+  "artVer": "309",
+  "sourceCommit": "a73a0c7847c6586a9119598bb2996ac5dff3b926",
   "models": [
     {
       "id": "flight",
@@ -1916,6 +1916,66 @@
       }
     },
     {
+      "id": "pinky",
+      "name": "Pinky 3D",
+      "key": "suit:pinky",
+      "file": "suits/pinky.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "box": null,
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/pinky-tap-1.png",
+          "suits/pinky-tap-2.png",
+          "suits/pinky-tap-3.png",
+          "suits/pinky-tap-4.png",
+          "suits/pinky-tap-5.png",
+          "suits/pinky-tap-6.png",
+          "suits/pinky-tap-7.png",
+          "suits/pinky-tap-8.png",
+          "suits/pinky-tap-9.png",
+          "suits/pinky-tap-10.png",
+          "suits/pinky-tap-11.png",
+          "suits/pinky-tap-12.png"
+        ],
+        "asc": [],
+        "desc": [
+          "suits/pinky-desc-1.png",
+          "suits/pinky-desc-2.png",
+          "suits/pinky-desc-3.png",
+          "suits/pinky-desc-4.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/pinky.png": "badc62739fdc806d541455588ee6ef9e18dca5b537a96527638d8e31769487eb",
+        "suits/pinky-tap-1.png": "badc62739fdc806d541455588ee6ef9e18dca5b537a96527638d8e31769487eb",
+        "suits/pinky-tap-2.png": "3c056f02ec7355ad2f2f65f0edebd9bea3b3c3893942bd8c017575738a1bf92a",
+        "suits/pinky-tap-3.png": "d25406b403a0e056d74a79a88f462078a7803b175cef2329026d687259dacfdc",
+        "suits/pinky-tap-4.png": "92ec8802a8999a6ca97a5410156f22dbbca39969630ac0e5184221582fbed203",
+        "suits/pinky-tap-5.png": "cc41c0ffa5fcaddbac5bef44e5fbfefe3e855bff20af039df706a0baf345b6f8",
+        "suits/pinky-tap-6.png": "f525a52e5d8aeff32c5d32727f7e01c385634aca7e963e4c18389420b4380bcf",
+        "suits/pinky-tap-7.png": "4b5f1dee7f9ba7f949549109154ffaaad8d2cd5811acff3a4f452df958bdeef6",
+        "suits/pinky-tap-8.png": "70913472b9123d9f0e502b20fb02f23183a030597c78687732706a54eb3ea1c1",
+        "suits/pinky-tap-9.png": "439833b2c17f563ad413e52c774930f306e40b921c246af8025ffc8b95b2edbf",
+        "suits/pinky-tap-10.png": "19a6591c4ecad01222aad4f5700f0c337d06585e459e6f395a147232061b9bfb",
+        "suits/pinky-tap-11.png": "8632a782b4561dbdb29f616834f60023ae3e0a294f656bc22d3f2cddb44d3496",
+        "suits/pinky-tap-12.png": "c1046d0ed9ebb491f56918e21a56fd36eef426ad8fd56321c5ebe74510aa8fe6",
+        "suits/pinky-desc-1.png": "badc62739fdc806d541455588ee6ef9e18dca5b537a96527638d8e31769487eb",
+        "suits/pinky-desc-2.png": "170839127d7bf27611a7c47c51abc24d2540f20d0d73910274514ee2e1c40c42",
+        "suits/pinky-desc-3.png": "24bdff0d3938cf1c9b864cafbf23383cb11ffe6f8df3db5c8671b477c33e0c9b",
+        "suits/pinky-desc-4.png": "47bd85ab589da3c628340224e2468865de9fc4213edb611e28b6d8ee86f4278d"
+      }
+    },
+    {
       "id": "cyber",
       "name": "Cyber",
       "key": "suit:cyber",
@@ -2689,6 +2749,11 @@
       182,
       90,
       30.12
+    ],
+    "suit:pinky": [
+      128,
+      128,
+      40
     ],
     "suit:cyber": [
       128,
@@ -5319,6 +5384,66 @@
       128,
       40
     ],
+    "pinky-tap-1": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-2": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-3": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-4": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-5": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-6": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-7": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-8": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-9": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-10": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-11": [
+      128,
+      128,
+      40
+    ],
+    "pinky-tap-12": [
+      128,
+      128,
+      40
+    ],
     "volt-tap-1": [
       128,
       128,
@@ -5484,7 +5609,7 @@
     "arcflash": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "9a8f2de651ee04a10884fecf4ca6745848843ae54c123f807b982e65c64e2cdd",
+    "control-constants": "b8ed679af4d250a4088d18ca66643fce1e3db7cb5144e3b54e7e68055bed2659",
     "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
