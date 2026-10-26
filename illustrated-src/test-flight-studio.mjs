@@ -84,10 +84,8 @@ assert.ok(Math.abs(y.animation.output.pose.nearArm-x.animation.output.pose.nearA
 assert.ok(Math.abs(y.animation.output.pose.tailTip-x.animation.output.pose.tailTip)>10);
 assert.equal(y.animation.output.pose.head,x.animation.output.pose.head,'arm edit changes head');
 assert.equal(y.y,x.y,'visual tuning changes flight path');assert.equal(y.vy,x.vy);
-// Noodle is the companion fixture since Quill became a 3D tap+dive suit (26 Oct 2026)
-const companion=manifest.models.find(m=>m.id==='ferret'),cp=makeProject(manifest,companion).profile,cs=createAnimation(companion);acceptTap(cs,cp);
-for(let i=0;i<150;i++)stepAnimation(cs,cp,STEP,300);assert.equal(cs.frame,0,'companion must rest after its tap clip');
-cp.loopContinuous=true;stepAnimation(cs,cp,STEP,300);assert.ok(cs.frame>0,'continuous option not honored');
+// The critters' looping companions all joined the 3D lineup (26 Oct 2026): no model loops now
+assert(manifest.models.every(m=>m.family==='premium-flight'||!m.banks.loop.length),'no model ships a loop bank');
 const t={time:3,anchor:1000,speed:.5,playing:true};assert.equal(transportTime(t,3000),4);assert.equal(transportTime({...t,playing:false},9000),3);
 for(const edit of [v=>v.version=99,v=>v.profile.tapSeconds=0,v=>v.profile.parts.head.offset=Infinity,v=>v.profile.tapOrder=[99],v=>v.pattern.events=[{at:5,type:'tap'},{at:2,type:'tap'}],v=>v.profile.descentFull=20,v=>v.view.scale=10000]){const bad=clone(base);edit(bad);assert.throws(()=>validateProject(bad,manifest));}
 const changed=clone(base);changed.model.assets={};assert.equal(validateProject(changed,manifest).warnings.length,1);

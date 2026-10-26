@@ -21,10 +21,10 @@ regfile = ART/'natural-export.json' if os.environ.get('NATURAL_FLIGHT_OUTPUT') e
 reg = json.loads(regfile.read_text())
 draw = (ROOT/'illustrated-src/game/draw.ts').read_text()
 dome = {k: [float(x) for x in v.split(',')] for k,v in re.findall(r'"((?:suit:)?[a-z]+(?:-(?:asc|desc)-\d+)?)":\s*\[([^\]]+)\]',draw)}
-loops = {'ferret','raccoon'}
+loops: set = set()  # Noodle and Bandit joined the 3D lineup (26 Oct 2026)
 # eight of the nine, and Quill's loop, retired with the 3D lineup (26 Oct 2026): their
 # reviewed frames are gone
-RETIRED = {'iontrim','voidsuit','sammie','gemmie','ember','frost','copper','leviathan','hedgehog'}
+RETIRED = {'iontrim','voidsuit','sammie','gemmie','ember','frost','copper','leviathan','hedgehog','ferret','raccoon'}
 expected = {'ghost'} | loops
 assert set(reg['report']) - RETIRED == expected, 'exact requested character scope'
 hashfile=SOURCE/'frame-hashes.json'

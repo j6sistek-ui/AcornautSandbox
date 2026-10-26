@@ -27,9 +27,9 @@ globalThis.localStorage={getItem:()=>null,setItem(){},removeItem(){}};
 const mod=file=>import(pathToFileURL(join(scratch,'js',file+'.js')).href);
 const [D,A,C,Sim,S,Control]=await Promise.all(['draw','art','catalog','sim','save','control-constants'].map(mod));
 // Ion, Void, Sammie, Gemmie, Ember, Frost, Copper and Leviathan left with the 3D
-// lineup (26 Oct 2026), and Quill's loop with them; Ghost and two loops stay
+// lineup (26 Oct 2026), and the three critters' loops with them; Ghost stays
 const standard=['ghost'];
-const loops=['ferret','raccoon'],art=A.emptyArt();
+const loops=[],art=A.emptyArt();
 assert.deepEqual([...D.NATURAL_FLIGHT_SUITS],standard);
 async function sprite(file){const im=await loadImage(join(root,'docs/art',file));Object.defineProperty(im,'src',{get:()=>file});labels.set(im,file);return A.asSprite(im);}
 for(const id of [...standard,...loops]){

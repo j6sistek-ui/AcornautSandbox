@@ -3795,6 +3795,7 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
   "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
   "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+
   "suit:eclipse": [186.2, 112.62, 26.96, 1.82],
   "eclipse-tap-1": [186.2, 112.62, 26.96, 1.82],
   "eclipse-tap-2": [184.49, 109.48, 26.96, -1.87],

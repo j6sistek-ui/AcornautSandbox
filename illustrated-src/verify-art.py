@@ -1243,6 +1243,8 @@ CUSTOM_FLIGHT_SUITS = {
                   # nor pale. Still rigged, unlike the other custom
                   # characters: the neck cut took cleanly at a 13.3% tail
                   # share on the new master.
+    "ferret",     # Noodle and Bandit, 26 Oct 2026: owner-approved 3D models,
+    "raccoon",    # the same as Quill below.
     "hedgehog",   # Quill, 26 Oct 2026: owner-approved 3D model (tools/rig3d), a
                   # 12-frame tap and 4-frame dive like the 3D lineup; its own
                   # head, so no dome anchors.

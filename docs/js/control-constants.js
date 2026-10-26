@@ -124,8 +124,6 @@ export const SUIT_LEAN = {
     // Briella's Cat flies its still until its sprite sheet lands
     briellacat: { up: 0.8, down: 0.3 },
     // the critters fly their painted tap banks with the standard lean
-    raccoon: { up: 0.8, down: 0.3 },
-    ferret: { up: 0.8, down: 0.3 },
     // --- declared shape exceptions
     cyber: { up: 0.8, down: 0.3 },
     // both aliens fly with NO lean: the owner zeroed climb and dive -
@@ -152,6 +150,8 @@ export const SUIT_LEAN = {
     eclipse: { up: 0, down: 0 },
     cryostar: { up: 0, down: 0 },
     verdant: { up: 0, down: 0 },
+    raccoon: { up: 0, down: 0 },
+    ferret: { up: 0, down: 0 },
 };
 /** The dial for a suit, or the default for one that has none yet. */
 export function suitLean(id) {

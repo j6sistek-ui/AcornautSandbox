@@ -68,6 +68,13 @@
   },
   "verdant": {
    "model": "verdant3d"
+  },
+  "ferret": {
+   "model": "meerkat3d",
+   "head": "tripoHead_1"
+  },
+  "raccoon": {
+   "model": "raccoon3d"
   }
  },
  "hashes": {
@@ -427,6 +434,40 @@
   "suits/verdant-tap-10.png": "e0c408ba9ef2d419a985a3eb3be7e052e4d1d4df",
   "suits/verdant-tap-11.png": "dce8c25e9ae37833cb238fa3d29e406af3587f6d",
   "suits/verdant-tap-12.png": "bb4aa75f6edc70179bbddfa1c589d1ac26b81a25",
-  "suits/verdant.png": "a9ef23b3d1432c7bda707c6374178dd98ff030cc"
+  "suits/verdant.png": "a9ef23b3d1432c7bda707c6374178dd98ff030cc",
+  "suits/ferret-desc-1.png": "71719ccddf911f0a5eec5d82b069693834df45c5",
+  "suits/ferret-desc-2.png": "0910b2130f202af8c72ade0a834a0ad9a1ae2ee3",
+  "suits/ferret-desc-3.png": "345fb06aec445c94b541cf6c83fb95a5df03164a",
+  "suits/ferret-desc-4.png": "7238cde1201c196ec6f7a5e0c41c07411d053741",
+  "suits/ferret-tap-1.png": "71719ccddf911f0a5eec5d82b069693834df45c5",
+  "suits/ferret-tap-2.png": "bc2653392778ef754306d65b55e7beb01400028e",
+  "suits/ferret-tap-3.png": "1e3b15055b5e79ddafca028abcb8c4c0cd633397",
+  "suits/ferret-tap-4.png": "88903fb42a57764af6f85d5c90eae58442634721",
+  "suits/ferret-tap-5.png": "7266af228d727225c15d801e052b590d98cfd82a",
+  "suits/ferret-tap-6.png": "78d0c7f18c08c9f9f734947753d97d4991ea8586",
+  "suits/ferret-tap-7.png": "6ae4aedf9430a93643074babcdd528661ccb995b",
+  "suits/ferret-tap-8.png": "0a1a4a0f08433f826735c30eb2af13c3a7a0039a",
+  "suits/ferret-tap-9.png": "7c605789d8116dbcceab0acd0952e60dd700c588",
+  "suits/ferret-tap-10.png": "a7be4e49f090abb5a8edf4aee1ca8997776f0998",
+  "suits/ferret-tap-11.png": "9a615f365ea8cb30bae05eb15b324c081e1981c1",
+  "suits/ferret-tap-12.png": "4d18f1204603e712a25ccb73956e1366a0de9f1d",
+  "suits/ferret.png": "71719ccddf911f0a5eec5d82b069693834df45c5",
+  "suits/raccoon-desc-1.png": "00d9d9888d2d52c250d2eb7be868130760d87841",
+  "suits/raccoon-desc-2.png": "86b9c7063fc82c2240b2b37561eb853ef9c6388e",
+  "suits/raccoon-desc-3.png": "a87feff0a2072ac554410523d72e75124f1d6257",
+  "suits/raccoon-desc-4.png": "dddb026a6c91ba841b2c530e713d1d8ab0ca9f8e",
+  "suits/raccoon-tap-1.png": "00d9d9888d2d52c250d2eb7be868130760d87841",
+  "suits/raccoon-tap-2.png": "888a9ba48cf1bff6f95cd7d4874e106bfb3b704e",
+  "suits/raccoon-tap-3.png": "f8bf22b9e39c88e31b6f38c38212802bf9dfba6e",
+  "suits/raccoon-tap-4.png": "04945de8e8708b4de7735ee31ab541e347c63d4a",
+  "suits/raccoon-tap-5.png": "7860c75f0e89508775414fce02b884445ea31549",
+  "suits/raccoon-tap-6.png": "681b307badaccf5ba8ccf268982d8453a0a0e78a",
+  "suits/raccoon-tap-7.png": "afa639cb573a38184d6121926c007fc293898b02",
+  "suits/raccoon-tap-8.png": "21a606b4eb61a49ba93f7b246b50669523258084",
+  "suits/raccoon-tap-9.png": "c8905894cf8977c8f8e805a3942f5a30fa87f52b",
+  "suits/raccoon-tap-10.png": "67cee33b52ad5ffe73157f4d049b940a99ec9825",
+  "suits/raccoon-tap-11.png": "2c9ecd11c05e439de680ed2bb2db565ab504ff73",
+  "suits/raccoon-tap-12.png": "c866fb57ffaff8a5f161cc472cab1c8ec638dee9",
+  "suits/raccoon.png": "00d9d9888d2d52c250d2eb7be868130760d87841"
  }
 }

@@ -128,8 +128,9 @@ try {
   assert.deepEqual(legacy,OldCat.SUITS.filter(suit=>!OldCat.wearsOwnHead(suit)&&!TRANSFERRED.includes(suit.id)&&!NATURAL.includes(suit.id)&&!THREE_D_TEST.includes(suit.id)),'helmet fitting does not change the pre-existing suit roster');
   assert.deepEqual([...promoted,...lineup.filter(s=>HIGH_ORBIT.includes(s.id))].map(suit=>suit.id).sort(),[...HIGH_ORBIT].sort(),'HIGH ORBIT promotions are the only roster additions');
   assert.deepEqual(lineup.map(s=>s.id).sort(),[...THREE_D_TEST].sort(),'the whole 3D lineup ships with a wearable helmet');
-  // Quill joined the 3D lineup with its own head (owner, 26 Oct 2026), so it is not flown below
-  const OWN_HEAD_3D=['hedgehog'];
+  // Quill, Noodle and Bandit joined the 3D lineup with their own heads (owner, 26 Oct 2026), so
+  // they are not flown below
+  const OWN_HEAD_3D=['hedgehog','ferret','raccoon'];
   const authorized=id=>HIGH_ORBIT.includes(id)||CYBER_TRIO.includes(id)||THREE_D_TEST.includes(id)||OWN_HEAD_3D.includes(id);
   const withoutAuthorizedRigs=table=>Array.isArray(table) ? table.filter(id=>!authorized(id))
     : Object.fromEntries(Object.entries(table).filter(([id])=>!authorized(id)));

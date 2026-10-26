@@ -450,6 +450,7 @@ const TAP_BANKS: Record<string, number> = {
   // and the next two on the same rendered skeleton, then four on their own rigs
   flight: 12, frost: 12, leviathan: 12, copper: 12, alien: 12, hedgehog: 12,
   arcflash: 12, origamist: 12, eclipse: 12, cryostar: 12, verdant: 12,
+  ferret: 12, raccoon: 12,
   // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
   // retired: their GENERATED motion lost the pilot's lower body at its
   // extremes, and each flies a painted ascent/descent ramp now -
@@ -498,11 +499,13 @@ const DESC_BANKS: Record<string, number> =
         abyssal: 4, gemmie: 4, iontrim: 4, sammie: 4, cosmic: 4,
         flight: 4, frost: 4, leviathan: 4, copper: 4, alien: 4, hedgehog: 4,
         arcflash: 4, origamist: 4, eclipse: 4, cryostar: 4, verdant: 4,
+        ferret: 4, raccoon: 4,
         };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
-// hedgehog (Quill) left for the 3D lineup (26 Oct 2026)
-const LOOP_BANKS: Record<string, number> = { raccoon: 16, ferret: 16 };
+// all three critters left for the 3D lineup (26 Oct 2026): Quill, then Noodle and Bandit.
+// The loop path stays for the next sheet that needs it.
+const LOOP_BANKS: Record<string, number> = {};
 const LAZY_SUIT_IDS = [...new Set([
   "vanguard",
   // Arcflash is SOLD on production (7 Sep 2026): its parts atlas must load

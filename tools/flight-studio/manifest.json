@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "316",
-  "sourceCommit": "40db0e3b6908d4b927b5a03a332398327756ca54",
+  "artVer": "317",
+  "sourceCommit": "b70a8540dbb95d55786877c78a887b0c5ab66fee",
   "models": [
     {
       "id": "flight",
@@ -1013,46 +1013,47 @@
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
+        "tap": [
+          "suits/raccoon-tap-1.png",
+          "suits/raccoon-tap-2.png",
+          "suits/raccoon-tap-3.png",
+          "suits/raccoon-tap-4.png",
+          "suits/raccoon-tap-5.png",
+          "suits/raccoon-tap-6.png",
+          "suits/raccoon-tap-7.png",
+          "suits/raccoon-tap-8.png",
+          "suits/raccoon-tap-9.png",
+          "suits/raccoon-tap-10.png",
+          "suits/raccoon-tap-11.png",
+          "suits/raccoon-tap-12.png"
+        ],
         "asc": [],
-        "desc": [],
-        "loop": [
-          "suits/raccoon-loop-1.png",
-          "suits/raccoon-loop-2.png",
-          "suits/raccoon-loop-3.png",
-          "suits/raccoon-loop-4.png",
-          "suits/raccoon-loop-5.png",
-          "suits/raccoon-loop-6.png",
-          "suits/raccoon-loop-7.png",
-          "suits/raccoon-loop-8.png",
-          "suits/raccoon-loop-9.png",
-          "suits/raccoon-loop-10.png",
-          "suits/raccoon-loop-11.png",
-          "suits/raccoon-loop-12.png",
-          "suits/raccoon-loop-13.png",
-          "suits/raccoon-loop-14.png",
-          "suits/raccoon-loop-15.png",
-          "suits/raccoon-loop-16.png"
-        ]
+        "desc": [
+          "suits/raccoon-desc-1.png",
+          "suits/raccoon-desc-2.png",
+          "suits/raccoon-desc-3.png",
+          "suits/raccoon-desc-4.png"
+        ],
+        "loop": []
       },
       "hashes": {
-        "suits/raccoon.png": "f497424777bb7a14a4d8fac3c8ed16ff5e9e01020c99cbecb8f70d88d2c3c2b6",
-        "suits/raccoon-loop-1.png": "f497424777bb7a14a4d8fac3c8ed16ff5e9e01020c99cbecb8f70d88d2c3c2b6",
-        "suits/raccoon-loop-2.png": "ab3ebf40a619012ec61be036faeae9fc4268fc52eac5cba52d0719b3c45ec93b",
-        "suits/raccoon-loop-3.png": "7ac0552cafec4d68ce5431cc93d595fedb551b7ff33e91f4c9776eda180b3124",
-        "suits/raccoon-loop-4.png": "8cdbc4166ff0df6927ac6455b03c32dff964aa3aadafb496f99f591e670a9846",
-        "suits/raccoon-loop-5.png": "0ea70fe8a60044930b05939b9e5ef00f9f3d9c684796985f759b3ab0565be7b3",
-        "suits/raccoon-loop-6.png": "5171fc3a397b7bb6491e7945e38420082b65c63d5a1f7d096b95172002524005",
-        "suits/raccoon-loop-7.png": "d7f60c090534cef5d5bbc4915c4275aeea7f36361c0c86e73acfda80fba30437",
-        "suits/raccoon-loop-8.png": "cb68ad67450553d899eaba18bd5765a56640624bf346e364db07f634b301a607",
-        "suits/raccoon-loop-9.png": "849b2a7974f640359fbe8469c69478a301314d6d28fcd3ae839afdd5f2828fa3",
-        "suits/raccoon-loop-10.png": "b7afd2aeb7020d03397916ac081d01e9a931dbb49a71f0c3d9414f5331a6b028",
-        "suits/raccoon-loop-11.png": "cbe4c0e625a92585324b0087ddd2995f5d4456a0ac6cc8ab3bd515789611b961",
-        "suits/raccoon-loop-12.png": "5cbded4d1cda6bb22dc6397439e7b53472450ff1eed347557f5eb68d581858b6",
-        "suits/raccoon-loop-13.png": "6affa3efbf05337ce817ac324e86985cfbca0637651d2c57d1b1cf110a62b6b7",
-        "suits/raccoon-loop-14.png": "2a16dc4cddcc4b7f629344d5175e4fec28a9c7088be9b00b44dfb6a526f241a4",
-        "suits/raccoon-loop-15.png": "61a6a0c6db65dab60e9c6e5272709488d8d28cb1da4b764cb9ae100248c36555",
-        "suits/raccoon-loop-16.png": "207b259c5a61d706262d7cebef3e3d6412e3720053690e422a0a7f16b45bf545"
+        "suits/raccoon.png": "f80cd1334c9f1cff5d954de22a077b96b6cb461a09ab11b3486dfa5e95cd5aa7",
+        "suits/raccoon-tap-1.png": "f80cd1334c9f1cff5d954de22a077b96b6cb461a09ab11b3486dfa5e95cd5aa7",
+        "suits/raccoon-tap-2.png": "ab437b28e8e17fb78c0343938234be62402bb4e8d5e6d3a805be9770a5c7744e",
+        "suits/raccoon-tap-3.png": "7c6940cef59be24ef9785f7f1f4028e4aac2276ff632da32ec699caacc3a51f9",
+        "suits/raccoon-tap-4.png": "879a8e560d33b3ad6131cff8d949e505ed51ee3e59b41a27faf5921bea36cb41",
+        "suits/raccoon-tap-5.png": "fce10bdb768a6556f7005ab59147e6b1b0a210accd8c729bd1682da74d6a706a",
+        "suits/raccoon-tap-6.png": "23d47e694ac2dfbc96d5f5f7fa02e41c67651001df1069455a62de119c95f31e",
+        "suits/raccoon-tap-7.png": "dc8b2c5cb7c6f24ccc760702775547bbcedb30b966cde23393bf04ce1ac8c563",
+        "suits/raccoon-tap-8.png": "9ee9af4b76b205aabcaf9ab8ce90d06dbbb8e05ffffab8336f612960d7f778df",
+        "suits/raccoon-tap-9.png": "90db0ce2d0984f32f3e761dd89bb447675c5c2f0799ea7b5ae6a5dacd8eef02d",
+        "suits/raccoon-tap-10.png": "06836559a25bb0a41dcc072b6a5ae0b1e79f411d53385ef6406430f849646d6c",
+        "suits/raccoon-tap-11.png": "728cfeb9ffb39a1f27931b81926e469e0aa891cb29d0b481a7c35d3a221bfe75",
+        "suits/raccoon-tap-12.png": "fdf0ca359823c36b2eb7694d78efa995269bdac88f1dcdf2a2b4126356037c77",
+        "suits/raccoon-desc-1.png": "f80cd1334c9f1cff5d954de22a077b96b6cb461a09ab11b3486dfa5e95cd5aa7",
+        "suits/raccoon-desc-2.png": "3ac7de914bf8209039a7c8f44d0800e309486afbcd6939a3d8e8bd1c784e84bb",
+        "suits/raccoon-desc-3.png": "fe72d6bc0093b42dbcee52c6bf7c4cda29367c47a53d88ab0b3d74d19f9fb3ca",
+        "suits/raccoon-desc-4.png": "f5d34535c87534e2d5a15eb7685ae7d8a835790ee4fa5d5724dc65ee8f7971e4"
       }
     },
     {
@@ -1072,46 +1073,47 @@
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
+        "tap": [
+          "suits/ferret-tap-1.png",
+          "suits/ferret-tap-2.png",
+          "suits/ferret-tap-3.png",
+          "suits/ferret-tap-4.png",
+          "suits/ferret-tap-5.png",
+          "suits/ferret-tap-6.png",
+          "suits/ferret-tap-7.png",
+          "suits/ferret-tap-8.png",
+          "suits/ferret-tap-9.png",
+          "suits/ferret-tap-10.png",
+          "suits/ferret-tap-11.png",
+          "suits/ferret-tap-12.png"
+        ],
         "asc": [],
-        "desc": [],
-        "loop": [
-          "suits/ferret-loop-1.png",
-          "suits/ferret-loop-2.png",
-          "suits/ferret-loop-3.png",
-          "suits/ferret-loop-4.png",
-          "suits/ferret-loop-5.png",
-          "suits/ferret-loop-6.png",
-          "suits/ferret-loop-7.png",
-          "suits/ferret-loop-8.png",
-          "suits/ferret-loop-9.png",
-          "suits/ferret-loop-10.png",
-          "suits/ferret-loop-11.png",
-          "suits/ferret-loop-12.png",
-          "suits/ferret-loop-13.png",
-          "suits/ferret-loop-14.png",
-          "suits/ferret-loop-15.png",
-          "suits/ferret-loop-16.png"
-        ]
+        "desc": [
+          "suits/ferret-desc-1.png",
+          "suits/ferret-desc-2.png",
+          "suits/ferret-desc-3.png",
+          "suits/ferret-desc-4.png"
+        ],
+        "loop": []
       },
       "hashes": {
-        "suits/ferret.png": "23c6c248487900d2d89fb91c38aa3fc2a82c1ce073a8ef269c3443bbfff68518",
-        "suits/ferret-loop-1.png": "23c6c248487900d2d89fb91c38aa3fc2a82c1ce073a8ef269c3443bbfff68518",
-        "suits/ferret-loop-2.png": "3efd8309889e894bec0f5dc0f164ad3ca60c1be6a72752c00fee8d3e662ad123",
-        "suits/ferret-loop-3.png": "97046a09d0a17933d13388599061f99a28d8b7c0cf9a6708933e8dd760faa02b",
-        "suits/ferret-loop-4.png": "6991fb1f427c543f5b7a21f1e2ea7e1339bbadb92dbc778bb4af0152d900b694",
-        "suits/ferret-loop-5.png": "d72d0fe6418019b548c5e6fb5859a5cfff9eb18cb6632982df69f59f4c13abba",
-        "suits/ferret-loop-6.png": "d9b8abc701454033101b2e5deb106cf9ab664c743b4094385c6716aa8ccbd0bb",
-        "suits/ferret-loop-7.png": "d54e37a61c6d2257431e4278d3c790431351a76bc4b5c0b2dbe24eccc3e5227a",
-        "suits/ferret-loop-8.png": "326bfc24192df5995a949c337aab296d6a3990bef5ed5531603d4942eeab1342",
-        "suits/ferret-loop-9.png": "0c0b3075e19a07c5dc6b3e6eb6bc2d9b75e5940ccd214436ea51223188e2481e",
-        "suits/ferret-loop-10.png": "7b96d9ff63c09008ad497d9e1c097d46fca30adccc181330f81aba126438bf68",
-        "suits/ferret-loop-11.png": "42e1683ec4183452ef2b072178c83227cb884e4ba1c280ba458b50793be3c2e7",
-        "suits/ferret-loop-12.png": "7000f98d5dd67c313f4fc81a31df6f386f0244729efc26467d830bf0d1336a07",
-        "suits/ferret-loop-13.png": "973ba42c73f44b163448db38f5a4099793c7d72db27d31dd75a30308dac5bab3",
-        "suits/ferret-loop-14.png": "5e845c2ba892c1123e5f14f665405018ecd4f7e86403bc7724f60c5143f5e7c8",
-        "suits/ferret-loop-15.png": "110a4e29fabe22be87a978d93a7d1ebe9c582054c96135c283604342829f1eb5",
-        "suits/ferret-loop-16.png": "1ece74ff8402db70ecb0488e4c14027dab33865e66817fb121e67b6cfc15460a"
+        "suits/ferret.png": "12e0ed495f9acf66ca8dc19dd23b87b90480749ffaf15123fe2deae5a65c2a19",
+        "suits/ferret-tap-1.png": "12e0ed495f9acf66ca8dc19dd23b87b90480749ffaf15123fe2deae5a65c2a19",
+        "suits/ferret-tap-2.png": "62c4bb9bda3dc8a7e23527ae7189cab1bc4096d07176256e9907655d91693384",
+        "suits/ferret-tap-3.png": "de980b5bc2308a3d3aea383b274ee02a9dd4d68107a810ba540c88aff64888f1",
+        "suits/ferret-tap-4.png": "adbe258cf03d0a4ddc56ebce0b123216d121ad660dc563f3f4e0da06bfd1c8b6",
+        "suits/ferret-tap-5.png": "09019950bb64cfbf38b20ad56cf843c5fcb2fa8ffcd052f6831346ee0977a0cf",
+        "suits/ferret-tap-6.png": "14108aba8d09f6ff48b0b8d197712cda0f0144d2b216ad6f58d3807303227f36",
+        "suits/ferret-tap-7.png": "e4eadedb86be0eff96cb1b422506c30cfaf00a8496f73da60b9425a998684d4c",
+        "suits/ferret-tap-8.png": "6d2bf61022b0ce61757e9c6957321b67e085f751c440068b22d716ef1104eac9",
+        "suits/ferret-tap-9.png": "e999bff9175090e28588be281eb16f1b4bd75c277db48999dc1db70304af22aa",
+        "suits/ferret-tap-10.png": "aaee13b5d7713cc810f9459200042aa5e0a664467d297212a4179df250fb643e",
+        "suits/ferret-tap-11.png": "d69725bd25757f18f4eaa066fcd48ec65c7016664342314ff2e99217196f2bef",
+        "suits/ferret-tap-12.png": "c4c0b627fff569e31e9b9a7700dfb7959d4b4c0c9335dd17e4f1b51860e47a0d",
+        "suits/ferret-desc-1.png": "12e0ed495f9acf66ca8dc19dd23b87b90480749ffaf15123fe2deae5a65c2a19",
+        "suits/ferret-desc-2.png": "7c4707ac91ad12573cc179772f30e98a097de74d98f487370c22b011c85659f4",
+        "suits/ferret-desc-3.png": "8a792ec006e98fdd840ed98215e47c8abda176f473ba257082ae8e4fe583bcbb",
+        "suits/ferret-desc-4.png": "818688a3a2df9a99bbd259ce3889369c42bf53e8e3a35a0877040f5d242f347c"
       }
     },
     {
@@ -5517,6 +5519,66 @@
       128,
       40
     ],
+    "ferret-tap-1": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-2": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-3": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-4": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-5": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-6": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-7": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-8": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-9": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-10": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-11": [
+      128,
+      128,
+      40
+    ],
+    "ferret-tap-12": [
+      128,
+      128,
+      40
+    ],
     "hedgehog-tap-1": [
       128,
       128,
@@ -5573,6 +5635,66 @@
       40
     ],
     "hedgehog-tap-12": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-1": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-2": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-3": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-4": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-5": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-6": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-7": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-8": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-9": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-10": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-11": [
+      128,
+      128,
+      40
+    ],
+    "raccoon-tap-12": [
       128,
       128,
       40
@@ -5742,7 +5864,7 @@
     "arcflash": "e3311622176da38faba697d12c9b2a471084681e7192d539da559e6336028b38",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "7c96fee5b5b642a53bbe665470e0ce604dda10351a75569e26deb22e621e2ae4",
+    "control-constants": "cb8e8a9da67abc331453f4cbb5704e340b345534bcea3da026e4e61e6472d1fc",
     "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
