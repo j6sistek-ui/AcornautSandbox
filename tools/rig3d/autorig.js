@@ -291,15 +291,36 @@ export async function loadRig(url, opts = {}) {
   // edges, so feet and spine stay put. jiggleAnchor()/setJiggle() let the studio's spring move it.
   const jiggle = [];
   for (const [n, spec] of (opts.jiggle || []).entries()) {
+    // weight is taken from every named bone; the FIRST one locates the region (a shared bone such
+    // as the root can then feed both cheeks without pulling their centres together)
     const src = new Set(spec.bones.map(byName).filter(i => i >= 0)); if (!src.size) continue;
-    const dom = []; for (let i = 0; i < N; i++) { let b = -1, w = 0; for (let k = 0; k < 4; k++) if (sw.getComponent(i, k) > w) { w = sw.getComponent(i, k); b = si.getComponent(i, k); } if (src.has(b)) dom.push(i); }
+    // spec.tailRoot: also take the rump from the first rebuilt tail bones, so the tail's swing no
+    // longer drags the butt with it (owner: "her butt doesnt jiggle, it actually disappears")
+    for (let k = 0; k < (spec.tailRoot || 0); k++) src.add(base + k);
+    // spec.at = 'tail': the region is centred on the tail's base (owner: "made the base of the tail
+    // the jiggle ... it would move more of the butt and less of the leg")
+    if (spec.at === 'tail') {
+      const c = J[0].clone(), near = []; for (let i = 0; i < N; i++) { let b = -1, w = 0; for (let k = 0; k < 4; k++) if (sw.getComponent(i, k) > w) { w = sw.getComponent(i, k); b = si.getComponent(i, k); } if (src.has(b)) near.push(P[i].distanceTo(c)); }
+      near.sort((x, y) => x - y); const R = (near[Math.floor(near.length * 0.35)] || 0.1) * (spec.reach ?? 1);
+      c.y += (spec.up || 0) * R; c.addScaledVector(fwd, -(spec.back || 0) * R);
+      const jb = new THREE.Bone(); jb.name = 'jiggle_' + n; parentBone.add(jb); jb.position.copy(parentBone.worldToLocal(c.clone())); jb.updateMatrixWorld(true);
+      jiggle.push({ bone: jb, rest: jb.position.clone(), src, centre: c.clone(), R, gain: spec.gain ?? 1 });
+      continue;
+    }
+    const lead = byName(spec.bones[0]);
+    const dom = []; for (let i = 0; i < N; i++) { let b = -1, w = 0; for (let k = 0; k < 4; k++) if (sw.getComponent(i, k) > w) { w = sw.getComponent(i, k); b = si.getComponent(i, k); } if (b === lead) dom.push(i); }
     if (!dom.length) continue;
-    // the region's centre: the middle of its upper part (a foot hanging off the same bone does not drag it)
+    // the region's centre: the middle of its upper part (a foot hanging off the same bone does not drag
+    // it), or with spec.rear the middle of its rearmost part - the round of a cheek, not its top edge
     const ys = dom.map(i => P[i].y).sort((x, y) => x - y), yCut = ys[Math.floor(ys.length * (spec.floor ?? 0.3))];
-    const c = new THREE.Vector3(); let m = 0; for (const i of dom) if (P[i].y >= yCut) { c.add(P[i]); m++; } c.divideScalar(m);
+    let pick = dom.filter(i => P[i].y >= yCut);
+    if (spec.rear) { const xs = pick.map(i => P[i].dot(fwd)).sort((x, y) => x - y), xCut = xs[Math.floor(xs.length * spec.rear)]; pick = pick.filter(i => P[i].dot(fwd) <= xCut); }
+    const c = new THREE.Vector3(); for (const i of pick) c.add(P[i]); c.divideScalar(pick.length);
     const ds = dom.filter(i => P[i].y >= yCut).map(i => P[i].distanceTo(c)).sort((x, y) => x - y), R = ds[Math.floor(ds.length * 0.85)] * (spec.reach ?? 1);
     // spec.up lifts the centre (owner: "the jiggle needs to be up more")
     c.y += (spec.up || 0) * R;
+    // spec.back slides it toward the tail (owner, marking the frame: the round back of the cheeks)
+    c.addScaledVector(fwd, -(spec.back || 0) * R);
     const parent = bones[[...src][0]];
     const jb = new THREE.Bone(); jb.name = 'jiggle_' + n; parent.add(jb); jb.position.copy(parent.worldToLocal(c.clone())); jb.updateMatrixWorld(true);
     jiggle.push({ bone: jb, rest: jb.position.clone(), src, centre: c.clone(), R, gain: spec.gain ?? 1 });
@@ -322,6 +343,9 @@ export async function loadRig(url, opts = {}) {
     }
     si2.needsUpdate = sw2.needsUpdate = true;
   }
+  // for checking a region by eye: each vertex's total jiggle weight
+  const jiggleWeights = () => { const g = mesh.geometry, si3 = g.attributes.skinIndex, sw3 = g.attributes.skinWeight, out = new Float32Array(si3.count), first = allBones.length - jiggle.length;
+    for (let i = 0; i < si3.count; i++) for (let k = 0; k < 4; k++) if (si3.getComponent(i, k) >= first) out[i] += sw3.getComponent(i, k); return out; };
   mesh.bind(new THREE.Skeleton(allBones, inverses), mesh.bindMatrix);
   // signed bend of the curl at each joint, about the lateral axis
   const ang = []; for (let k = 1; k < NB; k++) { const a = J[k].clone().sub(J[k - 1]), b = J[k + 1].clone().sub(J[k]); const cr = new THREE.Vector3().crossVectors(a, b); ang.push(Math.atan2(cr.dot(LAT), a.dot(b))); }
@@ -426,12 +450,12 @@ export async function loadRig(url, opts = {}) {
     pivot.updateMatrixWorld(true);
   }
   return {
-    pivot, model, mesh, apply, jiggleAnchor, setJiggle, jiggleCount: jiggle.length, debug: { sOf: () => sOf, weld, sParam, axisAt, tailOutAt, aimDeg }, centre, LAT, FWD: fwd, UP, all, tailBones,
+    pivot, model, mesh, apply, jiggleAnchor, setJiggle, jiggleWeights, jiggleCount: jiggle.length, debug: { sOf: () => sOf, weld, sParam, axisAt, tailOutAt, aimDeg }, centre, LAT, FWD: fwd, UP, all, tailBones,
     info: {
       head: bones[head].name, ears: ears.map(i => bones[i].name), spine: spine.map(i => bones[i].name),
       front: front.map(c => c.map(i => bones[i].name)), hind: hind.map(c => c.map(i => bones[i].name)),
       tail: [...tailSet].map(i => bones[i].name), forward: fwd.toArray().map(x => +x.toFixed(3)),
-      jiggle: jiggle.map(j => ({ bone: j.bone.name, from: [...j.src].map(i => bones[i].name), radius: +j.R.toFixed(3) })),
+      jiggle: jiggle.map(j => ({ bone: j.bone.name, from: [...j.src].map(i => allBones[i].name), radius: +j.R.toFixed(3) })),
       tailBones: NB, tailRestAxisDeg: +REST_AXIS.toFixed(1), hinge: HP.clone().sub(J[0]).toArray().map(x => +x.toFixed(3)), cutFaces: cut, contactFaces: contact, caps, socketed, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
     },
   };
