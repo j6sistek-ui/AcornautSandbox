@@ -1,4 +1,4 @@
-import { BUNDLES, DUST_STICKER, HELMETS, PALS, SHOP_CYCLE, SUITS, bundleIds, isIap, wearsOwnHead, } from "./catalog.js?v=314";
+import { BUNDLES, DUST_STICKER, HELMETS, PALS, SHOP_CYCLE, SUITS, bundleIds, isIap, wearsOwnHead, } from "./catalog.js?v=315";
 const modulo = (n, length) => ((n % length) + length) % length;
 /** A date-seeded draw. The inputs are copied; neither catalog nor save is mutated. */
 function dealFrom(pool, count, seed) {

@@ -1,7 +1,7 @@
-import { HIGH_ORBIT_DISPLAY_SPAN } from './high-orbit-config.js?v=314';
-import { PREMIUM_FLIGHT_DURATION } from './high-orbit-motion.js?v=314';
-import { paintHighOrbitEffect } from './high-orbit-effects.js?v=314';
-import { PREMIUM_FLIGHT_FRAMES } from './premium-flight-frames.js?v=314';
+import { HIGH_ORBIT_DISPLAY_SPAN } from './high-orbit-config.js?v=315';
+import { PREMIUM_FLIGHT_DURATION } from './high-orbit-motion.js?v=315';
+import { paintHighOrbitEffect } from './high-orbit-effects.js?v=315';
+import { PREMIUM_FLIGHT_FRAMES } from './premium-flight-frames.js?v=315';
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 /** How fast the bank is read, not how long the tap lasts.
  *
