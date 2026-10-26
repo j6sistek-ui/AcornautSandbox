@@ -28,7 +28,7 @@ const modelPath = args.find(a => a.endsWith('.glb'));
 const id = opt('id');
 if (!modelPath || !id) { console.error('usage: node render.mjs <model.glb> --id <suit-id> [--out dir] [--size 512] [--seconds 2] [--frames tap:12,desc:4,asc:0]'); process.exit(2); }
 const out = path.resolve(opt('out', `rig3d-out/${id}`));
-const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', ''), HEAD = opt('head', ''), BODY = opt('body', ''), TAIL = opt('tail', ''), JIG = opt('jiggle', ''), JQ = ['jf', 'jz', 'jk', 'jg', 'jup', 'jback', 'jrear', 'jreach', 'jfloor', 'jat', 'jtail', 'jshow', 'tailjig', 'tailamp', 'pitch', 'yaw'].map(k => opt(k, '') ? `&${k}=${opt(k, '')}` : '').join('');
+const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', ''), HEAD = opt('head', ''), BODY = opt('body', ''), TAIL = opt('tail', ''), JIG = opt('jiggle', ''), JQ = ['jf', 'jz', 'jk', 'jg', 'jup', 'jback', 'jrear', 'jreach', 'jfloor', 'jat', 'jtail', 'jshow', 'tailjig', 'jdet', 'jkw', 'tailamp', 'pitch', 'yaw'].map(k => opt(k, '') ? `&${k}=${opt(k, '')}` : '').join('');
 for (const d of ['', 'hd', 'sheets', 'preview']) fs.mkdirSync(path.join(out, d), { recursive: true });
 
 // playwright: local install, then the PLAYWRIGHT_MODULE env var, then a global path
@@ -78,7 +78,7 @@ const sheet = (urls, cols, cell) => page.evaluate(async ([urls, cols, cell]) => 
 
 const moves = await page.evaluate(() => window.studio.moves);
 const hasFfmpeg = (() => { try { execFileSync('ffmpeg', ['-version'], { stdio: 'ignore' }); return true; } catch { return false; } })();
-const anchors = {}, boots = {};
+const anchors = {}, boots = {}, jig = {};
 // --anchors-only: pose every bank frame and measure it, drawing nothing - the frames on disk stay
 if (args.includes('--anchors-only')) {
   for (const [move, m] of Object.entries(moves)) for (let i = 0; i < m.frames; i++) {
@@ -97,6 +97,7 @@ for (const [move, m] of Object.entries(moves)) {
     const hd = await page.evaluate(([mv, i]) => window.studio.bank(mv, i), [move, i]);
     anchors[`${id}-${move}-${i + 1}`] = await page.evaluate(() => window.studio.anchor());
     boots[`${id}-${move}-${i + 1}`] = await page.evaluate(() => window.studio.boots());
+    jig[`${id}-${move}-${i + 1}`] = await page.evaluate(([mv, i]) => window.studio.jiggleAt(mv, i), [move, i]);
     urls.push(hd);
     save(path.join(out, 'hd', `${id}-${move}-${i + 1}.png`), hd);
     save(path.join(out, `${id}-${move}-${i + 1}.png`), await resize(hd, 256));
@@ -115,6 +116,8 @@ for (const [move, m] of Object.entries(moves)) {
 fs.writeFileSync(path.join(out, 'anchors.json'), JSON.stringify(anchors, null, 1));
 // wake emitters per frame, [[x, y], ...] one per hind foot, same space
 fs.writeFileSync(path.join(out, 'boots.json'), JSON.stringify(boots, null, 1));
+// each frame's jiggle offset per region (world units), to check the bank flows
+if (Object.values(jig).some(v => v.length)) fs.writeFileSync(path.join(out, 'jiggle.json'), JSON.stringify(jig, null, 1));
 save(path.join(out, `${id}-rig.glb`), 'data:;base64,' + await page.evaluate(([s, f]) => window.studio.glb(s, f), [SECONDS, FPS]));
 console.log('wrote', out);
 closing = true; await browser.close(); server.close();

@@ -120,21 +120,31 @@ const headRest = headBone.getWorldQuaternion(new THREE.Quaternion());
 // out) plus a flap kick at each tap; a looped move runs two cycles first so frame 1 is settled.
 // ?jf= frequency (Hz), ?jz= damping ratio, ?jk= tap kick, ?jg= gain
 const JF = +(q.get('jf') || 2.6), JZ = +(q.get('jz') || 0.18), JK = +(q.get('jk') || 0.9), JG = +(q.get('jg') || 1);
-const MOVE_SECONDS = { tap: 0.7, desc: 0.6, asc: 0.6 };
+// the tap plays over the game's TAP_ANIM_DURATION (1.0 s, catalog.ts), so the spring runs on that clock
+const MOVE_SECONDS = { tap: 1.0, desc: 0.6, asc: 0.6 };
+// ?jdet=0.15 detunes the regions' springs against each other (one faster, one slower) so the two
+// cheeks ripple rather than move as one block
+const JDET = +(q.get('jdet') || 0);
+const JKW = +(q.get('jkw') || 0);
 function springAt(move, u) {
   const m = MOVES[move], T = MOVE_SECONDS[move] || 0.6, dt = 1 / 480, n = Math.round(T / dt), J = rig.jiggleCount;
-  const w = 2 * Math.PI * JF, k = w * w, c = 2 * JZ * w;
+  const wOf = i => 2 * Math.PI * JF * (1 + (J > 1 ? JDET * (i / (J - 1) - 0.5) : 0));
+  const ks = Array.from({ length: J }, (_, i) => wOf(i) ** 2), cs = Array.from({ length: J }, (_, i) => 2 * JZ * wOf(i));
   const x = Array.from({ length: J }, () => new THREE.Vector3()), v = Array.from({ length: J }, () => new THREE.Vector3());
   const t0 = m.loop ? u - 2 : 0, total = Math.max(0, Math.round((u - t0) * n));
   let A0 = null, A1 = null;
   for (let s = 0; s <= total; s++) {
     const t = t0 + s / n, tu = m.loop ? ((t % 1) + 1) % 1 : Math.min(1, Math.max(0, t));
     // the flap: the body is kicked up at the start of every tap, so the soft part is left behind
-    if (m.loop && s > 0 && Math.floor(t) !== Math.floor(t - 1 / n)) v.forEach(vi => vi.addScaledVector(rig.UP, -JK));
+    // spread over the start of the tap (?jkw=, share of the cycle) rather than one instant hit, so
+    // the sag builds across the first frames instead of jumping between frame 1 and frame 2
+    if (m.loop) { const ph = t - Math.floor(t);
+      if (JKW <= 0) { if (s > 0 && Math.floor(t) !== Math.floor(t - 1 / n)) v.forEach(vi => vi.addScaledVector(rig.UP, -JK)); }
+      else if (ph < JKW) { const A = JK * Math.PI / (2 * JKW * T); v.forEach(vi => vi.addScaledVector(rig.UP, -A * Math.sin(Math.PI * ph / JKW) * dt)); } }
     rig.apply(m.pose(tu)); const A = rig.jiggleAnchor();
     if (A0 && A1) for (let i = 0; i < J; i++) {
       const acc = A[i].clone().sub(A1[i].clone().multiplyScalar(2)).add(A0[i]).divideScalar(dt * dt);
-      const f = x[i].clone().multiplyScalar(-k).addScaledVector(v[i], -c).sub(acc);
+      const f = x[i].clone().multiplyScalar(-ks[i]).addScaledVector(v[i], -cs[i]).sub(acc);
       v[i].addScaledVector(f, dt); x[i].addScaledVector(v[i], dt);
     }
     A0 = A1; A1 = A;
@@ -159,6 +169,8 @@ window.studio = {
   bank(move, i) { const m = MOVES[move]; return frame(move, m.loop ? i / m.frames : i / (m.frames - 1), false); },
   // the helmet anchor of the frame bank() just drew
   anchor() { return headAnchor(); },
+  // the jiggle offsets of bank frame i, for checking the flow frame to frame
+  jiggleAt(move, i) { const m = MOVES[move]; if (!rig.jiggleCount) return []; return springAt(move, m.loop ? i / m.frames : i / (m.frames - 1)).map(o => o.toArray().map(x => +x.toFixed(4))); },
   // the wake emitters of the same frame
   boots() { return bootAnchors(); },
   // pose a bank frame without drawing it, for an anchors-only pass
