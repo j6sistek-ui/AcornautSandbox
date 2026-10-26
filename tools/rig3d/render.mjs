@@ -56,12 +56,16 @@ const page = await browser.newPage();
 // a model the rig cannot use (no skeleton, say) fails at once instead of waiting out the timeout
 let failed = null;
 page.on('pageerror', e => { console.error('page error:', e.message); failed = e.message; });
+// and a browser that dies (a crash, a paused machine) ends the run rather than hanging it
+page.on('crash', () => { console.error('the page crashed'); process.exit(1); });
+let closing = false;
+browser.on('disconnected', () => { if (closing) return; console.error('the browser went away'); process.exit(1); });
 await page.goto(`http://localhost:${port}/studio.html?model=/model.glb&size=${SIZE}&frames=${encodeURIComponent(FRAMES)}`);
 await Promise.race([
   page.waitForFunction(() => window.studioReady, null, { timeout: 600000 }),
   (async () => { while (!failed) await new Promise(r => setTimeout(r, 200)); })(),
 ]);
-if (failed) { console.error(`cannot render ${path.basename(modelPath)}: ${failed}`); await browser.close(); server.close(); process.exit(1); }
+if (failed) { console.error(`cannot render ${path.basename(modelPath)}: ${failed}`); closing = true; await browser.close(); server.close(); process.exit(1); }
 const info = await page.evaluate(() => window.studio.info);
 fs.writeFileSync(path.join(out, 'rig.json'), JSON.stringify(info, null, 2));
 console.log('rig:', JSON.stringify({ head: info.head, front: info.front.length, hind: info.hind.length, tail: info.tail.length, cutFaces: info.cutFaces, loose: info.looseTailPieces }));
@@ -93,4 +97,6 @@ for (const [move, m] of Object.entries(moves)) {
 }
 save(path.join(out, `${id}-rig.glb`), 'data:;base64,' + await page.evaluate(([s, f]) => window.studio.glb(s, f), [SECONDS, FPS]));
 console.log('wrote', out);
-await browser.close(); server.close();
+closing = true; await browser.close(); server.close();
+// the static server's keep-alive sockets would hold the process open long after the work is done
+process.exit(0);

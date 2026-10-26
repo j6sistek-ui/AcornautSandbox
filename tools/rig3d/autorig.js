@@ -17,7 +17,7 @@
 //      stretches the join least, so the plume swings as one piece and keeps the
 //      shape it was sculpted with
 //   5. expose one control surface, apply(pose), in degrees about the lateral
-//      axis: + is nose up / limb forward / tail back; tailOut swings the tail
+//      axis: + is nose up / limb forward / tail back; tailAim points the tail
 //
 // Runs in a browser (three.js, WebGL). studio.html drives it.
 import * as THREE from 'three';
@@ -45,8 +45,10 @@ export async function loadRig(url, opts = {}) {
   const root = parent.findIndex(p => p < 0);
   const map = opts.map || {};
   const byName = n => bones.findIndex(b => b.name.replace(/[^A-Za-z0-9_]/g, '') === n);
-  // head: the bone carrying the face - the one with the most direct children
-  let head = map.head != null ? byName(map.head) : kids.reduce((best, k, i) => k.length > kids[best].length ? i : best, 0);
+  // head: the bone carrying the most of the mesh - the face, the cheeks, the ears. It used to be
+  // "the most direct children", which held until a cat whose rig hangs its front legs off a
+  // neck bone tied three bones for it and picked the pelvis
+  let head = map.head != null ? byName(map.head) : count.reduce((best, n, i) => i !== root && n > count[best] ? i : best, root === 0 ? 1 : 0);
   const pathToRoot = i => { const p = []; while (i >= 0) { p.unshift(i); i = parent[i]; } return p; };
   const spinePath = pathToRoot(head);
   const onSpine = new Set(spinePath);
@@ -285,6 +287,14 @@ export async function loadRig(url, opts = {}) {
   // past straight out (and back past the sculpt's angle) the swing is in plain degrees, the
   // same on every model, so an overshoot written for one tail is not doubled on another
   const OVER_DEG = 70;
+  // TAIL AIM: where a pose wants the tail's axis, in plain degrees in the forward/up plane -
+  // 180 straight out behind, 90 straight up, past 180 below - blended from the sculpt's own
+  // rest angle by w. The same aim puts every model's tail in the same place, however it was
+  // sculpted: a robot cat whose tail is modelled straight out swings exactly as far as a
+  // squirrel whose plume is modelled upright. Frame 1 (w = 0) is the sculpt itself.
+  const wrapDeg = d => ((d % 360) + 540) % 360 - 180;
+  const REST_AXIS = axisAt(0);
+  const aimDeg = (w, to, u) => wrapDeg(REST_AXIS + wrapDeg(to - REST_AXIS) * w - axisAt(u));
 
   // THE HINGE. The tail joins the rump across a wide patch, so where it turns matters: turned
   // about the middle of its base, the front of that patch tears off the back and stretches.
@@ -295,10 +305,13 @@ export async function loadRig(url, opts = {}) {
     const tw = new Float32Array(N); for (let i = 0; i < N; i++) for (let k = 0; k < 4; k++) if (si.getComponent(i, k) >= base) tw[i] += sw.getComponent(i, k);
     const E = []; const seen = new Set();
     for (let t = 0; t < ix.length; t += 3) for (const [a, b] of [[ix[t], ix[t + 1]], [ix[t + 1], ix[t + 2]], [ix[t + 2], ix[t]]]) { if (Math.abs(tw[a] - tw[b]) < 1e-3) continue; const k = a < b ? a * N + b : b * N + a; if (seen.has(k)) continue; seen.add(k); E.push(a, b); }
-    const q = new THREE.Quaternion().setFromAxisAngle(LAT, tailOutAt(0) * Math.PI / 180), v = new THREE.Vector3(), pa = new THREE.Vector3(), pb = new THREE.Vector3();
+    // the swings the moves actually make: out past straight, and up over the back
+    const qs = (opts.hingeAims || [200, 100]).map(to => new THREE.Quaternion().setFromAxisAngle(LAT, aimDeg(1, to, 0) * Math.PI / 180));
+    let q = qs[0]; const v = new THREE.Vector3(), pa = new THREE.Vector3(), pb = new THREE.Vector3();
     // vertex i (rest position P[i]) with the tail turned straight out about pivot H
     const moved = (i, H, out) => { v.copy(P[i]).sub(H).applyQuaternion(q).add(H); return out.copy(P[i]).lerp(v, tw[i]); };
-    const cost = H => { let c = 0; for (let e = 0; e < E.length; e += 2) { const a = E[e], b = E[e + 1], L = P[a].distanceTo(P[b]); if (L < 1e-7) continue; const L1 = moved(a, H, pa).distanceTo(moved(b, H, pb)); c += (L1 - L) * (L1 - L) / L; } return c; };
+    const cost1 = H => { let c = 0; for (let e = 0; e < E.length; e += 2) { const a = E[e], b = E[e + 1], L = P[a].distanceTo(P[b]); if (L < 1e-7) continue; const L1 = moved(a, H, pa).distanceTo(moved(b, H, pb)); c += (L1 - L) * (L1 - L) / L; } return c; };
+    const cost = H => qs.reduce((c, qq) => { q = qq; return c + cost1(H); }, 0);
     let best = cost(HP), bp = HP.clone();
     for (const [R, st] of [[0.3, 0.03], [0.04, 0.008]]) { const c0 = bp.clone(); for (let x = -R; x <= R + 1e-9; x += st) for (let y = -R; y <= R + 1e-9; y += st) { const H = c0.clone().addScaledVector(fwd, x).addScaledVector(UP, y); const c = cost(H); if (c < best) { best = c; bp = H; } } }
     HP.copy(bp);
@@ -326,7 +339,7 @@ export async function loadRig(url, opts = {}) {
     front.forEach((ch, n) => { const v = n ? (p.frontR ?? p.front ?? 0) : (p.frontL ?? p.front ?? 0); turn(ch[0], v * 0.55); if (ch[1] != null) turn(ch[1], v * 0.35); if (ch[2] != null) turn(ch[2], -(p.paw || 0) - v * 0.2); });
     hind.forEach((ch, n) => { const v = n ? (p.hindR ?? p.hind ?? 0) : (p.hindL ?? p.hind ?? 0); turn(ch[0], v + (n ? 4 : -4)); if (ch[1] != null) turn(ch[1], p.hindLow || 0); if (ch[2] != null) turn(ch[2], (p.hindLow || 0) * 0.6); });
     const unf = p.unfurl ?? 0, out = p.tailOut || 0, outIn = Math.min(1, Math.max(0, out));
-    const outDeg = outIn * tailOutAt(unf) + (out - outIn) * OVER_DEG;
+    const outDeg = p.tailAim ? aimDeg(p.tailAim[0], p.tailAim[1], unf) : outIn * tailOutAt(unf) + (out - outIn) * OVER_DEG;
     tailBones.forEach((b, k) => {
       const rootRamp = Math.min(1, Math.max(0, (k - 1) / 3)), ramp = rootRamp * rootRamp * (3 - 2 * rootRamp);
       const bend = k === 0 ? 0 : -ang[k - 1] * unf * ramp * 180 / Math.PI;
@@ -343,12 +356,12 @@ export async function loadRig(url, opts = {}) {
   }
 
   return {
-    pivot, model, mesh, apply, debug: { sOf: () => sOf, weld, sParam, axisAt, tailOutAt }, centre, LAT, FWD: fwd, UP, all, tailBones,
+    pivot, model, mesh, apply, debug: { sOf: () => sOf, weld, sParam, axisAt, tailOutAt, aimDeg }, centre, LAT, FWD: fwd, UP, all, tailBones,
     info: {
       head: bones[head].name, ears: ears.map(i => bones[i].name), spine: spine.map(i => bones[i].name),
       front: front.map(c => c.map(i => bones[i].name)), hind: hind.map(c => c.map(i => bones[i].name)),
       tail: [...tailSet].map(i => bones[i].name), forward: fwd.toArray().map(x => +x.toFixed(3)),
-      tailBones: NB, tailOutDeg: +tailOutAt(0).toFixed(1), tailOutUnrolledDeg: +tailOutAt(1).toFixed(1), hinge: HP.clone().sub(J[0]).toArray().map(x => +x.toFixed(3)), cutFaces: cut, contactFaces: contact, caps, socketed, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
+      tailBones: NB, tailRestAxisDeg: +REST_AXIS.toFixed(1), hinge: HP.clone().sub(J[0]).toArray().map(x => +x.toFixed(3)), cutFaces: cut, contactFaces: contact, caps, socketed, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
     },
   };
 }
