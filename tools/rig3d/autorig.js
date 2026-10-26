@@ -92,6 +92,9 @@ export async function loadRig(url, opts = {}) {
   // (Ghost's second wisp grows from its back: folded into the one rebuilt tail, its tip tore off)
   const keep = new Set((map.keep || []).map(byName).filter(i => i >= 0));
   for (const c of rest) if (c !== tailMain && !c.some(i => keep.has(i))) { const m = massOf(c); if (m && m.dot(fwd) < hips) c.forEach(i => tailSet.add(i)); }
+  // the kept chains still move: apply()'s p.follow turns them (owner: "the tails move independently
+  // on timing ... big one always leads"), shared down the chain so the wisp curls rather than pivots
+  const keepChains = rest.filter(c => c.some(i => keep.has(i)));
   const UP = new THREE.Vector3(0, 1, 0), LAT = new THREE.Vector3().crossVectors(fwd, UP).normalize();
   const along = v => v.dot(fwd);
   const legRoots = legs.map(c => ({ c, x: along(wpos(bones[c[0]])) })).sort((a, b) => b.x - a.x);
@@ -420,6 +423,7 @@ export async function loadRig(url, opts = {}) {
     pivot.position.copy(centre).addScaledVector(UP, p.lift || 0);
     spine.forEach((i, n) => turn(i, (p.spine || 0) / spine.length));
     turn(head, p.head || 0);
+    if (p.follow) keepChains.forEach(ch => ch.slice(0, 3).forEach((b, k) => turn(b, p.follow * [0.5, 0.3, 0.2][k])));
     ears.forEach((i, n) => turn(i, (p.ears || 0) * (n ? 0.85 : 1)));
     front.forEach((ch, n) => { const v = n ? (p.frontR ?? p.front ?? 0) : (p.frontL ?? p.front ?? 0); turn(ch[0], v * 0.55); if (ch[1] != null) turn(ch[1], v * 0.35); if (ch[2] != null) turn(ch[2], -(p.paw || 0) - v * 0.2); });
     hind.forEach((ch, n) => { const v = n ? (p.hindR ?? p.hind ?? 0) : (p.hindL ?? p.hind ?? 0); turn(ch[0], v + (n ? 4 : -4)); if (ch[1] != null) turn(ch[1], p.hindLow || 0); if (ch[2] != null) turn(ch[2], (p.hindLow || 0) * 0.6); });

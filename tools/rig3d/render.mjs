@@ -28,7 +28,7 @@ const modelPath = args.find(a => a.endsWith('.glb'));
 const id = opt('id');
 if (!modelPath || !id) { console.error('usage: node render.mjs <model.glb> --id <suit-id> [--out dir] [--size 512] [--seconds 2] [--frames tap:12,desc:4,asc:0]'); process.exit(2); }
 const out = path.resolve(opt('out', `rig3d-out/${id}`));
-const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', ''), HEAD = opt('head', ''), BODY = opt('body', ''), TAIL = opt('tail', ''), JIG = opt('jiggle', ''), JQ = ['jf', 'jz', 'jk', 'jg', 'jup', 'jback', 'jrear', 'jreach', 'jfloor', 'jat', 'jtail', 'jshow', 'tailjig', 'jdet', 'jkw', 'keep', 'tailamp', 'pitch', 'yaw'].map(k => opt(k, '') ? `&${k}=${opt(k, '')}` : '').join('');
+const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', ''), HEAD = opt('head', ''), BODY = opt('body', ''), TAIL = opt('tail', ''), JIG = opt('jiggle', ''), JQ = ['jf', 'jz', 'jk', 'jg', 'jup', 'jback', 'jrear', 'jreach', 'jfloor', 'jat', 'jtail', 'jshow', 'tailjig', 'jdet', 'jkw', 'keep', 'follow', 'famp', 'fsign', 'tailamp', 'pitch', 'yaw'].map(k => opt(k, '') ? `&${k}=${opt(k, '')}` : '').join('');
 for (const d of ['', 'hd', 'sheets', 'preview']) fs.mkdirSync(path.join(out, d), { recursive: true });
 
 // playwright: local install, then the PLAYWRIGHT_MODULE env var, then a global path

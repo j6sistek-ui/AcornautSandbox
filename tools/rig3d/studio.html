@@ -25,7 +25,14 @@ const TAILAMP = +(q.get('tailamp') || 1), TAIL_REST = ALL_MOVES.tap.pose(0).tail
 const shaped = pose => TAILAMP === 1 ? pose : u => { const p = pose(u);
   if (p.tailAim) p.tailAim = [p.tailAim[0], TAIL_REST + (p.tailAim[1] - TAIL_REST) * TAILAMP];
   if (p.unfurl) p.unfurl *= TAILAMP; return p; };
-const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames, pose: shaped(m.pose) }]));
+// ?follow=0.1: a kept chain (--keep) follows the tail's swing that many seconds late, at ?famp= of
+// its size (?fsign= flips its sense) - the big tail leads, the wisp follows through
+const FOLLOW = +(q.get('follow') || 0), FAMP = +(q.get('famp') || 0.8) * +(q.get('fsign') || 1);
+const SECONDS_OF = { tap: 1.0, desc: 0.6, asc: 0.6 };
+const followed = (name, pose, loop) => !FOLLOW ? pose : u => { const p = pose(u), T = SECONDS_OF[name] || 0.6;
+  const ud = u - FOLLOW / T, pd = pose(loop ? ((ud % 1) + 1) % 1 : Math.max(0, ud));
+  if (pd.tailAim) p.follow = (pd.tailAim[1] - TAIL_REST) * FAMP; return p; };
+const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames, pose: followed(k, shaped(m.pose), m.loop) }]));
 const R = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 R.setPixelRatio(1); R.setSize(SIZE, SIZE);
 R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
