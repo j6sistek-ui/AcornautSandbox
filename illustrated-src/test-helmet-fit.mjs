@@ -14,7 +14,7 @@ function equalPixels(message){
  assert.equal(different,0,message+' (different channels)');
 }
 let composites=0,pairs=0,poses=0;
-// 35 with the 3D test (pinky, beta, 25 Oct 2026); its own head, so it takes the portrait check
+// 35 with the 3D test (cupcake, beta, 25 Oct 2026); its own head, so it takes the portrait check
 assert.equal(r.cat.SUITS.length,35,'review inventory includes every current character');
 assert.deepEqual(Object.keys(fit.HELMET_SEATS).sort(),r.cat.HELMETS.map(h=>h.id).sort(),'every helmet has a reviewed seat');
 for(const h of r.cat.HELMETS){

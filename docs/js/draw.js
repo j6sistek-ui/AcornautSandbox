@@ -4487,8 +4487,8 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // painted HEAD-UP at -22 - 36 degrees the other side of the family - so a
 // climb tipped it back until it sat upright in the sky rather than
 // climbing, which is what the owner saw as leading with its head.
-// The 3D test (pinky) too: its rendered dive frames carry the attitude.
-const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog", "pinky"]);
+// The 3D test (cupcake) too: its rendered dive frames carry the attitude.
+const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog", "cupcake"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as

@@ -558,10 +558,10 @@
    "frame": false
   },
   {
-   "id": "pinky",
-   "name": "Pinky 3D",
-   "key": "suit:pinky",
-   "file": "suits/pinky.png",
+   "id": "cupcake",
+   "name": "Cupcake",
+   "key": "suit:cupcake",
+   "file": "suits/cupcake.png",
    "dome": [
     128,
     128,
@@ -8882,10 +8882,10 @@
    "played": true
   },
   {
-   "id": "pinky-tap-1",
-   "name": "Pinky 3D tap 1",
-   "key": "pinky-tap-1",
-   "file": "suits/pinky-tap-1.png",
+   "id": "cupcake-tap-1",
+   "name": "Cupcake tap 1",
+   "key": "cupcake-tap-1",
+   "file": "suits/cupcake-tap-1.png",
    "dome": [
     128,
     128,
@@ -8898,10 +8898,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-2",
-   "name": "Pinky 3D tap 2",
-   "key": "pinky-tap-2",
-   "file": "suits/pinky-tap-2.png",
+   "id": "cupcake-tap-2",
+   "name": "Cupcake tap 2",
+   "key": "cupcake-tap-2",
+   "file": "suits/cupcake-tap-2.png",
    "dome": [
     128,
     128,
@@ -8914,10 +8914,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-3",
-   "name": "Pinky 3D tap 3",
-   "key": "pinky-tap-3",
-   "file": "suits/pinky-tap-3.png",
+   "id": "cupcake-tap-3",
+   "name": "Cupcake tap 3",
+   "key": "cupcake-tap-3",
+   "file": "suits/cupcake-tap-3.png",
    "dome": [
     128,
     128,
@@ -8930,10 +8930,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-4",
-   "name": "Pinky 3D tap 4",
-   "key": "pinky-tap-4",
-   "file": "suits/pinky-tap-4.png",
+   "id": "cupcake-tap-4",
+   "name": "Cupcake tap 4",
+   "key": "cupcake-tap-4",
+   "file": "suits/cupcake-tap-4.png",
    "dome": [
     128,
     128,
@@ -8946,10 +8946,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-5",
-   "name": "Pinky 3D tap 5",
-   "key": "pinky-tap-5",
-   "file": "suits/pinky-tap-5.png",
+   "id": "cupcake-tap-5",
+   "name": "Cupcake tap 5",
+   "key": "cupcake-tap-5",
+   "file": "suits/cupcake-tap-5.png",
    "dome": [
     128,
     128,
@@ -8962,10 +8962,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-6",
-   "name": "Pinky 3D tap 6",
-   "key": "pinky-tap-6",
-   "file": "suits/pinky-tap-6.png",
+   "id": "cupcake-tap-6",
+   "name": "Cupcake tap 6",
+   "key": "cupcake-tap-6",
+   "file": "suits/cupcake-tap-6.png",
    "dome": [
     128,
     128,
@@ -8978,10 +8978,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-7",
-   "name": "Pinky 3D tap 7",
-   "key": "pinky-tap-7",
-   "file": "suits/pinky-tap-7.png",
+   "id": "cupcake-tap-7",
+   "name": "Cupcake tap 7",
+   "key": "cupcake-tap-7",
+   "file": "suits/cupcake-tap-7.png",
    "dome": [
     128,
     128,
@@ -8994,10 +8994,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-8",
-   "name": "Pinky 3D tap 8",
-   "key": "pinky-tap-8",
-   "file": "suits/pinky-tap-8.png",
+   "id": "cupcake-tap-8",
+   "name": "Cupcake tap 8",
+   "key": "cupcake-tap-8",
+   "file": "suits/cupcake-tap-8.png",
    "dome": [
     128,
     128,
@@ -9010,10 +9010,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-9",
-   "name": "Pinky 3D tap 9",
-   "key": "pinky-tap-9",
-   "file": "suits/pinky-tap-9.png",
+   "id": "cupcake-tap-9",
+   "name": "Cupcake tap 9",
+   "key": "cupcake-tap-9",
+   "file": "suits/cupcake-tap-9.png",
    "dome": [
     128,
     128,
@@ -9026,10 +9026,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-10",
-   "name": "Pinky 3D tap 10",
-   "key": "pinky-tap-10",
-   "file": "suits/pinky-tap-10.png",
+   "id": "cupcake-tap-10",
+   "name": "Cupcake tap 10",
+   "key": "cupcake-tap-10",
+   "file": "suits/cupcake-tap-10.png",
    "dome": [
     128,
     128,
@@ -9042,10 +9042,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-11",
-   "name": "Pinky 3D tap 11",
-   "key": "pinky-tap-11",
-   "file": "suits/pinky-tap-11.png",
+   "id": "cupcake-tap-11",
+   "name": "Cupcake tap 11",
+   "key": "cupcake-tap-11",
+   "file": "suits/cupcake-tap-11.png",
    "dome": [
     128,
     128,
@@ -9058,10 +9058,10 @@
    "played": false
   },
   {
-   "id": "pinky-tap-12",
-   "name": "Pinky 3D tap 12",
-   "key": "pinky-tap-12",
-   "file": "suits/pinky-tap-12.png",
+   "id": "cupcake-tap-12",
+   "name": "Cupcake tap 12",
+   "key": "cupcake-tap-12",
+   "file": "suits/cupcake-tap-12.png",
    "dome": [
     128,
     128,

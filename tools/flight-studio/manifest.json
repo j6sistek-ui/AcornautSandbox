@@ -1,7 +1,7 @@
 {
   "version": 1,
   "artVer": "309",
-  "sourceCommit": "a332a725bedea6a5fa186b832efa2c46f06e6d9f",
+  "sourceCommit": "d76c4ef923b0dcdae150998ef268726c679a3745",
   "models": [
     {
       "id": "flight",
@@ -1916,10 +1916,10 @@
       }
     },
     {
-      "id": "pinky",
-      "name": "Pinky 3D",
-      "key": "suit:pinky",
-      "file": "suits/pinky.png",
+      "id": "cupcake",
+      "name": "Cupcake",
+      "key": "suit:cupcake",
+      "file": "suits/cupcake.png",
       "dome": [
         128,
         128,
@@ -1933,46 +1933,46 @@
       "atlas": null,
       "banks": {
         "tap": [
-          "suits/pinky-tap-1.png",
-          "suits/pinky-tap-2.png",
-          "suits/pinky-tap-3.png",
-          "suits/pinky-tap-4.png",
-          "suits/pinky-tap-5.png",
-          "suits/pinky-tap-6.png",
-          "suits/pinky-tap-7.png",
-          "suits/pinky-tap-8.png",
-          "suits/pinky-tap-9.png",
-          "suits/pinky-tap-10.png",
-          "suits/pinky-tap-11.png",
-          "suits/pinky-tap-12.png"
+          "suits/cupcake-tap-1.png",
+          "suits/cupcake-tap-2.png",
+          "suits/cupcake-tap-3.png",
+          "suits/cupcake-tap-4.png",
+          "suits/cupcake-tap-5.png",
+          "suits/cupcake-tap-6.png",
+          "suits/cupcake-tap-7.png",
+          "suits/cupcake-tap-8.png",
+          "suits/cupcake-tap-9.png",
+          "suits/cupcake-tap-10.png",
+          "suits/cupcake-tap-11.png",
+          "suits/cupcake-tap-12.png"
         ],
         "asc": [],
         "desc": [
-          "suits/pinky-desc-1.png",
-          "suits/pinky-desc-2.png",
-          "suits/pinky-desc-3.png",
-          "suits/pinky-desc-4.png"
+          "suits/cupcake-desc-1.png",
+          "suits/cupcake-desc-2.png",
+          "suits/cupcake-desc-3.png",
+          "suits/cupcake-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/pinky.png": "f7001f40482892a5b2f0432624768b61d0ba43544450393953a54ac1d80af772",
-        "suits/pinky-tap-1.png": "f7001f40482892a5b2f0432624768b61d0ba43544450393953a54ac1d80af772",
-        "suits/pinky-tap-2.png": "8d4f4a48cd18e85bad070bbee93ebbb1ac2debb30d23cb47f80989e4d1cbcf54",
-        "suits/pinky-tap-3.png": "34df7cf304fe88986c271a3a1111676ff838552c2ac91afdb3324b756f02eb8b",
-        "suits/pinky-tap-4.png": "e78127e1b39431d2818fc2cf40f8e18a2b24d1880a0bd79e0d8d0f4d88537623",
-        "suits/pinky-tap-5.png": "1d2e073a7b8b4cfb05d9b936efeb24a8067507e4b092ebf2b26f32cf7757cfc2",
-        "suits/pinky-tap-6.png": "0da63b3a4ce84d4cab7a916f4bfccd45c7bd052492ad907c4eaa2778da9e7576",
-        "suits/pinky-tap-7.png": "16cbffa8050159743c7619f2c33449b7e08ae3f04c123c9895c85e5fab7ce257",
-        "suits/pinky-tap-8.png": "d15f28d4d1de895510af02e691fcef8dfbb1f52a45ed5c8b8df2def68abfea9f",
-        "suits/pinky-tap-9.png": "fec14ed6de63da3cbb0913d89d605ff8c969bebfd0d6db06f2f5686c8631c76b",
-        "suits/pinky-tap-10.png": "dcad16b069de5c0595788290144a85635105f825281fc0f107a477167e0d80fa",
-        "suits/pinky-tap-11.png": "0905348ed38ddb383c609ae6f91403f5c0ecf3277753323c8635d75dad67a119",
-        "suits/pinky-tap-12.png": "f5d39c3b9455dcdb9ed61f72a23d67fd8152d1a750694dd36df74df52d3ce326",
-        "suits/pinky-desc-1.png": "f7001f40482892a5b2f0432624768b61d0ba43544450393953a54ac1d80af772",
-        "suits/pinky-desc-2.png": "e1ec9e18e08c0661443257877b94c3b54aa2d1f80a790c37312ef8d55cee3f60",
-        "suits/pinky-desc-3.png": "6aa7de07cb7d93830b55aeb6988fbfef2c368c0b81b6d8fbca048c758baacda5",
-        "suits/pinky-desc-4.png": "efc126ba95482be60a2649d5047f5603a2b2b6e42c0abeee4990c6abe5d83397"
+        "suits/cupcake.png": "f7001f40482892a5b2f0432624768b61d0ba43544450393953a54ac1d80af772",
+        "suits/cupcake-tap-1.png": "f7001f40482892a5b2f0432624768b61d0ba43544450393953a54ac1d80af772",
+        "suits/cupcake-tap-2.png": "8d4f4a48cd18e85bad070bbee93ebbb1ac2debb30d23cb47f80989e4d1cbcf54",
+        "suits/cupcake-tap-3.png": "34df7cf304fe88986c271a3a1111676ff838552c2ac91afdb3324b756f02eb8b",
+        "suits/cupcake-tap-4.png": "e78127e1b39431d2818fc2cf40f8e18a2b24d1880a0bd79e0d8d0f4d88537623",
+        "suits/cupcake-tap-5.png": "1d2e073a7b8b4cfb05d9b936efeb24a8067507e4b092ebf2b26f32cf7757cfc2",
+        "suits/cupcake-tap-6.png": "0da63b3a4ce84d4cab7a916f4bfccd45c7bd052492ad907c4eaa2778da9e7576",
+        "suits/cupcake-tap-7.png": "16cbffa8050159743c7619f2c33449b7e08ae3f04c123c9895c85e5fab7ce257",
+        "suits/cupcake-tap-8.png": "d15f28d4d1de895510af02e691fcef8dfbb1f52a45ed5c8b8df2def68abfea9f",
+        "suits/cupcake-tap-9.png": "fec14ed6de63da3cbb0913d89d605ff8c969bebfd0d6db06f2f5686c8631c76b",
+        "suits/cupcake-tap-10.png": "dcad16b069de5c0595788290144a85635105f825281fc0f107a477167e0d80fa",
+        "suits/cupcake-tap-11.png": "0905348ed38ddb383c609ae6f91403f5c0ecf3277753323c8635d75dad67a119",
+        "suits/cupcake-tap-12.png": "f5d39c3b9455dcdb9ed61f72a23d67fd8152d1a750694dd36df74df52d3ce326",
+        "suits/cupcake-desc-1.png": "f7001f40482892a5b2f0432624768b61d0ba43544450393953a54ac1d80af772",
+        "suits/cupcake-desc-2.png": "e1ec9e18e08c0661443257877b94c3b54aa2d1f80a790c37312ef8d55cee3f60",
+        "suits/cupcake-desc-3.png": "6aa7de07cb7d93830b55aeb6988fbfef2c368c0b81b6d8fbca048c758baacda5",
+        "suits/cupcake-desc-4.png": "efc126ba95482be60a2649d5047f5603a2b2b6e42c0abeee4990c6abe5d83397"
       }
     },
     {
@@ -2750,7 +2750,7 @@
       90,
       30.12
     ],
-    "suit:pinky": [
+    "suit:cupcake": [
       128,
       128,
       40
@@ -5384,62 +5384,62 @@
       128,
       40
     ],
-    "pinky-tap-1": [
+    "cupcake-tap-1": [
       128,
       128,
       40
     ],
-    "pinky-tap-2": [
+    "cupcake-tap-2": [
       128,
       128,
       40
     ],
-    "pinky-tap-3": [
+    "cupcake-tap-3": [
       128,
       128,
       40
     ],
-    "pinky-tap-4": [
+    "cupcake-tap-4": [
       128,
       128,
       40
     ],
-    "pinky-tap-5": [
+    "cupcake-tap-5": [
       128,
       128,
       40
     ],
-    "pinky-tap-6": [
+    "cupcake-tap-6": [
       128,
       128,
       40
     ],
-    "pinky-tap-7": [
+    "cupcake-tap-7": [
       128,
       128,
       40
     ],
-    "pinky-tap-8": [
+    "cupcake-tap-8": [
       128,
       128,
       40
     ],
-    "pinky-tap-9": [
+    "cupcake-tap-9": [
       128,
       128,
       40
     ],
-    "pinky-tap-10": [
+    "cupcake-tap-10": [
       128,
       128,
       40
     ],
-    "pinky-tap-11": [
+    "cupcake-tap-11": [
       128,
       128,
       40
     ],
-    "pinky-tap-12": [
+    "cupcake-tap-12": [
       128,
       128,
       40
@@ -5609,7 +5609,7 @@
     "arcflash": "3fae49f1be0fcc15c642330d9f6b39ff9b590c8cd40d42a0c2d3bd8375b0f63d",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "b8ed679af4d250a4088d18ca66643fce1e3db7cb5144e3b54e7e68055bed2659",
+    "control-constants": "e903a827f60bd19b02538cd86a0ba300f069fc250871eb9d2bb2df199ed5d929",
     "cyber-trio-registration": "961e3df5a258b7ae6ff898c31210ef3566ad657bf59eda2459add9e323f7aeb3",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",

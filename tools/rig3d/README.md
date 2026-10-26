@@ -7,7 +7,7 @@ because every frame is the same model in a different pose.
 
 ```
 cd tools/rig3d && npm install
-node render.mjs path/to/model.glb --id pinky --out ../../rig3d-out/pinky
+node render.mjs path/to/model.glb --id cupcake --out ../../rig3d-out/cupcake
 ```
 
 | Output | What it is |

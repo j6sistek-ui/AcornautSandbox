@@ -360,7 +360,7 @@ const TAP_BANKS = {
     // THE 3D TEST (owner, 25 Oct 2026: "12 tap, 4 dive, try something new.
     // drop it in beta"): rendered by tools/rig3d from a rigged model, a
     // twelve-frame tap and a four-frame dive, no climb. Beta-only suit.
-    pinky: 12,
+    cupcake: 12,
     // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
     // retired: their GENERATED motion lost the pilot's lower body at its
     // extremes, and each flies a painted ascent/descent ramp now -
@@ -411,7 +411,7 @@ const DESC_BANKS = { eclipse: 8, flight: 5, cyber: 9, porcelain: 9, nacre: 9, or
     sammie: 8, frost: 8, ghost: 8, leviathan: 8,
     briellacat: 4,
     // the 3D test's dive, paired with its tap bank (see TAP_BANKS)
-    pinky: 4,
+    cupcake: 4,
 };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
@@ -700,7 +700,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         // 2026), so its sheet loads there rather than only on the beta host
         "briellacat",
         // the 3D test (25 Oct 2026) is a beta-only suit, so its still is too
-        ...(IS_BETA ? ["pinky"] : []),
+        ...(IS_BETA ? ["cupcake"] : []),
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     const hyperRunIds = [

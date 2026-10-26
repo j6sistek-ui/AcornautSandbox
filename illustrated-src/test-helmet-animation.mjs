@@ -121,7 +121,7 @@ try {
   assert.deepEqual(promoted.map(suit=>suit.id),HIGH_ORBIT,'HIGH ORBIT promotions are the only roster additions');
   // The 3D test (owner, 25 Oct 2026: "12 tap, 4 dive, try something new.
   // drop it in beta"): a rendered tap bank and dive bank, its own head.
-  const THREE_D_TEST=['pinky'];
+  const THREE_D_TEST=['cupcake'];
   const authorized=id=>HIGH_ORBIT.includes(id)||CYBER_TRIO.includes(id)||THREE_D_TEST.includes(id);
   const withoutAuthorizedRigs=table=>Array.isArray(table) ? table.filter(id=>!authorized(id))
     : Object.fromEntries(Object.entries(table).filter(([id])=>!authorized(id)));

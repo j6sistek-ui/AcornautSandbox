@@ -311,7 +311,7 @@ export const SUITS: Suit[] = [
   // let me see how it looks in general or if it just doesn't fit"). A
   // rendered model, not a painting: tools/rig3d made its twelve tap and four
   // dive frames. Its own head, so no helmet is fitted. Beta only.
-  { id: "pinky", name: "Pinky 3D", cost: 0, beta: true, ownHead: true, fur: "#f07ab8", furDark: "#b84482", belly: "#fde3ef", suit: "#f59ac8", suitLite: "#ffd1e8", suitDark: "#a8336f", trim: "#7fd3ff", glow: null, dust: null },
+  { id: "cupcake", name: "Cupcake", cost: 0, beta: true, ownHead: true, fur: "#f07ab8", furDark: "#b84482", belly: "#fde3ef", suit: "#f59ac8", suitLite: "#ffd1e8", suitDark: "#a8336f", trim: "#7fd3ff", glow: null, dust: null },
   { id: "cyber", name: "Cyber", cost: 0, ownHead: true, fur: "#9b3beb", furDark: "#2511aa", belly: "#e2cff3", suit: "#4e29b6", suitLite: "#d2a7f2", suitDark: "#0f0646", trim: "#ff3df0", glow: "#7030df", dust: "#c8a8ff" },
 ];
 // Beta-only suits are stripped from production entirely. Anything a PACK
@@ -1066,7 +1066,7 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
   // go live now"): the five former beta suits fill the ladder above 300.
   { title: "HIGH ORBIT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
   // the 3D test (25 Oct 2026); its suit is beta-only, so this row is too
-  ...(IS_BETA ? [{ title: "3D TEST", ids: ["pinky"] }] : []),
+  ...(IS_BETA ? [{ title: "3D TEST", ids: ["cupcake"] }] : []),
 ];
 
 // The helmet wall groups by what the GLASS does, because that is how a
