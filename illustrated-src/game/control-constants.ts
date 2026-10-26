@@ -54,7 +54,7 @@ export const TAP_SHAPE_MIN = 0.1, TAP_SHAPE_MAX = 1.0;
 // Arcflash have their own controllers.
 export const TAP_SHAPE: Record<string, TapShape | "velocity"> = {
   cyber: "velocity", seraph: "velocity",
-  briellacat: "velocity", ghost: "velocity",
+  briellacat: "velocity",
   // Owner-requested replacement banks follow Cyber's exact live path.
   nacre: "velocity",
 };
@@ -192,7 +192,6 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
 
   // --- rigged suits: these carry the velocity bank AND the heading pitch,
   //     so they are the ones most likely to read as over-tipped
-  ghost:       { up: 0.8, down: 0.3 },
   seraph:      { up: 0.8, down: 0.3 },
   nacre:       { up: 0.8, down: 0.3 },
 
@@ -235,6 +234,7 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   ferret:      { up: 0, down: 0 },
   bigbooty:    { up: 0, down: 0 },
   porcelain:   { up: 0, down: 0 },
+  ghost:       { up: 0, down: 0 },
 };
 
 /** The dial for a suit, or the default for one that has none yet. */

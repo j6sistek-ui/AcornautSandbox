@@ -27,10 +27,11 @@ globalThis.localStorage={getItem:()=>null,setItem(){},removeItem(){}};
 const mod=file=>import(pathToFileURL(join(scratch,'js',file+'.js')).href);
 const [D,A,C,Sim,S,Control]=await Promise.all(['draw','art','catalog','sim','save','control-constants'].map(mod));
 // Ion, Void, Sammie, Gemmie, Ember, Frost, Copper and Leviathan left with the 3D
-// lineup (26 Oct 2026), and the three critters' loops with them; Ghost stays
-const standard=['ghost'];
+// lineup (26 Oct 2026), the three critters' loops with them, and last Ghost (27 Oct 2026)
+const standard=[];
 const loops=[],art=A.emptyArt();
 assert.deepEqual([...D.NATURAL_FLIGHT_SUITS],standard);
+if(!standard.length&&!loops.length){console.log('Natural flight: no suit flies the normalized series any more (all joined the 3D lineup); nothing to paint');process.exit(0);}
 async function sprite(file){const im=await loadImage(join(root,'docs/art',file));Object.defineProperty(im,'src',{get:()=>file});labels.set(im,file);return A.asSprite(im);}
 for(const id of [...standard,...loops]){
  art.suits[id]=await sprite(`suits/${id}.png`);

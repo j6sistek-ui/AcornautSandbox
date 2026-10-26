@@ -58,8 +58,8 @@ for(const model of premium){
     assert.equal(tuned.frame,8-original.frame,'each selected climb painting uses the reversed order');
   }
 }
-// Ghost is the ascent-bank fixture since Ion, then Copper, became 3D tap+dive suits (26 Oct 2026)
-const ion=manifest.models.find(m=>m.id==='ghost'),p=makeProject(manifest,ion).profile;
+// Seraph is the ascent-bank fixture since Ion, Copper and then Ghost became 3D tap+dive suits (26-27 Oct 2026)
+const ion=manifest.models.find(m=>m.id==='seraph'),p=makeProject(manifest,ion).profile;
 assert.equal(p.tapSource,'asc');
 assert.equal(p.tapPath,'out-back');
 const returning=createAnimation(ion);acceptTap(returning,p);for(let i=0;i<120;i++)stepAnimation(returning,p,STEP,-300);assert.equal(returning.frame,0,'out-and-back must finish at neutral');

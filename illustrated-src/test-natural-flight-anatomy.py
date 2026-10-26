@@ -12,7 +12,7 @@ reg = json.loads((source/'registration.json').read_text())
 regions = json.loads((repair/'regions.json').read_text())
 
 # voidsuit's repaired bank retired with the 3D lineup (26 Oct 2026)
-RETIRED = {'iontrim', 'voidsuit', 'sammie', 'gemmie', 'ember', 'frost', 'copper', 'leviathan', 'hedgehog', 'ferret', 'raccoon'}
+RETIRED = {'iontrim', 'voidsuit', 'sammie', 'gemmie', 'ember', 'frost', 'copper', 'leviathan', 'hedgehog', 'ferret', 'raccoon', 'ghost'}
 for suit, (x0, y0, x1, y1) in regions.items():
     if suit in RETIRED: continue
     before = np.asarray(Image.open(repair/f'{suit}-asc-8.before.png'))

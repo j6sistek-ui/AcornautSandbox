@@ -85,6 +85,12 @@
   "porcelain": {
    "model": "Future2.glb (Moonstone)",
    "note": "owner, 27 Oct 2026: Percy from future model #2 (moon tail)"
+  },
+  "ghost": {
+   "model": "cutefox.glb",
+   "tail": "tripoTail_0",
+   "args": "--tail tripoTail_0 --keep bone_25 --follow 0.1 --famp 0.8",
+   "note": "owner, 27 Oct 2026: her back wisp (bone_25) stays with the body and follows the main tail 0.1 s late at 80% - \"big one always leads\""
   }
  },
  "hashes": {
@@ -512,6 +518,23 @@
   "suits/porcelain-tap-10.png": "664c2d31584353259498c64a42b00530b49a0b21",
   "suits/porcelain-tap-11.png": "11fb408c815ab7447240e17038418f9dd3451278",
   "suits/porcelain-tap-12.png": "93e7bdf4f401b8b7eef59a06ad5964959397f677",
-  "suits/porcelain.png": "9431794e7be871e1db32cb3bf0d602075814aaee"
+  "suits/porcelain.png": "9431794e7be871e1db32cb3bf0d602075814aaee",
+  "suits/ghost-desc-1.png": "c559c9961d2b551babeab25ae70e4e1876170a99",
+  "suits/ghost-desc-2.png": "d1cc634198d4645e1a05b58035c67a150a5bf25e",
+  "suits/ghost-desc-3.png": "647b5ab3ee8dfe2bef33daa16fad267d01ef2bf4",
+  "suits/ghost-desc-4.png": "19af8e64e8165c9371a35e56a735591f5d0700bd",
+  "suits/ghost-tap-1.png": "358f3fff7c9b8a544b0d649c81905d8e850077dc",
+  "suits/ghost-tap-2.png": "b88bb1ee8931d9b208534dcac6d50c768ef14e48",
+  "suits/ghost-tap-3.png": "c012ebfa3d39c3e4e21165a27f9704404413387a",
+  "suits/ghost-tap-4.png": "74ebda7e94ab7d21bb14a0e58e53c0406fc7ca54",
+  "suits/ghost-tap-5.png": "3edb705e1ad68d4b427eee2472e93cd35974d5fa",
+  "suits/ghost-tap-6.png": "2c59b663602ac424399377f7b3c3ca967eaf76fa",
+  "suits/ghost-tap-7.png": "d3332a79153bf4551b679c8aef54b9f27a9f1fd5",
+  "suits/ghost-tap-8.png": "d0bcf983f0dbabadaf3dab5fb912c9f4f69cc1e9",
+  "suits/ghost-tap-9.png": "671c2aa162641dbebcb50f7581164338072b0e0b",
+  "suits/ghost-tap-10.png": "3b295ae58ae93d3886e502285e91781b7723d025",
+  "suits/ghost-tap-11.png": "ba91d17a34bd32f26780515fc77fae9558acb63c",
+  "suits/ghost-tap-12.png": "5c3dfc45f6ac53963fbce0fd01619cfaff4ce466",
+  "suits/ghost.png": "358f3fff7c9b8a544b0d649c81905d8e850077dc"
  }
 }

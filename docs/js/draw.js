@@ -1,38 +1,38 @@
-import { spillDockTravelDuration } from "./spill.js?v=319";
-import { clipHelmetGlass } from "./helmet-openings.js?v=319";
-import { paintFittedHelmet } from "./helmet-fit.js?v=319";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=319";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=319";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=319";
-import { arcflashPreview } from "./arcflash-motion.js?v=319";
-import { paintLiveStarTrail } from "./star-trails.js?v=319";
-import { trailWornBy } from "./catalog.js?v=319";
-import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=319";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=319";
-import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=319";
-import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=319";
-import { RIG3D_BOOTS } from "./rig3d-boots.js?v=319";
-import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=319";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=319";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=319";
-import { spillAppearance } from "./spill-appearance.js?v=319";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=319";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=319";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=319";
-import { goalHud } from "./campaign.js?v=319";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=319";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=319";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=319";
-import { spriteImageFor } from "./sprite-detail.js?v=319";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=319";
-import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=319";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=319";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=319";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=319";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=319";
-import { spillEngineColor } from "./spill-content.js?v=319";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=319";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=319";
+import { spillDockTravelDuration } from "./spill.js?v=320";
+import { clipHelmetGlass } from "./helmet-openings.js?v=320";
+import { paintFittedHelmet } from "./helmet-fit.js?v=320";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=320";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=320";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=320";
+import { arcflashPreview } from "./arcflash-motion.js?v=320";
+import { paintLiveStarTrail } from "./star-trails.js?v=320";
+import { trailWornBy } from "./catalog.js?v=320";
+import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=320";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=320";
+import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=320";
+import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=320";
+import { RIG3D_BOOTS } from "./rig3d-boots.js?v=320";
+import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=320";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=320";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=320";
+import { spillAppearance } from "./spill-appearance.js?v=320";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=320";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=320";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=320";
+import { goalHud } from "./campaign.js?v=320";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=320";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=320";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=320";
+import { spriteImageFor } from "./sprite-detail.js?v=320";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=320";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=320";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=320";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=320";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=320";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=320";
+import { spillEngineColor } from "./spill-content.js?v=320";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=320";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=320";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3515,7 +3515,6 @@ const DOME = {
     // Static portraits; each radius fits that painting's head, not its body box.
     // Five beta suits: whole-frame skull registration from beta-flight-refresh.
     "suit:robo": [184, 98, 32.71, 0],
-    "suit:ghost": [208, 109, 30.73, 0],
     "suit:catsuit": [212, 86, 50],
     "suit:phoenix": [207, 92, 41],
     "suit:seraph": [205, 131, 27.89, 2],
@@ -3554,23 +3553,6 @@ const DOME = {
     "seraph-desc-6": [203, 148, 27.89, 23],
     "seraph-desc-7": [201, 163, 27.89, 57],
     "seraph-desc-8": [197, 163, 27.89, 62],
-    // ghost — pose-specific head and collar registration.
-    "ghost-asc-1": [208, 109, 30.73, 0],
-    "ghost-asc-2": [208, 108.3, 30.73, -5],
-    "ghost-asc-3": [208, 107.5, 30.73, -10],
-    "ghost-asc-4": [208, 106.6, 30.73, -10],
-    "ghost-asc-5": [208, 105.5, 30.73, -10],
-    "ghost-asc-6": [208, 104.3, 30.73, -10],
-    "ghost-asc-7": [208, 103, 30.73, -15],
-    "ghost-asc-8": [208, 102, 30.73, -20],
-    "ghost-desc-1": [208, 109, 30.73, 0],
-    "ghost-desc-2": [208, 109.8, 30.73, 0],
-    "ghost-desc-3": [208, 110.8, 30.73, -5],
-    "ghost-desc-4": [208, 112, 30.73, -5],
-    "ghost-desc-5": [208, 113.2, 30.73, 0],
-    "ghost-desc-6": [208, 114.6, 30.73, 5],
-    "ghost-desc-7": [208, 116, 30.73, 5],
-    "ghost-desc-8": [208, 117, 30.73, 5],
     // THE 3D LINEUP (26 Oct 2026): measured, not placed - tools/rig3d projects each
     // frame's 3D head through the render camera (anchors.json). Centre and tilt are
     // per frame; the radius is the suit's median, so the glass never resizes.
@@ -3744,6 +3726,23 @@ const DOME = {
     "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
     "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
     "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+    "suit:ghost": [191.69, 101.54, 26.36, 2.03],
+    "ghost-tap-1": [191.69, 101.54, 26.36, 2.03],
+    "ghost-tap-2": [190.17, 99, 26.36, -1.66],
+    "ghost-tap-3": [189.14, 97.91, 26.36, -4.02],
+    "ghost-tap-4": [189.18, 98.47, 26.36, -4.4],
+    "ghost-tap-5": [190.38, 100.55, 26.36, -2.7],
+    "ghost-tap-6": [191.98, 103.69, 26.36, 0.61],
+    "ghost-tap-7": [193.48, 107.17, 26.36, 4.65],
+    "ghost-tap-8": [194.65, 110.05, 26.36, 8.31],
+    "ghost-tap-9": [195.23, 111.44, 26.36, 10.63],
+    "ghost-tap-10": [195.21, 110.86, 26.36, 11.01],
+    "ghost-tap-11": [194.61, 108.47, 26.36, 9.34],
+    "ghost-tap-12": [193.33, 105.01, 26.36, 6.06],
+    "ghost-desc-1": [191.69, 101.54, 26.36, 2.03],
+    "ghost-desc-2": [195.39, 116.14, 26.36, 15.8],
+    "ghost-desc-3": [195.62, 132.15, 26.36, 28.99],
+    "ghost-desc-4": [193.28, 148.77, 26.36, 41.42],
     "suit:porcelain": [185.99, 116.93, 27.51, 1.8],
     "porcelain-tap-1": [185.99, 116.93, 27.51, 1.8],
     "porcelain-tap-2": [185.27, 114.46, 27.51, -1.88],
@@ -4218,10 +4217,9 @@ function bakedDome(key) {
 // and one presentation box. Alpha-box fitting would undo the normalization
 // whenever a tail was longer, making the same helmet a different size.
 export const NATURAL_FLIGHT_SUITS = new Set([
-    "ghost",
-    // iontrim, voidsuit, sammie, gemmie and ember left this set with the 3D lineup
-    // (26 Oct 2026), then frost, copper and leviathan: their rendered banks register
-    // by their own first tap frame
+// empty since the 3D lineup (26-27 Oct 2026): iontrim, voidsuit, sammie, gemmie, ember,
+// frost, copper, leviathan and last ghost left it - their rendered banks register by their
+// own first tap frame. The fixed-box path stays for the next normalized series
 ]);
 const NATURAL_FLIGHT_BOX = { x: 32, y: 32, w: 192, h: 192 };
 function naturalFlightKey(key) {
@@ -4541,7 +4539,7 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // The 3D lineup too (26 Oct 2026): its rendered dive frames carry the attitude.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
     "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
-    "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant", "porcelain"]);
+    "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant", "porcelain", "ghost"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as

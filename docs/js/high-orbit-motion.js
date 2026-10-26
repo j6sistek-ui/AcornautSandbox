@@ -1,5 +1,5 @@
-import { HIGH_ORBIT_PROFILES, isPremiumSuit } from './high-orbit-config.js?v=319';
-import { createManeuverMotion, maneuverTap, stepManeuver } from './vanguard-maneuver.js?v=319';
+import { HIGH_ORBIT_PROFILES, isPremiumSuit } from './high-orbit-config.js?v=320';
+import { createManeuverMotion, maneuverTap, stepManeuver } from './vanguard-maneuver.js?v=320';
 export const PREMIUM_FLIGHT_DURATION = 1;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const smooth = (v) => { v = clamp(v, 0, 1); return v * v * (3 - 2 * v); };

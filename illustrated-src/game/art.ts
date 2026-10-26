@@ -454,6 +454,8 @@ const TAP_BANKS: Record<string, number> = {
   ferret: 12, raccoon: 12,
   // Big Booty (27 Oct 2026): her own jiggle rig - see art-src/rig3d/receipt.json for the recipe
   bigbooty: 12,
+  // Ghost (27 Oct 2026): her back wisp follows the main tail a beat late - recipe in the receipt
+  ghost: 12,
   // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
   // retired: their GENERATED motion lost the pilot's lower body at its
   // extremes, and each flies a painted ascent/descent ramp now -
@@ -488,21 +490,19 @@ const BOUNCE_BANKS: Record<string, number> = { volt: 16 };
 // eleven swept suits measured clean and keep their shared frame.
 const ASC_BANKS: Record<string, number> =
     { cyber: 9, nacre: 9, seraph: 8,
-        // alien, copper and leviathan left for the 3D lineup (26 Oct 2026)
-        ghost: 8,
+        // alien, copper, leviathan and then ghost left for the 3D lineup (26-27 Oct 2026)
         // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
         briellacat: 7,
         };
 const DESC_BANKS: Record<string, number> =
     { cyber: 9, nacre: 9, seraph: 8,
-        ghost: 8,
         briellacat: 4,
         // the 3D lineup's dives, paired with their twelve-frame taps above
         ember: 4, voidsuit: 4, groveguard: 4, cinderforge: 4, sunforged: 4,
         abyssal: 4, gemmie: 4, iontrim: 4, sammie: 4, cosmic: 4,
         flight: 4, frost: 4, leviathan: 4, copper: 4, alien: 4, hedgehog: 4,
         arcflash: 4, origamist: 4, porcelain: 4, eclipse: 4, cryostar: 4, verdant: 4,
-        ferret: 4, raccoon: 4, bigbooty: 4,
+        ferret: 4, raccoon: 4, bigbooty: 4, ghost: 4,
         };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.

@@ -1,5 +1,5 @@
 {
- "artVer": "319",
+ "artVer": "320",
  "suits": [
   {
    "id": "flight",
@@ -213,17 +213,12 @@
    "key": "suit:ghost",
    "file": "suits/ghost.png",
    "dome": [
-    208,
-    109,
-    30.73,
-    0
+    191.69,
+    101.54,
+    26.36,
+    2.03
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": false
@@ -4079,198 +4074,17 @@
   },
   {
    "played": true,
-   "id": "ghost-asc-1",
-   "name": "Ghost asc 1",
-   "key": "ghost-asc-1",
-   "file": "suits/ghost-asc-1.png",
-   "dome": [
-    208,
-    109,
-    30.73,
-    0
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "ghost-asc-2",
-   "name": "Ghost asc 2",
-   "key": "ghost-asc-2",
-   "file": "suits/ghost-asc-2.png",
-   "dome": [
-    208,
-    108.3,
-    30.73,
-    -5
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "ghost-asc-3",
-   "name": "Ghost asc 3",
-   "key": "ghost-asc-3",
-   "file": "suits/ghost-asc-3.png",
-   "dome": [
-    208,
-    107.5,
-    30.73,
-    -10
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "ghost-asc-4",
-   "name": "Ghost asc 4",
-   "key": "ghost-asc-4",
-   "file": "suits/ghost-asc-4.png",
-   "dome": [
-    208,
-    106.6,
-    30.73,
-    -10
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "ghost-asc-5",
-   "name": "Ghost asc 5",
-   "key": "ghost-asc-5",
-   "file": "suits/ghost-asc-5.png",
-   "dome": [
-    208,
-    105.5,
-    30.73,
-    -10
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "ghost-asc-6",
-   "name": "Ghost asc 6",
-   "key": "ghost-asc-6",
-   "file": "suits/ghost-asc-6.png",
-   "dome": [
-    208,
-    104.3,
-    30.73,
-    -10
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "ghost-asc-7",
-   "name": "Ghost asc 7",
-   "key": "ghost-asc-7",
-   "file": "suits/ghost-asc-7.png",
-   "dome": [
-    208,
-    103,
-    30.73,
-    -15
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
-   "id": "ghost-asc-8",
-   "name": "Ghost asc 8",
-   "key": "ghost-asc-8",
-   "file": "suits/ghost-asc-8.png",
-   "dome": [
-    208,
-    102,
-    30.73,
-    -20
-   ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
-   "ownHead": false,
-   "bakedDome": false,
-   "frame": true
-  },
-  {
-   "played": true,
    "id": "ghost-desc-1",
    "name": "Ghost desc 1",
    "key": "ghost-desc-1",
    "file": "suits/ghost-desc-1.png",
    "dome": [
-    208,
-    109,
-    30.73,
-    0
+    191.69,
+    101.54,
+    26.36,
+    2.03
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4282,17 +4096,12 @@
    "key": "ghost-desc-2",
    "file": "suits/ghost-desc-2.png",
    "dome": [
-    208,
-    109.8,
-    30.73,
-    0
+    195.39,
+    116.14,
+    26.36,
+    15.8
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4304,17 +4113,12 @@
    "key": "ghost-desc-3",
    "file": "suits/ghost-desc-3.png",
    "dome": [
-    208,
-    110.8,
-    30.73,
-    -5
+    195.62,
+    132.15,
+    26.36,
+    28.99
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
@@ -4326,105 +4130,216 @@
    "key": "ghost-desc-4",
    "file": "suits/ghost-desc-4.png",
    "dome": [
-    208,
-    112,
-    30.73,
-    -5
+    193.28,
+    148.77,
+    26.36,
+    41.42
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "ghost-desc-5",
-   "name": "Ghost desc 5",
-   "key": "ghost-desc-5",
-   "file": "suits/ghost-desc-5.png",
+   "id": "ghost-tap-1",
+   "name": "Ghost tap 1",
+   "key": "ghost-tap-1",
+   "file": "suits/ghost-tap-1.png",
    "dome": [
-    208,
-    113.2,
-    30.73,
-    0
+    191.69,
+    101.54,
+    26.36,
+    2.03
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "ghost-desc-6",
-   "name": "Ghost desc 6",
-   "key": "ghost-desc-6",
-   "file": "suits/ghost-desc-6.png",
+   "id": "ghost-tap-2",
+   "name": "Ghost tap 2",
+   "key": "ghost-tap-2",
+   "file": "suits/ghost-tap-2.png",
    "dome": [
-    208,
-    114.6,
-    30.73,
-    5
+    190.17,
+    99,
+    26.36,
+    -1.66
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "ghost-desc-7",
-   "name": "Ghost desc 7",
-   "key": "ghost-desc-7",
-   "file": "suits/ghost-desc-7.png",
+   "id": "ghost-tap-3",
+   "name": "Ghost tap 3",
+   "key": "ghost-tap-3",
+   "file": "suits/ghost-tap-3.png",
    "dome": [
-    208,
-    116,
-    30.73,
-    5
+    189.14,
+    97.91,
+    26.36,
+    -4.02
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
-   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true
   },
   {
    "played": true,
-   "id": "ghost-desc-8",
-   "name": "Ghost desc 8",
-   "key": "ghost-desc-8",
-   "file": "suits/ghost-desc-8.png",
+   "id": "ghost-tap-4",
+   "name": "Ghost tap 4",
+   "key": "ghost-tap-4",
+   "file": "suits/ghost-tap-4.png",
    "dome": [
-    208,
-    117,
-    30.73,
-    5
+    189.18,
+    98.47,
+    26.36,
+    -4.4
    ],
-   "box": [
-    32,
-    32,
-    192,
-    192
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "ghost-tap-5",
+   "name": "Ghost tap 5",
+   "key": "ghost-tap-5",
+   "file": "suits/ghost-tap-5.png",
+   "dome": [
+    190.38,
+    100.55,
+    26.36,
+    -2.7
    ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "ghost-tap-6",
+   "name": "Ghost tap 6",
+   "key": "ghost-tap-6",
+   "file": "suits/ghost-tap-6.png",
+   "dome": [
+    191.98,
+    103.69,
+    26.36,
+    0.61
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "ghost-tap-7",
+   "name": "Ghost tap 7",
+   "key": "ghost-tap-7",
+   "file": "suits/ghost-tap-7.png",
+   "dome": [
+    193.48,
+    107.17,
+    26.36,
+    4.65
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "ghost-tap-8",
+   "name": "Ghost tap 8",
+   "key": "ghost-tap-8",
+   "file": "suits/ghost-tap-8.png",
+   "dome": [
+    194.65,
+    110.05,
+    26.36,
+    8.31
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "ghost-tap-9",
+   "name": "Ghost tap 9",
+   "key": "ghost-tap-9",
+   "file": "suits/ghost-tap-9.png",
+   "dome": [
+    195.23,
+    111.44,
+    26.36,
+    10.63
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "ghost-tap-10",
+   "name": "Ghost tap 10",
+   "key": "ghost-tap-10",
+   "file": "suits/ghost-tap-10.png",
+   "dome": [
+    195.21,
+    110.86,
+    26.36,
+    11.01
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "ghost-tap-11",
+   "name": "Ghost tap 11",
+   "key": "ghost-tap-11",
+   "file": "suits/ghost-tap-11.png",
+   "dome": [
+    194.61,
+    108.47,
+    26.36,
+    9.34
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "ghost-tap-12",
+   "name": "Ghost tap 12",
+   "key": "ghost-tap-12",
+   "file": "suits/ghost-tap-12.png",
+   "dome": [
+    193.33,
+    105.01,
+    26.36,
+    6.06
+   ],
+   "box": null,
    "ownHead": false,
    "bakedDome": false,
    "frame": true

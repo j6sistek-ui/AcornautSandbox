@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "319",
-  "sourceCommit": "06038ab72a5fff22a62bcd2c5d187deb127a3145",
+  "artVer": "320",
+  "sourceCommit": "80cb68b615a1c2a749c79d9d6992e3b6e22e22c3",
   "models": [
     {
       "id": "flight",
@@ -795,64 +795,59 @@
       "key": "suit:ghost",
       "file": "suits/ghost.png",
       "dome": [
-        208,
-        109,
-        30.73,
-        0
+        191.69,
+        101.54,
+        26.36,
+        2.03
       ],
-      "box": [
-        32,
-        32,
-        192,
-        192
-      ],
+      "box": null,
       "ownHead": false,
       "bakedDome": false,
       "frame": false,
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/ghost-asc-1.png",
-          "suits/ghost-asc-2.png",
-          "suits/ghost-asc-3.png",
-          "suits/ghost-asc-4.png",
-          "suits/ghost-asc-5.png",
-          "suits/ghost-asc-6.png",
-          "suits/ghost-asc-7.png",
-          "suits/ghost-asc-8.png"
+        "tap": [
+          "suits/ghost-tap-1.png",
+          "suits/ghost-tap-2.png",
+          "suits/ghost-tap-3.png",
+          "suits/ghost-tap-4.png",
+          "suits/ghost-tap-5.png",
+          "suits/ghost-tap-6.png",
+          "suits/ghost-tap-7.png",
+          "suits/ghost-tap-8.png",
+          "suits/ghost-tap-9.png",
+          "suits/ghost-tap-10.png",
+          "suits/ghost-tap-11.png",
+          "suits/ghost-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/ghost-desc-1.png",
           "suits/ghost-desc-2.png",
           "suits/ghost-desc-3.png",
-          "suits/ghost-desc-4.png",
-          "suits/ghost-desc-5.png",
-          "suits/ghost-desc-6.png",
-          "suits/ghost-desc-7.png",
-          "suits/ghost-desc-8.png"
+          "suits/ghost-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/ghost.png": "40e221636ebf8774226748ca6d8ae2f62293e61dea4c5cff0bcc8cc844855ee4",
-        "suits/ghost-asc-1.png": "40e221636ebf8774226748ca6d8ae2f62293e61dea4c5cff0bcc8cc844855ee4",
-        "suits/ghost-asc-2.png": "2aa66169b6a94f8f252bd18cfbaf9a29612628e360e43a5c8ab94c521e842655",
-        "suits/ghost-asc-3.png": "6da07e01036567263250cf4a4bff18aa309c7c4e21676149857b003368860cd4",
-        "suits/ghost-asc-4.png": "424ca9a399ebc12d541c991cb6959d258612b808e48d555b22975113a59d49af",
-        "suits/ghost-asc-5.png": "b0dc27842a5e32e907d299a0c258dbaaceb67e2a3155f76f166da4aa59728562",
-        "suits/ghost-asc-6.png": "894d528b341bfe3eaa9e12208d06df2f7ce890c7e0985ceed6c4ddfe582c477b",
-        "suits/ghost-asc-7.png": "04cc559cce6a016305eb34a76afad4e79c2f1f7b9f3c303888c277c4b94d96c3",
-        "suits/ghost-asc-8.png": "dcb38fee3e13355504c404cb2beed49319600d4f9687549e4755053930b5a0b7",
-        "suits/ghost-desc-1.png": "40e221636ebf8774226748ca6d8ae2f62293e61dea4c5cff0bcc8cc844855ee4",
-        "suits/ghost-desc-2.png": "b833b4fbde84b2284bc6028f6cec5c224c574cd6083cb5491d7cda9fffe594a6",
-        "suits/ghost-desc-3.png": "5dda3c02aa6ffcbe13dc0aba01a75f84216514e89854a226dd164ca22ca42dc3",
-        "suits/ghost-desc-4.png": "50134d31dd0074ed5d8c88510b063eed18f008461629cd622890cbc26e110ec8",
-        "suits/ghost-desc-5.png": "42d5debd2438c218728f143c596ca15a834fc24fe58957f4d6476e1eaeaa0ae1",
-        "suits/ghost-desc-6.png": "63b241855e7c901b6e54e59206ba04560da0190d77bf4ff7f951ac9cf255488f",
-        "suits/ghost-desc-7.png": "7f593cabe801b10833b7da9b4ce8e4a207387ba94760d22b209a04e86fb81bff",
-        "suits/ghost-desc-8.png": "b988321733ff84a534b04b943ccc65b492eaa7d24db66cb925bf94da57d47287"
+        "suits/ghost.png": "e845a9a4fb7e5d5074774bd446b0b7406f1c1cb0cb680922ff3882b8aa37e6d2",
+        "suits/ghost-tap-1.png": "e845a9a4fb7e5d5074774bd446b0b7406f1c1cb0cb680922ff3882b8aa37e6d2",
+        "suits/ghost-tap-2.png": "dff4a4c5eb325b4fced12bc8a8cde9aa3bfe978db4a7efb55a895fcb54c0e853",
+        "suits/ghost-tap-3.png": "0f0f3c86e063ace6fac492ec4ee1782d02018fe04bda2bf1427ad4516b5b0097",
+        "suits/ghost-tap-4.png": "f76d1f5b2c916425e7cac13487f4e06ca291708d2062b97ddf2f5ff79d8852bc",
+        "suits/ghost-tap-5.png": "47d79317602bc6b1149cea6173dda88edab4ba634d6a9132808308aff1dc3352",
+        "suits/ghost-tap-6.png": "103b87d4e54f26ca11cdd390403924b2faffdc923588cf3596c9390f89ac2273",
+        "suits/ghost-tap-7.png": "4b107953a236f32dc4cb61b94095b161b8e6688fc7bebee8d85d2928abfe1075",
+        "suits/ghost-tap-8.png": "b1f1acdb3b5fc353dfc104ca52638179c17a0a1da953b835f1603f48034e99b2",
+        "suits/ghost-tap-9.png": "ab1613afbe7e2c225075c38dfbfa055eaa0197e8adbec3b4bbdf4560a32d87cd",
+        "suits/ghost-tap-10.png": "3dc80cb192854c82349fc4db5c2b6ccf1eb869b86697fad6eacddfc8e678e0ea",
+        "suits/ghost-tap-11.png": "37b1ef16541bd4d0a22d161032ba946fd3cb5f1226cbee12ab95912cfa82ce84",
+        "suits/ghost-tap-12.png": "64196eb3fcd0cf283dd91051579ca97653ae015635c8904f1a41ada88b94c98b",
+        "suits/ghost-desc-1.png": "d7153f3ea295a69988f55ac6067364d3bd4aa0d4f54f5e7ce169ea55a2def69e",
+        "suits/ghost-desc-2.png": "0d4cbac5897c3c261823875005c0f518a41f39f469b350ac19b34754d53c3b79",
+        "suits/ghost-desc-3.png": "54980b1533f78cc467a408153cd652b256dc3e1742bd32ceecde092ae8210120",
+        "suits/ghost-desc-4.png": "7beba2d842b7ae4e9685a1e555ee5f289c8ac6f95c62229d6eca40dc8b5e5d9d"
       }
     },
     {
@@ -2672,10 +2667,10 @@
       1.82
     ],
     "suit:ghost": [
-      208,
-      109,
-      30.73,
-      0
+      191.69,
+      101.54,
+      26.36,
+      2.03
     ],
     "suit:bigbooty": [
       197.85,
@@ -4038,101 +4033,101 @@
       36.18,
       5.83
     ],
-    "ghost-asc-1": [
-      208,
-      109,
-      30.73,
-      0
-    ],
-    "ghost-asc-2": [
-      208,
-      108.3,
-      30.73,
-      -5
-    ],
-    "ghost-asc-3": [
-      208,
-      107.5,
-      30.73,
-      -10
-    ],
-    "ghost-asc-4": [
-      208,
-      106.6,
-      30.73,
-      -10
-    ],
-    "ghost-asc-5": [
-      208,
-      105.5,
-      30.73,
-      -10
-    ],
-    "ghost-asc-6": [
-      208,
-      104.3,
-      30.73,
-      -10
-    ],
-    "ghost-asc-7": [
-      208,
-      103,
-      30.73,
-      -15
-    ],
-    "ghost-asc-8": [
-      208,
-      102,
-      30.73,
-      -20
-    ],
     "ghost-desc-1": [
-      208,
-      109,
-      30.73,
-      0
+      191.69,
+      101.54,
+      26.36,
+      2.03
     ],
     "ghost-desc-2": [
-      208,
-      109.8,
-      30.73,
-      0
+      195.39,
+      116.14,
+      26.36,
+      15.8
     ],
     "ghost-desc-3": [
-      208,
-      110.8,
-      30.73,
-      -5
+      195.62,
+      132.15,
+      26.36,
+      28.99
     ],
     "ghost-desc-4": [
-      208,
-      112,
-      30.73,
-      -5
+      193.28,
+      148.77,
+      26.36,
+      41.42
     ],
-    "ghost-desc-5": [
-      208,
-      113.2,
-      30.73,
-      0
+    "ghost-tap-1": [
+      191.69,
+      101.54,
+      26.36,
+      2.03
     ],
-    "ghost-desc-6": [
-      208,
-      114.6,
-      30.73,
-      5
+    "ghost-tap-2": [
+      190.17,
+      99,
+      26.36,
+      -1.66
     ],
-    "ghost-desc-7": [
-      208,
-      116,
-      30.73,
-      5
+    "ghost-tap-3": [
+      189.14,
+      97.91,
+      26.36,
+      -4.02
     ],
-    "ghost-desc-8": [
-      208,
-      117,
-      30.73,
-      5
+    "ghost-tap-4": [
+      189.18,
+      98.47,
+      26.36,
+      -4.4
+    ],
+    "ghost-tap-5": [
+      190.38,
+      100.55,
+      26.36,
+      -2.7
+    ],
+    "ghost-tap-6": [
+      191.98,
+      103.69,
+      26.36,
+      0.61
+    ],
+    "ghost-tap-7": [
+      193.48,
+      107.17,
+      26.36,
+      4.65
+    ],
+    "ghost-tap-8": [
+      194.65,
+      110.05,
+      26.36,
+      8.31
+    ],
+    "ghost-tap-9": [
+      195.23,
+      111.44,
+      26.36,
+      10.63
+    ],
+    "ghost-tap-10": [
+      195.21,
+      110.86,
+      26.36,
+      11.01
+    ],
+    "ghost-tap-11": [
+      194.61,
+      108.47,
+      26.36,
+      9.34
+    ],
+    "ghost-tap-12": [
+      193.33,
+      105.01,
+      26.36,
+      6.06
     ],
     "groveguard-desc-1": [
       187.04,
@@ -5850,7 +5845,7 @@
     "arcflash": "e3311622176da38faba697d12c9b2a471084681e7192d539da559e6336028b38",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "4e25fda28b50f075e3b0f7d76db5f326938110e28febc202c828db645484651c",
+    "control-constants": "484e680510b7dd83262572b0f37854012ff305fc147da70c6a07a066ec2de178",
     "cyber-trio-registration": "015faf2a34603b2ed1ed653b79ae2c10139ae7ee083efa48a3d68288eadbc08c",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
