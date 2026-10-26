@@ -25,7 +25,7 @@ R.setPixelRatio(1); R.setSize(SIZE, SIZE);
 R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
 document.body.appendChild(R.domElement);
 
-const rig = await loadRig(q.get('model'), { ...(RIG_OPTS || {}), ...(q.get('head') ? { map: { head: q.get('head') } } : {}) });
+const rig = await loadRig(q.get('model'), { ...(RIG_OPTS || {}), ...(q.get('head') || q.get('tail') ? { map: { ...(q.get('head') ? { head: q.get('head') } : {}), ...(q.get('tail') ? { tail: q.get('tail') } : {}) } } : {}) });
 const scene = new THREE.Scene(); scene.add(rig.pivot);
 // a soft studio room for metal to reflect: Tripo's materials are metallic-roughness, and with
 // nothing around them their metal parts rendered near black

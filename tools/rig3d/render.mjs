@@ -28,7 +28,7 @@ const modelPath = args.find(a => a.endsWith('.glb'));
 const id = opt('id');
 if (!modelPath || !id) { console.error('usage: node render.mjs <model.glb> --id <suit-id> [--out dir] [--size 512] [--seconds 2] [--frames tap:12,desc:4,asc:0]'); process.exit(2); }
 const out = path.resolve(opt('out', `rig3d-out/${id}`));
-const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', ''), HEAD = opt('head', ''), BODY = opt('body', '');
+const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', ''), HEAD = opt('head', ''), BODY = opt('body', ''), TAIL = opt('tail', '');
 for (const d of ['', 'hd', 'sheets', 'preview']) fs.mkdirSync(path.join(out, d), { recursive: true });
 
 // playwright: local install, then the PLAYWRIGHT_MODULE env var, then a global path
@@ -61,7 +61,7 @@ page.on('pageerror', e => { console.error('page error:', e.message); failed = e.
 page.on('crash', () => { console.error('the page crashed'); process.exit(1); });
 let closing = false;
 browser.on('disconnected', () => { if (closing) return; console.error('the browser went away'); process.exit(1); });
-await page.goto(`http://localhost:${port}/studio.html?model=/model.glb&size=${SIZE}&frames=${encodeURIComponent(FRAMES)}&head=${encodeURIComponent(HEAD)}${BODY ? `&body=${BODY}` : ''}`);
+await page.goto(`http://localhost:${port}/studio.html?model=/model.glb&size=${SIZE}&frames=${encodeURIComponent(FRAMES)}&head=${encodeURIComponent(HEAD)}${BODY ? `&body=${BODY}` : ''}${TAIL ? `&tail=${encodeURIComponent(TAIL)}` : ''}`);
 await Promise.race([
   page.waitForFunction(() => window.studioReady, null, { timeout: 600000 }),
   (async () => { while (!failed) await new Promise(r => setTimeout(r, 200)); })(),

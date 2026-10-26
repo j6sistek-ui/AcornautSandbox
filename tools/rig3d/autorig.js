@@ -74,7 +74,11 @@ export async function loadRig(url, opts = {}) {
   // tail FIRST: the heaviest chain of all. Picking the legs first ("the four reaching lowest")
   // took a tail that curls down below the feet for a hind leg - the robot squirrel's ten-bone
   // tail flew as a leg and its tail got one stray bone
-  const tailMain = chains.slice().sort((a, b) => verts(b) - verts(a))[0] || [];
+  // map.tail pins the tail by naming one of its bones, as map.head pins the head: some rigs
+  // carry a front leg heavier than the tail (the future cats), and it flew as the tail
+  const tailPin = map.tail != null ? byName(map.tail) : -1;
+  const tailMain = tailPin >= 0 ? (chains.find(c => c.includes(tailPin)) || subtree(tailPin))
+    : chains.slice().sort((a, b) => verts(b) - verts(a))[0] || [];
   // legs: the four chains reaching lowest, of the rest
   const legs = chains.filter(c => c !== tailMain).sort((a, b) => tipY(a) - tipY(b)).slice(0, 4);
   const rest = chains.filter(c => !legs.includes(c));

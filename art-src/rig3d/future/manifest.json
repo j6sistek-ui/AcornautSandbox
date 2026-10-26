@@ -1,6 +1,6 @@
 {
  "note": "Future models (owner, 26 Oct 2026): validated with tools/rig3d, NOT live. Names are placeholders. Each folder holds the 12-frame tap, 4-frame dive, the still, helmet anchors and wake feet, ready to install when one is picked.",
- "command": "node tools/rig3d/render.mjs Future<n>.glb --id future<n> --frames tap:12,desc:4,asc:0 [--head <bone>]",
+ "command": "node tools/rig3d/render.mjs Future<n>.glb --id future<n> --frames tap:12,desc:4,asc:0 [--head <bone>] [--tail <bone>]",
  "models": {
   "future1": {
    "name": "Snowdrift",
@@ -104,16 +104,17 @@
     "head": "tripoHead_1",
     "front": 2,
     "hind": 2,
-    "tail": 7
+    "tail": 5
    },
    "framing": {
-    "left": -0.74,
-    "right": -0.17,
-    "top": -0.6,
-    "bottom": -0.58
+    "left": -0.71,
+    "right": -0.22,
+    "top": -0.46,
+    "bottom": -0.59
    },
-   "helmetRadius": 21.02,
-   "note": "sits small in frame (framed by body length)"
+   "helmetRadius": 20.8,
+   "note": "a front leg outweighed the tail and flew as it (owner: \"backwards\"); tail pinned. Sits small in frame",
+   "tail": "tripoTail_0"
   },
   "future7": {
    "name": "Wyrm",
@@ -145,13 +146,14 @@
     "tail": 5
    },
    "framing": {
-    "left": -0.78,
-    "right": -0.16,
-    "top": -0.53,
-    "bottom": -0.54
+    "left": -0.74,
+    "right": -0.23,
+    "top": -0.44,
+    "bottom": -0.48
    },
-   "helmetRadius": 22.0,
-   "note": "sits small in frame"
+   "helmetRadius": 22.35,
+   "note": "a front leg outweighed the tail and flew as it (owner: \"backwards\"); tail pinned. Sits small in frame",
+   "tail": "tripoTail_0"
   },
   "future9": {
    "name": "Umbra",
@@ -190,7 +192,8 @@
     "bottom": -0.43
    },
    "helmetRadius": 40.95,
-   "note": "humanoid-named rig: head pinned to Head"
+   "note": "humanoid-named rig whose rainbow tail is skinned to the Pelvis, the bone the hind legs hang from: the tail cannot swing on its own. Needs custom rigging (owner: \"backwards\"); head pinned to Head",
+   "needsCustomRig": true
   },
   "future11": {
    "name": "Geode",
