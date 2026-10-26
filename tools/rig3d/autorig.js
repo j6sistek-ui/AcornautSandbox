@@ -298,6 +298,8 @@ export async function loadRig(url, opts = {}) {
     const ys = dom.map(i => P[i].y).sort((x, y) => x - y), yCut = ys[Math.floor(ys.length * (spec.floor ?? 0.3))];
     const c = new THREE.Vector3(); let m = 0; for (const i of dom) if (P[i].y >= yCut) { c.add(P[i]); m++; } c.divideScalar(m);
     const ds = dom.filter(i => P[i].y >= yCut).map(i => P[i].distanceTo(c)).sort((x, y) => x - y), R = ds[Math.floor(ds.length * 0.85)] * (spec.reach ?? 1);
+    // spec.up lifts the centre (owner: "the jiggle needs to be up more")
+    c.y += (spec.up || 0) * R;
     const parent = bones[[...src][0]];
     const jb = new THREE.Bone(); jb.name = 'jiggle_' + n; parent.add(jb); jb.position.copy(parent.worldToLocal(c.clone())); jb.updateMatrixWorld(true);
     jiggle.push({ bone: jb, rest: jb.position.clone(), src, centre: c.clone(), R, gain: spec.gain ?? 1 });

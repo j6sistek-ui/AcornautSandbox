@@ -19,14 +19,22 @@ const q = new URLSearchParams(location.search);
 const SIZE = +(q.get('size') || 512);
 // ?frames=tap:12,desc:4,asc:0 overrides a bank's frame count; 0 leaves the move out
 const counts = Object.fromEntries((q.get('frames') || '').split(',').filter(Boolean).map(kv => kv.split(':')).map(([k, v]) => [k, +v]));
-const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames }]));
+// ?tailamp=0.6 scales how far the tail swings from its rest aim (and how far it unfurls), for a
+// model whose tail would sweep through its own legs at full swing (Big Booty)
+const TAILAMP = +(q.get('tailamp') || 1), TAIL_REST = ALL_MOVES.tap.pose(0).tailAim?.[1] ?? 130;
+const shaped = pose => TAILAMP === 1 ? pose : u => { const p = pose(u);
+  if (p.tailAim) p.tailAim = [p.tailAim[0], TAIL_REST + (p.tailAim[1] - TAIL_REST) * TAILAMP];
+  if (p.unfurl) p.unfurl *= TAILAMP; return p; };
+const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames, pose: shaped(m.pose) }]));
 const R = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 R.setPixelRatio(1); R.setSize(SIZE, SIZE);
 R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
 document.body.appendChild(R.domElement);
 
 // ?jiggle=bone_39,tripoRoot|bone_42 - one spring region per |, named by the bones carrying it
-const JIGGLE = q.get('jiggle') ? q.get('jiggle').split('|').map(r => ({ bones: r.split(',') })) : [];
+// ?jup= lifts each region's centre by that share of its radius; ?jfloor= the share of its lowest
+// points left out of the centre (a foot on the same bone does not drag it down)
+const JIGGLE = q.get('jiggle') ? q.get('jiggle').split('|').map(r => ({ bones: r.split(','), up: +(q.get('jup') || 0), floor: +(q.get('jfloor') || 0.3) })) : [];
 const rig = await loadRig(q.get('model'), { ...(RIG_OPTS || {}), jiggle: JIGGLE, basePitch: +(q.get('pitch') || 0), yaw: +(q.get('yaw') || 0), ...(q.get('head') || q.get('tail') ? { map: { ...(q.get('head') ? { head: q.get('head') } : {}), ...(q.get('tail') ? { tail: q.get('tail') } : {}) } } : {}) });
 const scene = new THREE.Scene(); scene.add(rig.pivot);
 // a soft studio room for metal to reflect: Tripo's materials are metallic-roughness, and with
