@@ -25,7 +25,9 @@ R.setPixelRatio(1); R.setSize(SIZE, SIZE);
 R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
 document.body.appendChild(R.domElement);
 
-const rig = await loadRig(q.get('model'), { ...(RIG_OPTS || {}), ...(q.get('head') || q.get('tail') ? { map: { ...(q.get('head') ? { head: q.get('head') } : {}), ...(q.get('tail') ? { tail: q.get('tail') } : {}) } } : {}) });
+// ?jiggle=bone_39,tripoRoot|bone_42 - one spring region per |, named by the bones carrying it
+const JIGGLE = q.get('jiggle') ? q.get('jiggle').split('|').map(r => ({ bones: r.split(',') })) : [];
+const rig = await loadRig(q.get('model'), { ...(RIG_OPTS || {}), jiggle: JIGGLE, basePitch: +(q.get('pitch') || 0), yaw: +(q.get('yaw') || 0), ...(q.get('head') || q.get('tail') ? { map: { ...(q.get('head') ? { head: q.get('head') } : {}), ...(q.get('tail') ? { tail: q.get('tail') } : {}) } } : {}) });
 const scene = new THREE.Scene(); scene.add(rig.pivot);
 // a soft studio room for metal to reflect: Tripo's materials are metallic-roughness, and with
 // nothing around them their metal parts rendered near black
@@ -98,7 +100,38 @@ function bootAnchors() {
 }
 rig.apply({ ...MOVES.tap ? MOVES.tap.pose(0) : {}, lift: 0 }); rig.pivot.updateMatrixWorld(true);
 const headRest = headBone.getWorldQuaternion(new THREE.Quaternion());
-function frame(move, u, lift) { const p = MOVES[move].pose(u); if (!lift) p.lift = 0; rig.apply(p); R.render(scene, cam); return R.domElement.toDataURL('image/png'); }
+// THE SPRING (jiggle regions only): a damped spring per region, pulled by its attachment's
+// acceleration, so the soft part lags, overshoots and settles behind the body. Simulated in
+// real seconds across the move WITH its lift (the game supplies the bob the bank frames leave
+// out) plus a flap kick at each tap; a looped move runs two cycles first so frame 1 is settled.
+// ?jf= frequency (Hz), ?jz= damping ratio, ?jk= tap kick, ?jg= gain
+const JF = +(q.get('jf') || 2.6), JZ = +(q.get('jz') || 0.18), JK = +(q.get('jk') || 0.9), JG = +(q.get('jg') || 1);
+const MOVE_SECONDS = { tap: 0.7, desc: 0.6, asc: 0.6 };
+function springAt(move, u) {
+  const m = MOVES[move], T = MOVE_SECONDS[move] || 0.6, dt = 1 / 480, n = Math.round(T / dt), J = rig.jiggleCount;
+  const w = 2 * Math.PI * JF, k = w * w, c = 2 * JZ * w;
+  const x = Array.from({ length: J }, () => new THREE.Vector3()), v = Array.from({ length: J }, () => new THREE.Vector3());
+  const t0 = m.loop ? u - 2 : 0, total = Math.max(0, Math.round((u - t0) * n));
+  let A0 = null, A1 = null;
+  for (let s = 0; s <= total; s++) {
+    const t = t0 + s / n, tu = m.loop ? ((t % 1) + 1) % 1 : Math.min(1, Math.max(0, t));
+    // the flap: the body is kicked up at the start of every tap, so the soft part is left behind
+    if (m.loop && s > 0 && Math.floor(t) !== Math.floor(t - 1 / n)) v.forEach(vi => vi.addScaledVector(rig.UP, -JK));
+    rig.apply(m.pose(tu)); const A = rig.jiggleAnchor();
+    if (A0 && A1) for (let i = 0; i < J; i++) {
+      const acc = A[i].clone().sub(A1[i].clone().multiplyScalar(2)).add(A0[i]).divideScalar(dt * dt);
+      const f = x[i].clone().multiplyScalar(-k).addScaledVector(v[i], -c).sub(acc);
+      v[i].addScaledVector(f, dt); x[i].addScaledVector(v[i], dt);
+    }
+    A0 = A1; A1 = A;
+  }
+  return x.map(o => o.multiplyScalar(JG));
+}
+function frame(move, u, lift) {
+  const off = rig.jiggleCount ? springAt(move, u) : null;
+  const p = MOVES[move].pose(u); if (!lift) p.lift = 0; rig.apply(p); if (off) rig.setJiggle(off);
+  R.render(scene, cam); return R.domElement.toDataURL('image/png');
+}
 
 window.studio = {
   info: { ...rig.info, framing },

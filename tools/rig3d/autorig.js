@@ -284,6 +284,42 @@ export async function loadRig(url, opts = {}) {
     }
   }
   geo.setIndex(keepIx.concat(capTris));
+  // JIGGLE (owner, 27 Oct 2026: "big booty needs custom rigging, with jiggle physics"): a soft
+  // region rides a spring bone of its own - what a Blender jiggle add-on does. Each entry names
+  // the bones that carry the region (one cheek); a new bone sits at the region's centre, child
+  // of the first, and takes their weight there, full at the middle and fading to none at the
+  // edges, so feet and spine stay put. jiggleAnchor()/setJiggle() let the studio's spring move it.
+  const jiggle = [];
+  for (const [n, spec] of (opts.jiggle || []).entries()) {
+    const src = new Set(spec.bones.map(byName).filter(i => i >= 0)); if (!src.size) continue;
+    const dom = []; for (let i = 0; i < N; i++) { let b = -1, w = 0; for (let k = 0; k < 4; k++) if (sw.getComponent(i, k) > w) { w = sw.getComponent(i, k); b = si.getComponent(i, k); } if (src.has(b)) dom.push(i); }
+    if (!dom.length) continue;
+    // the region's centre: the middle of its upper part (a foot hanging off the same bone does not drag it)
+    const ys = dom.map(i => P[i].y).sort((x, y) => x - y), yCut = ys[Math.floor(ys.length * (spec.floor ?? 0.3))];
+    const c = new THREE.Vector3(); let m = 0; for (const i of dom) if (P[i].y >= yCut) { c.add(P[i]); m++; } c.divideScalar(m);
+    const ds = dom.filter(i => P[i].y >= yCut).map(i => P[i].distanceTo(c)).sort((x, y) => x - y), R = ds[Math.floor(ds.length * 0.85)] * (spec.reach ?? 1);
+    const parent = bones[[...src][0]];
+    const jb = new THREE.Bone(); jb.name = 'jiggle_' + n; parent.add(jb); jb.position.copy(parent.worldToLocal(c.clone())); jb.updateMatrixWorld(true);
+    jiggle.push({ bone: jb, rest: jb.position.clone(), src, centre: c.clone(), R, gain: spec.gain ?? 1 });
+  }
+  if (jiggle.length) {
+    const base2 = allBones.length;
+    allBones.push(...jiggle.map(j => j.bone)); inverses.push(...jiggle.map(j => j.bone.matrixWorld.clone().invert()));
+    const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    const si2 = geo.attributes.skinIndex, sw2 = geo.attributes.skinWeight, P2 = new THREE.Vector3();
+    for (let i = 0; i < si2.count; i++) {
+      P2.fromBufferAttribute(geo.attributes.position, i).applyMatrix4(mesh.matrixWorld);
+      const ws = []; for (let k = 0; k < 4; k++) { const w = sw2.getComponent(i, k); if (w > 0) ws.push([si2.getComponent(i, k), w]); }
+      let moved = false;
+      jiggle.forEach((j, n) => { const f = 1 - sstep(0.45 * j.R, 1.15 * j.R, P2.distanceTo(j.centre)); if (f <= 0) return;
+        let take = 0; for (const x of ws) if (j.src.has(x[0])) { const t = x[1] * f; x[1] -= t; take += t; }
+        if (take > 0) { ws.push([base2 + n, take]); moved = true; } });
+      if (!moved) continue;
+      ws.sort((a, b) => b[1] - a[1]); const top = ws.slice(0, 4), tot = top.reduce((a, x) => a + x[1], 0) || 1;
+      for (let k = 0; k < 4; k++) { si2.setComponent(i, k, top[k] ? top[k][0] : 0); sw2.setComponent(i, k, top[k] ? top[k][1] / tot : 0); }
+    }
+    si2.needsUpdate = sw2.needsUpdate = true;
+  }
   mesh.bind(new THREE.Skeleton(allBones, inverses), mesh.bindMatrix);
   // signed bend of the curl at each joint, about the lateral axis
   const ang = []; for (let k = 1; k < NB; k++) { const a = J[k].clone().sub(J[k - 1]), b = J[k + 1].clone().sub(J[k]); const cr = new THREE.Vector3().crossVectors(a, b); ang.push(Math.atan2(cr.dot(LAT), a.dot(b))); }
@@ -348,7 +384,10 @@ export async function loadRig(url, opts = {}) {
   const lagAt = (fn, k) => typeof fn === 'function' ? fn(k / (NB - 1), k) : (fn || 0);
   function apply(p) {
     all.forEach((b, i) => b.quaternion.copy(restAll[i]));
-    pivot.quaternion.setFromAxisAngle(LAT, (p.pitch || 0) * Math.PI / 180);
+    // opts.basePitch / opts.yaw: a model's own resting attitude (Big Booty flies nose-up and
+    // turned a little toward the viewer, like her painted master); every move rides on top of it
+    pivot.quaternion.setFromAxisAngle(UP, (opts.yaw || 0) * Math.PI / 180)
+      .multiply(new THREE.Quaternion().setFromAxisAngle(LAT, ((p.pitch || 0) + (opts.basePitch || 0)) * Math.PI / 180));
     pivot.position.copy(centre).addScaledVector(UP, p.lift || 0);
     spine.forEach((i, n) => turn(i, (p.spine || 0) / spine.length));
     turn(head, p.head || 0);
@@ -372,12 +411,25 @@ export async function loadRig(url, opts = {}) {
     pivot.updateMatrixWorld(true);
   }
 
+  // the spring's attachment: where each jiggle bone's rest point is under the current pose
+  const jiggleAnchor = () => jiggle.map(j => j.bone.parent.localToWorld(j.rest.clone()));
+  // displace each jiggle bone by a world-space offset (already scaled by the caller's spring)
+  function setJiggle(offsets) {
+    jiggle.forEach((j, n) => { const o = offsets[n]; if (!o) { j.bone.position.copy(j.rest); return; }
+      const par = j.bone.parent, q = par.getWorldQuaternion(new THREE.Quaternion()).invert(), s = par.getWorldScale(new THREE.Vector3());
+      // a soft limit: past about a third of the region's size the spring gives less and less, so a
+      // hard kick bounces the cheek rather than pulling it into a teardrop
+      const L = o.length() * j.gain, M = 0.33 * j.R, k = L > 1e-9 ? M * Math.tanh(L / M) / L * j.gain : 0;
+      const local = o.clone().multiplyScalar(k).applyQuaternion(q).divide(s); j.bone.position.copy(j.rest).add(local); });
+    pivot.updateMatrixWorld(true);
+  }
   return {
-    pivot, model, mesh, apply, debug: { sOf: () => sOf, weld, sParam, axisAt, tailOutAt, aimDeg }, centre, LAT, FWD: fwd, UP, all, tailBones,
+    pivot, model, mesh, apply, jiggleAnchor, setJiggle, jiggleCount: jiggle.length, debug: { sOf: () => sOf, weld, sParam, axisAt, tailOutAt, aimDeg }, centre, LAT, FWD: fwd, UP, all, tailBones,
     info: {
       head: bones[head].name, ears: ears.map(i => bones[i].name), spine: spine.map(i => bones[i].name),
       front: front.map(c => c.map(i => bones[i].name)), hind: hind.map(c => c.map(i => bones[i].name)),
       tail: [...tailSet].map(i => bones[i].name), forward: fwd.toArray().map(x => +x.toFixed(3)),
+      jiggle: jiggle.map(j => ({ bone: j.bone.name, from: [...j.src].map(i => bones[i].name), radius: +j.R.toFixed(3) })),
       tailBones: NB, tailRestAxisDeg: +REST_AXIS.toFixed(1), hinge: HP.clone().sub(J[0]).toArray().map(x => +x.toFixed(3)), cutFaces: cut, contactFaces: contact, caps, socketed, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
     },
   };
