@@ -11,6 +11,7 @@
 // every move, and exposes window.studio for the renderer to drive.
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { loadRig } from './autorig.js';
 import { MOVES as ALL_MOVES, RIG_OPTS } from './moves.js';
 
@@ -26,6 +27,10 @@ document.body.appendChild(R.domElement);
 
 const rig = await loadRig(q.get('model'), RIG_OPTS || {});
 const scene = new THREE.Scene(); scene.add(rig.pivot);
+// a soft studio room for metal to reflect: Tripo's materials are metallic-roughness, and with
+// nothing around them their metal parts rendered near black
+scene.environment = new THREE.PMREMGenerator(R).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.6;
 scene.add(new THREE.HemisphereLight(0xfff4fb, 0x3a2f55, 2.0));
 const key = new THREE.DirectionalLight(0xffffff, 2.4); scene.add(key);
 const rim = new THREE.DirectionalLight(0xb9a6ff, 1.6); scene.add(rim);

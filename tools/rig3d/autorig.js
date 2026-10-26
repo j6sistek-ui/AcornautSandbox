@@ -55,7 +55,12 @@ export async function loadRig(url, opts = {}) {
   // every chain hanging off the spine path: a bone plus its descendants
   const subtree = i => { const out = [i]; for (const c of kids[i]) out.push(...subtree(c)); return out; };
   const chains = [];
-  for (const s of spinePath) if (s !== head) for (const c of kids[s]) if (!onSpine.has(c)) chains.push(subtree(c));
+  // a branch that forks into two or more long sub-chains is a HUB (one rig's hip bone carries
+  // both hind legs AND a tail): split it into its sub-chains. Toes fork too, but short, so a
+  // paw stays with its leg
+  const depth = i => 1 + Math.max(0, ...kids[i].map(depth));
+  const addChain = c => { const long = kids[c].filter(k => depth(k) >= 3); if (long.length >= 2) kids[c].forEach(addChain); else chains.push(subtree(c)); };
+  for (const s of spinePath) if (s !== head) for (const c of kids[s]) if (!onSpine.has(c)) addChain(c);
   const tipY = ch => Math.min(...ch.map(i => wpos(bones[i]).y));
   const verts = ch => ch.reduce((a, i) => a + count[i], 0);
   // tail FIRST: the heaviest chain of all. Picking the legs first ("the four reaching lowest")
