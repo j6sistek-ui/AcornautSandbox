@@ -86,6 +86,16 @@ function headAnchor() {
   o.project(cam); t.project(cam); const deg = Math.atan2(-(t.y - o.y), t.x - o.x) * 180 / Math.PI;
   return [+((x0 + x1) / 2).toFixed(2), +((y0 + y1) / 2).toFixed(2), +(Math.max(x1 - x0, y1 - y0) / 2).toFixed(2), +deg.toFixed(2)];
 }
+// WAKE EMITTERS: each hind foot, as the centre of the vertices its last bone carries, in the
+// same 256 px frame space - where a suit's signature wake leaves the body on every frame
+const footVerts = rig.info.hind.map(ch => { const fi = rig.mesh.skeleton.bones.findIndex(b => b.name === ch[ch.length - 1]), vs = [];
+  for (let i = 0; i < hsi.count; i++) { let b = -1, w = 0; for (let k = 0; k < 4; k++) if (hsw.getComponent(i, k) > w) { w = hsw.getComponent(i, k); b = hsi.getComponent(i, k); } if (b === fi) vs.push(i); }
+  return vs; }).filter(vs => vs.length);
+function bootAnchors() {
+  rig.mesh.updateMatrixWorld(true); const pv = new THREE.Vector3();
+  return footVerts.map(vs => { let sx = 0, sy = 0; for (const i of vs) { rig.mesh.getVertexPosition(i, pv).applyMatrix4(rig.mesh.matrixWorld).project(cam); sx += (pv.x + 1) / 2 * 256; sy += (1 - pv.y) / 2 * 256; }
+    return [+(sx / vs.length).toFixed(1), +(sy / vs.length).toFixed(1)]; });
+}
 rig.apply({ ...MOVES.tap ? MOVES.tap.pose(0) : {}, lift: 0 }); rig.pivot.updateMatrixWorld(true);
 const headRest = headBone.getWorldQuaternion(new THREE.Quaternion());
 function frame(move, u, lift) { const p = MOVES[move].pose(u); if (!lift) p.lift = 0; rig.apply(p); R.render(scene, cam); return R.domElement.toDataURL('image/png'); }
@@ -97,6 +107,10 @@ window.studio = {
   bank(move, i) { const m = MOVES[move]; return frame(move, m.loop ? i / m.frames : i / (m.frames - 1), false); },
   // the helmet anchor of the frame bank() just drew
   anchor() { return headAnchor(); },
+  // the wake emitters of the same frame
+  boots() { return bootAnchors(); },
+  // pose a bank frame without drawing it, for an anchors-only pass
+  pose(move, i) { const m = MOVES[move], p = m.pose(m.loop ? i / m.frames : i / (m.frames - 1)); p.lift = 0; rig.apply(p); R.render(scene, cam); },
   // a sample at any u, with the move's own lift so a preview shows the motion
   sample(move, u) { return frame(move, u, true); },
   // the rig with every move baked in as a clip `seconds` long, for Blender or any glTF viewer

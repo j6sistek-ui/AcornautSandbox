@@ -28,7 +28,7 @@ const modelPath = args.find(a => a.endsWith('.glb'));
 const id = opt('id');
 if (!modelPath || !id) { console.error('usage: node render.mjs <model.glb> --id <suit-id> [--out dir] [--size 512] [--seconds 2] [--frames tap:12,desc:4,asc:0]'); process.exit(2); }
 const out = path.resolve(opt('out', `rig3d-out/${id}`));
-const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', ''), HEAD = opt('head', '');
+const SIZE = +opt('size', 512), SECONDS = +opt('seconds', 2), FPS = 30, FRAMES = opt('frames', ''), HEAD = opt('head', ''), BODY = opt('body', '');
 for (const d of ['', 'hd', 'sheets', 'preview']) fs.mkdirSync(path.join(out, d), { recursive: true });
 
 // playwright: local install, then the PLAYWRIGHT_MODULE env var, then a global path
@@ -61,7 +61,7 @@ page.on('pageerror', e => { console.error('page error:', e.message); failed = e.
 page.on('crash', () => { console.error('the page crashed'); process.exit(1); });
 let closing = false;
 browser.on('disconnected', () => { if (closing) return; console.error('the browser went away'); process.exit(1); });
-await page.goto(`http://localhost:${port}/studio.html?model=/model.glb&size=${SIZE}&frames=${encodeURIComponent(FRAMES)}&head=${encodeURIComponent(HEAD)}`);
+await page.goto(`http://localhost:${port}/studio.html?model=/model.glb&size=${SIZE}&frames=${encodeURIComponent(FRAMES)}&head=${encodeURIComponent(HEAD)}${BODY ? `&body=${BODY}` : ''}`);
 await Promise.race([
   page.waitForFunction(() => window.studioReady, null, { timeout: 600000 }),
   (async () => { while (!failed) await new Promise(r => setTimeout(r, 200)); })(),
@@ -78,12 +78,25 @@ const sheet = (urls, cols, cell) => page.evaluate(async ([urls, cols, cell]) => 
 
 const moves = await page.evaluate(() => window.studio.moves);
 const hasFfmpeg = (() => { try { execFileSync('ffmpeg', ['-version'], { stdio: 'ignore' }); return true; } catch { return false; } })();
-const anchors = {};
+const anchors = {}, boots = {};
+// --anchors-only: pose every bank frame and measure it, drawing nothing - the frames on disk stay
+if (args.includes('--anchors-only')) {
+  for (const [move, m] of Object.entries(moves)) for (let i = 0; i < m.frames; i++) {
+    await page.evaluate(([mv, i]) => window.studio.pose(mv, i), [move, i]);
+    anchors[`${id}-${move}-${i + 1}`] = await page.evaluate(() => window.studio.anchor());
+    boots[`${id}-${move}-${i + 1}`] = await page.evaluate(() => window.studio.boots());
+  }
+  fs.writeFileSync(path.join(out, 'anchors.json'), JSON.stringify(anchors, null, 1));
+  fs.writeFileSync(path.join(out, 'boots.json'), JSON.stringify(boots, null, 1));
+  console.log('wrote anchors and boots to', out);
+  closing = true; await browser.close(); server.close(); process.exit(0);
+}
 for (const [move, m] of Object.entries(moves)) {
   const urls = [];
   for (let i = 0; i < m.frames; i++) {
     const hd = await page.evaluate(([mv, i]) => window.studio.bank(mv, i), [move, i]);
     anchors[`${id}-${move}-${i + 1}`] = await page.evaluate(() => window.studio.anchor());
+    boots[`${id}-${move}-${i + 1}`] = await page.evaluate(() => window.studio.boots());
     urls.push(hd);
     save(path.join(out, 'hd', `${id}-${move}-${i + 1}.png`), hd);
     save(path.join(out, `${id}-${move}-${i + 1}.png`), await resize(hd, 256));
@@ -100,6 +113,8 @@ for (const [move, m] of Object.entries(moves)) {
 }
 // helmet anchors per frame, [x, y, r, deg] in 256 px frame space (the game's DOME format)
 fs.writeFileSync(path.join(out, 'anchors.json'), JSON.stringify(anchors, null, 1));
+// wake emitters per frame, [[x, y], ...] one per hind foot, same space
+fs.writeFileSync(path.join(out, 'boots.json'), JSON.stringify(boots, null, 1));
 save(path.join(out, `${id}-rig.glb`), 'data:;base64,' + await page.evaluate(([s, f]) => window.studio.glb(s, f), [SECONDS, FPS]));
 console.log('wrote', out);
 closing = true; await browser.close(); server.close();
