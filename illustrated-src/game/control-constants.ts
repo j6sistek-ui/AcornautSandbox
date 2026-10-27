@@ -56,7 +56,6 @@ export const TAP_SHAPE: Record<string, TapShape | "velocity"> = {
   cyber: "velocity", seraph: "velocity",
   briellacat: "velocity",
   // Owner-requested replacement banks follow Cyber's exact live path.
-  nacre: "velocity",
 };
 
 /** THE TAIL SPRING, per suit. The plume on a suit with its own tail layer
@@ -72,7 +71,7 @@ export type TailSpring = { stiff: number; damp: number; kick: number };
 export const TAIL_SPRING_MIN = 0.25, TAIL_SPRING_MAX = 3;
 export const TAIL_SPRING_ONE: TailSpring = { stiff: 1, damp: 1, kick: 1 };
 export const TAIL_SPRING: Record<string, TailSpring> = {};
-export const TAIL_SPRING_SUITS = ["robo", "catsuit", "volt", "cyber", "nacre"];
+export const TAIL_SPRING_SUITS = ["robo", "catsuit", "volt", "cyber"];
 
 /** THE TAP ACCENT, LIVE (owner, 12 Sep 2026: "enable it in game ... by
  *  default 1x is good"). The 167 ms ignition and the body reaction on every
@@ -193,7 +192,6 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   // --- rigged suits: these carry the velocity bank AND the heading pitch,
   //     so they are the ones most likely to read as over-tipped
   seraph:      { up: 0.8, down: 0.3 },
-  nacre:       { up: 0.8, down: 0.3 },
 
   // --- custom ANIMATION suits. Their frames are the owner's and are not to
   //     be touched; their LEAN is a dial like everyone else's.
@@ -234,6 +232,7 @@ export const SUIT_LEAN: Record<string, SuitLean> = {
   ferret:      { up: 0, down: 0 },
   bigbooty:    { up: 0, down: 0 },
   porcelain:   { up: 0, down: 0 },
+  nacre:         { up: 0, down: 0 },
   ghost:       { up: 0, down: 0 },
 };
 

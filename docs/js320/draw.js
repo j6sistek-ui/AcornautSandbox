@@ -3518,7 +3518,6 @@ const DOME = {
     "suit:catsuit": [212, 86, 50],
     "suit:phoenix": [207, 92, 41],
     "suit:seraph": [205, 131, 27.89, 2],
-    "suit:nacre": [180, 84, 32.0492],
     // robo — pose-specific head and collar registration.
     "robo-tap-1": [193, 102, 34.24, 0],
     "robo-tap-2": [193, 102, 34.24, 0],
@@ -4031,8 +4030,7 @@ const TAIL_PIVOT = {
     // is why a swing tore a piece off the animal instead of sweeping along
     // it. Re-cut the art and these must be re-read from the same run.
     cyber: [101, 125],
-    // Percy and Patriot left the painted trio for rendered 3D banks (no split tail to pivot)
-    nacre: [...CYBER_TRIO_REGISTRATION.nacre.tailPivot],
+    // Percy, Patriot and Envoy left the painted trio for rendered 3D banks (no split tail to pivot)
     bigbooty: [92, 129],
     catsuit: [74, 149],
     copper: [108, 142],
@@ -4539,7 +4537,7 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // The 3D lineup too (26 Oct 2026): its rendered dive frames carry the attitude.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
     "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
-    "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant", "porcelain", "ghost"]);
+    "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant", "porcelain", "ghost", "nacre"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
@@ -4548,7 +4546,7 @@ const LOOP_FPS = 12;
 // EXTENDS rather than which way it points, and the rig supplies the
 // direction over the top. That is what lets nine frames read as a climb and
 // a dive instead of needing two sheets that never quite agree at the seam.
-const RIG_PITCH_WITH_BANK = new Set(["cyber", "nacre"]);
+const RIG_PITCH_WITH_BANK = new Set(["cyber"]);
 // THE FRAMES A GENERATED BANK LOST. Twenty-two of the tap banks were made
 // from one shared motion, and that motion loses the pilot's LOWER BODY at
 // its extremes - hip, haunch and hind leg leave the silhouette entirely and

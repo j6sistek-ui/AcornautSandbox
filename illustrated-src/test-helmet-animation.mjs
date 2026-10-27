@@ -99,7 +99,7 @@ try {
   // Owner,12 Sep2026: these existing own-head pilots now use Cyber's9/9
   // banks and loading rig. Their head policies are checked in the trio suite.
   // Patriot left the trio's painted frames for the 3D lineup (26 Oct 2026)
-  const CYBER_TRIO=['nacre'];
+  const CYBER_TRIO=[];  // Envoy, the last painted pilot, left for a 3D bank (27 Oct 2026)
   // The 3D lineup (owner, 26 Oct 2026: "here are the replacements, DIRECT
   // replace"): suits re-made as rendered tap and dive banks, helmets kept -
   // the first ten, Flight and Frost on Ion's skeleton, then Leviathan, Copper and
@@ -130,7 +130,7 @@ try {
   assert.deepEqual(lineup.map(s=>s.id).sort(),[...THREE_D_TEST].sort(),'the whole 3D lineup ships with a wearable helmet');
   // Quill, Noodle and Bandit joined the 3D lineup with their own heads (owner, 26 Oct 2026), so
   // they are not flown below
-  const OWN_HEAD_3D=['hedgehog','ferret','raccoon'];
+  const OWN_HEAD_3D=['hedgehog','ferret','raccoon','nacre'];
   const authorized=id=>HIGH_ORBIT.includes(id)||CYBER_TRIO.includes(id)||THREE_D_TEST.includes(id)||OWN_HEAD_3D.includes(id);
   const withoutAuthorizedRigs=table=>Array.isArray(table) ? table.filter(id=>!authorized(id))
     : Object.fromEntries(Object.entries(table).filter(([id])=>!authorized(id)));

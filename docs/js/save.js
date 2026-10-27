@@ -1,13 +1,13 @@
-import { highOrbitTrailSuit, isPremiumFrames } from "./high-orbit-config.js?v=320";
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=320";
-import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=320";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=320";
-import { restoreSpill } from "./spill.js?v=320";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=320";
+import { highOrbitTrailSuit, isPremiumFrames, isPremiumSuit } from "./high-orbit-config.js?v=321";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=321";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=321";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=321";
+import { restoreSpill } from "./spill.js?v=321";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=321";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, FIXED_SHOP_SUIT_IDS, bundleQuote, idDust, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, } from "./catalog.js?v=320";
-import { platform } from "./platform.js?v=320";
-import { TAP_SHAPE, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_ONE, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=320";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, FIXED_SHOP_SUIT_IDS, bundleQuote, idDust, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, wearsOwnHead, } from "./catalog.js?v=321";
+import { platform } from "./platform.js?v=321";
+import { TAP_SHAPE, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_ONE, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=321";
 // Pinned to the shipped pre-regrouping catalog (9 Sep 2026). These are
 // historical grant amounts, not the price of the new bundle layout.
 export const BETA_DUST_GRANT_FLOOR = 12360;
@@ -239,7 +239,9 @@ export function loadSave() {
     // existed, or edited by hand) comes off rather than half-fitting
     {
         const h = HELMETS.find((x) => x.id === s.equipped);
-        if (!isPremiumFrames(s.equippedSuit) && h?.suitOnly && h.suitOnly !== s.equippedSuit)
+        // a premium pilot with her own head (Envoy, rendered since 27 Oct 2026) hides the helmet, not removes it
+        const ownHeadPremium = isPremiumSuit(s.equippedSuit) && wearsOwnHead(SUITS.find((u) => u.id === s.equippedSuit) ?? {});
+        if (!isPremiumFrames(s.equippedSuit) && !ownHeadPremium && h?.suitOnly && h.suitOnly !== s.equippedSuit)
             s.equipped = "clear";
     }
     if (!SUITS.some((u) => u.id === s.equippedSuit))

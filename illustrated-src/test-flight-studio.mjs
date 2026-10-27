@@ -30,9 +30,10 @@ for(const model of manifest.models){const project=makeProject(manifest,model);as
 assert.equal(manifest.models.length,34);const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
 assert.deepEqual(rigs.map(m=>m.id).sort(),['abyssal','arcflash','cinderforge','cosmic','groveguard','sunforged','vanguard'],'all seven original cut rigs remain available');
 // Patriot flies a rendered tap/dive bank since its 3D model (owner, 26 Oct 2026); Percy and Envoy keep Cyber's
-for(const id of ['origamist','porcelain']){const m=manifest.models.find(x=>x.id===id);
+for(const id of ['origamist','porcelain','nacre']){const m=manifest.models.find(x=>x.id===id);
   assert.equal(m.family,'bank');assert.equal(m.banks.tap.length,12);assert.equal(m.banks.desc.length,4);assert.equal(m.banks.asc.length,0);assert(!m.sheet);}
-const premium=manifest.models.filter(m=>['nacre'].includes(m.id));assert.equal(premium.length,1);
+// Envoy, the last painted 9/9 pilot, left for a rendered bank (27 Oct 2026)
+const premium=manifest.models.filter(m=>m.family==='bank'&&m.banks.asc.length===9&&m.id!=='cyber');assert.equal(premium.length,0);
 const cyber=manifest.models.find(m=>m.id==='cyber'),cyberProfile=makeProject(manifest,cyber).profile;
 for(const model of premium){
   assert.equal(model.family,'bank');assert.equal(model.atlas,null);assert(!model.sheet);

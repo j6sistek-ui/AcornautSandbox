@@ -8,8 +8,8 @@ import {PAINTED_TAP_EASE} from './game/control-constants.mjs';
 import {createArcflashMotion,stepArcflash,arcflashTap,arcflashDive} from './game/arcflash-motion.mjs';
 import {createManeuverMotion,stepManeuver,maneuverTap} from './game/vanguard-maneuver.mjs';
 export const VERSION=1,STEP=1/120;
-// Patriot, then Percy, left for rendered tap/dive banks (3D lineup, 26-27 Oct 2026)
-const cyberStandard=id=>['cyber','nacre'].includes(id);
+// Patriot, Percy and then Envoy left for rendered tap/dive banks (3D lineup, 26-27 Oct 2026)
+const cyberStandard=id=>['cyber'].includes(id);
 export const PARTS={body:'Torso',head:'Head',heave:'Body float',nearArm:'Near upper arm',nearElbow:'Near forearm',farArm:'Far upper arm',farElbow:'Far forearm',nearThigh:'Near thigh',nearKnee:'Near shin',farThigh:'Far thigh',farKnee:'Far shin',tailRoot:'Tail root',tailMid:'Tail middle',tailTip:'Tail tip'};
 export const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export const clone=v=>JSON.parse(JSON.stringify(v));

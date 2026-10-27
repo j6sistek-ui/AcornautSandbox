@@ -1,38 +1,38 @@
-import { spillDockTravelDuration } from "./spill.js?v=320";
-import { clipHelmetGlass } from "./helmet-openings.js?v=320";
-import { paintFittedHelmet } from "./helmet-fit.js?v=320";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=320";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=320";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=320";
-import { arcflashPreview } from "./arcflash-motion.js?v=320";
-import { paintLiveStarTrail } from "./star-trails.js?v=320";
-import { trailWornBy } from "./catalog.js?v=320";
-import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=320";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=320";
-import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=320";
-import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=320";
-import { RIG3D_BOOTS } from "./rig3d-boots.js?v=320";
-import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=320";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=320";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=320";
-import { spillAppearance } from "./spill-appearance.js?v=320";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=320";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=320";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=320";
-import { goalHud } from "./campaign.js?v=320";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=320";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=320";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=320";
-import { spriteImageFor } from "./sprite-detail.js?v=320";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=320";
-import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=320";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=320";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=320";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=320";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=320";
-import { spillEngineColor } from "./spill-content.js?v=320";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=320";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=320";
+import { spillDockTravelDuration } from "./spill.js?v=321";
+import { clipHelmetGlass } from "./helmet-openings.js?v=321";
+import { paintFittedHelmet } from "./helmet-fit.js?v=321";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=321";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=321";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=321";
+import { arcflashPreview } from "./arcflash-motion.js?v=321";
+import { paintLiveStarTrail } from "./star-trails.js?v=321";
+import { trailWornBy } from "./catalog.js?v=321";
+import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=321";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=321";
+import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=321";
+import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=321";
+import { RIG3D_BOOTS } from "./rig3d-boots.js?v=321";
+import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=321";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=321";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=321";
+import { spillAppearance } from "./spill-appearance.js?v=321";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=321";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=321";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=321";
+import { goalHud } from "./campaign.js?v=321";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=321";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=321";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=321";
+import { spriteImageFor } from "./sprite-detail.js?v=321";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=321";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=321";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=321";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=321";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=321";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=321";
+import { spillEngineColor } from "./spill-content.js?v=321";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=321";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=321";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3518,7 +3518,6 @@ const DOME = {
     "suit:catsuit": [212, 86, 50],
     "suit:phoenix": [207, 92, 41],
     "suit:seraph": [205, 131, 27.89, 2],
-    "suit:nacre": [180, 84, 32.0492],
     // robo — pose-specific head and collar registration.
     "robo-tap-1": [193, 102, 34.24, 0],
     "robo-tap-2": [193, 102, 34.24, 0],
@@ -4031,8 +4030,7 @@ const TAIL_PIVOT = {
     // is why a swing tore a piece off the animal instead of sweeping along
     // it. Re-cut the art and these must be re-read from the same run.
     cyber: [101, 125],
-    // Percy and Patriot left the painted trio for rendered 3D banks (no split tail to pivot)
-    nacre: [...CYBER_TRIO_REGISTRATION.nacre.tailPivot],
+    // Percy, Patriot and Envoy left the painted trio for rendered 3D banks (no split tail to pivot)
     bigbooty: [92, 129],
     catsuit: [74, 149],
     copper: [108, 142],
@@ -4539,7 +4537,7 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // The 3D lineup too (26 Oct 2026): its rendered dive frames carry the attitude.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
     "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
-    "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant", "porcelain", "ghost"]);
+    "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant", "porcelain", "ghost", "nacre"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
@@ -4548,7 +4546,7 @@ const LOOP_FPS = 12;
 // EXTENDS rather than which way it points, and the rig supplies the
 // direction over the top. That is what lets nine frames read as a climb and
 // a dive instead of needing two sheets that never quite agree at the seam.
-const RIG_PITCH_WITH_BANK = new Set(["cyber", "nacre"]);
+const RIG_PITCH_WITH_BANK = new Set(["cyber"]);
 // THE FRAMES A GENERATED BANK LOST. Twenty-two of the tap banks were made
 // from one shared motion, and that motion loses the pilot's LOWER BODY at
 // its extremes - hip, haunch and hind leg leave the silhouette entirely and

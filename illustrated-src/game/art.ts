@@ -428,8 +428,9 @@ const RIGGED_SUITS = [
   // overhaul sold it on production in two bundles - and its rig stayed
   // behind this flag, so a pilot who bought it flew a flat sticker while
   // the beta page flew the animation. A suit's art must follow the suit.
-  "cyber", "nacre",
+  "cyber",
   // origamist left with the 3D lineup (26 Oct 2026): it flies a rendered bank
+  // nacre (Envoy) followed on a new model with twin tails (27 Oct 2026)
   // High Orbit uses its own eleven-part atlases below.
 ];
 const TAP_BANKS: Record<string, number> = {
@@ -454,6 +455,8 @@ const TAP_BANKS: Record<string, number> = {
   ferret: 12, raccoon: 12,
   // Big Booty (27 Oct 2026): her own jiggle rig - see art-src/rig3d/receipt.json for the recipe
   bigbooty: 12,
+  // Envoy (27 Oct 2026): a new model, its twin tails twirling and crossing
+  nacre: 12,
   // Ghost (27 Oct 2026): her back wisp follows the main tail a beat late - recipe in the receipt
   ghost: 12,
   // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
@@ -489,20 +492,20 @@ const BOUNCE_BANKS: Record<string, number> = { volt: 16 };
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
 const ASC_BANKS: Record<string, number> =
-    { cyber: 9, nacre: 9, seraph: 8,
+    { cyber: 9, seraph: 8,
         // alien, copper, leviathan and then ghost left for the 3D lineup (26-27 Oct 2026)
         // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
         briellacat: 7,
         };
 const DESC_BANKS: Record<string, number> =
-    { cyber: 9, nacre: 9, seraph: 8,
+    { cyber: 9, seraph: 8,
         briellacat: 4,
         // the 3D lineup's dives, paired with their twelve-frame taps above
         ember: 4, voidsuit: 4, groveguard: 4, cinderforge: 4, sunforged: 4,
         abyssal: 4, gemmie: 4, iontrim: 4, sammie: 4, cosmic: 4,
         flight: 4, frost: 4, leviathan: 4, copper: 4, alien: 4, hedgehog: 4,
         arcflash: 4, origamist: 4, porcelain: 4, eclipse: 4, cryostar: 4, verdant: 4,
-        ferret: 4, raccoon: 4, bigbooty: 4, ghost: 4,
+        ferret: 4, raccoon: 4, bigbooty: 4, ghost: 4, nacre: 4,
         };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.

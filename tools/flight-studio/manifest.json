@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "320",
-  "sourceCommit": "80cb68b615a1c2a749c79d9d6992e3b6e22e22c3",
+  "artVer": "321",
+  "sourceCommit": "39458626f8d65d3a0a9bdd8493df12ccaaac4756",
   "models": [
     {
       "id": "flight",
@@ -220,9 +220,9 @@
       "key": "suit:nacre",
       "file": "suits/nacre.png",
       "dome": [
-        180,
-        84,
-        32.0492
+        128,
+        128,
+        40
       ],
       "box": null,
       "ownHead": true,
@@ -231,70 +231,47 @@
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/nacre-asc-1.png",
-          "suits/nacre-asc-2.png",
-          "suits/nacre-asc-3.png",
-          "suits/nacre-asc-4.png",
-          "suits/nacre-asc-5.png",
-          "suits/nacre-asc-6.png",
-          "suits/nacre-asc-7.png",
-          "suits/nacre-asc-8.png",
-          "suits/nacre-asc-9.png"
+        "tap": [
+          "suits/nacre-tap-1.png",
+          "suits/nacre-tap-2.png",
+          "suits/nacre-tap-3.png",
+          "suits/nacre-tap-4.png",
+          "suits/nacre-tap-5.png",
+          "suits/nacre-tap-6.png",
+          "suits/nacre-tap-7.png",
+          "suits/nacre-tap-8.png",
+          "suits/nacre-tap-9.png",
+          "suits/nacre-tap-10.png",
+          "suits/nacre-tap-11.png",
+          "suits/nacre-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/nacre-desc-1.png",
           "suits/nacre-desc-2.png",
           "suits/nacre-desc-3.png",
-          "suits/nacre-desc-4.png",
-          "suits/nacre-desc-5.png",
-          "suits/nacre-desc-6.png",
-          "suits/nacre-desc-7.png",
-          "suits/nacre-desc-8.png",
-          "suits/nacre-desc-9.png"
+          "suits/nacre-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/nacre.png": "cf39e38abf4528161639ec39891a71b214c98375964d07acf045a28c2c96042b",
-        "suits/nacre-asc-1.png": "cf39e38abf4528161639ec39891a71b214c98375964d07acf045a28c2c96042b",
-        "suits/nacre-asc-2.png": "aee4d27af5144bf1fb2dcb5250e4f1bf8b4f133c5308feaf37cbe2f01b5e73e7",
-        "suits/nacre-asc-3.png": "341bd3752bf99b051c2de5f54d8ad539be8aec8771f022bb85b81ccd8dbfaaa3",
-        "suits/nacre-asc-4.png": "26a7da75415034b34df52fbb4200170a769b6a8bf0d559558621cd190ca6af53",
-        "suits/nacre-asc-5.png": "94ad5a837b8772326499591b5ed77d30cb9b37526d6be887ae13dc44a4adcc16",
-        "suits/nacre-asc-6.png": "60c5ca88c69b5f837906c7bc9934a49a52f39c39dc057b71a25c4086b419dd9f",
-        "suits/nacre-asc-7.png": "48c1c702c7c2f8ec30818c4bfacee5641dc51d5259f29b3c365e657cc30502f0",
-        "suits/nacre-asc-8.png": "fbe3bb66b516d3affed3b6ba3e24b235a8981c4d58811ccd6ca772d07a41e83e",
-        "suits/nacre-asc-9.png": "6081df9f2aff0ed1da4a48ed780918ee1bc35b99e167460a335ebb0a0ea8b88b",
-        "suits/nacre-desc-1.png": "13af366b5a81e70fb0b44a70f1d1d9d0d83cbe22ea6c3be0602272478ba12663",
-        "suits/nacre-desc-2.png": "f7d194b06584ab3aa278a1efe0fb7d1576748e0615f3ff80ece6d45620e8d85d",
-        "suits/nacre-desc-3.png": "f7dbe3bbef3c71a7c09f2715ab29fdfbd46f5159006781d8695173a0a96cb1bc",
-        "suits/nacre-desc-4.png": "00e56d37bd72744e97d0920aa88f588bbbb00aaf1a74b3e0eeb6264d2e2ba352",
-        "suits/nacre-desc-5.png": "f6eb3bdb73208fbc75d6bfb7f01e5598be0d861e31d09c19785b6ba8985cf3bb",
-        "suits/nacre-desc-6.png": "4c785b83d35f1bdd144104293a5c75949f6ff3d6fa21cf9e6236b93cad9b4dac",
-        "suits/nacre-desc-7.png": "fffa04782f02e81a7e4563fd6b0f0bae4316f75907617426d334cd33ec7463d0",
-        "suits/nacre-desc-8.png": "09df8245b046649412134b9e2a5bb3993b1190a00a63ad46a0f5467815cd618c",
-        "suits/nacre-desc-9.png": "537d2b0811fdbec17c061c200c8d76285068c3401172608c6a1772731bb47d52",
-        "suits/hd/nacre.png": "d6cb22ecbe239d5adce4bc2455d17a0d6bafba15acceaf7dbe0c72c794441117",
-        "suits/hd/nacre-asc-1.png": "d6cb22ecbe239d5adce4bc2455d17a0d6bafba15acceaf7dbe0c72c794441117",
-        "suits/hd/nacre-asc-2.png": "f02ca9cc1d4bf3087c1d47959aa5137c66a246eeb419a03b6ece23695f2c78f9",
-        "suits/hd/nacre-asc-3.png": "007fe8b06b0a6529a8b56c2a0468f69c5d402e65fc569c04d6c1bc230ff84f16",
-        "suits/hd/nacre-asc-4.png": "e9a93c70a055e8a20ab22869c872d543941861c3bf7ccfa2583402d49c0f17c4",
-        "suits/hd/nacre-asc-5.png": "55d457b186f7dc39c4f757a7ff1244e1e0677febd4333206bb15180bfeb50578",
-        "suits/hd/nacre-asc-6.png": "e4c3a04c2e112d57f656164176575aadfa51b66d98961f9caf3d0de2f3997ae8",
-        "suits/hd/nacre-asc-7.png": "1b4e5aa28bec457d679cd70136105f06ed4c40f7a33ad329c0a92370c31ffbde",
-        "suits/hd/nacre-asc-8.png": "f2c9fd977b52cb4027f5db5097fa1615fc784e5f06e8b0653be924aebac4abaf",
-        "suits/hd/nacre-asc-9.png": "e7f3db033c7a1ede560fdecc103aab385cfeb6bbd85d862488a63196159b6b5f",
-        "suits/hd/nacre-desc-1.png": "f87bad3d114bfcfc631e95eedcf2a502322277e1cf6918bc009ceedeb164eb30",
-        "suits/hd/nacre-desc-2.png": "ea514abf46a8a1bc1eca0f7e2a5ab9a067c0349de98e4101e124e785a31c2418",
-        "suits/hd/nacre-desc-3.png": "7846e14c605cedf3d1fcd6651902bdbb5b0928209d4355df007c7619dee6f89e",
-        "suits/hd/nacre-desc-4.png": "d34e4790e0145aa221bdc3ebe1cf0d2d6ae13b4208e7f65d1b466a685aab19af",
-        "suits/hd/nacre-desc-5.png": "71c43070af6dcb9c67e8070419fa8a98433ad064f333b141f495a4b4c874b2bb",
-        "suits/hd/nacre-desc-6.png": "6452a3c2d8debf22474c9501c4b6536c63fdb84b13d63f32193b34fa18ba86d9",
-        "suits/hd/nacre-desc-7.png": "d72b237c5b4834d6f50bfb1bbe34ff2e0c81d6ae4367318f18ae3f7f3375a91e",
-        "suits/hd/nacre-desc-8.png": "5c128ff8e903624d325acc1d063778ac039d7b30a3bb94a7120ad2863d73ec6a",
-        "suits/hd/nacre-desc-9.png": "ad5a29cdbbf7d9d3783f2e32d6d75e3f6e98dbb71483374c071fc57b7c19f94b"
+        "suits/nacre.png": "434178c2288da968929e41f7caff952b7161cefc0dcc3756d2da37a33e46d89d",
+        "suits/nacre-tap-1.png": "434178c2288da968929e41f7caff952b7161cefc0dcc3756d2da37a33e46d89d",
+        "suits/nacre-tap-2.png": "76afccb86a19b983e33eb1e44c50ac4e362645cc8123c9eccb9cf88b091e8d70",
+        "suits/nacre-tap-3.png": "6ffedea86c8fdf57a4fc0e50364500e5168c054b9e3d14ac689c7e85345304dc",
+        "suits/nacre-tap-4.png": "7048230aa6cfa13479d9c31e914d201ad2440a55df108fb23038adddcd2330c2",
+        "suits/nacre-tap-5.png": "1e74b12aa1a1f74bae63e7d2fe3d8005686bbe3f39899998dabd99c47f5446f2",
+        "suits/nacre-tap-6.png": "dec5aa892929abc1dea42c5cbcc532d372e924ea22a6397a69b4b6e242816dbd",
+        "suits/nacre-tap-7.png": "e0a39ec3150d47fb89467e22c0f0707a753e11e58c7724d66306b3b3dc5339f7",
+        "suits/nacre-tap-8.png": "2bff51710c2e53bc5acff0cfa5d1764867310e96ce260107a7927e68603a79b2",
+        "suits/nacre-tap-9.png": "31dce14e31f9145d1fce4b4725f33241312492f6a0db4f61f0cf1c16557d2a82",
+        "suits/nacre-tap-10.png": "c71e029d9ece9a85c9e4f2aafc9cb279702a2016a4fb510c63d1768616569bf8",
+        "suits/nacre-tap-11.png": "edccb9b0c737aea6c68f0faf8e030df47d038dcab3a2597b05d6a79be69d2b9f",
+        "suits/nacre-tap-12.png": "3b8b7148434248f887e9ae8a7b995fd50953a05759001b4d1d7d5173656b8e6e",
+        "suits/nacre-desc-1.png": "0d118f289fa2267fb83f9886464fec6aec855507a201cad884796703f970cbaf",
+        "suits/nacre-desc-2.png": "11a82d26a87a5d7550ae510cd45e8337c88c983c52fa61423dd942fa2a1a60ca",
+        "suits/nacre-desc-3.png": "5aea660c5187278641c19f175775d2d35f5ed71d31701c369a8377bece6de6e7",
+        "suits/nacre-desc-4.png": "00749739a932c369e5f1dc24482e9d4c0cd876794ada5d85e3272e5db445f1a2"
       }
     },
     {
@@ -2614,9 +2591,9 @@
       1.8
     ],
     "suit:nacre": [
-      180,
-      84,
-      32.0492
+      128,
+      128,
+      40
     ],
     "suit:origamist": [
       186.2,
@@ -5330,96 +5307,6 @@
       128,
       40
     ],
-    "nacre-asc-1": [
-      128,
-      128,
-      40
-    ],
-    "nacre-asc-2": [
-      128,
-      128,
-      40
-    ],
-    "nacre-asc-3": [
-      128,
-      128,
-      40
-    ],
-    "nacre-asc-4": [
-      128,
-      128,
-      40
-    ],
-    "nacre-asc-5": [
-      128,
-      128,
-      40
-    ],
-    "nacre-asc-6": [
-      128,
-      128,
-      40
-    ],
-    "nacre-asc-7": [
-      128,
-      128,
-      40
-    ],
-    "nacre-asc-8": [
-      128,
-      128,
-      40
-    ],
-    "nacre-asc-9": [
-      128,
-      128,
-      40
-    ],
-    "nacre-desc-1": [
-      128,
-      128,
-      40
-    ],
-    "nacre-desc-2": [
-      128,
-      128,
-      40
-    ],
-    "nacre-desc-3": [
-      128,
-      128,
-      40
-    ],
-    "nacre-desc-4": [
-      128,
-      128,
-      40
-    ],
-    "nacre-desc-5": [
-      128,
-      128,
-      40
-    ],
-    "nacre-desc-6": [
-      128,
-      128,
-      40
-    ],
-    "nacre-desc-7": [
-      128,
-      128,
-      40
-    ],
-    "nacre-desc-8": [
-      128,
-      128,
-      40
-    ],
-    "nacre-desc-9": [
-      128,
-      128,
-      40
-    ],
     "catsuit-tap-1": [
       128,
       128,
@@ -5616,6 +5503,66 @@
       40
     ],
     "hedgehog-tap-12": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-1": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-2": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-3": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-4": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-5": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-6": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-7": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-8": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-9": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-10": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-11": [
+      128,
+      128,
+      40
+    ],
+    "nacre-tap-12": [
       128,
       128,
       40
@@ -5845,12 +5792,12 @@
     "arcflash": "e3311622176da38faba697d12c9b2a471084681e7192d539da559e6336028b38",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "484e680510b7dd83262572b0f37854012ff305fc147da70c6a07a066ec2de178",
-    "cyber-trio-registration": "015faf2a34603b2ed1ed653b79ae2c10139ae7ee083efa48a3d68288eadbc08c",
+    "control-constants": "6b385d03ebd7e690747579a776e84bbcf241d5acf62df9341f850462850f8159",
+    "cyber-trio-registration": "0663184e2894d0e6ec70c3dacde5d1694c67de69d3b13a9abc007129eaddbf30",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
     "high-orbit": "0a4d14f1e6b76eb8d83aeb1f08ac09a633ef0bfc4449c91dabcf5aa00a78738c",
-    "high-orbit-config": "3fd7f4caca5a7cdbd04e597cf36605957af8dfb892d2db89ec25d463614f07ed",
+    "high-orbit-config": "29fd3020155165356fc151784a6fadd5efd5b8f3e6a595bd09a8a6faa095223e",
     "high-orbit-effects": "d9a59b01628522f06f529b6e3d04af410c483ebdc47835eb4b0b8b6246f5b721",
     "high-orbit-motion": "08e7ec309a2bb197950773b427d01b1fe181f0c8503ed4886d9eb96f1e6064e2",
     "high-orbit-parts": "798fed584c734351b883e5638015b93b7a5402a3936cbbc9ef10128531c1190e",

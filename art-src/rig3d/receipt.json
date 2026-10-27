@@ -91,6 +91,12 @@
    "tail": "tripoTail_0",
    "args": "--tail tripoTail_0 --keep bone_25 --follow 0.1 --famp 0.8",
    "note": "owner, 27 Oct 2026: her back wisp (bone_25) stays with the body and follows the main tail 0.1 s late at 80% - \"big one always leads\""
+  },
+  "nacre": {
+   "model": "cutefantasycreature.glb (owner upload, 27 Oct 2026)",
+   "tail": "bone_29",
+   "args": "--tail bone_29 --keep bone_26 --follow 0.18 --famp 1.4 --troll 260 --tyaw 18 --fyaw 55 --fphase 0.15",
+   "note": "owner, 27 Oct 2026: \"ok use the new one\" then option B - the big tail twirls and thrusts, the second (bone_26) follows late and sways the other way so they cross; own head, helmetless"
   }
  },
  "hashes": {
@@ -535,6 +541,23 @@
   "suits/ghost-tap-10.png": "3b295ae58ae93d3886e502285e91781b7723d025",
   "suits/ghost-tap-11.png": "ba91d17a34bd32f26780515fc77fae9558acb63c",
   "suits/ghost-tap-12.png": "5c3dfc45f6ac53963fbce0fd01619cfaff4ce466",
-  "suits/ghost.png": "358f3fff7c9b8a544b0d649c81905d8e850077dc"
+  "suits/ghost.png": "358f3fff7c9b8a544b0d649c81905d8e850077dc",
+  "suits/nacre-tap-1.png": "f5a595a55a74881c0b83bf49e2de3d62446e96dc",
+  "suits/nacre-tap-2.png": "f1008b243c224debd9394d7342e142d15c288bef",
+  "suits/nacre-tap-3.png": "13fbd8a856898d9e28e1feb9191f55f6eb665442",
+  "suits/nacre-tap-4.png": "c0832b43159d015b54e9e9877fbc13d92b817cbf",
+  "suits/nacre-tap-5.png": "c31f75ffbf62adacc6973389f39ba7de72710c5e",
+  "suits/nacre-tap-6.png": "d62cacf733c31f54982d6c26797cd52e0ce14179",
+  "suits/nacre-tap-7.png": "08b3e64275f814cc20f23288a80601f9b5dcf077",
+  "suits/nacre-tap-8.png": "ec9b6745acf73f37c9ca0c77e63e2acd5bb7a770",
+  "suits/nacre-tap-9.png": "88e93ce24ca1077cdfff655cc892ccad9a9dd5e2",
+  "suits/nacre-tap-10.png": "d6240a823f666e6967e02a476adca56409c01de6",
+  "suits/nacre-tap-11.png": "6b7d95cdee210e7d6d5b6e21f8ffd93bcc80b862",
+  "suits/nacre-tap-12.png": "57f4b7be1e56045ad2660f18b991d1b10d8c85e5",
+  "suits/nacre-desc-1.png": "868b9387be45f9abf6afc51562dd2f5c1a9c9f52",
+  "suits/nacre-desc-2.png": "62f4703c12cfef3cfc595cb89bba86df1d70c948",
+  "suits/nacre-desc-3.png": "d1e79b70d0134dfd3b9813881ac330230602041c",
+  "suits/nacre-desc-4.png": "8a9f5051a2e9533556807f825c180b305ae52afe",
+  "suits/nacre.png": "f5a595a55a74881c0b83bf49e2de3d62446e96dc"
  }
 }
