@@ -27,7 +27,8 @@ for(const model of manifest.models){const project=makeProject(manifest,model);as
   const at=clone(a.animation);seekSimulation(a,8.25);assert.deepEqual(a.animation,at,'pause changes a pose');
   seekSimulation(a,project.pattern.duration+8.25);assert.deepEqual(a.animation,at,'repeat differs from first pass');
 }
-assert.equal(manifest.models.length,34);const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
+assert.equal(manifest.models.length,42);  // eight new suits from the owner's board (27 Oct 2026)
+const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
 assert.deepEqual(rigs.map(m=>m.id).sort(),['abyssal','arcflash','cinderforge','cosmic','groveguard','sunforged','vanguard'],'all seven original cut rigs remain available');
 // Patriot flies a rendered tap/dive bank since its 3D model (owner, 26 Oct 2026); Percy and Envoy keep Cyber's
 for(const id of ['origamist','porcelain','nacre']){const m=manifest.models.find(x=>x.id===id);

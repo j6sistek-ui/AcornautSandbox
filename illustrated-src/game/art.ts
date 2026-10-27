@@ -457,6 +457,8 @@ const TAP_BANKS: Record<string, number> = {
   bigbooty: 12,
   // Envoy (27 Oct 2026): a new model, its twin tails twirling and crossing
   nacre: 12,
+  // the owner's board (27 Oct 2026): eight new suits from the staged future models
+  tracer: 12, glasssuit: 12, redline: 12, robodog: 12, geode: 12, mystic: 12, wyrm: 12, dune: 12,
   // Ghost (27 Oct 2026): her back wisp follows the main tail a beat late - recipe in the receipt
   ghost: 12,
   // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
@@ -506,6 +508,7 @@ const DESC_BANKS: Record<string, number> =
         flight: 4, frost: 4, leviathan: 4, copper: 4, alien: 4, hedgehog: 4,
         arcflash: 4, origamist: 4, porcelain: 4, eclipse: 4, cryostar: 4, verdant: 4,
         ferret: 4, raccoon: 4, bigbooty: 4, ghost: 4, nacre: 4,
+        tracer: 4, glasssuit: 4, redline: 4, robodog: 4, geode: 4, mystic: 4, wyrm: 4, dune: 4,
         };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
@@ -768,6 +771,8 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
     // 2026), so its sheet loads there rather than only on the beta host
     "briellacat",
+    // the owner's board (27 Oct 2026): eight new suits, on the beta host until the owner flies them
+    "tracer", "glasssuit", "redline", "robodog", "geode", "mystic", "wyrm", "dune",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
   const hyperRunIds = [

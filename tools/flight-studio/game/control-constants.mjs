@@ -150,6 +150,14 @@ export const SUIT_LEAN = {
     bigbooty: { up: 0, down: 0 },
     porcelain: { up: 0, down: 0 },
     nacre: { up: 0, down: 0 },
+    tracer: { up: 0, down: 0 },
+    glasssuit: { up: 0, down: 0 },
+    redline: { up: 0, down: 0 },
+    robodog: { up: 0, down: 0 },
+    geode: { up: 0, down: 0 },
+    mystic: { up: 0, down: 0 },
+    wyrm: { up: 0, down: 0 },
+    dune: { up: 0, down: 0 },
     ghost: { up: 0, down: 0 },
 };
 /** The dial for a suit, or the default for one that has none yet. */

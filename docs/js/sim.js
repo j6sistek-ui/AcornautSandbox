@@ -1,5 +1,5 @@
-import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=322";
-import { PAINTED_TAP_SUITS, TAP_REPEAT } from "./control-constants.js?v=322";
+import { createVanguardMotion, stepVanguard, vanguardTap, vanguardDive, vanguardContact, vanguardGate } from "./vanguard.js?v=323";
+import { PAINTED_TAP_SUITS, TAP_REPEAT } from "./control-constants.js?v=323";
 /** WHAT A REPEAT TAP DOES to a tap animation still playing. Three answers:
  *    "rewind"  the picture reverses from where it is, bounces off the start
  *              and plays out again. Every tap moves the body that frame.
@@ -30,24 +30,24 @@ export function repeatTapMode(id, save) {
 export function repeatTapQueues(id, save) {
     return repeatTapMode(id, save) === "finish";
 }
-import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=322";
-import { createHighOrbitMotion, createPremiumWake, stepPremiumWake, stepHighOrbit, highOrbitTap } from "./high-orbit-motion.js?v=322";
-import { isHighOrbit, isPremiumSuit, highOrbitTrailSuit } from "./high-orbit-config.js?v=322";
-import { trailWornBy, STAR_CHART_TRAILS } from "./catalog.js?v=322";
-import { missionRandom } from "./mission-rng.js?v=322";
-import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=322";
-import { CHART_LEVELS, reachedGate } from "./campaign.js?v=322";
-import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, BOUNCE_ANIM_DURATION, LEGACY_DEBRIS_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, PHYS, TRAILS } from "./catalog.js?v=322";
-import { nextFamilyPlanet } from "./planet-family.js?v=322";
-import { modsUnlocked, batteryUnlocked, writeSave, tailSpringFor, grantTutorialKit, equippedPals } from "./save.js?v=322";
-import { platform } from "./platform.js?v=322";
-import { TUTORIAL_SUIT } from "./catalog.js?v=322";
-import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=322";
-import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=322";
-import { raceViewport, raceViewportY } from "./race-viewport.js?v=322";
-import { createSpill, resizeSpill, spillBurst, spillCleared, spillTap, stepSpill, } from "./spill.js?v=322";
-import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=322";
-import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=322";
+import { createArcflashMotion, stepArcflash, arcflashTap, arcflashDive, arcflashContact } from "./arcflash-motion.js?v=323";
+import { createHighOrbitMotion, createPremiumWake, stepPremiumWake, stepHighOrbit, highOrbitTap } from "./high-orbit-motion.js?v=323";
+import { isHighOrbit, isPremiumSuit, highOrbitTrailSuit } from "./high-orbit-config.js?v=323";
+import { trailWornBy, STAR_CHART_TRAILS } from "./catalog.js?v=323";
+import { missionRandom } from "./mission-rng.js?v=323";
+import { recordZoneVisit, routeMasks, settleMissionCredit, earnedCampaignStars, migrateCampaign, barrierId } from "./campaign-progress.js?v=323";
+import { CHART_LEVELS, reachedGate } from "./campaign.js?v=323";
+import { TUNNEL_LEAD_NODES, TUNNEL_LEAD_BLEND, BOUNCE_ANIM_DURATION, LEGACY_DEBRIS_COUNT, ENVS, ENV_GATES, IS_BETA, RETRO_GATE, TAIL, WARP_GATES, TAP_ANIM_DURATION, TUT_READ, PHYS, TRAILS } from "./catalog.js?v=323";
+import { nextFamilyPlanet } from "./planet-family.js?v=323";
+import { modsUnlocked, batteryUnlocked, writeSave, tailSpringFor, grantTutorialKit, equippedPals } from "./save.js?v=323";
+import { platform } from "./platform.js?v=323";
+import { TUTORIAL_SUIT } from "./catalog.js?v=323";
+import { emptyStats, goalMet, goldGatesFor, gateClearedBy } from "./campaign.js?v=323";
+import { createRaceState, RACE_DT, queueRaceInput, raceDecisionAge, stepRace, } from "./race.js?v=323";
+import { raceViewport, raceViewportY } from "./race-viewport.js?v=323";
+import { createSpill, resizeSpill, spillBurst, spillCleared, spillTap, stepSpill, } from "./spill.js?v=323";
+import { SPILL_UTILITIES, spillEngineColor } from "./spill-content.js?v=323";
+import { WORMHOLE_MAX_VY, WORMHOLE_FLAP, WORMHOLE_GRAVITY, WORMHOLE_SPEED_BASE, WORMHOLE_SPEED_RAMP, WORMHOLE_WIDTH, WORMHOLE_TURN, WORMHOLE_DEBRIS_SPACING, WORM_EVERY_GATES, WORM_CALM_SECONDS, WORM_CALM_SPEED, WORM_EXIT_LEAD, WORM_EXIT_GRACE, } from "./control-constants.js?v=323";
 export const TUNNEL_PATTERNS = [
     "launch", "ribbon", "acornArc", "sweep", "breather",
     "squeeze", "ripples", "debrisWeave", "surge",

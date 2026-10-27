@@ -1,5 +1,5 @@
 {
- "artVer": "322",
+ "artVer": "323",
  "suits": [
   {
    "id": "flight",
@@ -101,6 +101,22 @@
    "key": "suit:iontrim",
    "file": "suits/iontrim.png",
    "dome": [
+    191.55,
+    107.14,
+    24.07,
+    1.7
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "tracer",
+   "name": "Tracer",
+   "key": "suit:tracer",
+   "file": "suits/tracer.png",
+   "dome": [
     186.2,
     112.62,
     26.96,
@@ -108,6 +124,115 @@
    ],
    "box": null,
    "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "glasssuit",
+   "name": "Glass Suit",
+   "key": "suit:glasssuit",
+   "file": "suits/glasssuit.png",
+   "dome": [
+    186.04,
+    112.31,
+    26.32,
+    1.71
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "redline",
+   "name": "Red Line",
+   "key": "suit:redline",
+   "file": "suits/redline.png",
+   "dome": [
+    189.5,
+    106.74,
+    29.22,
+    1.65
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "robodog",
+   "name": "Robo Dog",
+   "key": "suit:robodog",
+   "file": "suits/robodog.png",
+   "dome": [
+    189.04,
+    108.64,
+    25.09,
+    1.78
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "geode",
+   "name": "Geode",
+   "key": "suit:geode",
+   "file": "suits/geode.png",
+   "dome": [
+    183.83,
+    121.67,
+    38.99,
+    1.77
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "mystic",
+   "name": "Mystic",
+   "key": "suit:mystic",
+   "file": "suits/mystic.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "wyrm",
+   "name": "Wyrm",
+   "key": "suit:wyrm",
+   "file": "suits/wyrm.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": false
+  },
+  {
+   "id": "dune",
+   "name": "Dune",
+   "key": "suit:dune",
+   "file": "suits/dune.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
    "bakedDome": false,
    "frame": false
   },
@@ -4074,6 +4199,278 @@
   },
   {
    "played": true,
+   "id": "geode-desc-1",
+   "name": "Geode desc 1",
+   "key": "geode-desc-1",
+   "file": "suits/geode-desc-1.png",
+   "dome": [
+    183.83,
+    121.67,
+    38.99,
+    1.77
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-desc-2",
+   "name": "Geode desc 2",
+   "key": "geode-desc-2",
+   "file": "suits/geode-desc-2.png",
+   "dome": [
+    184.41,
+    133.84,
+    38.99,
+    15.5
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-desc-3",
+   "name": "Geode desc 3",
+   "key": "geode-desc-3",
+   "file": "suits/geode-desc-3.png",
+   "dome": [
+    183.92,
+    144.47,
+    38.99,
+    28.69
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-desc-4",
+   "name": "Geode desc 4",
+   "key": "geode-desc-4",
+   "file": "suits/geode-desc-4.png",
+   "dome": [
+    181.2,
+    151.8,
+    38.99,
+    41.16
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-1",
+   "name": "Geode tap 1",
+   "key": "geode-tap-1",
+   "file": "suits/geode-tap-1.png",
+   "dome": [
+    183.83,
+    121.67,
+    38.99,
+    1.77
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-2",
+   "name": "Geode tap 2",
+   "key": "geode-tap-2",
+   "file": "suits/geode-tap-2.png",
+   "dome": [
+    182.77,
+    119.03,
+    38.99,
+    -1.91
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-3",
+   "name": "Geode tap 3",
+   "key": "geode-tap-3",
+   "file": "suits/geode-tap-3.png",
+   "dome": [
+    182,
+    117.73,
+    38.99,
+    -4.26
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-4",
+   "name": "Geode tap 4",
+   "key": "geode-tap-4",
+   "file": "suits/geode-tap-4.png",
+   "dome": [
+    181.81,
+    118.06,
+    38.99,
+    -4.64
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-5",
+   "name": "Geode tap 5",
+   "key": "geode-tap-5",
+   "file": "suits/geode-tap-5.png",
+   "dome": [
+    182.24,
+    119.91,
+    38.99,
+    -2.95
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-6",
+   "name": "Geode tap 6",
+   "key": "geode-tap-6",
+   "file": "suits/geode-tap-6.png",
+   "dome": [
+    183.05,
+    122.81,
+    38.99,
+    0.36
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-7",
+   "name": "Geode tap 7",
+   "key": "geode-tap-7",
+   "file": "suits/geode-tap-7.png",
+   "dome": [
+    183.93,
+    126.03,
+    38.99,
+    4.38
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-8",
+   "name": "Geode tap 8",
+   "key": "geode-tap-8",
+   "file": "suits/geode-tap-8.png",
+   "dome": [
+    184.62,
+    128.71,
+    38.99,
+    8.03
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-9",
+   "name": "Geode tap 9",
+   "key": "geode-tap-9",
+   "file": "suits/geode-tap-9.png",
+   "dome": [
+    185.09,
+    130.14,
+    38.99,
+    10.34
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-10",
+   "name": "Geode tap 10",
+   "key": "geode-tap-10",
+   "file": "suits/geode-tap-10.png",
+   "dome": [
+    185.34,
+    129.89,
+    38.99,
+    10.71
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-11",
+   "name": "Geode tap 11",
+   "key": "geode-tap-11",
+   "file": "suits/geode-tap-11.png",
+   "dome": [
+    185.27,
+    128,
+    38.99,
+    9.05
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "geode-tap-12",
+   "name": "Geode tap 12",
+   "key": "geode-tap-12",
+   "file": "suits/geode-tap-12.png",
+   "dome": [
+    184.76,
+    124.97,
+    38.99,
+    5.78
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
    "id": "ghost-desc-1",
    "name": "Ghost desc 1",
    "key": "ghost-desc-1",
@@ -4338,6 +4735,278 @@
     105.01,
     26.36,
     6.06
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-desc-1",
+   "name": "Glass Suit desc 1",
+   "key": "glasssuit-desc-1",
+   "file": "suits/glasssuit-desc-1.png",
+   "dome": [
+    186.04,
+    112.31,
+    26.32,
+    1.71
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-desc-2",
+   "name": "Glass Suit desc 2",
+   "key": "glasssuit-desc-2",
+   "file": "suits/glasssuit-desc-2.png",
+   "dome": [
+    187.19,
+    125.06,
+    26.32,
+    15.42
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-desc-3",
+   "name": "Glass Suit desc 3",
+   "key": "glasssuit-desc-3",
+   "file": "suits/glasssuit-desc-3.png",
+   "dome": [
+    185.63,
+    137.24,
+    26.32,
+    28.61
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-desc-4",
+   "name": "Glass Suit desc 4",
+   "key": "glasssuit-desc-4",
+   "file": "suits/glasssuit-desc-4.png",
+   "dome": [
+    182.08,
+    148.78,
+    26.32,
+    41.08
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-1",
+   "name": "Glass Suit tap 1",
+   "key": "glasssuit-tap-1",
+   "file": "suits/glasssuit-tap-1.png",
+   "dome": [
+    186.04,
+    112.31,
+    26.32,
+    1.71
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-2",
+   "name": "Glass Suit tap 2",
+   "key": "glasssuit-tap-2",
+   "file": "suits/glasssuit-tap-2.png",
+   "dome": [
+    185.04,
+    109.7,
+    26.32,
+    -1.96
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-3",
+   "name": "Glass Suit tap 3",
+   "key": "glasssuit-tap-3",
+   "file": "suits/glasssuit-tap-3.png",
+   "dome": [
+    184.37,
+    108.43,
+    26.32,
+    -4.31
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-4",
+   "name": "Glass Suit tap 4",
+   "key": "glasssuit-tap-4",
+   "file": "suits/glasssuit-tap-4.png",
+   "dome": [
+    184.35,
+    108.81,
+    26.32,
+    -4.68
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-5",
+   "name": "Glass Suit tap 5",
+   "key": "glasssuit-tap-5",
+   "file": "suits/glasssuit-tap-5.png",
+   "dome": [
+    184.98,
+    110.74,
+    26.32,
+    -3
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-6",
+   "name": "Glass Suit tap 6",
+   "key": "glasssuit-tap-6",
+   "file": "suits/glasssuit-tap-6.png",
+   "dome": [
+    185.88,
+    113.74,
+    26.32,
+    0.3
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-7",
+   "name": "Glass Suit tap 7",
+   "key": "glasssuit-tap-7",
+   "file": "suits/glasssuit-tap-7.png",
+   "dome": [
+    186.71,
+    117.08,
+    26.32,
+    4.32
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-8",
+   "name": "Glass Suit tap 8",
+   "key": "glasssuit-tap-8",
+   "file": "suits/glasssuit-tap-8.png",
+   "dome": [
+    187.28,
+    119.84,
+    26.32,
+    7.96
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-9",
+   "name": "Glass Suit tap 9",
+   "key": "glasssuit-tap-9",
+   "file": "suits/glasssuit-tap-9.png",
+   "dome": [
+    187.6,
+    121.22,
+    26.32,
+    10.27
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-10",
+   "name": "Glass Suit tap 10",
+   "key": "glasssuit-tap-10",
+   "file": "suits/glasssuit-tap-10.png",
+   "dome": [
+    187.71,
+    120.84,
+    26.32,
+    10.64
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-11",
+   "name": "Glass Suit tap 11",
+   "key": "glasssuit-tap-11",
+   "file": "suits/glasssuit-tap-11.png",
+   "dome": [
+    187.53,
+    118.8,
+    26.32,
+    8.98
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "glasssuit-tap-12",
+   "name": "Glass Suit tap 12",
+   "key": "glasssuit-tap-12",
+   "file": "suits/glasssuit-tap-12.png",
+   "dome": [
+    186.96,
+    115.67,
+    26.32,
+    5.72
    ],
    "box": null,
    "ownHead": false,
@@ -4623,10 +5292,10 @@
    "key": "iontrim-desc-1",
    "file": "suits/iontrim-desc-1.png",
    "dome": [
-    186.2,
-    112.62,
-    26.96,
-    1.82
+    191.55,
+    107.14,
+    24.07,
+    1.7
    ],
    "box": null,
    "ownHead": false,
@@ -4640,10 +5309,10 @@
    "key": "iontrim-desc-2",
    "file": "suits/iontrim-desc-2.png",
    "dome": [
-    188.58,
-    124.69,
-    26.96,
-    15.58
+    193.45,
+    122.23,
+    24.07,
+    15.45
    ],
    "box": null,
    "ownHead": false,
@@ -4657,10 +5326,10 @@
    "key": "iontrim-desc-3",
    "file": "suits/iontrim-desc-3.png",
    "dome": [
-    187.99,
-    138.17,
-    26.96,
-    28.78
+    191.56,
+    137.73,
+    24.07,
+    28.68
    ],
    "box": null,
    "ownHead": false,
@@ -4674,10 +5343,10 @@
    "key": "iontrim-desc-4",
    "file": "suits/iontrim-desc-4.png",
    "dome": [
-    184.8,
-    150.86,
-    26.96,
-    41.25
+    186.22,
+    152.39,
+    24.07,
+    41.17
    ],
    "box": null,
    "ownHead": false,
@@ -4691,10 +5360,10 @@
    "key": "iontrim-tap-1",
    "file": "suits/iontrim-tap-1.png",
    "dome": [
-    186.2,
-    112.62,
-    26.96,
-    1.82
+    191.55,
+    107.14,
+    24.07,
+    1.7
    ],
    "box": null,
    "ownHead": false,
@@ -4708,10 +5377,10 @@
    "key": "iontrim-tap-2",
    "file": "suits/iontrim-tap-2.png",
    "dome": [
-    184.49,
-    109.48,
-    26.96,
-    -1.87
+    190.33,
+    104.37,
+    24.07,
+    -1.99
    ],
    "box": null,
    "ownHead": false,
@@ -4725,10 +5394,10 @@
    "key": "iontrim-tap-3",
    "file": "suits/iontrim-tap-3.png",
    "dome": [
-    183.33,
-    108.02,
-    26.96,
-    -4.22
+    189.6,
+    103.16,
+    24.07,
+    -4.34
    ],
    "box": null,
    "ownHead": false,
@@ -4742,10 +5411,10 @@
    "key": "iontrim-tap-4",
    "file": "suits/iontrim-tap-4.png",
    "dome": [
-    183.18,
-    108.46,
-    26.96,
-    -4.6
+    189.66,
+    103.73,
+    24.07,
+    -4.72
    ],
    "box": null,
    "ownHead": false,
@@ -4759,10 +5428,10 @@
    "key": "iontrim-tap-5",
    "file": "suits/iontrim-tap-5.png",
    "dome": [
-    184.07,
-    110.69,
-    26.96,
-    -2.9
+    190.45,
+    105.93,
+    24.07,
+    -3.03
    ],
    "box": null,
    "ownHead": false,
@@ -4776,10 +5445,10 @@
    "key": "iontrim-tap-6",
    "file": "suits/iontrim-tap-6.png",
    "dome": [
-    185.56,
-    114.27,
-    26.96,
-    0.41
+    191.63,
+    109.29,
+    24.07,
+    0.28
    ],
    "box": null,
    "ownHead": false,
@@ -4793,10 +5462,10 @@
    "key": "iontrim-tap-7",
    "file": "suits/iontrim-tap-7.png",
    "dome": [
-    187.13,
-    118.34,
-    26.96,
-    4.44
+    192.75,
+    113,
+    24.07,
+    4.31
    ],
    "box": null,
    "ownHead": false,
@@ -4810,10 +5479,10 @@
    "key": "iontrim-tap-8",
    "file": "suits/iontrim-tap-8.png",
    "dome": [
-    188.4,
-    121.78,
-    26.96,
-    8.1
+    193.54,
+    116.04,
+    24.07,
+    7.97
    ],
    "box": null,
    "ownHead": false,
@@ -4827,10 +5496,10 @@
    "key": "iontrim-tap-9",
    "file": "suits/iontrim-tap-9.png",
    "dome": [
-    189.19,
-    123.57,
-    26.96,
-    10.41
+    193.95,
+    117.51,
+    24.07,
+    10.29
    ],
    "box": null,
    "ownHead": false,
@@ -4844,10 +5513,10 @@
    "key": "iontrim-tap-10",
    "file": "suits/iontrim-tap-10.png",
    "dome": [
-    189.41,
-    123.16,
-    26.96,
-    10.79
+    194,
+    116.93,
+    24.07,
+    10.66
    ],
    "box": null,
    "ownHead": false,
@@ -4861,10 +5530,10 @@
    "key": "iontrim-tap-11",
    "file": "suits/iontrim-tap-11.png",
    "dome": [
-    188.98,
-    120.63,
-    26.96,
-    9.12
+    193.63,
+    114.46,
+    24.07,
+    9
    ],
    "box": null,
    "ownHead": false,
@@ -4878,10 +5547,10 @@
    "key": "iontrim-tap-12",
    "file": "suits/iontrim-tap-12.png",
    "dome": [
-    187.85,
-    116.72,
-    26.96,
-    5.84
+    192.78,
+    110.84,
+    24.07,
+    5.72
    ],
    "box": null,
    "ownHead": false,
@@ -5706,6 +6375,278 @@
   },
   {
    "played": true,
+   "id": "redline-desc-1",
+   "name": "Red Line desc 1",
+   "key": "redline-desc-1",
+   "file": "suits/redline-desc-1.png",
+   "dome": [
+    189.5,
+    106.74,
+    29.22,
+    1.65
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-desc-2",
+   "name": "Red Line desc 2",
+   "key": "redline-desc-2",
+   "file": "suits/redline-desc-2.png",
+   "dome": [
+    191.39,
+    119.27,
+    29.22,
+    15.36
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-desc-3",
+   "name": "Red Line desc 3",
+   "key": "redline-desc-3",
+   "file": "suits/redline-desc-3.png",
+   "dome": [
+    190.03,
+    132.01,
+    29.22,
+    28.56
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-desc-4",
+   "name": "Red Line desc 4",
+   "key": "redline-desc-4",
+   "file": "suits/redline-desc-4.png",
+   "dome": [
+    187.21,
+    143.32,
+    29.22,
+    41.05
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-1",
+   "name": "Red Line tap 1",
+   "key": "redline-tap-1",
+   "file": "suits/redline-tap-1.png",
+   "dome": [
+    189.5,
+    106.74,
+    29.22,
+    1.65
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-2",
+   "name": "Red Line tap 2",
+   "key": "redline-tap-2",
+   "file": "suits/redline-tap-2.png",
+   "dome": [
+    188.4,
+    104.62,
+    29.22,
+    -2.02
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-3",
+   "name": "Red Line tap 3",
+   "key": "redline-tap-3",
+   "file": "suits/redline-tap-3.png",
+   "dome": [
+    187.68,
+    103.75,
+    29.22,
+    -4.36
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-4",
+   "name": "Red Line tap 4",
+   "key": "redline-tap-4",
+   "file": "suits/redline-tap-4.png",
+   "dome": [
+    187.63,
+    104.27,
+    29.22,
+    -4.74
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-5",
+   "name": "Red Line tap 5",
+   "key": "redline-tap-5",
+   "file": "suits/redline-tap-5.png",
+   "dome": [
+    188.23,
+    106.03,
+    29.22,
+    -3.06
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-6",
+   "name": "Red Line tap 6",
+   "key": "redline-tap-6",
+   "file": "suits/redline-tap-6.png",
+   "dome": [
+    189.21,
+    108.66,
+    29.22,
+    0.24
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-7",
+   "name": "Red Line tap 7",
+   "key": "redline-tap-7",
+   "file": "suits/redline-tap-7.png",
+   "dome": [
+    190.26,
+    111.52,
+    29.22,
+    4.26
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-8",
+   "name": "Red Line tap 8",
+   "key": "redline-tap-8",
+   "file": "suits/redline-tap-8.png",
+   "dome": [
+    191.16,
+    113.84,
+    29.22,
+    7.9
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-9",
+   "name": "Red Line tap 9",
+   "key": "redline-tap-9",
+   "file": "suits/redline-tap-9.png",
+   "dome": [
+    191.7,
+    114.93,
+    29.22,
+    10.21
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-10",
+   "name": "Red Line tap 10",
+   "key": "redline-tap-10",
+   "file": "suits/redline-tap-10.png",
+   "dome": [
+    191.84,
+    114.44,
+    29.22,
+    10.58
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-11",
+   "name": "Red Line tap 11",
+   "key": "redline-tap-11",
+   "file": "suits/redline-tap-11.png",
+   "dome": [
+    191.51,
+    112.48,
+    29.22,
+    8.92
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "redline-tap-12",
+   "name": "Red Line tap 12",
+   "key": "redline-tap-12",
+   "file": "suits/redline-tap-12.png",
+   "dome": [
+    190.67,
+    109.63,
+    29.22,
+    5.66
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
    "id": "robo-tap-1",
    "name": "Robo tap 1",
    "key": "robo-tap-1",
@@ -5970,6 +6911,278 @@
     99,
     34.24,
     0
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-desc-1",
+   "name": "Robo Dog desc 1",
+   "key": "robodog-desc-1",
+   "file": "suits/robodog-desc-1.png",
+   "dome": [
+    189.04,
+    108.64,
+    25.09,
+    1.78
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-desc-2",
+   "name": "Robo Dog desc 2",
+   "key": "robodog-desc-2",
+   "file": "suits/robodog-desc-2.png",
+   "dome": [
+    192.3,
+    123.12,
+    25.09,
+    15.49
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-desc-3",
+   "name": "Robo Dog desc 3",
+   "key": "robodog-desc-3",
+   "file": "suits/robodog-desc-3.png",
+   "dome": [
+    193.23,
+    137.37,
+    25.09,
+    28.67
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-desc-4",
+   "name": "Robo Dog desc 4",
+   "key": "robodog-desc-4",
+   "file": "suits/robodog-desc-4.png",
+   "dome": [
+    189.9,
+    150.55,
+    25.09,
+    41.13
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-1",
+   "name": "Robo Dog tap 1",
+   "key": "robodog-tap-1",
+   "file": "suits/robodog-tap-1.png",
+   "dome": [
+    189.04,
+    108.64,
+    25.09,
+    1.78
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-2",
+   "name": "Robo Dog tap 2",
+   "key": "robodog-tap-2",
+   "file": "suits/robodog-tap-2.png",
+   "dome": [
+    187.63,
+    105.97,
+    25.09,
+    -1.9
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-3",
+   "name": "Robo Dog tap 3",
+   "key": "robodog-tap-3",
+   "file": "suits/robodog-tap-3.png",
+   "dome": [
+    186.82,
+    104.76,
+    25.09,
+    -4.24
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-4",
+   "name": "Robo Dog tap 4",
+   "key": "robodog-tap-4",
+   "file": "suits/robodog-tap-4.png",
+   "dome": [
+    186.94,
+    105.25,
+    25.09,
+    -4.62
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-5",
+   "name": "Robo Dog tap 5",
+   "key": "robodog-tap-5",
+   "file": "suits/robodog-tap-5.png",
+   "dome": [
+    187.91,
+    107.31,
+    25.09,
+    -2.93
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-6",
+   "name": "Robo Dog tap 6",
+   "key": "robodog-tap-6",
+   "file": "suits/robodog-tap-6.png",
+   "dome": [
+    189.33,
+    110.53,
+    25.09,
+    0.37
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-7",
+   "name": "Robo Dog tap 7",
+   "key": "robodog-tap-7",
+   "file": "suits/robodog-tap-7.png",
+   "dome": [
+    190.71,
+    114.1,
+    25.09,
+    4.39
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-8",
+   "name": "Robo Dog tap 8",
+   "key": "robodog-tap-8",
+   "file": "suits/robodog-tap-8.png",
+   "dome": [
+    191.7,
+    117.11,
+    25.09,
+    8.03
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-9",
+   "name": "Robo Dog tap 9",
+   "key": "robodog-tap-9",
+   "file": "suits/robodog-tap-9.png",
+   "dome": [
+    192.2,
+    118.63,
+    25.09,
+    10.34
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-10",
+   "name": "Robo Dog tap 10",
+   "key": "robodog-tap-10",
+   "file": "suits/robodog-tap-10.png",
+   "dome": [
+    192.18,
+    118.14,
+    25.09,
+    10.71
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-11",
+   "name": "Robo Dog tap 11",
+   "key": "robodog-tap-11",
+   "file": "suits/robodog-tap-11.png",
+   "dome": [
+    191.62,
+    115.76,
+    25.09,
+    9.05
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "robodog-tap-12",
+   "name": "Robo Dog tap 12",
+   "key": "robodog-tap-12",
+   "file": "suits/robodog-tap-12.png",
+   "dome": [
+    190.51,
+    112.22,
+    25.09,
+    5.79
    ],
    "box": null,
    "ownHead": false,
@@ -6786,6 +7999,278 @@
     109.04,
     33.8,
     5.81
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-desc-1",
+   "name": "Tracer desc 1",
+   "key": "tracer-desc-1",
+   "file": "suits/tracer-desc-1.png",
+   "dome": [
+    186.2,
+    112.62,
+    26.96,
+    1.82
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-desc-2",
+   "name": "Tracer desc 2",
+   "key": "tracer-desc-2",
+   "file": "suits/tracer-desc-2.png",
+   "dome": [
+    188.58,
+    124.69,
+    26.96,
+    15.58
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-desc-3",
+   "name": "Tracer desc 3",
+   "key": "tracer-desc-3",
+   "file": "suits/tracer-desc-3.png",
+   "dome": [
+    187.99,
+    138.17,
+    26.96,
+    28.78
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-desc-4",
+   "name": "Tracer desc 4",
+   "key": "tracer-desc-4",
+   "file": "suits/tracer-desc-4.png",
+   "dome": [
+    184.8,
+    150.86,
+    26.96,
+    41.25
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-1",
+   "name": "Tracer tap 1",
+   "key": "tracer-tap-1",
+   "file": "suits/tracer-tap-1.png",
+   "dome": [
+    186.2,
+    112.62,
+    26.96,
+    1.82
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-2",
+   "name": "Tracer tap 2",
+   "key": "tracer-tap-2",
+   "file": "suits/tracer-tap-2.png",
+   "dome": [
+    184.49,
+    109.48,
+    26.96,
+    -1.87
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-3",
+   "name": "Tracer tap 3",
+   "key": "tracer-tap-3",
+   "file": "suits/tracer-tap-3.png",
+   "dome": [
+    183.33,
+    108.02,
+    26.96,
+    -4.22
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-4",
+   "name": "Tracer tap 4",
+   "key": "tracer-tap-4",
+   "file": "suits/tracer-tap-4.png",
+   "dome": [
+    183.18,
+    108.46,
+    26.96,
+    -4.6
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-5",
+   "name": "Tracer tap 5",
+   "key": "tracer-tap-5",
+   "file": "suits/tracer-tap-5.png",
+   "dome": [
+    184.07,
+    110.69,
+    26.96,
+    -2.9
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-6",
+   "name": "Tracer tap 6",
+   "key": "tracer-tap-6",
+   "file": "suits/tracer-tap-6.png",
+   "dome": [
+    185.56,
+    114.27,
+    26.96,
+    0.41
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-7",
+   "name": "Tracer tap 7",
+   "key": "tracer-tap-7",
+   "file": "suits/tracer-tap-7.png",
+   "dome": [
+    187.13,
+    118.34,
+    26.96,
+    4.44
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-8",
+   "name": "Tracer tap 8",
+   "key": "tracer-tap-8",
+   "file": "suits/tracer-tap-8.png",
+   "dome": [
+    188.4,
+    121.78,
+    26.96,
+    8.1
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-9",
+   "name": "Tracer tap 9",
+   "key": "tracer-tap-9",
+   "file": "suits/tracer-tap-9.png",
+   "dome": [
+    189.19,
+    123.57,
+    26.96,
+    10.41
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-10",
+   "name": "Tracer tap 10",
+   "key": "tracer-tap-10",
+   "file": "suits/tracer-tap-10.png",
+   "dome": [
+    189.41,
+    123.16,
+    26.96,
+    10.79
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-11",
+   "name": "Tracer tap 11",
+   "key": "tracer-tap-11",
+   "file": "suits/tracer-tap-11.png",
+   "dome": [
+    188.98,
+    120.63,
+    26.96,
+    9.12
+   ],
+   "box": null,
+   "ownHead": false,
+   "bakedDome": false,
+   "frame": true
+  },
+  {
+   "played": true,
+   "id": "tracer-tap-12",
+   "name": "Tracer tap 12",
+   "key": "tracer-tap-12",
+   "file": "suits/tracer-tap-12.png",
+   "dome": [
+    187.85,
+    116.72,
+    26.96,
+    5.84
    ],
    "box": null,
    "ownHead": false,
@@ -8028,6 +9513,198 @@
    "played": true
   },
   {
+   "id": "dune-tap-1",
+   "name": "Dune tap 1",
+   "key": "dune-tap-1",
+   "file": "suits/dune-tap-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-2",
+   "name": "Dune tap 2",
+   "key": "dune-tap-2",
+   "file": "suits/dune-tap-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-3",
+   "name": "Dune tap 3",
+   "key": "dune-tap-3",
+   "file": "suits/dune-tap-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-4",
+   "name": "Dune tap 4",
+   "key": "dune-tap-4",
+   "file": "suits/dune-tap-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-5",
+   "name": "Dune tap 5",
+   "key": "dune-tap-5",
+   "file": "suits/dune-tap-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-6",
+   "name": "Dune tap 6",
+   "key": "dune-tap-6",
+   "file": "suits/dune-tap-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-7",
+   "name": "Dune tap 7",
+   "key": "dune-tap-7",
+   "file": "suits/dune-tap-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-8",
+   "name": "Dune tap 8",
+   "key": "dune-tap-8",
+   "file": "suits/dune-tap-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-9",
+   "name": "Dune tap 9",
+   "key": "dune-tap-9",
+   "file": "suits/dune-tap-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-10",
+   "name": "Dune tap 10",
+   "key": "dune-tap-10",
+   "file": "suits/dune-tap-10.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-11",
+   "name": "Dune tap 11",
+   "key": "dune-tap-11",
+   "file": "suits/dune-tap-11.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "dune-tap-12",
+   "name": "Dune tap 12",
+   "key": "dune-tap-12",
+   "file": "suits/dune-tap-12.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
    "id": "ferret-tap-1",
    "name": "Noodle tap 1",
    "key": "ferret-tap-1",
@@ -8400,6 +10077,198 @@
    "name": "Quill tap 12",
    "key": "hedgehog-tap-12",
    "file": "suits/hedgehog-tap-12.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-1",
+   "name": "Mystic tap 1",
+   "key": "mystic-tap-1",
+   "file": "suits/mystic-tap-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-2",
+   "name": "Mystic tap 2",
+   "key": "mystic-tap-2",
+   "file": "suits/mystic-tap-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-3",
+   "name": "Mystic tap 3",
+   "key": "mystic-tap-3",
+   "file": "suits/mystic-tap-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-4",
+   "name": "Mystic tap 4",
+   "key": "mystic-tap-4",
+   "file": "suits/mystic-tap-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-5",
+   "name": "Mystic tap 5",
+   "key": "mystic-tap-5",
+   "file": "suits/mystic-tap-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-6",
+   "name": "Mystic tap 6",
+   "key": "mystic-tap-6",
+   "file": "suits/mystic-tap-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-7",
+   "name": "Mystic tap 7",
+   "key": "mystic-tap-7",
+   "file": "suits/mystic-tap-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-8",
+   "name": "Mystic tap 8",
+   "key": "mystic-tap-8",
+   "file": "suits/mystic-tap-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-9",
+   "name": "Mystic tap 9",
+   "key": "mystic-tap-9",
+   "file": "suits/mystic-tap-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-10",
+   "name": "Mystic tap 10",
+   "key": "mystic-tap-10",
+   "file": "suits/mystic-tap-10.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-11",
+   "name": "Mystic tap 11",
+   "key": "mystic-tap-11",
+   "file": "suits/mystic-tap-11.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "mystic-tap-12",
+   "name": "Mystic tap 12",
+   "key": "mystic-tap-12",
+   "file": "suits/mystic-tap-12.png",
    "dome": [
     128,
     128,
@@ -9040,6 +10909,198 @@
    "name": "Volt tap 16",
    "key": "volt-tap-16",
    "file": "suits/volt-tap-16.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-1",
+   "name": "Wyrm tap 1",
+   "key": "wyrm-tap-1",
+   "file": "suits/wyrm-tap-1.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-2",
+   "name": "Wyrm tap 2",
+   "key": "wyrm-tap-2",
+   "file": "suits/wyrm-tap-2.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-3",
+   "name": "Wyrm tap 3",
+   "key": "wyrm-tap-3",
+   "file": "suits/wyrm-tap-3.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-4",
+   "name": "Wyrm tap 4",
+   "key": "wyrm-tap-4",
+   "file": "suits/wyrm-tap-4.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-5",
+   "name": "Wyrm tap 5",
+   "key": "wyrm-tap-5",
+   "file": "suits/wyrm-tap-5.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-6",
+   "name": "Wyrm tap 6",
+   "key": "wyrm-tap-6",
+   "file": "suits/wyrm-tap-6.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-7",
+   "name": "Wyrm tap 7",
+   "key": "wyrm-tap-7",
+   "file": "suits/wyrm-tap-7.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-8",
+   "name": "Wyrm tap 8",
+   "key": "wyrm-tap-8",
+   "file": "suits/wyrm-tap-8.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-9",
+   "name": "Wyrm tap 9",
+   "key": "wyrm-tap-9",
+   "file": "suits/wyrm-tap-9.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-10",
+   "name": "Wyrm tap 10",
+   "key": "wyrm-tap-10",
+   "file": "suits/wyrm-tap-10.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-11",
+   "name": "Wyrm tap 11",
+   "key": "wyrm-tap-11",
+   "file": "suits/wyrm-tap-11.png",
+   "dome": [
+    128,
+    128,
+    40
+   ],
+   "box": null,
+   "ownHead": true,
+   "bakedDome": false,
+   "frame": true,
+   "played": true
+  },
+  {
+   "id": "wyrm-tap-12",
+   "name": "Wyrm tap 12",
+   "key": "wyrm-tap-12",
+   "file": "suits/wyrm-tap-12.png",
    "dome": [
     128,
     128,

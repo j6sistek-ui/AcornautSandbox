@@ -1,6 +1,6 @@
 import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=322";
 import { platform } from "./platform.js?v=322";
-import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES, PREMIUM_SUIT_IDS } from "./high-orbit-config.js?v=322";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=322";
 import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=322";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-10-27 01:51 UTC";
+export const BUILD_TIME = "2026-10-27 02:26 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -206,7 +206,19 @@ export const SUITS = [
     { id: "porcelain", name: "Percy", cost: 0, fur: "#c7ccd3", furDark: "#767e8d", belly: "#fff8e9", suit: "#efe8d7", suitLite: "#fffdf3", suitDark: "#38567b", trim: "#466bb4", glow: "#b9d8ff", dust: null },
     { id: "nacre", name: "Envoy", cost: 0, ownHead: true, headPolicy: "helmetless", fur: "#cfb1df", furDark: "#8e709f", belly: "#f5d8dc", suit: "#e4d6dc", suitLite: "#fff0df", suitDark: "#4a315d", trim: "#d4a2d8", glow: "#e5a8ed", dust: null },
     { id: "origamist", name: "Patriot", cost: 0, fur: "#d5b99a", furDark: "#927555", belly: "#fff0d6", suit: "#eadcc5", suitLite: "#fff4dc", suitDark: "#444767", trim: "#d99a59", glow: "#f5bb75", dust: null },
-    { id: "iontrim", name: "Ion", cost: 140, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
+    // ION IS THE ASTRONAUT (owner, 27 Oct 2026: "squirrel astronaut becomes ION (the trailer sample),
+    // current ION give new name. Its more standard looking"): the old Ion art flies on as Tracer
+    { id: "iontrim", name: "Ion", cost: 140, fur: "#a9a5a3", furDark: "#6d6866", belly: "#efe8e2", suit: "#9cc3dc", suitLite: "#d3e8f4", suitDark: "#4f6f86", trim: "#8a6a45", glow: "#bfe6ff", dust: "#d6efff" },
+    // THE NEW LINEUP (owner's suit board, 27 Oct 2026): new suits cost more than the originals on
+    // their shelf ("New ones get more expensive than the originals"); prices are first-draft
+    { id: "tracer", name: "Tracer", cost: 420, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
+    { id: "glasssuit", name: "Glass Suit", cost: 460, fur: "#c98f62", furDark: "#8c5a38", belly: "#f2dcc6", suit: "#dfe6ee", suitLite: "#ffffff", suitDark: "#9aa6b4", trim: "#d8a080", glow: "#ffe0c8", dust: "#fff0e4" },
+    { id: "redline", name: "Red Line", cost: 500, fur: "#3a3a3e", furDark: "#1c1c20", belly: "#d9a679", suit: "#2b2d33", suitLite: "#4a4d55", suitDark: "#141519", trim: "#ff2e3a", glow: "#ff3b3b", dust: "#ff8a8a" },
+    { id: "robodog", name: "Robo Dog", cost: 550, fur: "#b9bec4", furDark: "#6f757c", belly: "#e9edf0", suit: "#c8ced4", suitLite: "#ffffff", suitDark: "#5b636c", trim: "#2ad4e8", glow: "#3ce6ff", dust: "#a8f2ff" },
+    { id: "geode", name: "Geode", cost: 600, fur: "#9b7fd0", furDark: "#5d4590", belly: "#e9defa", suit: "#7b5bc0", suitLite: "#c9b5f2", suitDark: "#3e2a6e", trim: "#d6a8ff", glow: "#c890ff", dust: "#e6d2ff" },
+    { id: "mystic", name: "Mystic", cost: 1100, ownHead: true, fur: "#5a3a9a", furDark: "#2e1d55", belly: "#c9a8f0", suit: "#3b2470", suitLite: "#8a5fd0", suitDark: "#1c0f3a", trim: "#e070ff", glow: "#d060ff", dust: "#efb8ff" },
+    { id: "wyrm", name: "Wyrm", cost: 1200, ownHead: true, fur: "#c0442c", furDark: "#6e2015", belly: "#f0b27a", suit: "#3a2a2a", suitLite: "#8a4a3a", suitDark: "#1e1010", trim: "#ff9a3a", glow: "#ff6a2a", dust: "#ffc07a" },
+    { id: "dune", name: "Dune", cost: 1300, ownHead: true, fur: "#d8a24a", furDark: "#7a5520", belly: "#f6e2b8", suit: "#5a3f1e", suitLite: "#b58a48", suitDark: "#2c1e0e", trim: "#ffcf6a", glow: "#ffc04a", dust: "#ffe2a0" },
     { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
     { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
     { id: "voidsuit", name: "Void", cost: 240, fur: "#544a63", furDark: "#312a3d", belly: "#8d7fa0", suit: "#241d33", suitLite: "#4f4270", suitDark: "#100c18", trim: "#d4af37", glow: "#b45cff", dust: "#e7b6ff" },
@@ -860,24 +872,15 @@ export const DAILY_STREAK_LEN = 7;
 // catalog simply does not render, which is how the Unreleased shelf stays
 // beta-only without carrying its own flag.
 export const SUIT_SHELF = [
-    // Aurora and Stardust are DEMOTED to the beta shelf (owner, 1 Sep 2026):
-    // "underwhelming and not working well due to visual drifts". Their
-    // helmets stay earned as rewards; the shelf shows a placeholder card in
-    // their place until replacements arrive.
-    // AcorNut leads the row, earned or not (owner, 7 Sep 2026)
-    { title: "STANDARD", ids: ["vanguard", "flight", "iontrim", "copper", "frost", "voidsuit", "ember", "ghost"] },
-    { title: "EXOTIC", ids: ["robo", "alien", "bigbooty", "volt", "cyber", "cryostar", "verdant", "eclipse"] },
-    // premium suits the pilot owns; each one not yet bought shows as a door
-    // to the shop instead of a locked card that answers nothing
-    { title: "PURCHASED", ids: ["gemmie", "sammie", "seraph", "leviathan", "arcflash", ...PREMIUM_SUIT_IDS], shop: true },
-    // the cat eats no acorns, so no amount of them buys it: it is the
-    // 300-star prize, the full Star Chart, and nothing less
+    // THE OWNER'S BOARD (27 Oct 2026, first draft): five shelves, each sorted by unlock cost on
+    // screen (AcorNut still leads his). Premium suits sit with their kind and show as the row's
+    // store door until bought. Robo was cut from the shelves; owners keep him (favourites).
+    { title: "BASE", ids: ["flight", "iontrim", "glasssuit", "redline", "tracer", "copper", "frost", "ember", "origamist"] },
+    { title: "GALACTIC", ids: ["gemmie", "sammie", "cryostar", "verdant", "voidsuit", "porcelain", "eclipse", "robodog", "geode"] },
+    { title: "CUSTOM FLIGHTS", ids: ["vanguard", "alien", "bigbooty", "volt", "cyber", "leviathan", "nacre", "seraph"] },
     // the critters are premium: unowned ones show as doors to the shop
-    { title: "ACORN INTOLERANT", ids: ["catsuit", "briellacat", "raccoon", "ferret", "hedgehog"], shop: true },
-    // HIGH ORBIT (owner, 7 Sep 2026: "add unreleased as higher level star
-    // rewards where gaps are missing... all tap animations fixed so they can
-    // go live now"): the five former beta suits fill the ladder above 300.
-    { title: "HIGH ORBIT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal"] },
+    { title: "ACORN INTOLERANT", ids: ["catsuit", "briellacat", "raccoon", "ferret", "hedgehog", "mystic", "wyrm", "dune"], shop: true },
+    { title: "ABSTRACT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "arcflash", "ghost"] },
 ];
 // The helmet wall groups by what the GLASS does, because that is how a
 // pilot actually chooses one. Suit-locked helmets are not listed anywhere:

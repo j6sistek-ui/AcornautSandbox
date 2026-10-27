@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "322",
-  "sourceCommit": "9ad023ccaf854e76323e361c06e6c5bdc3fb207e",
+  "artVer": "323",
+  "sourceCommit": "f52f4dfd1ffb181cbb3319a489a35cb360ff58c0",
   "models": [
     {
       "id": "flight",
@@ -341,10 +341,10 @@
       "key": "suit:iontrim",
       "file": "suits/iontrim.png",
       "dome": [
-        186.2,
-        112.62,
-        26.96,
-        1.82
+        191.55,
+        107.14,
+        24.07,
+        1.7
       ],
       "box": null,
       "ownHead": false,
@@ -377,23 +377,508 @@
         "loop": []
       },
       "hashes": {
-        "suits/iontrim.png": "7588187d1b7d402847dc4442628d8eb73ee37d23bdf5111c912dd1869c48bfd8",
-        "suits/iontrim-tap-1.png": "7588187d1b7d402847dc4442628d8eb73ee37d23bdf5111c912dd1869c48bfd8",
-        "suits/iontrim-tap-2.png": "92ddedc41e85767b65d15349310f4c743be3da4b8c67bd66026670e1a1f05a0c",
-        "suits/iontrim-tap-3.png": "991df12718cc594c8f67b1e026e2c3c71c09273c22bdd164857117667fa40fce",
-        "suits/iontrim-tap-4.png": "b8cea733bccf48f64b069d7f678965fafec4766373b6e033142eb265005ed79b",
-        "suits/iontrim-tap-5.png": "c8b72cd8ff649362e4af8a9bffc288b4bb6bce7336e10c64fcd139ce6801eb4d",
-        "suits/iontrim-tap-6.png": "d94bb30187d49e3305b2551f56b6273d0ced2dc66001dd83e87299370f6dc6bc",
-        "suits/iontrim-tap-7.png": "679523a153d550b660f29f73fa0fe95a7c31992b5b322443b125864741798d1f",
-        "suits/iontrim-tap-8.png": "327e8aa629eb948551511b847fbee943443e5569eff1b8840bea0ef1c355a774",
-        "suits/iontrim-tap-9.png": "240228c16e3e443552ef1bff7ce34387d8e81fdca33255343549e4d70615ebdd",
-        "suits/iontrim-tap-10.png": "4306943b45e18e25bfeaa7e6c692305de96917526516a290cf1a412b5409ebe0",
-        "suits/iontrim-tap-11.png": "594ddf5fb33a8b7aa47ace86a61adc6eb962bb7c03dbecdf785ecb074033543f",
-        "suits/iontrim-tap-12.png": "91c1e76f7198b874860d05fc55a948c22fb962d6dfd374d2fb0874a01f62f519",
-        "suits/iontrim-desc-1.png": "7588187d1b7d402847dc4442628d8eb73ee37d23bdf5111c912dd1869c48bfd8",
-        "suits/iontrim-desc-2.png": "b7a30baa51c108c758ec95810e29fe50dd88c9421014c960a02283d30f5be979",
-        "suits/iontrim-desc-3.png": "7a6de69b5ddb58c3aa678146fa3db2808d6b162977ed0ba4104721cc02d90796",
-        "suits/iontrim-desc-4.png": "f3b38d3681139011cc1fb7fbfcbf3c2700450f71e677e17e0683107a5212b6c8"
+        "suits/iontrim.png": "1bfea544071029fdb00fb8c95c67b433b718154f075df20a88f67ae7b58dac7f",
+        "suits/iontrim-tap-1.png": "1bfea544071029fdb00fb8c95c67b433b718154f075df20a88f67ae7b58dac7f",
+        "suits/iontrim-tap-2.png": "4dc8cf0f0831e1b96effc80edea74e85208ebb5a7bc72d4576a1b4485332e9c7",
+        "suits/iontrim-tap-3.png": "6883d83502b53cd0579fc0860551018209b0708f11fb124ddaddf2ec2e370e21",
+        "suits/iontrim-tap-4.png": "c93d69f50205ce112357ab98c61777f6c831121fb77418c09c79aef2e74b053a",
+        "suits/iontrim-tap-5.png": "ce30b426ebfa1f0cda671852162ba08e175741ddb9e9f9ffe2c1a1e586dc8715",
+        "suits/iontrim-tap-6.png": "4203301267d268883efa865575304b65ebfdb34b5ef8b7a71d40d2ff10e6d2bc",
+        "suits/iontrim-tap-7.png": "dd44f28fa3a2d8860a842881b8e8bc1d5ae7522e4fd9fc93007f9673fcac081b",
+        "suits/iontrim-tap-8.png": "2001ba6d42c08f20d8f4d76f9efbc843ecdc8eede3635b3315175c3e2045aeaa",
+        "suits/iontrim-tap-9.png": "b61751cda6da042c4aac2051bcc3bd45a7db8d65f14e7d128a1006b2e757a47b",
+        "suits/iontrim-tap-10.png": "ba3498a6794536424e23804bdbbbf4050f0ec4cfe94d82f301e5f78bb53326e7",
+        "suits/iontrim-tap-11.png": "82c12fdec4c3feb763693b5665e062cef5ba3c18fa7053d36e471a5fac05e0db",
+        "suits/iontrim-tap-12.png": "89f5dd2e301f5c8f633fb5dbf1e59e8e1e451368baeb5c9baaed5ca9c004eff6",
+        "suits/iontrim-desc-1.png": "1bfea544071029fdb00fb8c95c67b433b718154f075df20a88f67ae7b58dac7f",
+        "suits/iontrim-desc-2.png": "dda5e6663ea96ded6ec03875430623ef4d3e55b62958bbaec17456158bc03069",
+        "suits/iontrim-desc-3.png": "68476e7642607e389787573e852863fc1a287b13cf39236c9dd7a18dc8108cfa",
+        "suits/iontrim-desc-4.png": "00b99f4aff748e0badca2e32857dec2f27b7794fbe57801c50bb45db61c0901f"
+      }
+    },
+    {
+      "id": "tracer",
+      "name": "Tracer",
+      "key": "suit:tracer",
+      "file": "suits/tracer.png",
+      "dome": [
+        186.2,
+        112.62,
+        26.96,
+        1.82
+      ],
+      "box": null,
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/tracer-tap-1.png",
+          "suits/tracer-tap-2.png",
+          "suits/tracer-tap-3.png",
+          "suits/tracer-tap-4.png",
+          "suits/tracer-tap-5.png",
+          "suits/tracer-tap-6.png",
+          "suits/tracer-tap-7.png",
+          "suits/tracer-tap-8.png",
+          "suits/tracer-tap-9.png",
+          "suits/tracer-tap-10.png",
+          "suits/tracer-tap-11.png",
+          "suits/tracer-tap-12.png"
+        ],
+        "asc": [],
+        "desc": [
+          "suits/tracer-desc-1.png",
+          "suits/tracer-desc-2.png",
+          "suits/tracer-desc-3.png",
+          "suits/tracer-desc-4.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/tracer.png": "7588187d1b7d402847dc4442628d8eb73ee37d23bdf5111c912dd1869c48bfd8",
+        "suits/tracer-tap-1.png": "7588187d1b7d402847dc4442628d8eb73ee37d23bdf5111c912dd1869c48bfd8",
+        "suits/tracer-tap-2.png": "92ddedc41e85767b65d15349310f4c743be3da4b8c67bd66026670e1a1f05a0c",
+        "suits/tracer-tap-3.png": "991df12718cc594c8f67b1e026e2c3c71c09273c22bdd164857117667fa40fce",
+        "suits/tracer-tap-4.png": "b8cea733bccf48f64b069d7f678965fafec4766373b6e033142eb265005ed79b",
+        "suits/tracer-tap-5.png": "c8b72cd8ff649362e4af8a9bffc288b4bb6bce7336e10c64fcd139ce6801eb4d",
+        "suits/tracer-tap-6.png": "d94bb30187d49e3305b2551f56b6273d0ced2dc66001dd83e87299370f6dc6bc",
+        "suits/tracer-tap-7.png": "679523a153d550b660f29f73fa0fe95a7c31992b5b322443b125864741798d1f",
+        "suits/tracer-tap-8.png": "327e8aa629eb948551511b847fbee943443e5569eff1b8840bea0ef1c355a774",
+        "suits/tracer-tap-9.png": "240228c16e3e443552ef1bff7ce34387d8e81fdca33255343549e4d70615ebdd",
+        "suits/tracer-tap-10.png": "4306943b45e18e25bfeaa7e6c692305de96917526516a290cf1a412b5409ebe0",
+        "suits/tracer-tap-11.png": "594ddf5fb33a8b7aa47ace86a61adc6eb962bb7c03dbecdf785ecb074033543f",
+        "suits/tracer-tap-12.png": "91c1e76f7198b874860d05fc55a948c22fb962d6dfd374d2fb0874a01f62f519",
+        "suits/tracer-desc-1.png": "7588187d1b7d402847dc4442628d8eb73ee37d23bdf5111c912dd1869c48bfd8",
+        "suits/tracer-desc-2.png": "b7a30baa51c108c758ec95810e29fe50dd88c9421014c960a02283d30f5be979",
+        "suits/tracer-desc-3.png": "7a6de69b5ddb58c3aa678146fa3db2808d6b162977ed0ba4104721cc02d90796",
+        "suits/tracer-desc-4.png": "f3b38d3681139011cc1fb7fbfcbf3c2700450f71e677e17e0683107a5212b6c8"
+      }
+    },
+    {
+      "id": "glasssuit",
+      "name": "Glass Suit",
+      "key": "suit:glasssuit",
+      "file": "suits/glasssuit.png",
+      "dome": [
+        186.04,
+        112.31,
+        26.32,
+        1.71
+      ],
+      "box": null,
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/glasssuit-tap-1.png",
+          "suits/glasssuit-tap-2.png",
+          "suits/glasssuit-tap-3.png",
+          "suits/glasssuit-tap-4.png",
+          "suits/glasssuit-tap-5.png",
+          "suits/glasssuit-tap-6.png",
+          "suits/glasssuit-tap-7.png",
+          "suits/glasssuit-tap-8.png",
+          "suits/glasssuit-tap-9.png",
+          "suits/glasssuit-tap-10.png",
+          "suits/glasssuit-tap-11.png",
+          "suits/glasssuit-tap-12.png"
+        ],
+        "asc": [],
+        "desc": [
+          "suits/glasssuit-desc-1.png",
+          "suits/glasssuit-desc-2.png",
+          "suits/glasssuit-desc-3.png",
+          "suits/glasssuit-desc-4.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/glasssuit.png": "bf2d964ddf3a971eb42e330abf6d6df450c572112f5dca20f1126bfd4f6a88eb",
+        "suits/glasssuit-tap-1.png": "bf2d964ddf3a971eb42e330abf6d6df450c572112f5dca20f1126bfd4f6a88eb",
+        "suits/glasssuit-tap-2.png": "04079fb130f8cf2b6ad10f70952db795c7daeae442bfe5eb1da575f4d3da2be7",
+        "suits/glasssuit-tap-3.png": "3e9584f08ec2adf33442bfe739375f91419c1a1418a8d741d811538e5a0ac17d",
+        "suits/glasssuit-tap-4.png": "38d46fded19e9fe6c709e6835a9759e37b17c264ee5d4f7a02791fb2bb879295",
+        "suits/glasssuit-tap-5.png": "21e2dd5fb19054ec4b05b8c52c7759e0c20de28583cccfc8161f081282f6bb13",
+        "suits/glasssuit-tap-6.png": "7d13b74d2fc3ba034c6c16748d15482a90b0c086757e52a7295b07f933f881f2",
+        "suits/glasssuit-tap-7.png": "410c74b1b7609aab3a49cd69c707a05d3237664dff1e95900cc48757df90c43f",
+        "suits/glasssuit-tap-8.png": "9db3700e28d5149f44a5dc603c7def0918473c155771d47a2c48ccebb6c96a01",
+        "suits/glasssuit-tap-9.png": "ddbc8e6a49101cae5ff0745e8b0cb108d75ad8306eb22f5a2b8c8f9439bb3191",
+        "suits/glasssuit-tap-10.png": "054ed71de4eff58c7e45360a125d627add3acfda73fdfcdce4e8b455b08f8bbc",
+        "suits/glasssuit-tap-11.png": "f58e07c5339973df14aecf24203788446256bded4bf3b975eaec35eb7ae0d977",
+        "suits/glasssuit-tap-12.png": "4ab11bd0b830951301cdefbaa19c1b3808d0942f92ab9b9fd892044b84f3d979",
+        "suits/glasssuit-desc-1.png": "bf2d964ddf3a971eb42e330abf6d6df450c572112f5dca20f1126bfd4f6a88eb",
+        "suits/glasssuit-desc-2.png": "026465dd37e5d842daf0d582d7ab28ebd7253219ddd924af1ae23943c18b7ef5",
+        "suits/glasssuit-desc-3.png": "7df8cc89134a68e6242d4dc255a5d2ee41e0db1b2abfce054e067b89c3e9126b",
+        "suits/glasssuit-desc-4.png": "16916581e3affa5ccf6a9bd6bddaf91e168f42171b8b4d738b314a99354af188"
+      }
+    },
+    {
+      "id": "redline",
+      "name": "Red Line",
+      "key": "suit:redline",
+      "file": "suits/redline.png",
+      "dome": [
+        189.5,
+        106.74,
+        29.22,
+        1.65
+      ],
+      "box": null,
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/redline-tap-1.png",
+          "suits/redline-tap-2.png",
+          "suits/redline-tap-3.png",
+          "suits/redline-tap-4.png",
+          "suits/redline-tap-5.png",
+          "suits/redline-tap-6.png",
+          "suits/redline-tap-7.png",
+          "suits/redline-tap-8.png",
+          "suits/redline-tap-9.png",
+          "suits/redline-tap-10.png",
+          "suits/redline-tap-11.png",
+          "suits/redline-tap-12.png"
+        ],
+        "asc": [],
+        "desc": [
+          "suits/redline-desc-1.png",
+          "suits/redline-desc-2.png",
+          "suits/redline-desc-3.png",
+          "suits/redline-desc-4.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/redline.png": "4f20c30b9bece6d275ecf063a68437c0342acdc053097948eee5181038421190",
+        "suits/redline-tap-1.png": "4f20c30b9bece6d275ecf063a68437c0342acdc053097948eee5181038421190",
+        "suits/redline-tap-2.png": "b7b96c7b7c8e85c547b5426ffe5060abb062d59376363a2e1945ef04c8770d6c",
+        "suits/redline-tap-3.png": "93a70733f628cf0b06d691d2170cc96ba273dbd9a1ff7b4b50d759d9bbef1aab",
+        "suits/redline-tap-4.png": "e6a36121727d7c147014d5d1624cf61201023d8d6952e08a3bbba422abdc90b0",
+        "suits/redline-tap-5.png": "2724f10bfb9f3d7f126ac8ba584c95154746af602ed0c0afea16628000c064a0",
+        "suits/redline-tap-6.png": "1f472e5ce781d015217b529f5b48a4c25040f3750d95f1d7ba92a5df503c8cc9",
+        "suits/redline-tap-7.png": "b7030020d4158f03e7562a637b6d7c5f96d8ed39804fb4cbcf7684460e1233da",
+        "suits/redline-tap-8.png": "09b1d7b0670c3e181ff569f139bab252984bfc05a2819e59a214de36ce9fb7b0",
+        "suits/redline-tap-9.png": "c20575d78ce52a0c00beeba00c987f8949fbd753ad7454b7cea3750fc11e4289",
+        "suits/redline-tap-10.png": "3ee881fcfde576a72e403c4049e28ff2abec65279cad3ec90d98fcf909f1f3ac",
+        "suits/redline-tap-11.png": "22092f6f5e1bfc6497345f5198c4b3548d3f1e58a2885ec29d2dc2b2f57ff9ec",
+        "suits/redline-tap-12.png": "e6648fc3a67e4e9219dc9188ede2b6067d7f6109e5eae610a14564bd75147663",
+        "suits/redline-desc-1.png": "4f20c30b9bece6d275ecf063a68437c0342acdc053097948eee5181038421190",
+        "suits/redline-desc-2.png": "1e8b70a6891fecc8076bbb47703f74045708e2e37320a07b46c3aab91597c04e",
+        "suits/redline-desc-3.png": "db4cf068840c1227aa6c5b9243e87cdc7c1593cafe6fed23727b4ba99cd0d155",
+        "suits/redline-desc-4.png": "39dd102eabdf6e469fae3a0db21d843cae43483e6b43eb7a03f8b1e515eef05c"
+      }
+    },
+    {
+      "id": "robodog",
+      "name": "Robo Dog",
+      "key": "suit:robodog",
+      "file": "suits/robodog.png",
+      "dome": [
+        189.04,
+        108.64,
+        25.09,
+        1.78
+      ],
+      "box": null,
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/robodog-tap-1.png",
+          "suits/robodog-tap-2.png",
+          "suits/robodog-tap-3.png",
+          "suits/robodog-tap-4.png",
+          "suits/robodog-tap-5.png",
+          "suits/robodog-tap-6.png",
+          "suits/robodog-tap-7.png",
+          "suits/robodog-tap-8.png",
+          "suits/robodog-tap-9.png",
+          "suits/robodog-tap-10.png",
+          "suits/robodog-tap-11.png",
+          "suits/robodog-tap-12.png"
+        ],
+        "asc": [],
+        "desc": [
+          "suits/robodog-desc-1.png",
+          "suits/robodog-desc-2.png",
+          "suits/robodog-desc-3.png",
+          "suits/robodog-desc-4.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/robodog.png": "1dde848a9da8aec3eeb4eae44d4f1d6d5a3f2ad7167bd0aa0dcea1c9fd0e1d32",
+        "suits/robodog-tap-1.png": "1dde848a9da8aec3eeb4eae44d4f1d6d5a3f2ad7167bd0aa0dcea1c9fd0e1d32",
+        "suits/robodog-tap-2.png": "fade8aeb2d4a054d838cc2343bfc91a1cb2e3434c004cc3d121ece443b227494",
+        "suits/robodog-tap-3.png": "da767b1ef4aacc77fffb37d932a8580f7c7ea01dc8b102c266d362f92d270c83",
+        "suits/robodog-tap-4.png": "e60c772b3c02d6a2da82124bc654cbc2677b12b2a3984813979f27bce46696b3",
+        "suits/robodog-tap-5.png": "c5ea3a1f59bcdc1f4619e3fc0312beaa15857bb5f373a5999d7681744e7496f5",
+        "suits/robodog-tap-6.png": "4b80a55a26e83ccdb7d0eeb23777ad0e9f314a26e315173413de257081b75e70",
+        "suits/robodog-tap-7.png": "f29716d84a7ee4fbbb719c9de25c98623a2bf98db645c63ca619ef54c0d55c86",
+        "suits/robodog-tap-8.png": "3bddd980b5c2aa2495b3048bf3b03c61e60146352a2d68ebbf96fd28d15fe2e6",
+        "suits/robodog-tap-9.png": "5488dcf77813f8a3ef2f95de8043496a4a8fdf5d9352ff82b1422d443006fb6d",
+        "suits/robodog-tap-10.png": "7ae076ec7efd382922ac7d65629420587fa5c28766b9d1823f0497700e8bbde2",
+        "suits/robodog-tap-11.png": "13998b010a1d1b29e3e0d07850f97616f3c9d9c7fb28b83530a3da86c9a8be41",
+        "suits/robodog-tap-12.png": "103c9dcbd454552562fc6a0d54b6a7f3032a8d39b4aa3bf40a54a6209fbabf96",
+        "suits/robodog-desc-1.png": "1dde848a9da8aec3eeb4eae44d4f1d6d5a3f2ad7167bd0aa0dcea1c9fd0e1d32",
+        "suits/robodog-desc-2.png": "942d11792bc6823ce587dc2f55f6d5514ec4732fb60c2e695f127683467087ae",
+        "suits/robodog-desc-3.png": "d62cd1cc0879017727dbb5b0156739aa034d35bd1375d4ce822420b4a9f0a512",
+        "suits/robodog-desc-4.png": "6e0d6e219d2d070cbbb41957e4a3f38da2adb36e127131520b698583716ea496"
+      }
+    },
+    {
+      "id": "geode",
+      "name": "Geode",
+      "key": "suit:geode",
+      "file": "suits/geode.png",
+      "dome": [
+        183.83,
+        121.67,
+        38.99,
+        1.77
+      ],
+      "box": null,
+      "ownHead": false,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/geode-tap-1.png",
+          "suits/geode-tap-2.png",
+          "suits/geode-tap-3.png",
+          "suits/geode-tap-4.png",
+          "suits/geode-tap-5.png",
+          "suits/geode-tap-6.png",
+          "suits/geode-tap-7.png",
+          "suits/geode-tap-8.png",
+          "suits/geode-tap-9.png",
+          "suits/geode-tap-10.png",
+          "suits/geode-tap-11.png",
+          "suits/geode-tap-12.png"
+        ],
+        "asc": [],
+        "desc": [
+          "suits/geode-desc-1.png",
+          "suits/geode-desc-2.png",
+          "suits/geode-desc-3.png",
+          "suits/geode-desc-4.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/geode.png": "53c2908b41f5ac7bb7418735169ef35b4caa1aa2e4e443933b63d53981d6e6fe",
+        "suits/geode-tap-1.png": "53c2908b41f5ac7bb7418735169ef35b4caa1aa2e4e443933b63d53981d6e6fe",
+        "suits/geode-tap-2.png": "67aac6d9b30e166d94d80a6ba7868be28f0e5ffbf88041cbaa1c36ceca88b2c0",
+        "suits/geode-tap-3.png": "8310099622590a62dd48871c37a91dee3d4f29ec3d07e4ded352cc1c95248352",
+        "suits/geode-tap-4.png": "9b6847f5deefd1d0c3a3eadbad2a5d9d21749e1ba1c6c319117815fc130659d9",
+        "suits/geode-tap-5.png": "cee6f2168fe4a087cf40c207042ca8ee8fe96a30830f2bb59d52f4652cf2edd4",
+        "suits/geode-tap-6.png": "57bb861a8819cab7d2f1632a209e894261e96de290128a1e00e45afb4fa68ec9",
+        "suits/geode-tap-7.png": "1d63d1825af30f7611fc479eafb306231cdae599d7d42859dc5a0951f9b5660e",
+        "suits/geode-tap-8.png": "256c7df7b838264e0bf22454aca5201ddd721fa3e26bd75de30a01def12cdaed",
+        "suits/geode-tap-9.png": "44a2beed38d3f88f3ac4c649a0f1f654601451422c3d5f5bc1599644ab2badc1",
+        "suits/geode-tap-10.png": "a5801297e7b0b6cf2c686f7fb027969ee6192a94b0c369e5d8308dc5b8baa202",
+        "suits/geode-tap-11.png": "c2cbe021ed3a3fb50165358c359c00cb8dc913b0286601d0315befe145f4238f",
+        "suits/geode-tap-12.png": "82930be490cd527be858cecd7996988980701cab9b4b12941ab46b6b3c21d39a",
+        "suits/geode-desc-1.png": "53c2908b41f5ac7bb7418735169ef35b4caa1aa2e4e443933b63d53981d6e6fe",
+        "suits/geode-desc-2.png": "893de5607f56d48bed093af9db774314aa5dcb88d60d2c293974268fcdbf8f21",
+        "suits/geode-desc-3.png": "82b82cfebf00094194e1bae84c98c91c5f088398516bed2ee3ecb871981e7656",
+        "suits/geode-desc-4.png": "80ff5d95c07d278801c2a855f0b7d7056591b1eae62518b7739b0c249e9bbb13"
+      }
+    },
+    {
+      "id": "mystic",
+      "name": "Mystic",
+      "key": "suit:mystic",
+      "file": "suits/mystic.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "box": null,
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/mystic-tap-1.png",
+          "suits/mystic-tap-2.png",
+          "suits/mystic-tap-3.png",
+          "suits/mystic-tap-4.png",
+          "suits/mystic-tap-5.png",
+          "suits/mystic-tap-6.png",
+          "suits/mystic-tap-7.png",
+          "suits/mystic-tap-8.png",
+          "suits/mystic-tap-9.png",
+          "suits/mystic-tap-10.png",
+          "suits/mystic-tap-11.png",
+          "suits/mystic-tap-12.png"
+        ],
+        "asc": [],
+        "desc": [
+          "suits/mystic-desc-1.png",
+          "suits/mystic-desc-2.png",
+          "suits/mystic-desc-3.png",
+          "suits/mystic-desc-4.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/mystic.png": "3d498d1855bc3037519eaaaf98f3a2b83ced6962be31caddb94c902c998bd0de",
+        "suits/mystic-tap-1.png": "3d498d1855bc3037519eaaaf98f3a2b83ced6962be31caddb94c902c998bd0de",
+        "suits/mystic-tap-2.png": "e4b0683e83a38c46d426cac3a11c7eaa63409da8c506d9c974b380a1ea2f6a50",
+        "suits/mystic-tap-3.png": "f0fd046399b1dc09275362db1dd1ffe79cf193685379b8c55764796a16487dcb",
+        "suits/mystic-tap-4.png": "27b23f5e6de2645a5a229e05f565b65de93d2d88cff777f1fab0ade06749df9e",
+        "suits/mystic-tap-5.png": "7972d6055634af886a02855682040347e526f28699b9560479c794c7dfb09c2c",
+        "suits/mystic-tap-6.png": "5eb1e83828a03beb3820ccd6dadc7fd21249a82b746992b238785c27e61ac250",
+        "suits/mystic-tap-7.png": "b1ad7bdf48f53d19a64c7df0ecdd9f2792e5b175bbc5effba184be902fd41447",
+        "suits/mystic-tap-8.png": "0f06382a2f87c88d308b840650eb3cfa584b2f64293876fec3f8c931f81d7706",
+        "suits/mystic-tap-9.png": "82f25dec276ef09fd0ce357c81a25a15676a69b1586e1bfde4cdad7f8411062a",
+        "suits/mystic-tap-10.png": "3acd64c4a610cf838450449f5f791994c18d66a11221231baf77d2b9f6dc10c2",
+        "suits/mystic-tap-11.png": "8b184bb8400ce1a87663204a96845afa434bbff97ce532a0221971cd19ef7595",
+        "suits/mystic-tap-12.png": "fb3d2a8bafa5b28abf854714a3f61828a520329ec484f1da55f1c544a581c0e9",
+        "suits/mystic-desc-1.png": "3d498d1855bc3037519eaaaf98f3a2b83ced6962be31caddb94c902c998bd0de",
+        "suits/mystic-desc-2.png": "30ea7dc807999b880c2751d0994a190ae26ef78ff4da3309925b372ec6724699",
+        "suits/mystic-desc-3.png": "eaa88c586e245722845c1e9ec287dd463ddfead32e37f62796049e892a175502",
+        "suits/mystic-desc-4.png": "406d00b14cf5e27514b49259c181e2d970b681ab0deb1b40f8d9b149be67df14"
+      }
+    },
+    {
+      "id": "wyrm",
+      "name": "Wyrm",
+      "key": "suit:wyrm",
+      "file": "suits/wyrm.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "box": null,
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/wyrm-tap-1.png",
+          "suits/wyrm-tap-2.png",
+          "suits/wyrm-tap-3.png",
+          "suits/wyrm-tap-4.png",
+          "suits/wyrm-tap-5.png",
+          "suits/wyrm-tap-6.png",
+          "suits/wyrm-tap-7.png",
+          "suits/wyrm-tap-8.png",
+          "suits/wyrm-tap-9.png",
+          "suits/wyrm-tap-10.png",
+          "suits/wyrm-tap-11.png",
+          "suits/wyrm-tap-12.png"
+        ],
+        "asc": [],
+        "desc": [
+          "suits/wyrm-desc-1.png",
+          "suits/wyrm-desc-2.png",
+          "suits/wyrm-desc-3.png",
+          "suits/wyrm-desc-4.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/wyrm.png": "b46ba5242b557cbde1609d31ce42ee2c3a9b60ac9d4d42d1a5c30c7bff6d6c1a",
+        "suits/wyrm-tap-1.png": "b46ba5242b557cbde1609d31ce42ee2c3a9b60ac9d4d42d1a5c30c7bff6d6c1a",
+        "suits/wyrm-tap-2.png": "94e95467aa79b6f9fb5a7396a3291cccb0e18f53bdf3f547218f24f9a720f3f9",
+        "suits/wyrm-tap-3.png": "f5d63b97c2de23eea5ff9401366b6403bf00e337cd80923b70d22737b7658811",
+        "suits/wyrm-tap-4.png": "542e312811491dbf9ce128271558f7384330b76093963408b0c77f18112dc732",
+        "suits/wyrm-tap-5.png": "a26fe11da7d8d8d6fae3c4bc6978cf65a059dac7cfe355cd6b26ed5326803477",
+        "suits/wyrm-tap-6.png": "005fd75557b17ce8e944e19a135df7ec564e355305663001964a61ef360a12f5",
+        "suits/wyrm-tap-7.png": "7cadce6e3a053103d29ca8f860fc26117b7a0029d75f18c29b1b674545715697",
+        "suits/wyrm-tap-8.png": "3cfcab6ddbc43a1346cbd1d46ecff4a83d04c33365e9ec16e0b3a8e9170f7bae",
+        "suits/wyrm-tap-9.png": "07a39345e24dcf41051fbd516edf49cdb90d47a4ee3f00001f474782e2a84ade",
+        "suits/wyrm-tap-10.png": "3e7907787ba17a621a071c2cda9bd97f67f07b0c13d76d1e153706e18fea45d5",
+        "suits/wyrm-tap-11.png": "c7bd2733479279ea7ad583dc3cba666dfa318232b3c8bf13a07a6ae085154776",
+        "suits/wyrm-tap-12.png": "14faa1118b86b17cf5a471744063a209f5464b1c3f101e09ad5926164ad7f80b",
+        "suits/wyrm-desc-1.png": "b46ba5242b557cbde1609d31ce42ee2c3a9b60ac9d4d42d1a5c30c7bff6d6c1a",
+        "suits/wyrm-desc-2.png": "e29e2fd19587625dce402852cee4c5b9db7d560282fbf9a0844a2f4e78c9c41c",
+        "suits/wyrm-desc-3.png": "42a766fdef181d0a4bf696c08f6f6104fde016051ae3b8b9ad4d56493c4e550a",
+        "suits/wyrm-desc-4.png": "9e298c5cbdaacba3312b5a35405fe5a0b12b73d98d8271d4765bcdda2a2ae04e"
+      }
+    },
+    {
+      "id": "dune",
+      "name": "Dune",
+      "key": "suit:dune",
+      "file": "suits/dune.png",
+      "dome": [
+        128,
+        128,
+        40
+      ],
+      "box": null,
+      "ownHead": true,
+      "bakedDome": false,
+      "frame": false,
+      "family": "bank",
+      "atlas": null,
+      "banks": {
+        "tap": [
+          "suits/dune-tap-1.png",
+          "suits/dune-tap-2.png",
+          "suits/dune-tap-3.png",
+          "suits/dune-tap-4.png",
+          "suits/dune-tap-5.png",
+          "suits/dune-tap-6.png",
+          "suits/dune-tap-7.png",
+          "suits/dune-tap-8.png",
+          "suits/dune-tap-9.png",
+          "suits/dune-tap-10.png",
+          "suits/dune-tap-11.png",
+          "suits/dune-tap-12.png"
+        ],
+        "asc": [],
+        "desc": [
+          "suits/dune-desc-1.png",
+          "suits/dune-desc-2.png",
+          "suits/dune-desc-3.png",
+          "suits/dune-desc-4.png"
+        ],
+        "loop": []
+      },
+      "hashes": {
+        "suits/dune.png": "df156f3710ae53b3b9c78eee4c28ff19547137adafa966074d7f7189185f11c4",
+        "suits/dune-tap-1.png": "df156f3710ae53b3b9c78eee4c28ff19547137adafa966074d7f7189185f11c4",
+        "suits/dune-tap-2.png": "ccb81a1084ac78a883b9629ddc8405204f93200184914c318d43437c17400d7c",
+        "suits/dune-tap-3.png": "91079089f74f989a6900e5ca0cb6c60b9de147446b3edad4591c3f7c69d425fd",
+        "suits/dune-tap-4.png": "ac21281a24fc862c26893a2996f832a4e04e0c3ed7c24d2deb261451d0b3c729",
+        "suits/dune-tap-5.png": "8e94ef1f004e4cd519c7328048af6bfca4e7a0a1286010d9f5320ac57dfa8eec",
+        "suits/dune-tap-6.png": "006bc4eec065813b6232f56dd480fe3e1e6f4273e3678099d6128812163ca244",
+        "suits/dune-tap-7.png": "75ea5955d0da31858243a2cb02f22ed968fce2b690a492f8d263d5fb005159c2",
+        "suits/dune-tap-8.png": "ae2c6b3d23a0adc485ef9cfe69bbff89eb6eb009b77670942fac40312cdbc8a9",
+        "suits/dune-tap-9.png": "981df50879f307cd46ed5b441793529cafeb64ee9d22d881d9f1f7f6041163a5",
+        "suits/dune-tap-10.png": "2bd5fc648de6859d316622f9871ed019e7aa36e3ff4f170e082e07037017202a",
+        "suits/dune-tap-11.png": "16f1fcd40c0e95948f98d0c41a7af110c3437c40e8e79b96c25f847513b0a960",
+        "suits/dune-tap-12.png": "58366a10bfb5b576789e104c7de0c7e5e7779f23e4abfe1abedefa684852cc7c",
+        "suits/dune-desc-1.png": "df156f3710ae53b3b9c78eee4c28ff19547137adafa966074d7f7189185f11c4",
+        "suits/dune-desc-2.png": "0d4e28b6d3e06bed49f6cfe7537cfe8eaa132d3019be3d006a48f9fe5990f231",
+        "suits/dune-desc-3.png": "16bf43e2d1e60a314ed6e952981c8becc302911942b3737a3fabf4166fe7834f",
+        "suits/dune-desc-4.png": "7d56241dcac61209aaff892fcce1b16fba2ae5369c5db4da1bfd6616edf65e56"
       }
     },
     {
@@ -2597,10 +3082,55 @@
       1.82
     ],
     "suit:iontrim": [
+      191.55,
+      107.14,
+      24.07,
+      1.7
+    ],
+    "suit:tracer": [
       186.2,
       112.62,
       26.96,
       1.82
+    ],
+    "suit:glasssuit": [
+      186.04,
+      112.31,
+      26.32,
+      1.71
+    ],
+    "suit:redline": [
+      189.5,
+      106.74,
+      29.22,
+      1.65
+    ],
+    "suit:robodog": [
+      189.04,
+      108.64,
+      25.09,
+      1.78
+    ],
+    "suit:geode": [
+      183.83,
+      121.67,
+      38.99,
+      1.77
+    ],
+    "suit:mystic": [
+      128,
+      128,
+      40
+    ],
+    "suit:wyrm": [
+      128,
+      128,
+      40
+    ],
+    "suit:dune": [
+      128,
+      128,
+      40
     ],
     "suit:copper": [
       185.92,
@@ -4005,6 +4535,102 @@
       36.18,
       5.83
     ],
+    "geode-desc-1": [
+      183.83,
+      121.67,
+      38.99,
+      1.77
+    ],
+    "geode-desc-2": [
+      184.41,
+      133.84,
+      38.99,
+      15.5
+    ],
+    "geode-desc-3": [
+      183.92,
+      144.47,
+      38.99,
+      28.69
+    ],
+    "geode-desc-4": [
+      181.2,
+      151.8,
+      38.99,
+      41.16
+    ],
+    "geode-tap-1": [
+      183.83,
+      121.67,
+      38.99,
+      1.77
+    ],
+    "geode-tap-2": [
+      182.77,
+      119.03,
+      38.99,
+      -1.91
+    ],
+    "geode-tap-3": [
+      182,
+      117.73,
+      38.99,
+      -4.26
+    ],
+    "geode-tap-4": [
+      181.81,
+      118.06,
+      38.99,
+      -4.64
+    ],
+    "geode-tap-5": [
+      182.24,
+      119.91,
+      38.99,
+      -2.95
+    ],
+    "geode-tap-6": [
+      183.05,
+      122.81,
+      38.99,
+      0.36
+    ],
+    "geode-tap-7": [
+      183.93,
+      126.03,
+      38.99,
+      4.38
+    ],
+    "geode-tap-8": [
+      184.62,
+      128.71,
+      38.99,
+      8.03
+    ],
+    "geode-tap-9": [
+      185.09,
+      130.14,
+      38.99,
+      10.34
+    ],
+    "geode-tap-10": [
+      185.34,
+      129.89,
+      38.99,
+      10.71
+    ],
+    "geode-tap-11": [
+      185.27,
+      128,
+      38.99,
+      9.05
+    ],
+    "geode-tap-12": [
+      184.76,
+      124.97,
+      38.99,
+      5.78
+    ],
     "ghost-desc-1": [
       191.69,
       101.54,
@@ -4100,6 +4726,102 @@
       105.01,
       26.36,
       6.06
+    ],
+    "glasssuit-desc-1": [
+      186.04,
+      112.31,
+      26.32,
+      1.71
+    ],
+    "glasssuit-desc-2": [
+      187.19,
+      125.06,
+      26.32,
+      15.42
+    ],
+    "glasssuit-desc-3": [
+      185.63,
+      137.24,
+      26.32,
+      28.61
+    ],
+    "glasssuit-desc-4": [
+      182.08,
+      148.78,
+      26.32,
+      41.08
+    ],
+    "glasssuit-tap-1": [
+      186.04,
+      112.31,
+      26.32,
+      1.71
+    ],
+    "glasssuit-tap-2": [
+      185.04,
+      109.7,
+      26.32,
+      -1.96
+    ],
+    "glasssuit-tap-3": [
+      184.37,
+      108.43,
+      26.32,
+      -4.31
+    ],
+    "glasssuit-tap-4": [
+      184.35,
+      108.81,
+      26.32,
+      -4.68
+    ],
+    "glasssuit-tap-5": [
+      184.98,
+      110.74,
+      26.32,
+      -3
+    ],
+    "glasssuit-tap-6": [
+      185.88,
+      113.74,
+      26.32,
+      0.3
+    ],
+    "glasssuit-tap-7": [
+      186.71,
+      117.08,
+      26.32,
+      4.32
+    ],
+    "glasssuit-tap-8": [
+      187.28,
+      119.84,
+      26.32,
+      7.96
+    ],
+    "glasssuit-tap-9": [
+      187.6,
+      121.22,
+      26.32,
+      10.27
+    ],
+    "glasssuit-tap-10": [
+      187.71,
+      120.84,
+      26.32,
+      10.64
+    ],
+    "glasssuit-tap-11": [
+      187.53,
+      118.8,
+      26.32,
+      8.98
+    ],
+    "glasssuit-tap-12": [
+      186.96,
+      115.67,
+      26.32,
+      5.72
     ],
     "groveguard-desc-1": [
       187.04,
@@ -4198,100 +4920,100 @@
       5.73
     ],
     "iontrim-desc-1": [
-      186.2,
-      112.62,
-      26.96,
-      1.82
+      191.55,
+      107.14,
+      24.07,
+      1.7
     ],
     "iontrim-desc-2": [
-      188.58,
-      124.69,
-      26.96,
-      15.58
+      193.45,
+      122.23,
+      24.07,
+      15.45
     ],
     "iontrim-desc-3": [
-      187.99,
-      138.17,
-      26.96,
-      28.78
+      191.56,
+      137.73,
+      24.07,
+      28.68
     ],
     "iontrim-desc-4": [
-      184.8,
-      150.86,
-      26.96,
-      41.25
+      186.22,
+      152.39,
+      24.07,
+      41.17
     ],
     "iontrim-tap-1": [
-      186.2,
-      112.62,
-      26.96,
-      1.82
+      191.55,
+      107.14,
+      24.07,
+      1.7
     ],
     "iontrim-tap-2": [
-      184.49,
-      109.48,
-      26.96,
-      -1.87
+      190.33,
+      104.37,
+      24.07,
+      -1.99
     ],
     "iontrim-tap-3": [
-      183.33,
-      108.02,
-      26.96,
-      -4.22
+      189.6,
+      103.16,
+      24.07,
+      -4.34
     ],
     "iontrim-tap-4": [
-      183.18,
-      108.46,
-      26.96,
-      -4.6
+      189.66,
+      103.73,
+      24.07,
+      -4.72
     ],
     "iontrim-tap-5": [
-      184.07,
-      110.69,
-      26.96,
-      -2.9
+      190.45,
+      105.93,
+      24.07,
+      -3.03
     ],
     "iontrim-tap-6": [
-      185.56,
-      114.27,
-      26.96,
-      0.41
+      191.63,
+      109.29,
+      24.07,
+      0.28
     ],
     "iontrim-tap-7": [
-      187.13,
-      118.34,
-      26.96,
-      4.44
+      192.75,
+      113,
+      24.07,
+      4.31
     ],
     "iontrim-tap-8": [
-      188.4,
-      121.78,
-      26.96,
-      8.1
+      193.54,
+      116.04,
+      24.07,
+      7.97
     ],
     "iontrim-tap-9": [
-      189.19,
-      123.57,
-      26.96,
-      10.41
+      193.95,
+      117.51,
+      24.07,
+      10.29
     ],
     "iontrim-tap-10": [
-      189.41,
-      123.16,
-      26.96,
-      10.79
+      194,
+      116.93,
+      24.07,
+      10.66
     ],
     "iontrim-tap-11": [
-      188.98,
-      120.63,
-      26.96,
-      9.12
+      193.63,
+      114.46,
+      24.07,
+      9
     ],
     "iontrim-tap-12": [
-      187.85,
-      116.72,
-      26.96,
-      5.84
+      192.78,
+      110.84,
+      24.07,
+      5.72
     ],
     "leviathan-desc-1": [
       186.86,
@@ -4581,6 +5303,102 @@
       27.51,
       5.81
     ],
+    "redline-desc-1": [
+      189.5,
+      106.74,
+      29.22,
+      1.65
+    ],
+    "redline-desc-2": [
+      191.39,
+      119.27,
+      29.22,
+      15.36
+    ],
+    "redline-desc-3": [
+      190.03,
+      132.01,
+      29.22,
+      28.56
+    ],
+    "redline-desc-4": [
+      187.21,
+      143.32,
+      29.22,
+      41.05
+    ],
+    "redline-tap-1": [
+      189.5,
+      106.74,
+      29.22,
+      1.65
+    ],
+    "redline-tap-2": [
+      188.4,
+      104.62,
+      29.22,
+      -2.02
+    ],
+    "redline-tap-3": [
+      187.68,
+      103.75,
+      29.22,
+      -4.36
+    ],
+    "redline-tap-4": [
+      187.63,
+      104.27,
+      29.22,
+      -4.74
+    ],
+    "redline-tap-5": [
+      188.23,
+      106.03,
+      29.22,
+      -3.06
+    ],
+    "redline-tap-6": [
+      189.21,
+      108.66,
+      29.22,
+      0.24
+    ],
+    "redline-tap-7": [
+      190.26,
+      111.52,
+      29.22,
+      4.26
+    ],
+    "redline-tap-8": [
+      191.16,
+      113.84,
+      29.22,
+      7.9
+    ],
+    "redline-tap-9": [
+      191.7,
+      114.93,
+      29.22,
+      10.21
+    ],
+    "redline-tap-10": [
+      191.84,
+      114.44,
+      29.22,
+      10.58
+    ],
+    "redline-tap-11": [
+      191.51,
+      112.48,
+      29.22,
+      8.92
+    ],
+    "redline-tap-12": [
+      190.67,
+      109.63,
+      29.22,
+      5.66
+    ],
     "robo-tap-1": [
       193,
       102,
@@ -4676,6 +5494,102 @@
       99,
       34.24,
       0
+    ],
+    "robodog-desc-1": [
+      189.04,
+      108.64,
+      25.09,
+      1.78
+    ],
+    "robodog-desc-2": [
+      192.3,
+      123.12,
+      25.09,
+      15.49
+    ],
+    "robodog-desc-3": [
+      193.23,
+      137.37,
+      25.09,
+      28.67
+    ],
+    "robodog-desc-4": [
+      189.9,
+      150.55,
+      25.09,
+      41.13
+    ],
+    "robodog-tap-1": [
+      189.04,
+      108.64,
+      25.09,
+      1.78
+    ],
+    "robodog-tap-2": [
+      187.63,
+      105.97,
+      25.09,
+      -1.9
+    ],
+    "robodog-tap-3": [
+      186.82,
+      104.76,
+      25.09,
+      -4.24
+    ],
+    "robodog-tap-4": [
+      186.94,
+      105.25,
+      25.09,
+      -4.62
+    ],
+    "robodog-tap-5": [
+      187.91,
+      107.31,
+      25.09,
+      -2.93
+    ],
+    "robodog-tap-6": [
+      189.33,
+      110.53,
+      25.09,
+      0.37
+    ],
+    "robodog-tap-7": [
+      190.71,
+      114.1,
+      25.09,
+      4.39
+    ],
+    "robodog-tap-8": [
+      191.7,
+      117.11,
+      25.09,
+      8.03
+    ],
+    "robodog-tap-9": [
+      192.2,
+      118.63,
+      25.09,
+      10.34
+    ],
+    "robodog-tap-10": [
+      192.18,
+      118.14,
+      25.09,
+      10.71
+    ],
+    "robodog-tap-11": [
+      191.62,
+      115.76,
+      25.09,
+      9.05
+    ],
+    "robodog-tap-12": [
+      190.51,
+      112.22,
+      25.09,
+      5.79
     ],
     "sammie-desc-1": [
       185.89,
@@ -4964,6 +5878,102 @@
       109.04,
       33.8,
       5.81
+    ],
+    "tracer-desc-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
+    ],
+    "tracer-desc-2": [
+      188.58,
+      124.69,
+      26.96,
+      15.58
+    ],
+    "tracer-desc-3": [
+      187.99,
+      138.17,
+      26.96,
+      28.78
+    ],
+    "tracer-desc-4": [
+      184.8,
+      150.86,
+      26.96,
+      41.25
+    ],
+    "tracer-tap-1": [
+      186.2,
+      112.62,
+      26.96,
+      1.82
+    ],
+    "tracer-tap-2": [
+      184.49,
+      109.48,
+      26.96,
+      -1.87
+    ],
+    "tracer-tap-3": [
+      183.33,
+      108.02,
+      26.96,
+      -4.22
+    ],
+    "tracer-tap-4": [
+      183.18,
+      108.46,
+      26.96,
+      -4.6
+    ],
+    "tracer-tap-5": [
+      184.07,
+      110.69,
+      26.96,
+      -2.9
+    ],
+    "tracer-tap-6": [
+      185.56,
+      114.27,
+      26.96,
+      0.41
+    ],
+    "tracer-tap-7": [
+      187.13,
+      118.34,
+      26.96,
+      4.44
+    ],
+    "tracer-tap-8": [
+      188.4,
+      121.78,
+      26.96,
+      8.1
+    ],
+    "tracer-tap-9": [
+      189.19,
+      123.57,
+      26.96,
+      10.41
+    ],
+    "tracer-tap-10": [
+      189.41,
+      123.16,
+      26.96,
+      10.79
+    ],
+    "tracer-tap-11": [
+      188.98,
+      120.63,
+      26.96,
+      9.12
+    ],
+    "tracer-tap-12": [
+      187.85,
+      116.72,
+      26.96,
+      5.84
     ],
     "verdant-desc-1": [
       186.2,
@@ -5382,6 +6392,66 @@
       128,
       40
     ],
+    "dune-tap-1": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-2": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-3": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-4": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-5": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-6": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-7": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-8": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-9": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-10": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-11": [
+      128,
+      128,
+      40
+    ],
+    "dune-tap-12": [
+      128,
+      128,
+      40
+    ],
     "ferret-tap-1": [
       128,
       128,
@@ -5498,6 +6568,66 @@
       40
     ],
     "hedgehog-tap-12": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-1": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-2": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-3": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-4": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-5": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-6": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-7": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-8": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-9": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-10": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-11": [
+      128,
+      128,
+      40
+    ],
+    "mystic-tap-12": [
       128,
       128,
       40
@@ -5702,6 +6832,66 @@
       128,
       40
     ],
+    "wyrm-tap-1": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-2": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-3": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-4": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-5": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-6": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-7": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-8": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-9": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-10": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-11": [
+      128,
+      128,
+      40
+    ],
+    "wyrm-tap-12": [
+      128,
+      128,
+      40
+    ],
     "volt-bounce-1": [
       128,
       128,
@@ -5787,7 +6977,7 @@
     "arcflash": "e3311622176da38faba697d12c9b2a471084681e7192d539da559e6336028b38",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "6b385d03ebd7e690747579a776e84bbcf241d5acf62df9341f850462850f8159",
+    "control-constants": "ceffb299940fecd512d0a55927facc38a076a046691ad1ad2c33551543dd6baf",
     "cyber-trio-registration": "0663184e2894d0e6ec70c3dacde5d1694c67de69d3b13a9abc007129eaddbf30",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",
