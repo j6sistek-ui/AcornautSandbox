@@ -127,7 +127,8 @@ for(const b of C.BUNDLES){
     assert.equal(b.name,collection.name);assert.equal(b.dust,20);
     assert.deepEqual(b.items,collection.ids.map(id=>({kind:collection.kind,id})),b.id+' groups exactly three former individual offers');
   }else for(const key of ['name','blurb','dust','items','fixed','featuredAtSticker','alwaysAvailable','keepSingles'])
-    assert.deepEqual(b[key],prior[key],b.id+' preserves '+key);
+    // the Samurai helmet retired from the Regalia Pack (owner, 27 Oct 2026); the rest is the baseline
+    assert.deepEqual(b[key],key==='items'&&b.id==='bundle-regalia'?prior.items.filter(i=>!(i.kind==='helm'&&i.id==='sammie')):prior[key],b.id+' preserves '+key);
   assert(C.bundleProductIds(b).length>=3,b.id+' has at least three distinct primary products');
   assert.deepEqual(b.kit,{banner:`shop/${b.id}.png`,discountDust:prior.fullAlaCarteTotal-prior.fullFeaturePrice},b.id+' has its intended retail discount');
   const quote=C.bundleQuote(b,none);

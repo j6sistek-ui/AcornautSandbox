@@ -1,7 +1,7 @@
-import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=326";
-import { platform } from "./platform.js?v=326";
-import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=326";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=326";
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=327";
+import { platform } from "./platform.js?v=327";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=327";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=327";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -17,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=326";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "326";
+export const ART_VER = "327";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-10-27 07:14 UTC";
+export const BUILD_TIME = "2026-10-27 13:59 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -134,6 +134,13 @@ export const PHYS = {
     overdriveSpan: 50,
     magnetR: 200,
     squirrelR: 16,
+};
+/** RETIRED HELMETS (owner, 27 Oct 2026: "both can be removed, cosmos is broken anyways"): off
+ *  the shelves, the Star Chart and the Regalia Pack. A pilot who had already earned or bought one
+ *  keeps it - past its old rung, or with the pack it came in - and nobody else is offered it. */
+export const RETIRED_HELMETS = {
+    sammie: { stars: 60, bundle: "bundle-regalia" },
+    cosmic: { stars: 185 },
 };
 export const HELMETS = [
     { id: "clear", name: "Clear", cost: 0, visor: "#bcd8f4", tint: 0.16, rim: "#cfd8e4", trim: "#8fa0b4", glow: null },
@@ -521,7 +528,8 @@ export const BUNDLES = [
         items: [
             { kind: "suit", id: "gemmie" }, { kind: "suit", id: "sammie" },
             { kind: "suit", id: "seraph" }, { kind: "suit", id: "leviathan" },
-            { kind: "helm", id: "gemmie" }, { kind: "helm", id: "sammie" },
+            // the Samurai helmet left the pack and the shelves (owner, 27 Oct 2026); owners keep it
+            { kind: "helm", id: "gemmie" },
             { kind: "helm", id: "seraph" }, { kind: "helm", id: "leviathan" },
             { kind: "trail", id: "opalfeather" }, { kind: "trail", id: "clockwork" }, { kind: "trail", id: "phoenixplume" },
         ],
@@ -885,9 +893,10 @@ export const SUIT_SHELF = [
 // they arrive with their suit and equipping them elsewhere does nothing,
 // so a card would be a lie.
 export const HELMET_SHELF = [
-    { title: "CLEAR VISORS", ids: ["clear", "lunar", "gemmie", "phoenix", "sammie", "seraph", "chronarch"] },
+    // Samurai and Cosmic retired from the shelves (owner, 27 Oct 2026); owners keep them
+    { title: "CLEAR VISORS", ids: ["clear", "lunar", "gemmie", "phoenix", "seraph", "chronarch"] },
     { title: "COLOR VISORS", ids: ["ion", "solar", "void", "comet", "cherry", "meteor", "chrono", "amethyst", "reactor"] },
-    { title: "GRAPHIC VISORS", ids: ["nebula", "royal", "aurora", "princess", "verdant", "cryostar", "eclipse", "cinderforge", "cosmic", "abyssal", "ivoryguard"] },
+    { title: "GRAPHIC VISORS", ids: ["nebula", "royal", "aurora", "princess", "verdant", "cryostar", "eclipse", "cinderforge", "abyssal", "ivoryguard"] },
 ];
 export function isIap(id) {
     return IAP_ITEMS.includes(id);

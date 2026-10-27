@@ -1,4 +1,4 @@
-import { STAR_CHART_TRAILS } from "./catalog.js?v=326";
+import { STAR_CHART_TRAILS } from "./catalog.js?v=327";
 /** Pearlescent highlights and shaded midtones, rather than opaque rainbow
  * particles. The original trail's color family and material remain intact. */
 export const STAR_TRAIL_PROFILES = {
