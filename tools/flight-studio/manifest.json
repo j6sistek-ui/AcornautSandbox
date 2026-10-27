@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "321",
-  "sourceCommit": "39458626f8d65d3a0a9bdd8493df12ccaaac4756",
+  "artVer": "322",
+  "sourceCommit": "9ad023ccaf854e76323e361c06e6c5bdc3fb207e",
   "models": [
     {
       "id": "flight",
@@ -316,7 +316,7 @@
         "loop": []
       },
       "hashes": {
-        "suits/origamist.png": "bc13b96bdfbfd528ee67ce9dde62f3ff6f48f04167a5a079c7f06987492e8ae9",
+        "suits/origamist.png": "52ba56591d233b809ece2f374d45297f4d6c84a19fb609d9b5f981305a43e0db",
         "suits/origamist-tap-1.png": "52ba56591d233b809ece2f374d45297f4d6c84a19fb609d9b5f981305a43e0db",
         "suits/origamist-tap-2.png": "fa3c3a88cd39e258418512e2e2c5a31cfbe8a2948184b80fa2cef1ad36c8611c",
         "suits/origamist-tap-3.png": "6aaca1a84a3302efd2db5550e61f5606ec398385437853daad041a8861ee4541",
@@ -332,12 +332,7 @@
         "suits/origamist-desc-1.png": "5060df5cea22b6c4d46c69b6cc1bd7b275946a71f14b9481ad05ddbbca5867f9",
         "suits/origamist-desc-2.png": "c1a160e76819fac52645d41e30c698180421dff8eb7c32f4c7de5da31225e305",
         "suits/origamist-desc-3.png": "3b7dfcfbfade1d4eb13253f8ed1e949c07dab96de59e88e456b3b264704b11db",
-        "suits/origamist-desc-4.png": "4663e0b52bd70dddb515702238446737d131d35b35ec41370d4bfbeb49c71417",
-        "suits/hd/origamist.png": "4bcb1dea363f02644dc14448aacff557e0d400ee8397f0bf7dcc3fd022a28ba8",
-        "suits/hd/origamist-desc-1.png": "cc55f795772163fa508ac2b1cc8790e7573573da6fea56131efdaa492b39edc7",
-        "suits/hd/origamist-desc-2.png": "9df36fc47352df57ca17461c493c767aea9a83ca8e633e57a0c34f211da3bfbc",
-        "suits/hd/origamist-desc-3.png": "a1d266c73be346bab1ae8d9132a11b6510b5b21a5820bc2623b69be7c9f99537",
-        "suits/hd/origamist-desc-4.png": "0d95e93cbb4d14f1ee44e0ba4a92a2860d7ee19d4b052e8cc05e052bebcb1152"
+        "suits/origamist-desc-4.png": "4663e0b52bd70dddb515702238446737d131d35b35ec41370d4bfbeb49c71417"
       }
     },
     {
