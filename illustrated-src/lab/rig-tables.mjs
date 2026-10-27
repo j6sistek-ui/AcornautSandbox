@@ -55,7 +55,7 @@ export function buildTables(root) {
   // measure those nine like everything else, so for them it seated the
   // helmet somewhere the Loadout does not. The set and the box are read
   // out of draw.ts so the bench can never disagree with the game again.
-  const natM = draw.match(/NATURAL_FLIGHT_SUITS\s*=\s*new Set\(\[([^\]]*)\]/);
+  const natM = draw.match(/NATURAL_FLIGHT_SUITS\s*=\s*new Set(?:<string>)?\(\[([^\]]*)\]/);
   if (!natM) throw new Error("missing NATURAL_FLIGHT_SUITS in draw.ts");
   const natural = new Set([...natM[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]));
   const boxM = draw.match(/NATURAL_FLIGHT_BOX\s*=\s*\{\s*x:\s*(\d+),\s*y:\s*(\d+),\s*w:\s*(\d+),\s*h:\s*(\d+)/);

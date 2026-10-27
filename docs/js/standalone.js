@@ -1,28 +1,28 @@
-import { selectShopCycle } from "./shop-cycle.js?v=317";
-import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=317";
-import { suitPitchFor, tapShapeFor, tailSpringFor, tapAccentStrengthFor } from "./save.js?v=317";
-import { platform } from "./platform.js?v=317";
-import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=317";
-import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=317";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=317";
-import { addChartScenery } from "./star-map-view.js?v=317";
-import { mapDebrisIndex } from "./zone-visuals.js?v=317";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=317";
-import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=317";
-import { repeatTapMode, FLIGHT_TEST_PATTERNS } from "./sim.js?v=317";
-import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=317";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=317";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, REMOVE_ADS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, ACORNS_PER_DUST } from "./catalog.js?v=317";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=317";
-import { bundleQuote } from "./catalog.js?v=317";
-import { drawSprite as drawSpriteOn } from "./art.js?v=317";
-import { createEngine } from "./engine.js?v=317";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=317";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=317";
-import { formatRaceTicks } from "./race.js?v=317";
-import { SPILL_UTILITIES, spillMastery, spillEngineColor } from "./spill-content.js?v=317";
-import { spillPreviewState } from "./spill-presentation.js?v=317";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=317";
+import { selectShopCycle } from "./shop-cycle.js?v=323";
+import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=323";
+import { suitPitchFor, tapShapeFor, tailSpringFor, tapAccentStrengthFor } from "./save.js?v=323";
+import { platform } from "./platform.js?v=323";
+import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=323";
+import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=323";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=323";
+import { addChartScenery } from "./star-map-view.js?v=323";
+import { mapDebrisIndex } from "./zone-visuals.js?v=323";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=323";
+import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=323";
+import { repeatTapMode, FLIGHT_TEST_PATTERNS } from "./sim.js?v=323";
+import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=323";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=323";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, REMOVE_ADS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, ACORNS_PER_DUST } from "./catalog.js?v=323";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=323";
+import { bundleQuote } from "./catalog.js?v=323";
+import { drawSprite as drawSpriteOn } from "./art.js?v=323";
+import { createEngine } from "./engine.js?v=323";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=323";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=323";
+import { formatRaceTicks } from "./race.js?v=323";
+import { SPILL_UTILITIES, spillMastery, spillEngineColor } from "./spill-content.js?v=323";
+import { spillPreviewState } from "./spill-presentation.js?v=323";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=323";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -665,16 +665,12 @@ export async function bootStandalone(root) {
                     gift.append(grow, el("p", "ac-sub ac-mid", "Yours, free — waiting in the Loadout."));
                     sheet.append(gift);
                 }
-                // THE AD SLOT, PAID IN ACORNS FOR NOW - the owner's stand-in for
-                // the rewarded revive: 10 acorns to fly on, 50 past gate 100. The
-                // wallet already holds this run's acorns (the crash banks before
-                // this sheet opens), so a good run usually funds its own continue.
-                // Not offered over the graduation gift - a brand-new pilot's first
-                // crash is the gear moment, not a paywall.
+                // THE CONTINUE IS AD ONLY (owner, 27 Oct 2026: "The 10 acorns options off the table
+                // now. Its ad only"): a rewarded ad flies on for free when the shell has one loaded;
+                // the acorn continue that stood in for it is gone from the sheet. While the ad plays
+                // the button waits. Not offered over the graduation gift - a brand-new pilot's first
+                // crash is the gear moment.
                 if (engine.save.guide !== "reward") {
-                    // THE AD CONTINUE (13 Sep 2026): a rewarded ad flies on for free
-                    // when the shell has one loaded; the acorn continue stays below
-                    // it as the other way. While the ad plays the button waits.
                     const offer = engine.adOffer();
                     if (offer) {
                         const ad = el("button", "ac-primary ac-continue ac-adbtn", offer === "busy" ? "AD PLAYING…" : "WATCH AN AD — CONTINUE FREE");
@@ -689,19 +685,9 @@ export async function bootStandalone(root) {
                         };
                         sheet.append(ad);
                     }
-                    const cost = engine.continueCost();
-                    const funds = engine.save.acorns ?? 0;
-                    if (funds >= cost) {
-                        const cont = el("button", "ac-primary ac-continue ac-holdbtn", `HOLD TO CONTINUE — ${cost} ACORNS`);
-                        holdToFire(cont, 550, () => engine.continueRun());
-                        sheet.append(cont);
-                    }
-                    else {
-                        sheet.append(el("p", "ac-sub ac-continue-short", `Continue costs ${cost} acorns — you have ${funds}`));
-                    }
                 }
                 const graduating = engine.save.guide === "reward";
-                const again = el("button", graduating || (engine.save.acorns ?? 0) >= engine.continueCost() || engine.adOffer() ? "ac-ghost" : "ac-primary", "TRY AGAIN");
+                const again = el("button", graduating || engine.adOffer() ? "ac-ghost" : "ac-primary", "TRY AGAIN");
                 // leaving the crash sheet is where a full-screen ad may play (engine.afterCrash)
                 again.onclick = () => engine.afterCrash(() => engine.fly(snap.flight));
                 // the gift leads on graduation, as it does on the Debris Field sheet

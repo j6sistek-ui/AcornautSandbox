@@ -24,8 +24,8 @@ dome = {k: [float(x) for x in v.split(',')] for k,v in re.findall(r'"((?:suit:)?
 loops: set = set()  # Noodle and Bandit joined the 3D lineup (26 Oct 2026)
 # eight of the nine, and Quill's loop, retired with the 3D lineup (26 Oct 2026): their
 # reviewed frames are gone
-RETIRED = {'iontrim','voidsuit','sammie','gemmie','ember','frost','copper','leviathan','hedgehog','ferret','raccoon'}
-expected = {'ghost'} | loops
+RETIRED = {'iontrim','voidsuit','sammie','gemmie','ember','frost','copper','leviathan','hedgehog','ferret','raccoon','ghost'}
+expected: set = set() | loops
 assert set(reg['report']) - RETIRED == expected, 'exact requested character scope'
 hashfile=SOURCE/'frame-hashes.json'
 hashes=json.loads(hashfile.read_text()) if hashfile.exists() else {}

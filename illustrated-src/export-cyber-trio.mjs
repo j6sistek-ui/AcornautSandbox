@@ -14,7 +14,14 @@ const sourceRoot=join(root,'art-src/cyber-standard-trio');
 const allIds=['porcelain','nacre','origamist'],args=process.argv.slice(2);
 const selected=args.includes('--suit')?args[args.indexOf('--suit')+1]:null;
 assert(!selected||allIds.includes(selected),'--suit must be porcelain,nacre,or origamist');
-const ids=selected?[selected]:allIds,framesOnly=args.includes('--frames-only'),manifest=[],registration={};
+// A pilot whose painted frames retired for a rendered 3D bank (PREMIUM_FRAMES_RETIRED in
+// high-orbit-config.ts) is never exported again: its old 9/9 frames share file names with the
+// new dive frames and portrait, and a build overwrote Percy's (27 Oct 2026)
+// (a sandboxed copy without the game sources, as the resampling test makes, retires nothing)
+const configPath=join(root,'illustrated-src/game/high-orbit-config.ts');
+const retired=new Set([...((existsSync(configPath)?readFileSync(configPath,'utf8'):'')
+  .match(/PREMIUM_FRAMES_RETIRED\s*=\s*new Set<string>\(\[([^\]]*)\]/)?.[1]??'').matchAll(/'([a-z]+)'/g)].map(m=>m[1]));
+const ids=(selected?[selected]:allIds).filter(id=>!retired.has(id)),framesOnly=args.includes('--frames-only'),manifest=[],registration={};
 const selectedBank=args.includes('--bank')?args[args.indexOf('--bank')+1]:null;
 assert(!selectedBank||(framesOnly&&['asc','desc'].includes(selectedBank)),'--bank requires --frames-only and asc or desc');
 const previewOutput=args.includes('--preview-output')?args[args.indexOf('--preview-output')+1]:null;

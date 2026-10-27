@@ -14,7 +14,7 @@ function equalPixels(message){
  assert.equal(different,0,message+' (different channels)');
 }
 let composites=0,pairs=0,poses=0;
-assert.equal(r.cat.SUITS.length,34,'review inventory includes every current character');
+assert.equal(r.cat.SUITS.length,42,'review inventory includes every current character');  // + eight from the owner's board (27 Oct 2026)
 assert.deepEqual(Object.keys(fit.HELMET_SEATS).sort(),r.cat.HELMETS.map(h=>h.id).sort(),'every helmet has a reviewed seat');
 for(const h of r.cat.HELMETS){
  assert(fit.HELMET_SEATS[h.id].every(Number.isFinite),h.id+' finite cavity');
@@ -50,9 +50,10 @@ for(const suit of r.cat.SUITS){
  }
  for(const h of helmets){ac.clearRect(0,0,256,256);r.draw.paintPortrait(ac,r.bank,h,suit,100,128,100);assert(ac.getImageData(0,0,256,256).data.some((v,i)=>i%4===3&&v>0),suit.id+'/'+h.id+' actual portrait rendered');}
 }
-// 651: Alien, Arcflash and Patriot wear helmets since their 3D models (26 Oct 2026), 27
-// pairings each added to 570
-assert.equal(pairs,651,'no valid pairing was omitted');
+// 678: Alien, Arcflash, Patriot and Percy wear helmets since their 3D models (26-27 Oct
+// 2026), 27 pairings each added to 570; 813: the owner's board added five helmeted suits
+// (Tracer, Glass Suit, Red Line, Robo Dog, Geode: 27 Oct 2026), 27 pairings each
+assert.equal(pairs,813,'no valid pairing was omitted');
 // Imported Studio presets may contain an exclusive helmet from another suit.
 // Load the same Clear fallback that paint() uses, even on a cold tool session.
 const cold=new StudioRenderer(manifest),loaded=[];cold.load=async path=>loaded.push(path);

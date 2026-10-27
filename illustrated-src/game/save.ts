@@ -1,5 +1,5 @@
 import type { SpillAppearance } from "./spill-appearance";
-import { highOrbitTrailSuit, isPremiumFrames } from "./high-orbit-config";
+import { highOrbitTrailSuit, isPremiumFrames, isPremiumSuit } from "./high-orbit-config";
 import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId, type CampaignProgress } from "./campaign-progress";
 import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor, type LevelDef, type StarReward } from "./campaign";
 import { STAR_UNLOCKS,
@@ -35,6 +35,7 @@ import {
   BOOSTS,
   BOOST_IDS,
   idGrants,
+  wearsOwnHead,
   type BoostId,
 } from "./catalog";
 import { platform } from "./platform";
@@ -430,7 +431,9 @@ export function loadSave(): SaveData {
   // existed, or edited by hand) comes off rather than half-fitting
   {
     const h = HELMETS.find((x) => x.id === s.equipped);
-    if (!isPremiumFrames(s.equippedSuit) && h?.suitOnly && h.suitOnly !== s.equippedSuit) s.equipped = "clear";
+    // a premium pilot with her own head (Envoy, rendered since 27 Oct 2026) hides the helmet, not removes it
+    const ownHeadPremium = isPremiumSuit(s.equippedSuit) && wearsOwnHead(SUITS.find((u) => u.id === s.equippedSuit) ?? {});
+    if (!isPremiumFrames(s.equippedSuit) && !ownHeadPremium && h?.suitOnly && h.suitOnly !== s.equippedSuit) s.equipped = "clear";
   }
   if (!SUITS.some((u) => u.id === s.equippedSuit)) s.equippedSuit = "flight";
   if (!TRAILS.some((t) => t.id === s.equippedTrail)) s.equippedTrail = "sparks";

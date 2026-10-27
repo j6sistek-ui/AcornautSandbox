@@ -619,16 +619,12 @@ export async function bootStandalone(root: HTMLElement) {
           gift.append(grow, el("p", "ac-sub ac-mid", "Yours, free — waiting in the Loadout."));
           sheet.append(gift);
         }
-        // THE AD SLOT, PAID IN ACORNS FOR NOW - the owner's stand-in for
-        // the rewarded revive: 10 acorns to fly on, 50 past gate 100. The
-        // wallet already holds this run's acorns (the crash banks before
-        // this sheet opens), so a good run usually funds its own continue.
-        // Not offered over the graduation gift - a brand-new pilot's first
-        // crash is the gear moment, not a paywall.
+        // THE CONTINUE IS AD ONLY (owner, 27 Oct 2026: "The 10 acorns options off the table
+        // now. Its ad only"): a rewarded ad flies on for free when the shell has one loaded;
+        // the acorn continue that stood in for it is gone from the sheet. While the ad plays
+        // the button waits. Not offered over the graduation gift - a brand-new pilot's first
+        // crash is the gear moment.
         if (engine.save.guide !== "reward") {
-          // THE AD CONTINUE (13 Sep 2026): a rewarded ad flies on for free
-          // when the shell has one loaded; the acorn continue stays below
-          // it as the other way. While the ad plays the button waits.
           const offer = engine.adOffer();
           if (offer) {
             const ad = el("button", "ac-primary ac-continue ac-adbtn", offer === "busy" ? "AD PLAYING…" : "WATCH AN AD — CONTINUE FREE");
@@ -639,20 +635,9 @@ export async function bootStandalone(root: HTMLElement) {
             }); };
             sheet.append(ad);
           }
-          const cost = engine.continueCost();
-          const funds = engine.save.acorns ?? 0;
-          if (funds >= cost) {
-            const cont = el("button", "ac-primary ac-continue ac-holdbtn",
-              `HOLD TO CONTINUE — ${cost} ACORNS`);
-            holdToFire(cont, 550, () => engine.continueRun());
-            sheet.append(cont);
-          } else {
-            sheet.append(el("p", "ac-sub ac-continue-short",
-              `Continue costs ${cost} acorns — you have ${funds}`));
-          }
         }
         const graduating = engine.save.guide === "reward";
-        const again = el("button", graduating || (engine.save.acorns ?? 0) >= engine.continueCost() || engine.adOffer() ? "ac-ghost" : "ac-primary", "TRY AGAIN");
+        const again = el("button", graduating || engine.adOffer() ? "ac-ghost" : "ac-primary", "TRY AGAIN");
         // leaving the crash sheet is where a full-screen ad may play (engine.afterCrash)
         again.onclick = () => engine.afterCrash(() => engine.fly(snap.flight));
         // the gift leads on graduation, as it does on the Debris Field sheet

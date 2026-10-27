@@ -1,38 +1,38 @@
-import { spillDockTravelDuration } from "./spill.js?v=317";
-import { clipHelmetGlass } from "./helmet-openings.js?v=317";
-import { paintFittedHelmet } from "./helmet-fit.js?v=317";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=317";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=317";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=317";
-import { arcflashPreview } from "./arcflash-motion.js?v=317";
-import { paintLiveStarTrail } from "./star-trails.js?v=317";
-import { trailWornBy } from "./catalog.js?v=317";
-import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=317";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=317";
-import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=317";
-import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=317";
-import { RIG3D_BOOTS } from "./rig3d-boots.js?v=317";
-import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=317";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=317";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=317";
-import { spillAppearance } from "./spill-appearance.js?v=317";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=317";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=317";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=317";
-import { goalHud } from "./campaign.js?v=317";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=317";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=317";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=317";
-import { spriteImageFor } from "./sprite-detail.js?v=317";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=317";
-import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=317";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=317";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=317";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=317";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=317";
-import { spillEngineColor } from "./spill-content.js?v=317";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=317";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=317";
+import { spillDockTravelDuration } from "./spill.js?v=323";
+import { clipHelmetGlass } from "./helmet-openings.js?v=323";
+import { paintFittedHelmet } from "./helmet-fit.js?v=323";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=323";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=323";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=323";
+import { arcflashPreview } from "./arcflash-motion.js?v=323";
+import { paintLiveStarTrail } from "./star-trails.js?v=323";
+import { trailWornBy } from "./catalog.js?v=323";
+import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=323";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=323";
+import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=323";
+import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=323";
+import { RIG3D_BOOTS } from "./rig3d-boots.js?v=323";
+import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=323";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=323";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=323";
+import { spillAppearance } from "./spill-appearance.js?v=323";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=323";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=323";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=323";
+import { goalHud } from "./campaign.js?v=323";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=323";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=323";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=323";
+import { spriteImageFor } from "./sprite-detail.js?v=323";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=323";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=323";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=323";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=323";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=323";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=323";
+import { spillEngineColor } from "./spill-content.js?v=323";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=323";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=323";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3515,13 +3515,9 @@ const DOME = {
     // Static portraits; each radius fits that painting's head, not its body box.
     // Five beta suits: whole-frame skull registration from beta-flight-refresh.
     "suit:robo": [184, 98, 32.71, 0],
-    "suit:ghost": [208, 109, 30.73, 0],
-    "suit:bigbooty": [184, 108, 25.36, 10],
     "suit:catsuit": [212, 86, 50],
     "suit:phoenix": [207, 92, 41],
     "suit:seraph": [205, 131, 27.89, 2],
-    "suit:porcelain": [180, 84, 35.3465],
-    "suit:nacre": [180, 84, 32.0492],
     // robo — pose-specific head and collar registration.
     "robo-tap-1": [193, 102, 34.24, 0],
     "robo-tap-2": [193, 102, 34.24, 0],
@@ -3539,23 +3535,6 @@ const DOME = {
     "robo-tap-14": [195, 106, 34.24, 0],
     "robo-tap-15": [194, 103, 34.24, 0],
     "robo-tap-16": [194, 99, 34.24, 0],
-    // bigbooty — pose-specific head and collar registration.
-    "bigbooty-tap-1": [207, 90, 29.71, 10],
-    "bigbooty-tap-2": [207, 91, 29.71, 10],
-    "bigbooty-tap-3": [209, 88, 29.71, 10],
-    "bigbooty-tap-4": [196, 81, 27.99, 10],
-    "bigbooty-tap-5": [208, 74, 29.71, 10],
-    "bigbooty-tap-6": [209, 73, 29.71, 10],
-    "bigbooty-tap-7": [207, 79, 29.71, 10],
-    "bigbooty-tap-8": [205, 92, 26.91, 10],
-    "bigbooty-tap-9": [201, 90, 26.38, 10],
-    "bigbooty-tap-10": [217, 73, 27.99, 15],
-    "bigbooty-tap-11": [215, 76, 28.55, 10],
-    "bigbooty-tap-12": [215, 72, 29.13, 10],
-    "bigbooty-tap-13": [204, 90, 27.99, 10],
-    "bigbooty-tap-14": [201, 92, 28.55, 10],
-    "bigbooty-tap-15": [203, 87, 29.71, 10],
-    "bigbooty-tap-16": [207, 82, 29.71, 10],
     // seraph — pose-specific head and collar registration.
     "seraph-asc-1": [205, 131, 27.89, 2],
     "seraph-asc-2": [205, 129, 27.89, 2],
@@ -3573,23 +3552,6 @@ const DOME = {
     "seraph-desc-6": [203, 148, 27.89, 23],
     "seraph-desc-7": [201, 163, 27.89, 57],
     "seraph-desc-8": [197, 163, 27.89, 62],
-    // ghost — pose-specific head and collar registration.
-    "ghost-asc-1": [208, 109, 30.73, 0],
-    "ghost-asc-2": [208, 108.3, 30.73, -5],
-    "ghost-asc-3": [208, 107.5, 30.73, -10],
-    "ghost-asc-4": [208, 106.6, 30.73, -10],
-    "ghost-asc-5": [208, 105.5, 30.73, -10],
-    "ghost-asc-6": [208, 104.3, 30.73, -10],
-    "ghost-asc-7": [208, 103, 30.73, -15],
-    "ghost-asc-8": [208, 102, 30.73, -20],
-    "ghost-desc-1": [208, 109, 30.73, 0],
-    "ghost-desc-2": [208, 109.8, 30.73, 0],
-    "ghost-desc-3": [208, 110.8, 30.73, -5],
-    "ghost-desc-4": [208, 112, 30.73, -5],
-    "ghost-desc-5": [208, 113.2, 30.73, 0],
-    "ghost-desc-6": [208, 114.6, 30.73, 5],
-    "ghost-desc-7": [208, 116, 30.73, 5],
-    "ghost-desc-8": [208, 117, 30.73, 5],
     // THE 3D LINEUP (26 Oct 2026): measured, not placed - tools/rig3d projects each
     // frame's 3D head through the render camera (anchors.json). Centre and tilt are
     // per frame; the radius is the suit's median, so the glass never resizes.
@@ -3712,23 +3674,6 @@ const DOME = {
     "gemmie-desc-2": [188.66, 113.27, 36.18, 15.55],
     "gemmie-desc-3": [190.83, 128.76, 36.18, 28.74],
     "gemmie-desc-4": [189.93, 144.01, 36.18, 41.19],
-    "suit:iontrim": [186.2, 112.62, 26.96, 1.82],
-    "iontrim-tap-1": [186.2, 112.62, 26.96, 1.82],
-    "iontrim-tap-2": [184.49, 109.48, 26.96, -1.87],
-    "iontrim-tap-3": [183.33, 108.02, 26.96, -4.22],
-    "iontrim-tap-4": [183.18, 108.46, 26.96, -4.6],
-    "iontrim-tap-5": [184.07, 110.69, 26.96, -2.9],
-    "iontrim-tap-6": [185.56, 114.27, 26.96, 0.41],
-    "iontrim-tap-7": [187.13, 118.34, 26.96, 4.44],
-    "iontrim-tap-8": [188.4, 121.78, 26.96, 8.1],
-    "iontrim-tap-9": [189.19, 123.57, 26.96, 10.41],
-    "iontrim-tap-10": [189.41, 123.16, 26.96, 10.79],
-    "iontrim-tap-11": [188.98, 120.63, 26.96, 9.12],
-    "iontrim-tap-12": [187.85, 116.72, 26.96, 5.84],
-    "iontrim-desc-1": [186.2, 112.62, 26.96, 1.82],
-    "iontrim-desc-2": [188.58, 124.69, 26.96, 15.58],
-    "iontrim-desc-3": [187.99, 138.17, 26.96, 28.78],
-    "iontrim-desc-4": [184.8, 150.86, 26.96, 41.25],
     "suit:sammie": [185.89, 114.58, 26.09, 1.83],
     "sammie-tap-1": [185.89, 114.58, 26.09, 1.83],
     "sammie-tap-2": [184.91, 112.4, 26.09, -1.84],
@@ -3763,6 +3708,159 @@ const DOME = {
     "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
     "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
     "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+    "suit:iontrim": [191.55, 107.14, 24.07, 1.7],
+    "iontrim-tap-1": [191.55, 107.14, 24.07, 1.7],
+    "iontrim-tap-2": [190.33, 104.37, 24.07, -1.99],
+    "iontrim-tap-3": [189.6, 103.16, 24.07, -4.34],
+    "iontrim-tap-4": [189.66, 103.73, 24.07, -4.72],
+    "iontrim-tap-5": [190.45, 105.93, 24.07, -3.03],
+    "iontrim-tap-6": [191.63, 109.29, 24.07, 0.28],
+    "iontrim-tap-7": [192.75, 113, 24.07, 4.31],
+    "iontrim-tap-8": [193.54, 116.04, 24.07, 7.97],
+    "iontrim-tap-9": [193.95, 117.51, 24.07, 10.29],
+    "iontrim-tap-10": [194, 116.93, 24.07, 10.66],
+    "iontrim-tap-11": [193.63, 114.46, 24.07, 9],
+    "iontrim-tap-12": [192.78, 110.84, 24.07, 5.72],
+    "iontrim-desc-1": [191.55, 107.14, 24.07, 1.7],
+    "iontrim-desc-2": [193.45, 122.23, 24.07, 15.45],
+    "iontrim-desc-3": [191.56, 137.73, 24.07, 28.68],
+    "iontrim-desc-4": [186.22, 152.39, 24.07, 41.17],
+    "suit:tracer": [186.2, 112.62, 26.96, 1.82],
+    "tracer-tap-1": [186.2, 112.62, 26.96, 1.82],
+    "tracer-tap-2": [184.49, 109.48, 26.96, -1.87],
+    "tracer-tap-3": [183.33, 108.02, 26.96, -4.22],
+    "tracer-tap-4": [183.18, 108.46, 26.96, -4.6],
+    "tracer-tap-5": [184.07, 110.69, 26.96, -2.9],
+    "tracer-tap-6": [185.56, 114.27, 26.96, 0.41],
+    "tracer-tap-7": [187.13, 118.34, 26.96, 4.44],
+    "tracer-tap-8": [188.4, 121.78, 26.96, 8.1],
+    "tracer-tap-9": [189.19, 123.57, 26.96, 10.41],
+    "tracer-tap-10": [189.41, 123.16, 26.96, 10.79],
+    "tracer-tap-11": [188.98, 120.63, 26.96, 9.12],
+    "tracer-tap-12": [187.85, 116.72, 26.96, 5.84],
+    "tracer-desc-1": [186.2, 112.62, 26.96, 1.82],
+    "tracer-desc-2": [188.58, 124.69, 26.96, 15.58],
+    "tracer-desc-3": [187.99, 138.17, 26.96, 28.78],
+    "tracer-desc-4": [184.8, 150.86, 26.96, 41.25],
+    "suit:glasssuit": [186.04, 112.31, 26.32, 1.71],
+    "glasssuit-tap-1": [186.04, 112.31, 26.32, 1.71],
+    "glasssuit-tap-2": [185.04, 109.7, 26.32, -1.96],
+    "glasssuit-tap-3": [184.37, 108.43, 26.32, -4.31],
+    "glasssuit-tap-4": [184.35, 108.81, 26.32, -4.68],
+    "glasssuit-tap-5": [184.98, 110.74, 26.32, -3],
+    "glasssuit-tap-6": [185.88, 113.74, 26.32, 0.3],
+    "glasssuit-tap-7": [186.71, 117.08, 26.32, 4.32],
+    "glasssuit-tap-8": [187.28, 119.84, 26.32, 7.96],
+    "glasssuit-tap-9": [187.6, 121.22, 26.32, 10.27],
+    "glasssuit-tap-10": [187.71, 120.84, 26.32, 10.64],
+    "glasssuit-tap-11": [187.53, 118.8, 26.32, 8.98],
+    "glasssuit-tap-12": [186.96, 115.67, 26.32, 5.72],
+    "glasssuit-desc-1": [186.04, 112.31, 26.32, 1.71],
+    "glasssuit-desc-2": [187.19, 125.06, 26.32, 15.42],
+    "glasssuit-desc-3": [185.63, 137.24, 26.32, 28.61],
+    "glasssuit-desc-4": [182.08, 148.78, 26.32, 41.08],
+    "suit:redline": [189.5, 106.74, 29.22, 1.65],
+    "redline-tap-1": [189.5, 106.74, 29.22, 1.65],
+    "redline-tap-2": [188.4, 104.62, 29.22, -2.02],
+    "redline-tap-3": [187.68, 103.75, 29.22, -4.36],
+    "redline-tap-4": [187.63, 104.27, 29.22, -4.74],
+    "redline-tap-5": [188.23, 106.03, 29.22, -3.06],
+    "redline-tap-6": [189.21, 108.66, 29.22, 0.24],
+    "redline-tap-7": [190.26, 111.52, 29.22, 4.26],
+    "redline-tap-8": [191.16, 113.84, 29.22, 7.9],
+    "redline-tap-9": [191.7, 114.93, 29.22, 10.21],
+    "redline-tap-10": [191.84, 114.44, 29.22, 10.58],
+    "redline-tap-11": [191.51, 112.48, 29.22, 8.92],
+    "redline-tap-12": [190.67, 109.63, 29.22, 5.66],
+    "redline-desc-1": [189.5, 106.74, 29.22, 1.65],
+    "redline-desc-2": [191.39, 119.27, 29.22, 15.36],
+    "redline-desc-3": [190.03, 132.01, 29.22, 28.56],
+    "redline-desc-4": [187.21, 143.32, 29.22, 41.05],
+    "suit:robodog": [189.04, 108.64, 25.09, 1.78],
+    "robodog-tap-1": [189.04, 108.64, 25.09, 1.78],
+    "robodog-tap-2": [187.63, 105.97, 25.09, -1.9],
+    "robodog-tap-3": [186.82, 104.76, 25.09, -4.24],
+    "robodog-tap-4": [186.94, 105.25, 25.09, -4.62],
+    "robodog-tap-5": [187.91, 107.31, 25.09, -2.93],
+    "robodog-tap-6": [189.33, 110.53, 25.09, 0.37],
+    "robodog-tap-7": [190.71, 114.1, 25.09, 4.39],
+    "robodog-tap-8": [191.7, 117.11, 25.09, 8.03],
+    "robodog-tap-9": [192.2, 118.63, 25.09, 10.34],
+    "robodog-tap-10": [192.18, 118.14, 25.09, 10.71],
+    "robodog-tap-11": [191.62, 115.76, 25.09, 9.05],
+    "robodog-tap-12": [190.51, 112.22, 25.09, 5.79],
+    "robodog-desc-1": [189.04, 108.64, 25.09, 1.78],
+    "robodog-desc-2": [192.3, 123.12, 25.09, 15.49],
+    "robodog-desc-3": [193.23, 137.37, 25.09, 28.67],
+    "robodog-desc-4": [189.9, 150.55, 25.09, 41.13],
+    "suit:geode": [183.83, 121.67, 38.99, 1.77],
+    "geode-tap-1": [183.83, 121.67, 38.99, 1.77],
+    "geode-tap-2": [182.77, 119.03, 38.99, -1.91],
+    "geode-tap-3": [182, 117.73, 38.99, -4.26],
+    "geode-tap-4": [181.81, 118.06, 38.99, -4.64],
+    "geode-tap-5": [182.24, 119.91, 38.99, -2.95],
+    "geode-tap-6": [183.05, 122.81, 38.99, 0.36],
+    "geode-tap-7": [183.93, 126.03, 38.99, 4.38],
+    "geode-tap-8": [184.62, 128.71, 38.99, 8.03],
+    "geode-tap-9": [185.09, 130.14, 38.99, 10.34],
+    "geode-tap-10": [185.34, 129.89, 38.99, 10.71],
+    "geode-tap-11": [185.27, 128, 38.99, 9.05],
+    "geode-tap-12": [184.76, 124.97, 38.99, 5.78],
+    "geode-desc-1": [183.83, 121.67, 38.99, 1.77],
+    "geode-desc-2": [184.41, 133.84, 38.99, 15.5],
+    "geode-desc-3": [183.92, 144.47, 38.99, 28.69],
+    "geode-desc-4": [181.2, 151.8, 38.99, 41.16],
+    "suit:ghost": [191.69, 101.54, 26.36, 2.03],
+    "ghost-tap-1": [191.69, 101.54, 26.36, 2.03],
+    "ghost-tap-2": [190.17, 99, 26.36, -1.66],
+    "ghost-tap-3": [189.14, 97.91, 26.36, -4.02],
+    "ghost-tap-4": [189.18, 98.47, 26.36, -4.4],
+    "ghost-tap-5": [190.38, 100.55, 26.36, -2.7],
+    "ghost-tap-6": [191.98, 103.69, 26.36, 0.61],
+    "ghost-tap-7": [193.48, 107.17, 26.36, 4.65],
+    "ghost-tap-8": [194.65, 110.05, 26.36, 8.31],
+    "ghost-tap-9": [195.23, 111.44, 26.36, 10.63],
+    "ghost-tap-10": [195.21, 110.86, 26.36, 11.01],
+    "ghost-tap-11": [194.61, 108.47, 26.36, 9.34],
+    "ghost-tap-12": [193.33, 105.01, 26.36, 6.06],
+    "ghost-desc-1": [191.69, 101.54, 26.36, 2.03],
+    "ghost-desc-2": [195.39, 116.14, 26.36, 15.8],
+    "ghost-desc-3": [195.62, 132.15, 26.36, 28.99],
+    "ghost-desc-4": [193.28, 148.77, 26.36, 41.42],
+    "suit:porcelain": [185.99, 116.93, 27.51, 1.8],
+    "porcelain-tap-1": [185.99, 116.93, 27.51, 1.8],
+    "porcelain-tap-2": [185.27, 114.46, 27.51, -1.88],
+    "porcelain-tap-3": [184.7, 113.33, 27.51, -4.23],
+    "porcelain-tap-4": [184.5, 113.75, 27.51, -4.6],
+    "porcelain-tap-5": [184.72, 115.59, 27.51, -2.92],
+    "porcelain-tap-6": [185.17, 118.43, 27.51, 0.39],
+    "porcelain-tap-7": [185.65, 121.57, 27.51, 4.4],
+    "porcelain-tap-8": [186.39, 124.24, 27.51, 8.05],
+    "porcelain-tap-9": [186.99, 125.61, 27.51, 10.36],
+    "porcelain-tap-10": [187.3, 125.26, 27.51, 10.74],
+    "porcelain-tap-11": [187.2, 123.25, 27.51, 9.07],
+    "porcelain-tap-12": [186.61, 120.16, 27.51, 5.81],
+    "porcelain-desc-1": [185.99, 116.93, 27.51, 1.8],
+    "porcelain-desc-2": [186.2, 129.65, 27.51, 15.51],
+    "porcelain-desc-3": [184.06, 141.78, 27.51, 28.7],
+    "porcelain-desc-4": [179.67, 153.11, 27.51, 41.16],
+    "suit:bigbooty": [197.85, 110.52, 26.23, 1.25],
+    "bigbooty-tap-1": [197.85, 110.52, 26.23, 1.25],
+    "bigbooty-tap-2": [196.78, 108.28, 26.23, -1.34],
+    "bigbooty-tap-3": [196.04, 107.44, 26.23, -2.99],
+    "bigbooty-tap-4": [195.88, 107.97, 26.23, -3.25],
+    "bigbooty-tap-5": [196.35, 109.67, 26.23, -2.06],
+    "bigbooty-tap-6": [197.16, 112.27, 26.23, 0.26],
+    "bigbooty-tap-7": [197.96, 115.28, 26.23, 3.1],
+    "bigbooty-tap-8": [198.57, 117.91, 26.23, 5.69],
+    "bigbooty-tap-9": [199.01, 119.33, 26.23, 7.34],
+    "bigbooty-tap-10": [199.3, 118.97, 26.23, 7.6],
+    "bigbooty-tap-11": [199.27, 116.84, 26.23, 6.41],
+    "bigbooty-tap-12": [198.78, 113.68, 26.23, 4.09],
+    "bigbooty-desc-1": [197.85, 110.52, 26.23, 1.25],
+    "bigbooty-desc-2": [198.06, 123.37, 26.23, 11.05],
+    "bigbooty-desc-3": [195.01, 135.55, 26.23, 20.85],
+    "bigbooty-desc-4": [188.82, 146.13, 26.23, 30.67],
     "suit:eclipse": [186.2, 112.62, 26.96, 1.82],
     "eclipse-tap-1": [186.2, 112.62, 26.96, 1.82],
     "eclipse-tap-2": [184.49, 109.48, 26.96, -1.87],
@@ -4017,9 +4115,7 @@ const TAIL_PIVOT = {
     // is why a swing tore a piece off the animal instead of sweeping along
     // it. Re-cut the art and these must be re-read from the same run.
     cyber: [101, 125],
-    porcelain: [...CYBER_TRIO_REGISTRATION.porcelain.tailPivot],
-    nacre: [...CYBER_TRIO_REGISTRATION.nacre.tailPivot],
-    origamist: [...CYBER_TRIO_REGISTRATION.origamist.tailPivot],
+    // Percy, Patriot and Envoy left the painted trio for rendered 3D banks (no split tail to pivot)
     bigbooty: [92, 129],
     catsuit: [74, 149],
     copper: [108, 142],
@@ -4204,10 +4300,9 @@ function bakedDome(key) {
 // and one presentation box. Alpha-box fitting would undo the normalization
 // whenever a tail was longer, making the same helmet a different size.
 export const NATURAL_FLIGHT_SUITS = new Set([
-    "ghost",
-    // iontrim, voidsuit, sammie, gemmie and ember left this set with the 3D lineup
-    // (26 Oct 2026), then frost, copper and leviathan: their rendered banks register
-    // by their own first tap frame
+// empty since the 3D lineup (26-27 Oct 2026): iontrim, voidsuit, sammie, gemmie, ember,
+// frost, copper, leviathan and last ghost left it - their rendered banks register by their
+// own first tap frame. The fixed-box path stays for the next normalized series
 ]);
 const NATURAL_FLIGHT_BOX = { x: 32, y: 32, w: 192, h: 192 };
 function naturalFlightKey(key) {
@@ -4399,6 +4494,7 @@ export const SUIT_DIVE_DEPTH = {
     // THE 3D LINEUP (26 Oct 2026): four rendered dive frames, walked in full
     cinderforge: 1, groveguard: 1, cosmic: 1, sunforged: 1, abyssal: 1,
     iontrim: 1, voidsuit: 1, ember: 1, sammie: 1, gemmie: 1,
+    tracer: 1, glasssuit: 1, redline: 1, robodog: 1, geode: 1, mystic: 1, wyrm: 1, dune: 1,
     // Fresh natural banks carry the shallow body pitch in the art and use
     // every tail-whip pose. The temporary limits on obsolete art are retired.
     copper: 1, leviathan: 1,
@@ -4527,7 +4623,8 @@ const RIG_TAIL_TRAIL = 0.55; // how much of the pitch the tail lags by
 // The 3D lineup too (26 Oct 2026): its rendered dive frames carry the attitude.
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
     "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
-    "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant"]);
+    "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant", "porcelain", "ghost", "nacre",
+    "tracer", "glasssuit", "redline", "robodog", "geode", "mystic", "wyrm", "dune"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as
@@ -4536,7 +4633,7 @@ const LOOP_FPS = 12;
 // EXTENDS rather than which way it points, and the rig supplies the
 // direction over the top. That is what lets nine frames read as a climb and
 // a dive instead of needing two sheets that never quite agree at the seam.
-const RIG_PITCH_WITH_BANK = new Set(["cyber", "porcelain", "nacre"]);
+const RIG_PITCH_WITH_BANK = new Set(["cyber"]);
 // THE FRAMES A GENERATED BANK LOST. Twenty-two of the tap banks were made
 // from one shared motion, and that motion loses the pilot's LOWER BODY at
 // its extremes - hip, haunch and hind leg leave the silhouette entirely and

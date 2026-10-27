@@ -1,5 +1,5 @@
 {
- "note": "Future models (owner, 26 Oct 2026): validated with tools/rig3d, NOT live. Names are placeholders. Each folder holds the 12-frame tap, 4-frame dive, the still, helmet anchors and wake feet, ready to install when one is picked.",
+ "note": "Future models (owner, 26 Oct 2026): validated with tools/rig3d, NOT live. Names are placeholders. Each folder holds the 12-frame tap, 4-frame dive, the still, helmet anchors and wake feet, ready to install when one is picked. future12-19: the owner's 27 Oct 2026 uploads, staged the same way.",
  "command": "node tools/rig3d/render.mjs Future<n>.glb --id future<n> --frames tap:12,desc:4,asc:0 [--head <bone>] [--tail <bone>]",
  "models": {
   "future1": {
@@ -212,6 +212,161 @@
     "bottom": -0.35
    },
    "helmetRadius": 38.99
+  },
+  "future12": {
+   "name": "Glass Suit",
+   "kind": "squirrel",
+   "source": "futuristicsquirrel.glb",
+   "args": "--head bone_12",
+   "rig": {
+    "head": "bone_12",
+    "front": 2,
+    "hind": 2,
+    "tail": 10
+   },
+   "framing": {
+    "left": -0.45,
+    "right": -0.2,
+    "top": -0.39,
+    "bottom": -0.41
+   },
+   "helmetRadius": 26.32,
+   "note": "upload #2, glass suit over copper fur; head pinned (the tool took the spine). The glass tail renders see-through by design"
+  },
+  "future13": {
+   "name": "Robo Dog",
+   "kind": "squirrel",
+   "source": "roboticdog.glb",
+   "rig": {
+    "head": "tripoHead_2",
+    "front": 2,
+    "hind": 2,
+    "tail": 5
+   },
+   "framing": {
+    "left": -0.49,
+    "right": -0.2,
+    "top": -0.41,
+    "bottom": -0.45
+   },
+   "helmetRadius": 25.09,
+   "note": "upload #4, chrome with cyan lines; automatic rig"
+  },
+  "future14": {
+   "name": "Astronaut",
+   "kind": "squirrel",
+   "source": "squirrelastronaut.glb",
+   "rig": {
+    "head": "tripoHead_1",
+    "front": 2,
+    "hind": 2,
+    "tail": 6
+   },
+   "framing": {
+    "left": -0.51,
+    "right": -0.22,
+    "top": -0.41,
+    "bottom": -0.46
+   },
+   "helmetRadius": 24.07,
+   "note": "upload #5, blue flight suit; automatic rig"
+  },
+  "future15": {
+   "name": "Jade",
+   "kind": "squirrel",
+   "source": "fantasycreature-nodome.glb",
+   "args": "--head bone_8 --tail tripoHead_0",
+   "rig": {
+    "head": "bone_8",
+    "front": 2,
+    "hind": 2,
+    "tail": 4
+   },
+   "framing": {
+    "left": -0.46,
+    "right": -0.24,
+    "top": -0.39,
+    "bottom": -0.42
+   },
+   "helmetRadius": 16.84,
+   "note": "upload #6 with its half dome cut away (27 Oct 2026); Tripo named the tail \"Head\", so head and tail are pinned"
+  },
+  "future16": {
+   "name": "Red Line",
+   "kind": "squirrel",
+   "source": "futuristicsquirrel2.glb",
+   "rig": {
+    "head": "bone_4",
+    "front": 2,
+    "hind": 2,
+    "tail": 10
+   },
+   "framing": {
+    "left": -0.46,
+    "right": -0.24,
+    "top": -0.4,
+    "bottom": -0.4
+   },
+   "helmetRadius": 29.22,
+   "note": "upload #7, black armour with red lines; Tripo named the tail \"Head\" but the automatic rig reads it right"
+  },
+  "future17": {
+   "name": "Neon Fox",
+   "kind": "squirrel",
+   "source": "neoncyberfox_1.glb",
+   "rig": {
+    "head": "tripoHead_2",
+    "front": 2,
+    "hind": 2,
+    "tail": 8
+   },
+   "framing": {
+    "left": -0.56,
+    "right": -0.23,
+    "top": -0.44,
+    "bottom": -0.52
+   },
+   "helmetRadius": 24.5,
+   "note": "upload #8, the re-rigged neon cyber fox; automatic rig"
+  },
+  "future18": {
+   "name": "Knight",
+   "kind": "squirrel",
+   "source": "armoredv2squirrel.glb",
+   "rig": {
+    "head": "bone_13",
+    "front": 2,
+    "hind": 2,
+    "tail": 5
+   },
+   "framing": {
+    "left": -0.43,
+    "right": -0.21,
+    "top": -0.37,
+    "bottom": -0.37
+   },
+   "helmetRadius": 28.61,
+   "note": "upload #9, gold and steel knight; Tripo named the tail \"Head\" but the automatic rig reads it right"
+  },
+  "future19": {
+   "name": "Blue Crystal",
+   "kind": "squirrel",
+   "source": "bluecrystal3squirrel.glb",
+   "args": "--head bone_11 --tail tripoHead_0 --split tripoSpine_1,tripoSpine_2",
+   "rig": {
+    "head": "bone_11",
+    "front": 2,
+    "hind": 2,
+    "tail": 7
+   },
+   "framing": {
+    "left": -0.46,
+    "right": -0.21,
+    "top": -0.29,
+    "bottom": -0.47
+   },
+   "helmetRadius": 23.55,
+   "note": "upload #10; the hind legs hang off the tail's root bone, so --split separates them (without it the pilot flew with no hind legs)"
   }
  }
 }

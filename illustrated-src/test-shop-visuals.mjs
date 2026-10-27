@@ -245,8 +245,9 @@ try{
     // no PAL slot in the cycle any more (15 Sep 2026: every pal is free), so
     // the mixed row is suits and helmets; a second helmet stands where the
     // companion did as the independent cart entry
-    day=dateWith(cycle=>cycle.suits.includes('porcelain')&&cycle.helms.length>1);reset();await tick();
-    const fixedName=C.SUITS.find(s=>s.id==='porcelain').name;
+    // Envoy is the fixed-head fixture since Percy and Patriot wear helmets (3D lineup, 26-27 Oct 2026)
+    day=dateWith(cycle=>cycle.suits.includes('nacre')&&cycle.helms.length>1);reset();await tick();
+    const fixedName=C.SUITS.find(s=>s.id==='nacre').name;
     const untouched=JSON.stringify(e.save),kept={outer:231,items:129};
     shopScroll().scrollTop=kept.outer;rail().scrollLeft=kept.items;
     async function choose(kind,id){
@@ -256,18 +257,18 @@ try{
       assert.equal(JSON.stringify(e.save),untouched,`${kind}:${id} only changes preview/cart, never equipment, currency or grants`);
       assertCompactStructure();
     }
-    await choose('suit','porcelain');
-    assert.deepEqual(pickedRailIds(),['porcelain']);
+    await choose('suit','nacre');
+    assert.deepEqual(pickedRailIds(),['nacre']);
     assert(app.querySelector('.ac-caseplate').textContent.includes(fixedName));
-    const porcelainPreview=app.querySelector('.ac-casecanvas');assertItemArtwork(porcelainPreview,{kind:'suit',id:'porcelain'});
+    const porcelainPreview=app.querySelector('.ac-casecanvas');assertItemArtwork(porcelainPreview,{kind:'suit',id:'nacre'});
     assert(![...surfaceOf(porcelainPreview).sources].some(p=>p.startsWith('/art/helms/')),'fixed-head preview retains its integrated head');
     // A second click removes only its cart selection; its preview remains.
-    await choose('suit','porcelain');assert.deepEqual(pickedRailIds(),[]);
+    await choose('suit','nacre');assert.deepEqual(pickedRailIds(),[]);
     assert(app.querySelector('.ac-caseplate').textContent.includes(fixedName));
     const helmets=[...rail().querySelectorAll('button[data-shop-item-kind="helm"]')].map(n=>n.dataset.shopItemId);
     for(const id of helmets){
       // Return the stage to the fixed-head pilot without keeping it in cart.
-      if(!app.querySelector('.ac-caseplate').textContent.includes(fixedName)){await choose('suit','porcelain');await choose('suit','porcelain');}
+      if(!app.querySelector('.ac-caseplate').textContent.includes(fixedName)){await choose('suit','nacre');await choose('suit','nacre');}
       await choose('helm',id);
       assert.deepEqual(pickedRailIds(),[id],'previewing a compatible suit adds only the chosen helmet to the cart');
       const preview=app.querySelector('.ac-casecanvas');assertItemArtwork(preview,{kind:'helm',id});
@@ -280,7 +281,7 @@ try{
     await choose('helm',pal);assert.deepEqual(pickedRailIds(),[pal]);
     assert(app.querySelector('.ac-caseplate').textContent.includes(C.HELMETS.find(h=>h.id===pal).name));
     assertItemArtwork(app.querySelector('.ac-casecanvas'),{kind:'helm',id:pal});
-    const partner=[...rail().querySelectorAll('button[data-shop-item-kind="suit"]')].find(n=>n.dataset.shopItemId!=='porcelain').dataset.shopItemId;
+    const partner=[...rail().querySelectorAll('button[data-shop-item-kind="suit"]')].find(n=>n.dataset.shopItemId!=='nacre').dataset.shopItemId;
     await choose('suit',partner);assert.deepEqual(pickedRailIds(),[pal,partner].sort(),'suit and helmet selections remain independent cart entries');
     assert(app.querySelector('.ac-caseplate').textContent.includes(C.SUITS.find(s=>s.id===partner).name));
     assert(app.querySelector('.ac-combobar').textContent.includes('2 ITEMS SELECTED'));
@@ -373,7 +374,7 @@ try{
           const suit=C.SUITS.find(s=>s.id===item.id),sources=surfaceOf(preview).sources;
           if(bundle.items.some(i=>i.kind==='helm'&&i.id===item.id)&&!C.wearsOwnHead(suit))assert(sources.has(`/art/helms/${item.id}.png`),item.id+' review wears its matching included helmet');
           // Patriot wears the pilot helmet since its 3D model (26 Oct 2026)
-          if(['porcelain','nacre'].includes(item.id))assert(![...sources].some(path=>path.startsWith('/art/helms/')),item.id+' review retains its authored head without an external helmet');
+          if(['nacre'].includes(item.id))assert(![...sources].some(path=>path.startsWith('/art/helms/')),item.id+' review retains its authored head without an external helmet');
         }
         if(item.kind==='pal')assert(sheet().textContent.includes(C.PALS.find(p=>p.id===item.id).desc),item.id+' review describes its actual gameplay effect');
         assert(sheet().querySelector('.ac-featurebuy'),itemKey(item)+' keeps bundle checkout alongside preview');

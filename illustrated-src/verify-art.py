@@ -64,8 +64,6 @@ COMPACT_PALS = {"cometsprite", "pocketmoon"}
 # fitted to painted art
 BASE_SUIT_IDS = (
     "robo",
-    "ghost",
-    "bigbooty",
 )
 # Each suit has its own head-to-body proportions. These display scales
 # record the build-295 head-cavity fitting review against unchanged art;
@@ -77,18 +75,14 @@ CALIBRATED_HELMET_SCALES = {
     # 40.32 still sat 14% over its own frames and well over the painted
     # skull ("it's helmet is huge"). This row follows the owner's number.
     "robo": 36.12 / 189,
-    "ghost": 0.2178,      # 49 / 225
-    "bigbooty": 28 / 187,
 }
 CALIBRATED_HELMET_TOLERANCE = 0.05
-NATURAL_FLIGHT_SUITS = {"ghost"}
+NATURAL_FLIGHT_SUITS: set = set()  # empty since Ghost joined the 3D lineup (27 Oct 2026)
 # Owner-requested skull normalization uses a shared 192px presentation box.
 CALIBRATED_HELMET_SCALES.update({suit: 36 / 192 for suit in NATURAL_FLIGHT_SUITS})
 # Suits the owner has refitted by eye on the rig editor leave the shared
 # 36px template; each row below is the owner's number.
-CALIBRATED_HELMET_SCALES["ghost"] = 30.73 / 192     # 5 Oct 2026
 CALIBRATED_HELMET_SCALES["robo"] = 32.71 / 189      # 5 Oct 2026, owner refit (was 36.12)
-CALIBRATED_HELMET_SCALES["bigbooty"] = 25.36 / 187  # 6 Oct 2026, owner refit (was 28)
 PAL_ALPHA = 15
 PAL_MIN_STRAY_AREA = 4
 PAL_MAX_DETACHED_GAP = 16
@@ -1243,6 +1237,8 @@ CUSTOM_FLIGHT_SUITS = {
                   # nor pale. Still rigged, unlike the other custom
                   # characters: the neck cut took cleanly at a 13.3% tail
                   # share on the new master.
+    "bigbooty",   # Big Booty, 27 Oct 2026: her 3D model on its own jiggle rig
+                  # (tools/rig3d: two cheek springs; recipe in the receipt).
     "ferret",     # Noodle and Bandit, 26 Oct 2026: owner-approved 3D models,
     "raccoon",    # the same as Quill below.
     "hedgehog",   # Quill, 26 Oct 2026: owner-approved 3D model (tools/rig3d), a
@@ -1251,6 +1247,9 @@ CUSTOM_FLIGHT_SUITS = {
     "briellacat", # owner-supplied sheet, 6 Sep 2026: Briella's Cat, a whole
                   # pencil character. Twelve poses cut into a 7-frame climb
                   # and a 4-frame dive; its own head, so no dome anchors.
+    # the owner's suit board, 27 Oct 2026: eight new suits rendered with tools/rig3d
+    # (art-src/rig3d/future, future6-8, 11-13 and 16, plus Ion's old art as Tracer)
+    "tracer", "glasssuit", "redline", "robodog", "geode", "mystic", "wyrm", "dune",
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.
@@ -1930,7 +1929,7 @@ def verify_run_lifelines(qa: QA) -> None:
     Three owner calls from one message, each a small wire that a refactor
     could cut without a type error: the mission objectives pinned to the
     top of a level run, RESTART LEVEL on the pause sheet for missions only,
-    and the crash sheet's acorn continue - the ad slot's stand-in. Each is
+    and the crash sheet's continue - ad only since 27 Oct 2026. Each is
     held by the wire that makes it real, not by its copy.
     """
     draw = DRAW_SOURCE.read_text(encoding="utf8")
@@ -1949,19 +1948,16 @@ def verify_run_lifelines(qa: QA) -> None:
                         "free flight would grow a restart that means TRY AGAIN")
     if "engine.restartLevel()" not in st:
         problems.append("RESTART LEVEL is not wired to engine.restartLevel")
-    # the continue: sheet -> engine -> sim, and the two prices
-    if "engine.continueRun()" not in st:
-        problems.append("the crash sheet lost its acorn continue")
-    if "reviveRun(world, save)" not in en:
-        problems.append("engine.continueRun no longer consults sim.reviveRun")
-    sim = (ROOT / "illustrated-src/game/sim.ts").read_text(encoding="utf8")
-    if not re.search(r"w\.score > 100 \? 50 : 10", sim):
-        problems.append("the continue prices drifted from the owner's spec "
-                        "(10, or 50 past gate 100)")
+    # the continue is AD ONLY (owner, 27 Oct 2026: "The 10 acorns options off the table
+    # now. Its ad only"): the sheet offers the rewarded ad and never sells the run for acorns
+    if "engine.continueWithAd()" not in st:
+        problems.append("the crash sheet lost its ad continue")
+    if "engine.continueRun()" in st or "ACORNS`" in st[st.find("WATCH AN AD"):st.find("WATCH AN AD") + 1500]:
+        problems.append("the crash sheet offers an acorn continue again - the owner made it ad only")
     if problems:
         qa.fail("run lifelines: " + "; ".join(problems))
     else:
-        qa.ok("objectives pinned, mission restart gated, acorn continue wired at both prices")
+        qa.ok("objectives pinned, mission restart gated, continue is ad only")
 
 
 def verify_vanguard(qa: QA) -> None:

@@ -99,14 +99,14 @@ try {
   // Owner,12 Sep2026: these existing own-head pilots now use Cyber's9/9
   // banks and loading rig. Their head policies are checked in the trio suite.
   // Patriot left the trio's painted frames for the 3D lineup (26 Oct 2026)
-  const CYBER_TRIO=['porcelain','nacre'];
+  const CYBER_TRIO=[];  // Envoy, the last painted pilot, left for a 3D bank (27 Oct 2026)
   // The 3D lineup (owner, 26 Oct 2026: "here are the replacements, DIRECT
   // replace"): suits re-made as rendered tap and dive banks, helmets kept -
   // the first ten, Flight and Frost on Ion's skeleton, then Leviathan, Copper and
   // Alien on their own rigs (Alien wears a helmet now: owner, 26 Oct 2026).
-  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic","flight","frost","leviathan","copper","alien","arcflash","origamist","eclipse","cryostar","verdant"];
+  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic","flight","frost","leviathan","copper","alien","arcflash","origamist","eclipse","cryostar","verdant","bigbooty","porcelain","ghost"];
   const suits=NewCat.SUITS.filter(suit=>!NewCat.wearsOwnHead(suit));
-  assert.equal(suits.length,24,'all twenty-four production suits with wearable helmets are covered (Alien, Arcflash and Patriot joined, 26 Oct 2026)');
+  assert.equal(suits.length,25,'all twenty-five production suits with wearable helmets are covered (Alien, Arcflash, Patriot and Percy joined, 26-27 Oct 2026; the owner\'s board\'s five new ones are beta until flown)');
   const promoted=suits.filter(suit=>HIGH_ORBIT.includes(suit.id)&&!THREE_D_TEST.includes(suit.id));
   const lineup=suits.filter(suit=>THREE_D_TEST.includes(suit.id));
   // Cryostar and Verdant's Eclipse transfers retired with the family's 3D models (26 Oct 2026)
@@ -130,8 +130,11 @@ try {
   assert.deepEqual(lineup.map(s=>s.id).sort(),[...THREE_D_TEST].sort(),'the whole 3D lineup ships with a wearable helmet');
   // Quill, Noodle and Bandit joined the 3D lineup with their own heads (owner, 26 Oct 2026), so
   // they are not flown below
-  const OWN_HEAD_3D=['hedgehog','ferret','raccoon'];
-  const authorized=id=>HIGH_ORBIT.includes(id)||CYBER_TRIO.includes(id)||THREE_D_TEST.includes(id)||OWN_HEAD_3D.includes(id);
+  const OWN_HEAD_3D=['hedgehog','ferret','raccoon','nacre'];
+  // the owner's board (27 Oct 2026): eight new rendered suits, beta until the owner flies them
+  const BOARD_BETA=['tracer','glasssuit','redline','robodog','geode','mystic','wyrm','dune'];
+  for(const id of BOARD_BETA)assert(!NewCat.SUITS.some(s=>s.id===id),id+' stays off production until flown');
+  const authorized=id=>HIGH_ORBIT.includes(id)||CYBER_TRIO.includes(id)||THREE_D_TEST.includes(id)||OWN_HEAD_3D.includes(id)||BOARD_BETA.includes(id);
   const withoutAuthorizedRigs=table=>Array.isArray(table) ? table.filter(id=>!authorized(id))
     : Object.fromEntries(Object.entries(table).filter(([id])=>!authorized(id)));
   for(const id of THREE_D_TEST){

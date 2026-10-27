@@ -27,12 +27,14 @@ for(const model of manifest.models){const project=makeProject(manifest,model);as
   const at=clone(a.animation);seekSimulation(a,8.25);assert.deepEqual(a.animation,at,'pause changes a pose');
   seekSimulation(a,project.pattern.duration+8.25);assert.deepEqual(a.animation,at,'repeat differs from first pass');
 }
-assert.equal(manifest.models.length,34);const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
+assert.equal(manifest.models.length,42);  // eight new suits from the owner's board (27 Oct 2026)
+const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
 assert.deepEqual(rigs.map(m=>m.id).sort(),['abyssal','arcflash','cinderforge','cosmic','groveguard','sunforged','vanguard'],'all seven original cut rigs remain available');
 // Patriot flies a rendered tap/dive bank since its 3D model (owner, 26 Oct 2026); Percy and Envoy keep Cyber's
-const patriot=manifest.models.find(m=>m.id==='origamist');
-assert.equal(patriot.family,'bank');assert.equal(patriot.banks.tap.length,12);assert.equal(patriot.banks.desc.length,4);assert.equal(patriot.banks.asc.length,0);assert(!patriot.sheet);
-const premium=manifest.models.filter(m=>['porcelain','nacre'].includes(m.id));assert.equal(premium.length,2);
+for(const id of ['origamist','porcelain','nacre']){const m=manifest.models.find(x=>x.id===id);
+  assert.equal(m.family,'bank');assert.equal(m.banks.tap.length,12);assert.equal(m.banks.desc.length,4);assert.equal(m.banks.asc.length,0);assert(!m.sheet);}
+// Envoy, the last painted 9/9 pilot, left for a rendered bank (27 Oct 2026)
+const premium=manifest.models.filter(m=>m.family==='bank'&&m.banks.asc.length===9&&m.id!=='cyber');assert.equal(premium.length,0);
 const cyber=manifest.models.find(m=>m.id==='cyber'),cyberProfile=makeProject(manifest,cyber).profile;
 for(const model of premium){
   assert.equal(model.family,'bank');assert.equal(model.atlas,null);assert(!model.sheet);
@@ -58,8 +60,8 @@ for(const model of premium){
     assert.equal(tuned.frame,8-original.frame,'each selected climb painting uses the reversed order');
   }
 }
-// Ghost is the ascent-bank fixture since Ion, then Copper, became 3D tap+dive suits (26 Oct 2026)
-const ion=manifest.models.find(m=>m.id==='ghost'),p=makeProject(manifest,ion).profile;
+// Seraph is the ascent-bank fixture since Ion, Copper and then Ghost became 3D tap+dive suits (26-27 Oct 2026)
+const ion=manifest.models.find(m=>m.id==='seraph'),p=makeProject(manifest,ion).profile;
 assert.equal(p.tapSource,'asc');
 assert.equal(p.tapPath,'out-back');
 const returning=createAnimation(ion);acceptTap(returning,p);for(let i=0;i<120;i++)stepAnimation(returning,p,STEP,-300);assert.equal(returning.frame,0,'out-and-back must finish at neutral');

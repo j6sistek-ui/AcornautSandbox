@@ -416,7 +416,8 @@ const RIGGED_SUITS = [
   // 8/8 painted bank - the static master is the honest loading fallback.
   // ghost went bank-only with its spectral rebuild: the wisp tail has no
   // neck to cut, and a full bank needs no rig.
-  "robo", "bigbooty",
+  // bigbooty left with her 3D model (27 Oct 2026): a rendered bank, no rig cut
+  "robo",
   // seraph left the rig list with the shelf-card promotion: its winged
   // asc-1 has no neck to cut (neck-cut.py refused it), and it flies a
   // full bank - the static master is its loading fallback, like alien.
@@ -427,8 +428,9 @@ const RIGGED_SUITS = [
   // overhaul sold it on production in two bundles - and its rig stayed
   // behind this flag, so a pilot who bought it flew a flat sticker while
   // the beta page flew the animation. A suit's art must follow the suit.
-  "cyber", "porcelain", "nacre",
+  "cyber",
   // origamist left with the 3D lineup (26 Oct 2026): it flies a rendered bank
+  // nacre (Envoy) followed on a new model with twin tails (27 Oct 2026)
   // High Orbit uses its own eleven-part atlases below.
 ];
 const TAP_BANKS: Record<string, number> = {
@@ -440,7 +442,7 @@ const TAP_BANKS: Record<string, number> = {
   // not on beta. A painted frame has no such thing: the pose IS the art.
   // Every one of these banks already shipped in the production art folder;
   // only this list kept production from asking for them.
-  robo: 16, bigbooty: 16, catsuit: 16, volt: 16,
+  robo: 16, catsuit: 16, volt: 16,
   // THE 3D LINEUP (owner, 26 Oct 2026: "here are the replacements, DIRECT
   // replace"): ten suits re-made from rigged 3D squirrels by tools/rig3d -
   // a twelve-frame tap and a four-frame dive (the dive table below), no climb, the
@@ -449,8 +451,16 @@ const TAP_BANKS: Record<string, number> = {
   abyssal: 12, gemmie: 12, iontrim: 12, sammie: 12, cosmic: 12,
   // and the next two on the same rendered skeleton, then four on their own rigs
   flight: 12, frost: 12, leviathan: 12, copper: 12, alien: 12, hedgehog: 12,
-  arcflash: 12, origamist: 12, eclipse: 12, cryostar: 12, verdant: 12,
+  arcflash: 12, origamist: 12, porcelain: 12, eclipse: 12, cryostar: 12, verdant: 12,
   ferret: 12, raccoon: 12,
+  // Big Booty (27 Oct 2026): her own jiggle rig - see art-src/rig3d/receipt.json for the recipe
+  bigbooty: 12,
+  // Envoy (27 Oct 2026): a new model, its twin tails twirling and crossing
+  nacre: 12,
+  // the owner's board (27 Oct 2026): eight new suits from the staged future models
+  tracer: 12, glasssuit: 12, redline: 12, robodog: 12, geode: 12, mystic: 12, wyrm: 12, dune: 12,
+  // Ghost (27 Oct 2026): her back wisp follows the main tail a beat late - recipe in the receipt
+  ghost: 12,
   // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
   // retired: their GENERATED motion lost the pilot's lower body at its
   // extremes, and each flies a painted ascent/descent ramp now -
@@ -484,22 +494,21 @@ const BOUNCE_BANKS: Record<string, number> = { volt: 16 };
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
 const ASC_BANKS: Record<string, number> =
-    { cyber: 9, porcelain: 9, nacre: 9, seraph: 8,
-        // alien, copper and leviathan left for the 3D lineup (26 Oct 2026)
-        ghost: 8,
+    { cyber: 9, seraph: 8,
+        // alien, copper, leviathan and then ghost left for the 3D lineup (26-27 Oct 2026)
         // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
         briellacat: 7,
         };
 const DESC_BANKS: Record<string, number> =
-    { cyber: 9, porcelain: 9, nacre: 9, seraph: 8,
-        ghost: 8,
+    { cyber: 9, seraph: 8,
         briellacat: 4,
         // the 3D lineup's dives, paired with their twelve-frame taps above
         ember: 4, voidsuit: 4, groveguard: 4, cinderforge: 4, sunforged: 4,
         abyssal: 4, gemmie: 4, iontrim: 4, sammie: 4, cosmic: 4,
         flight: 4, frost: 4, leviathan: 4, copper: 4, alien: 4, hedgehog: 4,
-        arcflash: 4, origamist: 4, eclipse: 4, cryostar: 4, verdant: 4,
-        ferret: 4, raccoon: 4,
+        arcflash: 4, origamist: 4, porcelain: 4, eclipse: 4, cryostar: 4, verdant: 4,
+        ferret: 4, raccoon: 4, bigbooty: 4, ghost: 4, nacre: 4,
+        tracer: 4, glasssuit: 4, redline: 4, robodog: 4, geode: 4, mystic: 4, wyrm: 4, dune: 4,
         };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
@@ -762,6 +771,8 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
     // 2026), so its sheet loads there rather than only on the beta host
     "briellacat",
+    // the owner's board (27 Oct 2026): eight new suits, on the beta host until the owner flies them
+    "tracer", "glasssuit", "redline", "robodog", "geode", "mystic", "wyrm", "dune",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
   const hyperRunIds = [
