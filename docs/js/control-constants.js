@@ -25,7 +25,7 @@ export const TAP_SHAPE_MIN = 0.1, TAP_SHAPE_MAX = 1.0;
 // their own ("its artwork, its frame work"). High Orbit, AcorNut and
 // Arcflash have their own controllers.
 export const TAP_SHAPE = {
-    cyber: "velocity", seraph: "velocity",
+    cyber: "velocity",
     briellacat: "velocity",
     // Owner-requested replacement banks follow Cyber's exact live path.
 };
@@ -110,7 +110,6 @@ export const SUIT_LEAN = {
     // flight was the reference here at the default; it joined the 3D lineup below
     // --- rigged suits: these carry the velocity bank AND the heading pitch,
     //     so they are the ones most likely to read as over-tipped
-    seraph: { up: 0.8, down: 0.3 },
     // --- custom ANIMATION suits. Their frames are the owner's and are not to
     //     be touched; their LEAN is a dial like everyone else's.
     volt: { up: 0.8, down: 0.3 },
@@ -150,14 +149,12 @@ export const SUIT_LEAN = {
     bigbooty: { up: 0, down: 0 },
     porcelain: { up: 0, down: 0 },
     nacre: { up: 0, down: 0 },
+    seraph: { up: 0, down: 0 },
     tracer: { up: 0, down: 0 },
     glasssuit: { up: 0, down: 0 },
     redline: { up: 0, down: 0 },
     robodog: { up: 0, down: 0 },
     geode: { up: 0, down: 0 },
-    mystic: { up: 0, down: 0 },
-    wyrm: { up: 0, down: 0 },
-    dune: { up: 0, down: 0 },
     ghost: { up: 0, down: 0 },
 };
 /** The dial for a suit, or the default for one that has none yet. */

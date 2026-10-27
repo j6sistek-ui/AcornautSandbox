@@ -36,7 +36,7 @@ const [D,A,Sim,S,C,Control]=await Promise.all(['draw','art','sim','save','catalo
 // iontrim, voidsuit, ember, gemmie and sammie left with the 3D lineup (26 Oct 2026),
 // then flight, frost, alien, copper, leviathan and patriot: a rendered tap and dive, no ascent
 // bank for velocity to walk
-const VELOCITY=['cyber','seraph','briellacat'];
+const VELOCITY=['cyber','briellacat'];
 assert.deepEqual(Object.keys(Control.TAP_SHAPE).sort(),[...VELOCITY].sort(),'TAP_SHAPE: every ascent-bank suit, and only those (owner, 12 Sep 2026: "everything I don\'t name otherwise, gets velocity rewind")');
 assert(Object.values(Control.TAP_SHAPE).every(v=>v==='velocity'),'and all of them are on velocity');
 assert.deepEqual([...VELOCITY].sort(),[...new Set([...Object.keys(A.ASC_BANKS)])].sort(),'the velocity roster is exactly the suits with an ascent bank');
@@ -46,8 +46,8 @@ assert.deepEqual(Control.TAIL_SPRING,{},'TAIL_SPRING is empty until the owner re
 assert.deepEqual([...Control.TAIL_SPRING_SUITS].sort(),[...A.RIGGED_SUITS].sort(),'the tail-spring roster is exactly the suits that draw their own tail layer');
 
 // --- the painter, with real ramp art --------------------------------------
-// Seraph since Eclipse joined the 3D lineup (26 Oct 2026): the velocity path needs an 8/8 ramp
-const id='seraph',art=A.emptyArt();
+// Cyber since Seraph joined the 3D lineup (27 Oct 2026): the velocity path needs a climb ramp
+const id='cyber',art=A.emptyArt(),DEEP=`asc-${A.ASC_BANKS[id]}`;
 async function sprite(file){const im=await loadImage(join(root,'docs/art',file));labels.set(im,file);return A.asSprite(im);}
 art.suits[id]=await sprite(`suits/${id}.png`);
 const bank=async(key,prefix,n)=>{art[key][id]=await Promise.all(Array.from({length:n},(_,i)=>sprite(`suits/${id}-${prefix}-${i+1}.png`)));};
@@ -77,8 +77,8 @@ function trace(cadence,ticks,setup){
 // velocity (the table): the deep climb is reached under fast taps and the
 // frame keeps moving with the climb-and-fall
 {
- const fast=trace(.15,60),deep=fast.indexOf('asc-8');
- assert(deep>=0&&deep<=20,`velocity: under 150 ms taps the pilot reaches its deepest climb by tick 20 (first asc-8 at ${deep})`);
+ const fast=trace(.15,60),deep=fast.indexOf(DEEP);
+ assert(deep>=0&&deep<=20,`velocity: under 150 ms taps the pilot reaches its deepest climb by tick 20 (first ${DEEP} at ${deep})`);
  const walk=trace(.3,240),distinct=new Set(walk).size,changes=walk.filter((p,i)=>i&&p!==walk[i-1]).length;
  assert(distinct>=12&&changes>=90,`velocity: the ascent follows the physics - ${distinct} distinct frames, ${changes} changes in 4 s`);
 }
@@ -87,7 +87,7 @@ function trace(cadence,ticks,setup){
 // tick ~15 and 0.10 s back has the pilot home ~6 ticks later, then sitting.
 {
  const dial=trace(.6,72,save=>{save.tapShape={[id]:{fwd:.25,back:.1}}});
- const deep=dial.indexOf('asc-8');
+ const deep=dial.indexOf(DEEP);
  assert(deep>=12&&deep<=17,`dial 0.25/0.10: first deep frame at tick ${deep} (expected 12-17)`);
  const home=dial.slice(deep).findIndex(p=>p==='asc-1');
  assert(home>0&&home<=8,`dial 0.25/0.10: home (asc-1) within 8 ticks of the deep frame, got ${home}`);
@@ -95,11 +95,11 @@ function trace(cadence,ticks,setup){
  // Eclipse's stock repeat rule is REWIND, so a second tap at tick 36 runs
  // the clock backwards from 0.6 s and re-crosses the deep frame ~21 ticks
  // later; on RESTART it climbs afresh and lands there 15 ticks after the tap.
- const second=dial.indexOf('asc-8',36);
- assert(second>=54&&second<=59,`dial 0.25/0.10 on rewind: the second tap re-crosses the deep frame (asc-8 at ${second})`);
+ const second=dial.indexOf(DEEP,36);
+ assert(second>=54&&second<=59,`dial 0.25/0.10 on rewind: the second tap re-crosses the deep frame (${DEEP} at ${second})`);
  const again=trace(.6,72,save=>{save.tapShape={[id]:{fwd:.25,back:.1}};save.tapRepeat={[id]:'restart'}});
- const onSchedule=again.indexOf('asc-8',36);
- assert(onSchedule>=48&&onSchedule<=53,`dial 0.25/0.10 on restart: the second tap climbs again on schedule (asc-8 at ${onSchedule})`);
+ const onSchedule=again.indexOf(DEEP,36);
+ assert(onSchedule>=48&&onSchedule<=53,`dial 0.25/0.10 on restart: the second tap climbs again on schedule (${DEEP} at ${onSchedule})`);
 }
 // the repeat-tap dial: on RESTART every tap is a fresh gesture from frame
 // one, so at 300 ms taps the frame right after the second tap is back at
@@ -119,15 +119,15 @@ function trace(cadence,ticks,setup){
 // reaches the deep frame (this is the behaviour the owner is comparing against)
 {
  const stock=trace(.15,60,save=>{save.tapShape={[id]:'default'}});
- assert(!stock.includes('asc-8'),'default ramp: 150 ms taps never reach asc-8');
+ assert(!stock.includes(DEEP),'default ramp: 150 ms taps never reach the deepest climb');
  assert(new Set(stock).size>=3,'default ramp: still animates through its opening frames');
 }
 // a live build ignores the dial: tapShapeFor with the dial set still answers the table
 // (checked through the resolver's own beta gate: IS_BETA is true here, so the
 // dial wins - and the table wins when nothing is dialled)
-assert.equal(S.tapShapeFor({tapShape:{}},'seraph'),'velocity');
-assert.deepEqual(S.tapShapeFor({tapShape:{seraph:{fwd:.5,back:.5}}},'seraph'),{fwd:.5,back:.5});
-assert.equal(S.tapShapeFor({tapShape:{seraph:'default'}},'seraph'),null);
+assert.equal(S.tapShapeFor({tapShape:{}},'cyber'),'velocity');
+assert.deepEqual(S.tapShapeFor({tapShape:{cyber:{fwd:.5,back:.5}}},'cyber'),{fwd:.5,back:.5});
+assert.equal(S.tapShapeFor({tapShape:{cyber:'default'}},'cyber'),null);
 assert.equal(S.tapShapeFor(null,'robo'),null,'a suit off the table (a frozen one) is the stock ramp');
 assert.equal(S.tapShapeFor(null,'flight'),null,'flight left the velocity table with the 3D lineup: it has no ascent bank to walk');
 

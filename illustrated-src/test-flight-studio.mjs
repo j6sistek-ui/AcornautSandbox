@@ -27,7 +27,7 @@ for(const model of manifest.models){const project=makeProject(manifest,model);as
   const at=clone(a.animation);seekSimulation(a,8.25);assert.deepEqual(a.animation,at,'pause changes a pose');
   seekSimulation(a,project.pattern.duration+8.25);assert.deepEqual(a.animation,at,'repeat differs from first pass');
 }
-assert.equal(manifest.models.length,42);  // eight new suits from the owner's board (27 Oct 2026)
+assert.equal(manifest.models.length,39);  // five new suits from the owner's board (27 Oct 2026)
 const rigs=manifest.models.filter(m=>!['bank','premium-flight'].includes(m.family));assert.equal(rigs.length,7);
 assert.deepEqual(rigs.map(m=>m.id).sort(),['abyssal','arcflash','cinderforge','cosmic','groveguard','sunforged','vanguard'],'all seven original cut rigs remain available');
 // Patriot flies a rendered tap/dive bank since its 3D model (owner, 26 Oct 2026); Percy and Envoy keep Cyber's
@@ -60,8 +60,9 @@ for(const model of premium){
     assert.equal(tuned.frame,8-original.frame,'each selected climb painting uses the reversed order');
   }
 }
-// Seraph is the ascent-bank fixture since Ion, Copper and then Ghost became 3D tap+dive suits (26-27 Oct 2026)
-const ion=manifest.models.find(m=>m.id==='seraph'),p=makeProject(manifest,ion).profile;
+// Briella's Cat is the ascent-bank fixture since Ion, Copper, Ghost and then Seraph became 3D tap+dive suits
+// (26-27 Oct 2026); Cyber flies its own Cyber-standard profile, so it cannot stand in
+const ion=manifest.models.find(m=>m.id==='briellacat'),p=makeProject(manifest,ion).profile;
 assert.equal(p.tapSource,'asc');
 assert.equal(p.tapPath,'out-back');
 const returning=createAnimation(ion);acceptTap(returning,p);for(let i=0;i<120;i++)stepAnimation(returning,p,STEP,-300);assert.equal(returning.frame,0,'out-and-back must finish at neutral');
@@ -70,7 +71,7 @@ p.tapEase=1; // The following fixtures isolate linear timing and custom duration
 const a=createAnimation(ion),b=createAnimation(ion);acceptTap(a,p);acceptTap(b,p);
 const visited=[];
 for(let i=0;i<120;i++){stepAnimation(a,p,STEP,-450);stepAnimation(b,p,STEP,-60);assert.equal(a.frame,b.frame,'tap frame must not follow rise velocity');assert.notEqual(a.bank,'desc');visited.push(a.frame);}
-assert.deepEqual([...new Set(visited)],[0,1,2,3,4,5,6,7]);
+assert.deepEqual([...new Set(visited)],ion.banks.asc.map((_,i)=>i));
 const long=clone(p);long.tapSeconds=1.5;const c=createAnimation(ion);acceptTap(c,long);for(let i=0;i<60;i++)stepAnimation(c,long,STEP,-300);assert.equal(c.frame,2,'1.5s cycle should be one-third complete at .5s');
 const gate=createAnimation(ion);acceptTap(gate,p);for(let i=0;i<60;i++)stepAnimation(gate,p,STEP,400);assert.notEqual(gate.bank,'desc','finish-tap gate lost');
 for(let i=0;i<120;i++)stepAnimation(gate,p,STEP,500);assert.equal(gate.bank,'desc');assert.ok(gate.fall>.8);

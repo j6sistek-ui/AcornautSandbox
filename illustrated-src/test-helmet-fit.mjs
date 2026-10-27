@@ -14,7 +14,7 @@ function equalPixels(message){
  assert.equal(different,0,message+' (different channels)');
 }
 let composites=0,pairs=0,poses=0;
-assert.equal(r.cat.SUITS.length,42,'review inventory includes every current character');  // + eight from the owner's board (27 Oct 2026)
+assert.equal(r.cat.SUITS.length,39,'review inventory includes every current character');  // + five from the owner's board (27 Oct 2026)
 assert.deepEqual(Object.keys(fit.HELMET_SEATS).sort(),r.cat.HELMETS.map(h=>h.id).sort(),'every helmet has a reviewed seat');
 for(const h of r.cat.HELMETS){
  assert(fit.HELMET_SEATS[h.id].every(Number.isFinite),h.id+' finite cavity');

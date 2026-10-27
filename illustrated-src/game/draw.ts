@@ -3549,7 +3549,6 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "suit:robo": [184, 98, 32.71, 0],
   "suit:catsuit": [212, 86, 50],
   "suit:phoenix": [207, 92, 41],
-  "suit:seraph": [205, 131, 27.89, 2],
   // robo — pose-specific head and collar registration.
   "robo-tap-1": [193, 102, 34.24, 0],
   "robo-tap-2": [193, 102, 34.24, 0],
@@ -3567,23 +3566,6 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "robo-tap-14": [195, 106, 34.24, 0],
   "robo-tap-15": [194, 103, 34.24, 0],
   "robo-tap-16": [194, 99, 34.24, 0],
-  // seraph — pose-specific head and collar registration.
-  "seraph-asc-1": [205, 131, 27.89, 2],
-  "seraph-asc-2": [205, 129, 27.89, 2],
-  "seraph-asc-3": [205, 127, 27.89, 2],
-  "seraph-asc-4": [205, 134, 27.89, 2],
-  "seraph-asc-5": [205, 132, 27.89, 2],
-  "seraph-asc-6": [205, 130, 27.89, -1],
-  "seraph-asc-7": [205, 128, 27.89, -4],
-  "seraph-asc-8": [205, 126, 27.89, -8],
-  "seraph-desc-1": [205, 131, 27.89, 2],
-  "seraph-desc-2": [205, 134, 27.89, 2],
-  "seraph-desc-3": [205, 137, 27.89, 4],
-  "seraph-desc-4": [205, 141, 27.89, 12],
-  "seraph-desc-5": [204, 145, 27.89, 19],
-  "seraph-desc-6": [203, 148, 27.89, 23],
-  "seraph-desc-7": [201, 163, 27.89, 57],
-  "seraph-desc-8": [197, 163, 27.89, 62],
   // THE 3D LINEUP (26 Oct 2026): measured, not placed - tools/rig3d projects each
   // frame's 3D head through the render camera (anchors.json). Centre and tilt are
   // per frame; the radius is the suit's median, so the glass never resizes.
@@ -3740,6 +3722,23 @@ const DOME: Record<string, [number, number, number] | [number, number, number, n
   "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
   "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
   "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+  "suit:seraph": [192.36, 121.33, 25.14, 2.3],
+  "seraph-tap-1": [192.36, 121.33, 25.14, 2.3],
+  "seraph-tap-2": [190.56, 118.3, 25.14, -1.36],
+  "seraph-tap-3": [189.53, 116.98, 25.14, -3.7],
+  "seraph-tap-4": [189.6, 117.64, 25.14, -4.07],
+  "seraph-tap-5": [190.72, 120.11, 25.14, -2.39],
+  "seraph-tap-6": [192.54, 123.77, 25.14, 0.9],
+  "seraph-tap-7": [194.47, 127.67, 25.14, 4.9],
+  "seraph-tap-8": [195.99, 130.77, 25.14, 8.53],
+  "seraph-tap-9": [196.8, 132.3, 25.14, 10.82],
+  "seraph-tap-10": [196.82, 131.68, 25.14, 11.19],
+  "seraph-tap-11": [195.98, 129.08, 25.14, 9.54],
+  "seraph-tap-12": [194.37, 125.29, 25.14, 6.3],
+  "seraph-desc-1": [192.36, 121.33, 25.14, 2.3],
+  "seraph-desc-2": [193.32, 136.19, 25.14, 15.94],
+  "seraph-desc-3": [190.83, 151.42, 25.14, 29.01],
+  "seraph-desc-4": [185.26, 166.97, 25.14, 41.35],
   "suit:iontrim": [191.55, 107.14, 24.07, 1.7],
   "iontrim-tap-1": [191.55, 107.14, 24.07, 1.7],
   "iontrim-tap-2": [190.33, 104.37, 24.07, -1.99],
@@ -4604,7 +4603,7 @@ export const SUIT_DIVE_DEPTH: Record<string, number> = {
   // THE 3D LINEUP (26 Oct 2026): four rendered dive frames, walked in full
   cinderforge: 1, groveguard: 1, cosmic: 1, sunforged: 1, abyssal: 1,
   iontrim: 1, voidsuit: 1, ember: 1, sammie: 1, gemmie: 1,
-  tracer: 1, glasssuit: 1, redline: 1, robodog: 1, geode: 1, mystic: 1, wyrm: 1, dune: 1,
+  tracer: 1, glasssuit: 1, redline: 1, robodog: 1, geode: 1,
   // Fresh natural banks carry the shallow body pitch in the art and use
   // every tail-whip pose. The temporary limits on obsolete art are retired.
   copper: 1, leviathan: 1,
@@ -4743,7 +4742,7 @@ const RIG_TAIL_TRAIL = 0.55;                  // how much of the pitch the tail 
 const RIG_PITCH_SKIP = new Set(["robo", "bigbooty", "catsuit", "alien", "raccoon", "ferret", "hedgehog",
   "ember", "voidsuit", "groveguard", "cinderforge", "sunforged", "abyssal", "gemmie", "iontrim", "sammie", "cosmic",
   "flight", "frost", "leviathan", "copper", "arcflash", "origamist", "eclipse", "cryostar", "verdant", "porcelain", "ghost", "nacre",
-  "tracer", "glasssuit", "redline", "robodog", "geode", "mystic", "wyrm", "dune"]);
+  "tracer", "glasssuit", "redline", "robodog", "geode", "seraph"]);
 // the critters' flight cycles play at this rate, on the world clock
 const LOOP_FPS = 12;
 // A painted motion bank normally CARRIES the attitude, so rotating it as

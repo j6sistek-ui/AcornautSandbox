@@ -21,9 +21,12 @@ const SIZE = +(q.get('size') || 512);
 const counts = Object.fromEntries((q.get('frames') || '').split(',').filter(Boolean).map(kv => kv.split(':')).map(([k, v]) => [k, +v]));
 // ?tailamp=0.6 scales how far the tail swings from its rest aim (and how far it unfurls), for a
 // model whose tail would sweep through its own legs at full swing (Big Booty)
+// ?tailrest= (degrees, 180 straight out behind) moves the tail's resting aim the swing rides on
+// (Seraph: "tail more straight back")
 const TAILAMP = +(q.get('tailamp') || 1), TAIL_REST = ALL_MOVES.tap.pose(0).tailAim?.[1] ?? 130;
-const shaped = pose => TAILAMP === 1 ? pose : u => { const p = pose(u);
-  if (p.tailAim) p.tailAim = [p.tailAim[0], TAIL_REST + (p.tailAim[1] - TAIL_REST) * TAILAMP];
+const TAILREST = q.get('tailrest') ? +q.get('tailrest') : TAIL_REST;
+const shaped = pose => TAILAMP === 1 && TAILREST === TAIL_REST ? pose : u => { const p = pose(u);
+  if (p.tailAim) p.tailAim = [p.tailAim[0], TAILREST + (p.tailAim[1] - TAIL_REST) * TAILAMP];
   if (p.unfurl) p.unfurl *= TAILAMP; return p; };
 // ?follow=0.1: a kept chain (--keep) follows the tail's swing that many seconds late, at ?famp= of
 // its size (?fsign= flips its sense) - the big tail leads, the wisp follows through
@@ -43,7 +46,18 @@ const TROLL = +(q.get('troll') || 0);
 const ease = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
 const twirled = (name, pose, loop) => !TROLL ? pose : u => { const p = pose(u);
   p.tailRoll = loop ? TROLL * (ease((u - 0.04) / 0.36) - ease((u - 0.6) / 0.32)) : 0.25 * TROLL * ease(u); return p; };
-const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames, pose: twirled(k, swayed(k, followed(k, shaped(m.pose), m.loop), m.loop), m.loop) }]));
+// ?flap= (degrees): driven wings (--drive) beat down toward the hands on each tap - a quick
+// downstroke to the first third, then a slow recovery up past rest; the dive sweeps them down
+// ?bob= (degrees): the tail and hind feet bounce a little with each wingbeat - down with the
+// downstroke, back up as the wings recover (Seraph: "bounces with the feet when wings flap")
+const FLAP = +(q.get('flap') || 0), BOB = +(q.get('bob') || 0);
+const flapped = (name, pose, loop) => !FLAP ? pose : u => { const p = pose(u);
+  const s = loop ? (u < 0.3 ? ease(u / 0.3) : 1 - ease((u - 0.3) / 0.7)) - 0.4 : 0.9 * ease(u) - 0.4;
+  p.flap = FLAP * s;
+  if (BOB) { const b = BOB * s / 0.6 * (loop ? 1 : 0.4);
+    if (p.tailAim) p.tailAim = [p.tailAim[0], p.tailAim[1] + b]; p.hind = (p.hind || 0) - b; }
+  return p; };
+const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames, pose: flapped(k, twirled(k, swayed(k, followed(k, shaped(m.pose), m.loop), m.loop), m.loop), m.loop) }]));
 const R = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 R.setPixelRatio(1); R.setSize(SIZE, SIZE);
 R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;
