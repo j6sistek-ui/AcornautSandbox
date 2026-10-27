@@ -67,7 +67,11 @@ export async function loadRig(url, opts = {}) {
   // paw stays with its leg
   const depth = i => 1 + Math.max(0, ...kids[i].map(depth));
   // the fork can sit a few bones down the branch (pelvis bones first): follow single children to it
-  const addChain = c => { let f = c; while (kids[f].length === 1) f = kids[f][0]; const long = kids[f].filter(k => depth(k) >= 3); if (long.length >= 2) kids[f].forEach(addChain); else chains.push(subtree(c)); };
+  // map.split names bones whose children are always separate chains: a chain splits only where
+  // two long branches fork, so where the hind legs hang off the tail's own root bone (the blue
+  // crystal squirrel) they rode along as tail and the pilot flew with no hind legs
+  const split = new Set((map.split || []).map(byName).filter(i => i >= 0));
+  const addChain = c => { let f = c; while (kids[f].length === 1 && !split.has(f)) f = kids[f][0]; if (split.has(f)) { kids[f].forEach(addChain); return; } const long = kids[f].filter(k => depth(k) >= 3); if (long.length >= 2) kids[f].forEach(addChain); else chains.push(subtree(c)); };
   for (const s of spinePath) if (s !== head) for (const c of kids[s]) if (!onSpine.has(c)) addChain(c);
   const tipY = ch => Math.min(...ch.map(i => wpos(bones[i]).y));
   const verts = ch => ch.reduce((a, i) => a + count[i], 0);
