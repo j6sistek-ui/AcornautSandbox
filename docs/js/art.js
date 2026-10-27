@@ -1,10 +1,10 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=323";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=323";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=323";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=323";
-import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumFrames, isHighOrbitRig } from "./high-orbit-config.js?v=323";
-import { isArcflashRig } from "./arcflash.js?v=323";
-import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=323";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=325";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=325";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=325";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=325";
+import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumFrames, isHighOrbitRig } from "./high-orbit-config.js?v=325";
+import { isArcflashRig } from "./arcflash.js?v=325";
+import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=325";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -375,8 +375,11 @@ const TAP_BANKS = {
     bigbooty: 12,
     // Envoy (27 Oct 2026): a new model, its twin tails twirling and crossing
     nacre: 12,
-    // the owner's board (27 Oct 2026): eight new suits from the staged future models
-    tracer: 12, glasssuit: 12, redline: 12, robodog: 12, geode: 12, mystic: 12, wyrm: 12, dune: 12,
+    // Seraph (27 Oct 2026): its 3D model with a rigged tail and wings that beat down toward the
+    // hands (art-src/rig3d/receipt.json)
+    seraph: 12,
+    // the owner's board (27 Oct 2026): five new suits from the staged future models
+    tracer: 12, glasssuit: 12, redline: 12, robodog: 12, geode: 12,
     // Ghost (27 Oct 2026): her back wisp follows the main tail a beat late - recipe in the receipt
     ghost: 12,
     // seraph's, iontrim's, copper's and voidsuit's generated tap banks are
@@ -411,20 +414,21 @@ const BOUNCE_BANKS = { volt: 16 };
 // "large frame in rotation" the owner could see but not name. Dropped and
 // renumbered; the crossing now lands on a true first-dive pose. The other
 // eleven swept suits measured clean and keep their shared frame.
-const ASC_BANKS = { cyber: 9, seraph: 8,
+const ASC_BANKS = { cyber: 9,
+    // seraph left too (27 Oct 2026): its 3D model, wings beating down on its own hinges
     // alien, copper, leviathan and then ghost left for the 3D lineup (26-27 Oct 2026)
     // Briella's Cat (owner sheet, 6 Sep 2026): 12 poses cut 7 up / 4 down
     briellacat: 7,
 };
-const DESC_BANKS = { cyber: 9, seraph: 8,
+const DESC_BANKS = { cyber: 9,
     briellacat: 4,
     // the 3D lineup's dives, paired with their twelve-frame taps above
     ember: 4, voidsuit: 4, groveguard: 4, cinderforge: 4, sunforged: 4,
     abyssal: 4, gemmie: 4, iontrim: 4, sammie: 4, cosmic: 4,
     flight: 4, frost: 4, leviathan: 4, copper: 4, alien: 4, hedgehog: 4,
     arcflash: 4, origamist: 4, porcelain: 4, eclipse: 4, cryostar: 4, verdant: 4,
-    ferret: 4, raccoon: 4, bigbooty: 4, ghost: 4, nacre: 4,
-    tracer: 4, glasssuit: 4, redline: 4, robodog: 4, geode: 4, mystic: 4, wyrm: 4, dune: 4,
+    ferret: 4, raccoon: 4, bigbooty: 4, ghost: 4, nacre: 4, seraph: 4,
+    tracer: 4, glasssuit: 4, redline: 4, robodog: 4, geode: 4,
 };
 // THE CRITTERS' FLIGHT CYCLES: sixteen whole-character frames that loop
 // on the clock for as long as the suit is worn. See suitLoop / fullLoop.
@@ -714,8 +718,8 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
         // 2026), so its sheet loads there rather than only on the beta host
         "briellacat",
-        // the owner's board (27 Oct 2026): eight new suits, on the beta host until the owner flies them
-        "tracer", "glasssuit", "redline", "robodog", "geode", "mystic", "wyrm", "dune",
+        // the owner's board (27 Oct 2026): five new suits, on the beta host until the owner flies them
+        "tracer", "glasssuit", "redline", "robodog", "geode",
     ];
     const optional = (src) => loadImg(src).catch(() => null);
     const hyperRunIds = [

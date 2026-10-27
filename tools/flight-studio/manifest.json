@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "323",
-  "sourceCommit": "f52f4dfd1ffb181cbb3319a489a35cb360ff58c0",
+  "artVer": "325",
+  "sourceCommit": "57d52548c60d4028fda1155264940038a1e00ac0",
   "models": [
     {
       "id": "flight",
@@ -699,186 +699,6 @@
         "suits/geode-desc-2.png": "893de5607f56d48bed093af9db774314aa5dcb88d60d2c293974268fcdbf8f21",
         "suits/geode-desc-3.png": "82b82cfebf00094194e1bae84c98c91c5f088398516bed2ee3ecb871981e7656",
         "suits/geode-desc-4.png": "80ff5d95c07d278801c2a855f0b7d7056591b1eae62518b7739b0c249e9bbb13"
-      }
-    },
-    {
-      "id": "mystic",
-      "name": "Mystic",
-      "key": "suit:mystic",
-      "file": "suits/mystic.png",
-      "dome": [
-        128,
-        128,
-        40
-      ],
-      "box": null,
-      "ownHead": true,
-      "bakedDome": false,
-      "frame": false,
-      "family": "bank",
-      "atlas": null,
-      "banks": {
-        "tap": [
-          "suits/mystic-tap-1.png",
-          "suits/mystic-tap-2.png",
-          "suits/mystic-tap-3.png",
-          "suits/mystic-tap-4.png",
-          "suits/mystic-tap-5.png",
-          "suits/mystic-tap-6.png",
-          "suits/mystic-tap-7.png",
-          "suits/mystic-tap-8.png",
-          "suits/mystic-tap-9.png",
-          "suits/mystic-tap-10.png",
-          "suits/mystic-tap-11.png",
-          "suits/mystic-tap-12.png"
-        ],
-        "asc": [],
-        "desc": [
-          "suits/mystic-desc-1.png",
-          "suits/mystic-desc-2.png",
-          "suits/mystic-desc-3.png",
-          "suits/mystic-desc-4.png"
-        ],
-        "loop": []
-      },
-      "hashes": {
-        "suits/mystic.png": "3d498d1855bc3037519eaaaf98f3a2b83ced6962be31caddb94c902c998bd0de",
-        "suits/mystic-tap-1.png": "3d498d1855bc3037519eaaaf98f3a2b83ced6962be31caddb94c902c998bd0de",
-        "suits/mystic-tap-2.png": "e4b0683e83a38c46d426cac3a11c7eaa63409da8c506d9c974b380a1ea2f6a50",
-        "suits/mystic-tap-3.png": "f0fd046399b1dc09275362db1dd1ffe79cf193685379b8c55764796a16487dcb",
-        "suits/mystic-tap-4.png": "27b23f5e6de2645a5a229e05f565b65de93d2d88cff777f1fab0ade06749df9e",
-        "suits/mystic-tap-5.png": "7972d6055634af886a02855682040347e526f28699b9560479c794c7dfb09c2c",
-        "suits/mystic-tap-6.png": "5eb1e83828a03beb3820ccd6dadc7fd21249a82b746992b238785c27e61ac250",
-        "suits/mystic-tap-7.png": "b1ad7bdf48f53d19a64c7df0ecdd9f2792e5b175bbc5effba184be902fd41447",
-        "suits/mystic-tap-8.png": "0f06382a2f87c88d308b840650eb3cfa584b2f64293876fec3f8c931f81d7706",
-        "suits/mystic-tap-9.png": "82f25dec276ef09fd0ce357c81a25a15676a69b1586e1bfde4cdad7f8411062a",
-        "suits/mystic-tap-10.png": "3acd64c4a610cf838450449f5f791994c18d66a11221231baf77d2b9f6dc10c2",
-        "suits/mystic-tap-11.png": "8b184bb8400ce1a87663204a96845afa434bbff97ce532a0221971cd19ef7595",
-        "suits/mystic-tap-12.png": "fb3d2a8bafa5b28abf854714a3f61828a520329ec484f1da55f1c544a581c0e9",
-        "suits/mystic-desc-1.png": "3d498d1855bc3037519eaaaf98f3a2b83ced6962be31caddb94c902c998bd0de",
-        "suits/mystic-desc-2.png": "30ea7dc807999b880c2751d0994a190ae26ef78ff4da3309925b372ec6724699",
-        "suits/mystic-desc-3.png": "eaa88c586e245722845c1e9ec287dd463ddfead32e37f62796049e892a175502",
-        "suits/mystic-desc-4.png": "406d00b14cf5e27514b49259c181e2d970b681ab0deb1b40f8d9b149be67df14"
-      }
-    },
-    {
-      "id": "wyrm",
-      "name": "Wyrm",
-      "key": "suit:wyrm",
-      "file": "suits/wyrm.png",
-      "dome": [
-        128,
-        128,
-        40
-      ],
-      "box": null,
-      "ownHead": true,
-      "bakedDome": false,
-      "frame": false,
-      "family": "bank",
-      "atlas": null,
-      "banks": {
-        "tap": [
-          "suits/wyrm-tap-1.png",
-          "suits/wyrm-tap-2.png",
-          "suits/wyrm-tap-3.png",
-          "suits/wyrm-tap-4.png",
-          "suits/wyrm-tap-5.png",
-          "suits/wyrm-tap-6.png",
-          "suits/wyrm-tap-7.png",
-          "suits/wyrm-tap-8.png",
-          "suits/wyrm-tap-9.png",
-          "suits/wyrm-tap-10.png",
-          "suits/wyrm-tap-11.png",
-          "suits/wyrm-tap-12.png"
-        ],
-        "asc": [],
-        "desc": [
-          "suits/wyrm-desc-1.png",
-          "suits/wyrm-desc-2.png",
-          "suits/wyrm-desc-3.png",
-          "suits/wyrm-desc-4.png"
-        ],
-        "loop": []
-      },
-      "hashes": {
-        "suits/wyrm.png": "b46ba5242b557cbde1609d31ce42ee2c3a9b60ac9d4d42d1a5c30c7bff6d6c1a",
-        "suits/wyrm-tap-1.png": "b46ba5242b557cbde1609d31ce42ee2c3a9b60ac9d4d42d1a5c30c7bff6d6c1a",
-        "suits/wyrm-tap-2.png": "94e95467aa79b6f9fb5a7396a3291cccb0e18f53bdf3f547218f24f9a720f3f9",
-        "suits/wyrm-tap-3.png": "f5d63b97c2de23eea5ff9401366b6403bf00e337cd80923b70d22737b7658811",
-        "suits/wyrm-tap-4.png": "542e312811491dbf9ce128271558f7384330b76093963408b0c77f18112dc732",
-        "suits/wyrm-tap-5.png": "a26fe11da7d8d8d6fae3c4bc6978cf65a059dac7cfe355cd6b26ed5326803477",
-        "suits/wyrm-tap-6.png": "005fd75557b17ce8e944e19a135df7ec564e355305663001964a61ef360a12f5",
-        "suits/wyrm-tap-7.png": "7cadce6e3a053103d29ca8f860fc26117b7a0029d75f18c29b1b674545715697",
-        "suits/wyrm-tap-8.png": "3cfcab6ddbc43a1346cbd1d46ecff4a83d04c33365e9ec16e0b3a8e9170f7bae",
-        "suits/wyrm-tap-9.png": "07a39345e24dcf41051fbd516edf49cdb90d47a4ee3f00001f474782e2a84ade",
-        "suits/wyrm-tap-10.png": "3e7907787ba17a621a071c2cda9bd97f67f07b0c13d76d1e153706e18fea45d5",
-        "suits/wyrm-tap-11.png": "c7bd2733479279ea7ad583dc3cba666dfa318232b3c8bf13a07a6ae085154776",
-        "suits/wyrm-tap-12.png": "14faa1118b86b17cf5a471744063a209f5464b1c3f101e09ad5926164ad7f80b",
-        "suits/wyrm-desc-1.png": "b46ba5242b557cbde1609d31ce42ee2c3a9b60ac9d4d42d1a5c30c7bff6d6c1a",
-        "suits/wyrm-desc-2.png": "e29e2fd19587625dce402852cee4c5b9db7d560282fbf9a0844a2f4e78c9c41c",
-        "suits/wyrm-desc-3.png": "42a766fdef181d0a4bf696c08f6f6104fde016051ae3b8b9ad4d56493c4e550a",
-        "suits/wyrm-desc-4.png": "9e298c5cbdaacba3312b5a35405fe5a0b12b73d98d8271d4765bcdda2a2ae04e"
-      }
-    },
-    {
-      "id": "dune",
-      "name": "Dune",
-      "key": "suit:dune",
-      "file": "suits/dune.png",
-      "dome": [
-        128,
-        128,
-        40
-      ],
-      "box": null,
-      "ownHead": true,
-      "bakedDome": false,
-      "frame": false,
-      "family": "bank",
-      "atlas": null,
-      "banks": {
-        "tap": [
-          "suits/dune-tap-1.png",
-          "suits/dune-tap-2.png",
-          "suits/dune-tap-3.png",
-          "suits/dune-tap-4.png",
-          "suits/dune-tap-5.png",
-          "suits/dune-tap-6.png",
-          "suits/dune-tap-7.png",
-          "suits/dune-tap-8.png",
-          "suits/dune-tap-9.png",
-          "suits/dune-tap-10.png",
-          "suits/dune-tap-11.png",
-          "suits/dune-tap-12.png"
-        ],
-        "asc": [],
-        "desc": [
-          "suits/dune-desc-1.png",
-          "suits/dune-desc-2.png",
-          "suits/dune-desc-3.png",
-          "suits/dune-desc-4.png"
-        ],
-        "loop": []
-      },
-      "hashes": {
-        "suits/dune.png": "df156f3710ae53b3b9c78eee4c28ff19547137adafa966074d7f7189185f11c4",
-        "suits/dune-tap-1.png": "df156f3710ae53b3b9c78eee4c28ff19547137adafa966074d7f7189185f11c4",
-        "suits/dune-tap-2.png": "ccb81a1084ac78a883b9629ddc8405204f93200184914c318d43437c17400d7c",
-        "suits/dune-tap-3.png": "91079089f74f989a6900e5ca0cb6c60b9de147446b3edad4591c3f7c69d425fd",
-        "suits/dune-tap-4.png": "ac21281a24fc862c26893a2996f832a4e04e0c3ed7c24d2deb261451d0b3c729",
-        "suits/dune-tap-5.png": "8e94ef1f004e4cd519c7328048af6bfca4e7a0a1286010d9f5320ac57dfa8eec",
-        "suits/dune-tap-6.png": "006bc4eec065813b6232f56dd480fe3e1e6f4273e3678099d6128812163ca244",
-        "suits/dune-tap-7.png": "75ea5955d0da31858243a2cb02f22ed968fce2b690a492f8d263d5fb005159c2",
-        "suits/dune-tap-8.png": "ae2c6b3d23a0adc485ef9cfe69bbff89eb6eb009b77670942fac40312cdbc8a9",
-        "suits/dune-tap-9.png": "981df50879f307cd46ed5b441793529cafeb64ee9d22d881d9f1f7f6041163a5",
-        "suits/dune-tap-10.png": "2bd5fc648de6859d316622f9871ed019e7aa36e3ff4f170e082e07037017202a",
-        "suits/dune-tap-11.png": "16f1fcd40c0e95948f98d0c41a7af110c3437c40e8e79b96c25f847513b0a960",
-        "suits/dune-tap-12.png": "58366a10bfb5b576789e104c7de0c7e5e7779f23e4abfe1abedefa684852cc7c",
-        "suits/dune-desc-1.png": "df156f3710ae53b3b9c78eee4c28ff19547137adafa966074d7f7189185f11c4",
-        "suits/dune-desc-2.png": "0d4e28b6d3e06bed49f6cfe7537cfe8eaa132d3019be3d006a48f9fe5990f231",
-        "suits/dune-desc-3.png": "16bf43e2d1e60a314ed6e952981c8becc302911942b3737a3fabf4166fe7834f",
-        "suits/dune-desc-4.png": "7d56241dcac61209aaff892fcce1b16fba2ae5369c5db4da1bfd6616edf65e56"
       }
     },
     {
@@ -1735,10 +1555,10 @@
       "key": "suit:seraph",
       "file": "suits/seraph.png",
       "dome": [
-        205,
-        131,
-        27.89,
-        2
+        192.36,
+        121.33,
+        25.14,
+        2.3
       ],
       "box": null,
       "ownHead": false,
@@ -1747,47 +1567,47 @@
       "family": "bank",
       "atlas": null,
       "banks": {
-        "tap": [],
-        "asc": [
-          "suits/seraph-asc-1.png",
-          "suits/seraph-asc-2.png",
-          "suits/seraph-asc-3.png",
-          "suits/seraph-asc-4.png",
-          "suits/seraph-asc-5.png",
-          "suits/seraph-asc-6.png",
-          "suits/seraph-asc-7.png",
-          "suits/seraph-asc-8.png"
+        "tap": [
+          "suits/seraph-tap-1.png",
+          "suits/seraph-tap-2.png",
+          "suits/seraph-tap-3.png",
+          "suits/seraph-tap-4.png",
+          "suits/seraph-tap-5.png",
+          "suits/seraph-tap-6.png",
+          "suits/seraph-tap-7.png",
+          "suits/seraph-tap-8.png",
+          "suits/seraph-tap-9.png",
+          "suits/seraph-tap-10.png",
+          "suits/seraph-tap-11.png",
+          "suits/seraph-tap-12.png"
         ],
+        "asc": [],
         "desc": [
           "suits/seraph-desc-1.png",
           "suits/seraph-desc-2.png",
           "suits/seraph-desc-3.png",
-          "suits/seraph-desc-4.png",
-          "suits/seraph-desc-5.png",
-          "suits/seraph-desc-6.png",
-          "suits/seraph-desc-7.png",
-          "suits/seraph-desc-8.png"
+          "suits/seraph-desc-4.png"
         ],
         "loop": []
       },
       "hashes": {
-        "suits/seraph.png": "c11ba3654d169a3f9fb48a87ed40ee528e0f2ec895e8d8bf9e5a41eab93ef4c7",
-        "suits/seraph-asc-1.png": "c11ba3654d169a3f9fb48a87ed40ee528e0f2ec895e8d8bf9e5a41eab93ef4c7",
-        "suits/seraph-asc-2.png": "2541b1f89b764ca64ccc5ec462cf5b8a7d0430d3062d9c6c96611148f350dbbf",
-        "suits/seraph-asc-3.png": "704620b38c080da563136f04a065bcc5dff26fa3e0232d05bd59c46039f297dd",
-        "suits/seraph-asc-4.png": "f9ba5f7b8f270f315b62c869fd131dc0fa911b43a33ec0d06d09833f2761a1c5",
-        "suits/seraph-asc-5.png": "97f615d99e166d3873037bb01ab3387de4a09ab3e085f3accbf12c4e88d28e3a",
-        "suits/seraph-asc-6.png": "4e9384d01d0b171b25e761efe7dc7803ce21febc016c70264f0a69fac750bbc3",
-        "suits/seraph-asc-7.png": "66514c081975e69e317b039fe4165a51d3003916e128f0509c9b87d12f9cac99",
-        "suits/seraph-asc-8.png": "952e442efdfe94535a50c057c71a301df136458626bcedc778ba6828825bc3c0",
-        "suits/seraph-desc-1.png": "c11ba3654d169a3f9fb48a87ed40ee528e0f2ec895e8d8bf9e5a41eab93ef4c7",
-        "suits/seraph-desc-2.png": "ff5c16d45123626c7aca92d08a24c517af73c52e5fd1f62f1aa1d25208ec33f4",
-        "suits/seraph-desc-3.png": "8de91ea1fe4de5e22bde180ee9b7a23591a72529691893a03c2af17158d6594c",
-        "suits/seraph-desc-4.png": "34cef6c3118be7c5d5d21222db2bebba68cc3118783f973f8be14de85c217eef",
-        "suits/seraph-desc-5.png": "5f749893bcb3685a997c7408471eef28df63a93ba8e49fd2b8837350cf68e573",
-        "suits/seraph-desc-6.png": "51a0750d893235789f25d3876de249df6d877d6b8120ac1f66d0f3d4cbe531a7",
-        "suits/seraph-desc-7.png": "84ed42036200b064884785bd906a9eb77ea177c5817c68deadcdc76deb22cfec",
-        "suits/seraph-desc-8.png": "21f6a54568944c9fed106e0587bace5e189a963d2e061bd1d80dfce4639c18e4"
+        "suits/seraph.png": "6d6bb8cf6a7f42940c62dc2bdd00e4de14671ad73aa6785606e989bbfbb1e527",
+        "suits/seraph-tap-1.png": "6d6bb8cf6a7f42940c62dc2bdd00e4de14671ad73aa6785606e989bbfbb1e527",
+        "suits/seraph-tap-2.png": "2148534445880a26c10778ea51e48ce0d1ea1f3bac62a7e3fb274c453a6c780a",
+        "suits/seraph-tap-3.png": "659d37b5b7d4c0fc898f00381d7efc8ed433d4c2258340e92cee2231881ede34",
+        "suits/seraph-tap-4.png": "a8dc84fa9acd58fd0d3d88636436b1a652fc42d71be4863ab7572ad067cf81f1",
+        "suits/seraph-tap-5.png": "211523a17cec60d97db41f128e899b0b0cb46ae042b6b6e154cfc9a7f98556b7",
+        "suits/seraph-tap-6.png": "c61a2d84389e41b7e29699c6a628b0fbebef9944317915c893607939a6353a4b",
+        "suits/seraph-tap-7.png": "d13c5501e72a954784f4f71ddf6fa07e2a4ccecdb0402467578a65a083e19a68",
+        "suits/seraph-tap-8.png": "d1d5150e0d89a89a443cf751ebfd09712a54f3dbdf309b6f53ac11c20e53da9c",
+        "suits/seraph-tap-9.png": "43e52bdad8ef6a63669c2f06a8cc6588992bdf1a342fe8c2e7ba4fcf070d100f",
+        "suits/seraph-tap-10.png": "dd91377e09a92ba80c31f99b989553d87ccdcaf698179d6c2c281b33ad894cce",
+        "suits/seraph-tap-11.png": "72f5e98c710c6e3261b185b79b678c335a7fe7b40502c8b0a4192eb51c6e738e",
+        "suits/seraph-tap-12.png": "67145483eef0c8b400a26e8aaa144803689366b885b92abe5b883319e1196cfd",
+        "suits/seraph-desc-1.png": "7ef56e3a18b01d3089e3db7710221d8a81e15509129cd2fb93e79d2719f7c2d7",
+        "suits/seraph-desc-2.png": "cbe4dcc21364bcaf33839ed899bf6e6de88c45fc80f462f2c45739fec5202bb6",
+        "suits/seraph-desc-3.png": "3b6478a5d17464ad62ee1c9469f8a84e7dc45ab9a03f1e70cb07c05070ee01ff",
+        "suits/seraph-desc-4.png": "5c73dfbb1287bcb11b6465e4b1003c44859dd0dd69fcdb3fdb0a0afbb32241aa"
       }
     },
     {
@@ -3117,21 +2937,6 @@
       38.99,
       1.77
     ],
-    "suit:mystic": [
-      128,
-      128,
-      40
-    ],
-    "suit:wyrm": [
-      128,
-      128,
-      40
-    ],
-    "suit:dune": [
-      128,
-      128,
-      40
-    ],
     "suit:copper": [
       185.92,
       105.99,
@@ -3213,10 +3018,10 @@
       1.83
     ],
     "suit:seraph": [
-      205,
-      131,
-      27.89,
-      2
+      192.36,
+      121.33,
+      25.14,
+      2.3
     ],
     "suit:leviathan": [
       186.86,
@@ -5687,101 +5492,101 @@
       26.09,
       5.83
     ],
-    "seraph-asc-1": [
-      205,
-      131,
-      27.89,
-      2
-    ],
-    "seraph-asc-2": [
-      205,
-      129,
-      27.89,
-      2
-    ],
-    "seraph-asc-3": [
-      205,
-      127,
-      27.89,
-      2
-    ],
-    "seraph-asc-4": [
-      205,
-      134,
-      27.89,
-      2
-    ],
-    "seraph-asc-5": [
-      205,
-      132,
-      27.89,
-      2
-    ],
-    "seraph-asc-6": [
-      205,
-      130,
-      27.89,
-      -1
-    ],
-    "seraph-asc-7": [
-      205,
-      128,
-      27.89,
-      -4
-    ],
-    "seraph-asc-8": [
-      205,
-      126,
-      27.89,
-      -8
-    ],
     "seraph-desc-1": [
-      205,
-      131,
-      27.89,
-      2
+      192.36,
+      121.33,
+      25.14,
+      2.3
     ],
     "seraph-desc-2": [
-      205,
-      134,
-      27.89,
-      2
+      193.32,
+      136.19,
+      25.14,
+      15.94
     ],
     "seraph-desc-3": [
-      205,
-      137,
-      27.89,
-      4
+      190.83,
+      151.42,
+      25.14,
+      29.01
     ],
     "seraph-desc-4": [
-      205,
-      141,
-      27.89,
-      12
+      185.26,
+      166.97,
+      25.14,
+      41.35
     ],
-    "seraph-desc-5": [
-      204,
-      145,
-      27.89,
-      19
+    "seraph-tap-1": [
+      192.36,
+      121.33,
+      25.14,
+      2.3
     ],
-    "seraph-desc-6": [
-      203,
-      148,
-      27.89,
-      23
+    "seraph-tap-2": [
+      190.56,
+      118.3,
+      25.14,
+      -1.36
     ],
-    "seraph-desc-7": [
-      201,
-      163,
-      27.89,
-      57
+    "seraph-tap-3": [
+      189.53,
+      116.98,
+      25.14,
+      -3.7
     ],
-    "seraph-desc-8": [
-      197,
-      163,
-      27.89,
-      62
+    "seraph-tap-4": [
+      189.6,
+      117.64,
+      25.14,
+      -4.07
+    ],
+    "seraph-tap-5": [
+      190.72,
+      120.11,
+      25.14,
+      -2.39
+    ],
+    "seraph-tap-6": [
+      192.54,
+      123.77,
+      25.14,
+      0.9
+    ],
+    "seraph-tap-7": [
+      194.47,
+      127.67,
+      25.14,
+      4.9
+    ],
+    "seraph-tap-8": [
+      195.99,
+      130.77,
+      25.14,
+      8.53
+    ],
+    "seraph-tap-9": [
+      196.8,
+      132.3,
+      25.14,
+      10.82
+    ],
+    "seraph-tap-10": [
+      196.82,
+      131.68,
+      25.14,
+      11.19
+    ],
+    "seraph-tap-11": [
+      195.98,
+      129.08,
+      25.14,
+      9.54
+    ],
+    "seraph-tap-12": [
+      194.37,
+      125.29,
+      25.14,
+      6.3
     ],
     "sunforged-desc-1": [
       184.69,
@@ -6392,66 +6197,6 @@
       128,
       40
     ],
-    "dune-tap-1": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-2": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-3": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-4": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-5": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-6": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-7": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-8": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-9": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-10": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-11": [
-      128,
-      128,
-      40
-    ],
-    "dune-tap-12": [
-      128,
-      128,
-      40
-    ],
     "ferret-tap-1": [
       128,
       128,
@@ -6568,66 +6313,6 @@
       40
     ],
     "hedgehog-tap-12": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-1": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-2": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-3": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-4": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-5": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-6": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-7": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-8": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-9": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-10": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-11": [
-      128,
-      128,
-      40
-    ],
-    "mystic-tap-12": [
       128,
       128,
       40
@@ -6832,66 +6517,6 @@
       128,
       40
     ],
-    "wyrm-tap-1": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-2": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-3": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-4": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-5": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-6": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-7": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-8": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-9": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-10": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-11": [
-      128,
-      128,
-      40
-    ],
-    "wyrm-tap-12": [
-      128,
-      128,
-      40
-    ],
     "volt-bounce-1": [
       128,
       128,
@@ -6977,7 +6602,7 @@
     "arcflash": "e3311622176da38faba697d12c9b2a471084681e7192d539da559e6336028b38",
     "arcflash-motion": "902c076a65e35fd16438be972770838a70b70ee0d513e4b6559f844c9af18aa1",
     "arcflash-parts": "b0989e541f3f93f1fffcd59ccbad53e960483f5a4e4deeb260c1e00180f98cd6",
-    "control-constants": "ceffb299940fecd512d0a55927facc38a076a046691ad1ad2c33551543dd6baf",
+    "control-constants": "5423f0cfbfc90f6d1743ba5f6cc280ab04c0affaa3299182efc26ad788d51598",
     "cyber-trio-registration": "0663184e2894d0e6ec70c3dacde5d1694c67de69d3b13a9abc007129eaddbf30",
     "helmet-fit": "58a3aec893e83a114e5058e4d3ae9afee94ab13d542c1480988ffa08efb83f49",
     "helmet-openings": "147f7f21830bace1c99a778ac80469bdcf7a680a2372913984344a732c984eec",

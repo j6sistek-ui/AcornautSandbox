@@ -1,7 +1,7 @@
-import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=323";
-import { platform } from "./platform.js?v=323";
-import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=323";
-import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=323";
+import { NEW_PLANET_RGB } from "./zone-planet-colors.js?v=325";
+import { platform } from "./platform.js?v=325";
+import { ORBIT_PILOT_IDS, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=325";
+import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=325";
 // TWO VERSIONS, ON PURPOSE (owner, 9 Sep 2026): "Production version
 // intent: V1.0.0. Dev version: V1.0.12 and rolling each change. we isolate
 // we are building v1 production version, and keep a dev stamp, that gets
@@ -17,7 +17,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants.js?v=323";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "323";
+export const ART_VER = "325";
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
 // beta/index.html sets this global before importing the same bundle and
@@ -62,7 +62,7 @@ export const HYPER_RUN_ENABLED = true;
 // Stamped by export-sandbox.mjs at build time, so two approvals of the
 // same day are still tellable apart on the Profile footer. Unbuilt source
 // (labs, tests) shows no stamp rather than a stale one.
-export const BUILD_TIME = "2026-10-27 02:51 UTC";
+export const BUILD_TIME = "2026-10-27 04:15 UTC";
 // THE DEV STAMP ROLLS EVERY CHANGE (owner: "so i can verify it loaded").
 // A version that never moves cannot answer the only question it is read
 // for, which is the hour the owner just lost: new art loaded in a private
@@ -217,9 +217,6 @@ export const SUITS = [
     { id: "redline", name: "Red Line", cost: 500, beta: true, fur: "#3a3a3e", furDark: "#1c1c20", belly: "#d9a679", suit: "#2b2d33", suitLite: "#4a4d55", suitDark: "#141519", trim: "#ff2e3a", glow: "#ff3b3b", dust: "#ff8a8a" },
     { id: "robodog", name: "Robo Dog", cost: 550, beta: true, fur: "#b9bec4", furDark: "#6f757c", belly: "#e9edf0", suit: "#c8ced4", suitLite: "#ffffff", suitDark: "#5b636c", trim: "#2ad4e8", glow: "#3ce6ff", dust: "#a8f2ff" },
     { id: "geode", name: "Geode", cost: 600, beta: true, fur: "#9b7fd0", furDark: "#5d4590", belly: "#e9defa", suit: "#7b5bc0", suitLite: "#c9b5f2", suitDark: "#3e2a6e", trim: "#d6a8ff", glow: "#c890ff", dust: "#e6d2ff" },
-    { id: "mystic", name: "Mystic", cost: 1100, beta: true, ownHead: true, fur: "#5a3a9a", furDark: "#2e1d55", belly: "#c9a8f0", suit: "#3b2470", suitLite: "#8a5fd0", suitDark: "#1c0f3a", trim: "#e070ff", glow: "#d060ff", dust: "#efb8ff" },
-    { id: "wyrm", name: "Wyrm", cost: 1200, beta: true, ownHead: true, fur: "#c0442c", furDark: "#6e2015", belly: "#f0b27a", suit: "#3a2a2a", suitLite: "#8a4a3a", suitDark: "#1e1010", trim: "#ff9a3a", glow: "#ff6a2a", dust: "#ffc07a" },
-    { id: "dune", name: "Dune", cost: 1300, beta: true, ownHead: true, fur: "#d8a24a", furDark: "#7a5520", belly: "#f6e2b8", suit: "#5a3f1e", suitLite: "#b58a48", suitDark: "#2c1e0e", trim: "#ffcf6a", glow: "#ffc04a", dust: "#ffe2a0" },
     { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
     { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
     { id: "voidsuit", name: "Void", cost: 240, fur: "#544a63", furDark: "#312a3d", belly: "#8d7fa0", suit: "#241d33", suitLite: "#4f4270", suitDark: "#100c18", trim: "#d4af37", glow: "#b45cff", dust: "#e7b6ff" },
@@ -880,7 +877,7 @@ export const SUIT_SHELF = [
     { title: "GALACTIC", ids: ["gemmie", "sammie", "cryostar", "verdant", "voidsuit", "porcelain", "eclipse", "robodog", "geode"], shop: true },
     { title: "CUSTOM FLIGHTS", ids: ["vanguard", "alien", "bigbooty", "volt", "cyber", "leviathan", "nacre", "seraph"], shop: true },
     // the critters are premium: unowned ones show as doors to the shop
-    { title: "ACORN INTOLERANT", ids: ["catsuit", "briellacat", "raccoon", "ferret", "hedgehog", "mystic", "wyrm", "dune"], shop: true },
+    { title: "ACORN INTOLERANT", ids: ["catsuit", "briellacat", "raccoon", "ferret", "hedgehog"], shop: true },
     { title: "ABSTRACT", ids: ["cinderforge", "groveguard", "cosmic", "sunforged", "abyssal", "arcflash", "ghost"], shop: true },
 ];
 // The helmet wall groups by what the GLASS does, because that is how a

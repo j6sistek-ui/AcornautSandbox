@@ -1247,9 +1247,9 @@ CUSTOM_FLIGHT_SUITS = {
     "briellacat", # owner-supplied sheet, 6 Sep 2026: Briella's Cat, a whole
                   # pencil character. Twelve poses cut into a 7-frame climb
                   # and a 4-frame dive; its own head, so no dome anchors.
-    # the owner's suit board, 27 Oct 2026: eight new suits rendered with tools/rig3d
-    # (art-src/rig3d/future, future6-8, 11-13 and 16, plus Ion's old art as Tracer)
-    "tracer", "glasssuit", "redline", "robodog", "geode", "mystic", "wyrm", "dune",
+    # the owner's suit board, 27 Oct 2026: five new suits rendered with tools/rig3d
+    # (art-src/rig3d/future, future11-13 and 16, plus Ion's old art as Tracer)
+    "tracer", "glasssuit", "redline", "robodog", "geode",
     # volt, bigbooty, robo and catsuit are granted custom flight animation
     # too, but theirs are PAINTED TAP BANKS, not motion banks. They are good
     # as they are; do not convert them onto this tier to "finish" the set.

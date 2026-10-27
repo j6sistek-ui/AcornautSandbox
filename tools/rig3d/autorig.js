@@ -95,6 +95,9 @@ export async function loadRig(url, opts = {}) {
   // map.keep names bones whose chains stay with the body even though they sit behind the hips
   // (Ghost's second wisp grows from its back: folded into the one rebuilt tail, its tip tore off)
   const keep = new Set((map.keep || []).map(byName).filter(i => i >= 0));
+  // ...and so do the chains --drive names: Seraph's right wing sat just behind the hips and was
+  // folded into the rebuilt tail, so its own bone drove nothing
+  (map.drive || []).map(byName).filter(i => i >= 0).forEach(i => keep.add(i));
   for (const c of rest) if (c !== tailMain && !c.some(i => keep.has(i))) { const m = massOf(c); if (m && m.dot(fwd) < hips) c.forEach(i => tailSet.add(i)); }
   // the kept chains still move: apply()'s p.follow turns them (owner: "the tails move independently
   // on timing ... big one always leads"), shared down the chain so the wisp curls rather than pivots
@@ -104,11 +107,19 @@ export async function loadRig(url, opts = {}) {
   // chain, so the two tails can move on their own timing
   // map.drive names a bone whose branch the rebuilt tail never took (its vertices kept their own
   // bones): it is driven like a kept chain without changing the tail at all - Envoy's upright tail
-  for (const n of map.drive || []) { const i = byName(n); if (i >= 0) keepChains.push(subtree(i)); }
+  for (const n of map.drive || []) { const i = byName(n); if (i >= 0 && !keepChains.some(c => c.includes(i))) keepChains.push(subtree(i)); }
   // exactly the named bones leave (not their whole branch: Envoy's loop-tip bone hangs below the
   // upright tail's chain but carries the LOOP), and they are driven together as one chain
   { const un = (map.untail || []).map(byName).filter(i => i >= 0); un.forEach(k => tailSet.delete(k)); if (un.length) keepChains.push(un); }
   const UP = new THREE.Vector3(0, 1, 0), LAT = new THREE.Vector3().crossVectors(fwd, UP).normalize();
+  // each driven chain's flap hinge (p.flap): the axis that swings its mass toward the front paw on
+  // its side (a chain's lowest bone - a humanoid arm lists its twist bones after the hand). About the long axis alone, a wing swept up and back only spun along its own length
+  const flapAxis = keepChains.map(ch => { const b = ch[0], at = wpos(bones[b]), m = massOf(ch);
+    const paws = legs.map(c => c.map(i => wpos(bones[i])).sort((x, y) => x.y - y.y)[0]).filter(v => v.dot(fwd) > wpos(bones[root]).dot(fwd));
+    const side = at.clone().sub(wpos(bones[root])).dot(LAT), paw = paws.sort((x, y) => Math.abs(y.dot(LAT) - side) > Math.abs(x.dot(LAT) - side) ? -1 : 1)[0];
+    if (!m || !paw) return fwd.clone().applyQuaternion(restWInv[b]).normalize();
+    const ax = m.clone().sub(at).cross(paw.clone().sub(at)).normalize();
+    return ax.applyQuaternion(bones[b].getWorldQuaternion(new THREE.Quaternion()).invert()).normalize(); });
   const along = v => v.dot(fwd);
   const legRoots = legs.map(c => ({ c, x: along(wpos(bones[c[0]])) })).sort((a, b) => b.x - a.x);
   const front = legRoots.slice(0, 2).map(l => l.c), hind = legRoots.slice(2).map(l => l.c);
@@ -443,6 +454,10 @@ export async function loadRig(url, opts = {}) {
       const w = [0.5, 0.3, 0.2][k]; turn(b, (p.follow || 0) * w);
       // a sideways sway (about up) on top: the two tails cross and twist round each other
       if (p.followYaw) { const a = UP.clone().applyQuaternion(restWInv[b]).normalize(); bones[b].quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(a, p.followYaw * w * Math.PI / 180)); } }));
+    // p.flap (degrees, + = down): each driven wing beats in the plane from its rest line toward
+    // the hand on its side - down toward the hands and back up (owner, 27 Oct 2026, Seraph: "flapping
+    // down toward hands, not back")
+    if (p.flap) keepChains.forEach((ch, n) => bones[ch[0]].quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(flapAxis[n], p.flap * Math.PI / 180)));
     ears.forEach((i, n) => turn(i, (p.ears || 0) * (n ? 0.85 : 1)));
     front.forEach((ch, n) => { const v = n ? (p.frontR ?? p.front ?? 0) : (p.frontL ?? p.front ?? 0); turn(ch[0], v * 0.55); if (ch[1] != null) turn(ch[1], v * 0.35); if (ch[2] != null) turn(ch[2], -(p.paw || 0) - v * 0.2); });
     hind.forEach((ch, n) => { const v = n ? (p.hindR ?? p.hind ?? 0) : (p.hindL ?? p.hind ?? 0); turn(ch[0], v + (n ? 4 : -4)); if (ch[1] != null) turn(ch[1], p.hindLow || 0); if (ch[2] != null) turn(ch[2], (p.hindLow || 0) * 0.6); });
@@ -487,6 +502,7 @@ export async function loadRig(url, opts = {}) {
       head: bones[head].name, ears: ears.map(i => bones[i].name), spine: spine.map(i => bones[i].name),
       front: front.map(c => c.map(i => bones[i].name)), hind: hind.map(c => c.map(i => bones[i].name)),
       tail: [...tailSet].map(i => bones[i].name), forward: fwd.toArray().map(x => +x.toFixed(3)),
+      driven: keepChains.map((ch, n) => ({ bone: bones[ch[0]].name, at: wpos(bones[ch[0]]).toArray().map(x => +x.toFixed(3)), mass: massOf(ch)?.toArray().map(x => +x.toFixed(3)), flapAxis: flapAxis[n].toArray().map(x => +x.toFixed(3)) })),
       jiggle: jiggle.map(j => ({ bone: j.bone.name, from: [...j.src].map(i => allBones[i].name), radius: +j.R.toFixed(3) })),
       tailBones: NB, tailRestAxisDeg: +REST_AXIS.toFixed(1), hinge: HP.clone().sub(J[0]).toArray().map(x => +x.toFixed(3)), cutFaces: cut, contactFaces: contact, caps, socketed, looseTailPieces: islands, curlDeg: ang.map(a => +(a * 180 / Math.PI).toFixed(1)),
     },

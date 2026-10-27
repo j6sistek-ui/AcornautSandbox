@@ -104,7 +104,7 @@ try {
   // replace"): suits re-made as rendered tap and dive banks, helmets kept -
   // the first ten, Flight and Frost on Ion's skeleton, then Leviathan, Copper and
   // Alien on their own rigs (Alien wears a helmet now: owner, 26 Oct 2026).
-  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic","flight","frost","leviathan","copper","alien","arcflash","origamist","eclipse","cryostar","verdant","bigbooty","porcelain","ghost"];
+  const THREE_D_TEST=["ember","voidsuit","groveguard","cinderforge","sunforged","abyssal","gemmie","iontrim","sammie","cosmic","flight","frost","leviathan","copper","alien","arcflash","origamist","eclipse","cryostar","verdant","bigbooty","porcelain","ghost","seraph"];
   const suits=NewCat.SUITS.filter(suit=>!NewCat.wearsOwnHead(suit));
   assert.equal(suits.length,25,'all twenty-five production suits with wearable helmets are covered (Alien, Arcflash, Patriot and Percy joined, 26-27 Oct 2026; the owner\'s board\'s five new ones are beta until flown)');
   const promoted=suits.filter(suit=>HIGH_ORBIT.includes(suit.id)&&!THREE_D_TEST.includes(suit.id));
@@ -131,8 +131,9 @@ try {
   // Quill, Noodle and Bandit joined the 3D lineup with their own heads (owner, 26 Oct 2026), so
   // they are not flown below
   const OWN_HEAD_3D=['hedgehog','ferret','raccoon','nacre'];
-  // the owner's board (27 Oct 2026): eight new rendered suits, beta until the owner flies them
-  const BOARD_BETA=['tracer','glasssuit','redline','robodog','geode','mystic','wyrm','dune'];
+  // the owner's board (27 Oct 2026): five new rendered suits, beta until the owner flies them (Mystic, Wyrm and Dune
+  // were only being sorted: owner, 27 Oct 2026)
+  const BOARD_BETA=['tracer','glasssuit','redline','robodog','geode'];
   for(const id of BOARD_BETA)assert(!NewCat.SUITS.some(s=>s.id===id),id+' stays off production until flown');
   const authorized=id=>HIGH_ORBIT.includes(id)||CYBER_TRIO.includes(id)||THREE_D_TEST.includes(id)||OWN_HEAD_3D.includes(id)||BOARD_BETA.includes(id);
   const withoutAuthorizedRigs=table=>Array.isArray(table) ? table.filter(id=>!authorized(id))
