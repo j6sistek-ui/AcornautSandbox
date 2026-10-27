@@ -67,7 +67,9 @@ const LIVE_SUITS=new Set(['vanguard','flight','iontrim','copper','frost','voidsu
   'gemmie','sammie','seraph','leviathan','arcflash',
   'catsuit','briellacat','raccoon','ferret','hedgehog',
   'cinderforge','groveguard','cosmic','sunforged','abyssal',
-  'porcelain','nacre','origamist']);
+  'porcelain','nacre','origamist',
+  // the owner's board, flown on beta and confirmed (27 Oct 2026: "Beta flies them good")
+  'tracer','glasssuit','redline','robodog','geode']);
 const straightToLive=Cat.SUITS.filter(u=>!u.beta&&!LIVE_SUITS.has(u.id)).map(u=>u.id);
 assert.deepEqual(straightToLive,[],
   `new to the live catalogue and never confirmed on the live page: ${straightToLive.join(', ')}. `+

@@ -775,7 +775,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
     // 2026), so its sheet loads there rather than only on the beta host
     "briellacat",
-    // the owner's board (27 Oct 2026): five new suits, on the beta host until the owner flies them
+    // the owner's board (27 Oct 2026): five new suits, live since the owner flew them on beta
     "tracer", "glasssuit", "redline", "robodog", "geode",
   ];
   const optional = (src: string) => loadImg(src).catch(() => null);
