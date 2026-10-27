@@ -1,13 +1,13 @@
-import { highOrbitTrailSuit, isPremiumFrames, isPremiumSuit } from "./high-orbit-config.js?v=325";
-import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=325";
-import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=325";
-import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=325";
-import { restoreSpill } from "./spill.js?v=325";
-import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=325";
+import { highOrbitTrailSuit, isPremiumFrames, isPremiumSuit } from "./high-orbit-config.js?v=326";
+import { importSampleCredit, migrateCampaign, earnedCampaignStars, missionCredit, routeMasks, settleMissionCredit, rewardId } from "./campaign-progress.js?v=326";
+import { CHART_LEVELS, CHART_MAX_STARS, levelUnlocked, STAR_REWARDS, substituteFor } from "./campaign.js?v=326";
+import { STAR_UNLOCKS, RACE_GATES, } from "./campaign.js?v=326";
+import { restoreSpill } from "./spill.js?v=326";
+import { SPILL_UTILITY_IDS, spillEngineColor } from "./spill-content.js?v=326";
 export const freshSpillRecords = () => ({ bestScore: 0, ore: 0, contracts: 0, waves: 0, expeditions: 0, runs: 0 });
-import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, FIXED_SHOP_SUIT_IDS, bundleQuote, idDust, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, wearsOwnHead, } from "./catalog.js?v=325";
-import { platform } from "./platform.js?v=325";
-import { TAP_SHAPE, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_ONE, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=325";
+import { BETA_UNLOCK_GATES, HELMETS, LEGACY_KEYS, PALS, SAVE_KEY, SUITS, isIap, TRAILS, BUNDLES, FIXED_SHOP_SUIT_IDS, bundleQuote, idDust, IS_BETA, GUIDE_SUIT, GUIDE_HELM, TUTORIAL_SUIT, SUIT_PITCH_MIN, SUIT_PITCH_MAX, suitPitchDefault, palsClash, BOOSTS, BOOST_IDS, idGrants, wearsOwnHead, } from "./catalog.js?v=326";
+import { platform } from "./platform.js?v=326";
+import { TAP_SHAPE, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_ONE, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=326";
 // Pinned to the shipped pre-regrouping catalog (9 Sep 2026). These are
 // historical grant amounts, not the price of the new bundle layout.
 export const BETA_DUST_GRANT_FLOOR = 12360;

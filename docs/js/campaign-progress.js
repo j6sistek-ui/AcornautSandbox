@@ -1,8 +1,8 @@
-import { LEVELS, CHART_LEVELS, STAR_REWARDS, CHART_MAX_STARS, countBits, missionProgressId } from "./campaign.js?v=325";
+import { LEVELS, CHART_LEVELS, STAR_REWARDS, CHART_MAX_STARS, countBits, missionProgressId } from "./campaign.js?v=326";
 /** the missions this page's chart shows: a beta save's stars past the
  *  production road do not count toward its total (audit, 30 Sep 2026) */
 const chartIds = new Set(CHART_LEVELS.map((d) => d.id));
-import { ENVS } from "./catalog.js?v=325";
+import { ENVS } from "./catalog.js?v=326";
 export const barrierId = (after) => ({ 33: "hyper-barrier-1", 66: "hyper-barrier-2", 99: "hyper-barrier-3" }[after]);
 export const rewardId = (r) => r.kind === "dust" || r.kind === "acorns"
     ? `legacy:${r.kind}:${r.stars}`

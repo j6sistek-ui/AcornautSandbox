@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "325";
+export const ART_VER = "326";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -276,12 +276,12 @@ export const SUITS: Suit[] = [
   { id: "iontrim", name: "Ion", cost: 140, fur: "#a9a5a3", furDark: "#6d6866", belly: "#efe8e2", suit: "#9cc3dc", suitLite: "#d3e8f4", suitDark: "#4f6f86", trim: "#8a6a45", glow: "#bfe6ff", dust: "#d6efff" },
   // THE NEW LINEUP (owner's suit board, 27 Oct 2026): new suits cost more than the originals on
   // their shelf ("New ones get more expensive than the originals"); prices are first-draft.
-  // Beta first, as every new character: they go live once the owner has flown them
-  { id: "tracer", name: "Tracer", cost: 420, beta: true, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
-  { id: "glasssuit", name: "Glass Suit", cost: 460, beta: true, fur: "#c98f62", furDark: "#8c5a38", belly: "#f2dcc6", suit: "#dfe6ee", suitLite: "#ffffff", suitDark: "#9aa6b4", trim: "#d8a080", glow: "#ffe0c8", dust: "#fff0e4" },
-  { id: "redline", name: "Red Line", cost: 500, beta: true, fur: "#3a3a3e", furDark: "#1c1c20", belly: "#d9a679", suit: "#2b2d33", suitLite: "#4a4d55", suitDark: "#141519", trim: "#ff2e3a", glow: "#ff3b3b", dust: "#ff8a8a" },
-  { id: "robodog", name: "Robo Dog", cost: 550, beta: true, fur: "#b9bec4", furDark: "#6f757c", belly: "#e9edf0", suit: "#c8ced4", suitLite: "#ffffff", suitDark: "#5b636c", trim: "#2ad4e8", glow: "#3ce6ff", dust: "#a8f2ff" },
-  { id: "geode", name: "Geode", cost: 600, beta: true, fur: "#9b7fd0", furDark: "#5d4590", belly: "#e9defa", suit: "#7b5bc0", suitLite: "#c9b5f2", suitDark: "#3e2a6e", trim: "#d6a8ff", glow: "#c890ff", dust: "#e6d2ff" },
+  // Flown on beta and confirmed by the owner (27 Oct 2026: "Beta flies them good"): live
+  { id: "tracer", name: "Tracer", cost: 420, fur: "#d98f3d", furDark: "#a8641f", belly: "#f7e0bb", suit: "#1b3f5c", suitLite: "#3d7fa8", suitDark: "#0e2436", trim: "#4ad8ff", glow: "#4ad8ff", dust: "#8fe9ff" },
+  { id: "glasssuit", name: "Glass Suit", cost: 460, fur: "#c98f62", furDark: "#8c5a38", belly: "#f2dcc6", suit: "#dfe6ee", suitLite: "#ffffff", suitDark: "#9aa6b4", trim: "#d8a080", glow: "#ffe0c8", dust: "#fff0e4" },
+  { id: "redline", name: "Red Line", cost: 500, fur: "#3a3a3e", furDark: "#1c1c20", belly: "#d9a679", suit: "#2b2d33", suitLite: "#4a4d55", suitDark: "#141519", trim: "#ff2e3a", glow: "#ff3b3b", dust: "#ff8a8a" },
+  { id: "robodog", name: "Robo Dog", cost: 550, fur: "#b9bec4", furDark: "#6f757c", belly: "#e9edf0", suit: "#c8ced4", suitLite: "#ffffff", suitDark: "#5b636c", trim: "#2ad4e8", glow: "#3ce6ff", dust: "#a8f2ff" },
+  { id: "geode", name: "Geode", cost: 600, fur: "#9b7fd0", furDark: "#5d4590", belly: "#e9defa", suit: "#7b5bc0", suitLite: "#c9b5f2", suitDark: "#3e2a6e", trim: "#d6a8ff", glow: "#c890ff", dust: "#e6d2ff" },
   { id: "copper", name: "Copper", cost: 50, fur: "#a85f28", furDark: "#663409", belly: "#e6bd83", suit: "#8c4718", suitLite: "#f2ab62", suitDark: "#421f06", trim: "#ffdda8", glow: "#ff8a2a", dust: "#ffb45c" },
   { id: "frost", name: "Frost", cost: 380, fur: "#e2ecf6", furDark: "#a9bccf", belly: "#ffffff", suit: "#6f9dc4", suitLite: "#a9d4ef", suitDark: "#40688a", trim: "#eaf7ff", glow: "#9fe4ff", dust: "#dff5ff" },
   { id: "voidsuit", name: "Void", cost: 240, fur: "#544a63", furDark: "#312a3d", belly: "#8d7fa0", suit: "#241d33", suitLite: "#4f4270", suitDark: "#100c18", trim: "#d4af37", glow: "#b45cff", dust: "#e7b6ff" },

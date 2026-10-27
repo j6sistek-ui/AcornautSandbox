@@ -1,10 +1,10 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=325";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=325";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=325";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=325";
-import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumFrames, isHighOrbitRig } from "./high-orbit-config.js?v=325";
-import { isArcflashRig } from "./arcflash.js?v=325";
-import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=325";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=326";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=326";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=326";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=326";
+import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumFrames, isHighOrbitRig } from "./high-orbit-config.js?v=326";
+import { isArcflashRig } from "./arcflash.js?v=326";
+import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=326";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -718,7 +718,7 @@ export async function loadArt(eagerSuits = [], eagerPals = []) {
         // Briella's Cat is SOLD on production at 999 acorns (owner, 8 Sep
         // 2026), so its sheet loads there rather than only on the beta host
         "briellacat",
-        // the owner's board (27 Oct 2026): five new suits, on the beta host until the owner flies them
+        // the owner's board (27 Oct 2026): five new suits, live since the owner flew them on beta
         "tracer", "glasssuit", "redline", "robodog", "geode",
     ];
     const optional = (src) => loadImg(src).catch(() => null);
