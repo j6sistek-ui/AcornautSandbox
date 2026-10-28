@@ -73,7 +73,7 @@ for(const def of C.ALL_LEVELS.filter(d=>d.ord>100&&d.base==='fly')){
 // "every 5 levels almost"), so the test asks for presence, gates and a
 // rung every ten stars, not for star counts.
 // (pals left the road on 15 Sep 2026: every pal is free)
-const ownerRewards=[['helmet','sammie'],['suit','sammie'],['trail','phoenixplume'],['trail','opalfeather'],['helmet','gemmie'],['suit','gemmie']];
+const ownerRewards=[['suit','sammie'],['trail','phoenixplume'],['trail','opalfeather'],['helmet','gemmie'],['suit','gemmie']];
 assert(!C.STAR_REWARDS.some(r=>r.kind==='pal'),'no pal rung on the road');
 for(const [kind,id] of ownerRewards){
   const reward=C.STAR_REWARDS.find(r=>r.kind===kind&&r.id===id);
@@ -134,7 +134,10 @@ if(page==='production'){
   const saveAt=total=>{const s=fresh();P.migrateCampaign(s,false);for(let i=0;i<total/3;i++)P.settleMissionCredit(s,C.LEVELS[i],7);return s;};
   // each owner reward opens exactly at its rung, wherever the generator put it
   const U=C.STAR_UNLOCKS;
-  assert(!S.helmetRevealed(saveAt(U.helmets.sammie-3),'sammie'));assert(S.helmetRevealed(saveAt(U.helmets.sammie),'sammie'));
+  // the Samurai and Cosmic helmets retired (27 Oct 2026): no rung, and only a pilot past their old rung keeps them
+  assert.equal(U.helmets.sammie,undefined);assert.equal(U.helmets.cosmic,undefined);
+  assert(!S.helmetRevealed(saveAt(57),'sammie'));assert(S.helmetRevealed(saveAt(60),'sammie'));
+  assert(!S.helmetRevealed(saveAt(183),'cosmic'));assert(S.helmetRevealed(saveAt(186),'cosmic'));
   assert(!S.suitRevealed(saveAt(U.suits.sammie-3),'sammie'));assert(S.suitRevealed(saveAt(U.suits.sammie),'sammie'));
   assert(S.palUnlocked(saveAt(0),'magnetar'),'every pal is free from the first flight (15 Sep 2026)');
   assert(!S.trailUnlocked(saveAt(U.trails.opalfeather-3),'opalfeather'));assert(S.trailUnlocked(saveAt(U.trails.opalfeather),'opalfeather'));

@@ -35,6 +35,7 @@ import {
   BOOSTS,
   BOOST_IDS,
   idGrants,
+  RETIRED_HELMETS,
   wearsOwnHead,
   type BoostId,
 } from "./catalog";
@@ -787,6 +788,8 @@ export function palUnlocked(_s: SaveData, _id: string) {
 // starter tints have no rung and are open from the first flight. A helmet
 // already bought stays owned whatever the ladder says.
 export function helmetRevealed(s: SaveData, id: string) {
+  const retired = RETIRED_HELMETS[id];
+  if (retired) return s.unlocked.includes(id) || starsOf(s) >= retired.stars || (!!retired.bundle && (s.purchased || []).includes(retired.bundle));
   if (STAR_UNLOCKS.helmets[id] !== undefined && starsOf(s) >= STAR_UNLOCKS.helmets[id]) return true;
   if (isIap(id)) return iapOwned(s, id);
   if (STAR_UNLOCKS.helmets[id] === undefined) return true;

@@ -1,38 +1,38 @@
-import { spillDockTravelDuration } from "./spill.js?v=326";
-import { clipHelmetGlass } from "./helmet-openings.js?v=326";
-import { paintFittedHelmet } from "./helmet-fit.js?v=326";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=326";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=326";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=326";
-import { arcflashPreview } from "./arcflash-motion.js?v=326";
-import { paintLiveStarTrail } from "./star-trails.js?v=326";
-import { trailWornBy } from "./catalog.js?v=326";
-import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=326";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=326";
-import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=326";
-import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=326";
-import { RIG3D_BOOTS } from "./rig3d-boots.js?v=326";
-import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=326";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=326";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=326";
-import { spillAppearance } from "./spill-appearance.js?v=326";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=326";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=326";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=326";
-import { goalHud } from "./campaign.js?v=326";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=326";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=326";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=326";
-import { spriteImageFor } from "./sprite-detail.js?v=326";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=326";
-import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=326";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=326";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=326";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=326";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=326";
-import { spillEngineColor } from "./spill-content.js?v=326";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=326";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=326";
+import { spillDockTravelDuration } from "./spill.js?v=328";
+import { clipHelmetGlass } from "./helmet-openings.js?v=328";
+import { paintFittedHelmet } from "./helmet-fit.js?v=328";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=328";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=328";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=328";
+import { arcflashPreview } from "./arcflash-motion.js?v=328";
+import { paintLiveStarTrail } from "./star-trails.js?v=328";
+import { trailWornBy } from "./catalog.js?v=328";
+import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=328";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=328";
+import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=328";
+import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=328";
+import { RIG3D_BOOTS } from "./rig3d-boots.js?v=328";
+import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=328";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=328";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=328";
+import { spillAppearance } from "./spill-appearance.js?v=328";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=328";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=328";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=328";
+import { goalHud } from "./campaign.js?v=328";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=328";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=328";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=328";
+import { spriteImageFor } from "./sprite-detail.js?v=328";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=328";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=328";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=328";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=328";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=328";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=328";
+import { spillEngineColor } from "./spill-content.js?v=328";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=328";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=328";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -3537,23 +3537,23 @@ const DOME = {
     // THE 3D LINEUP (26 Oct 2026): measured, not placed - tools/rig3d projects each
     // frame's 3D head through the render camera (anchors.json). Centre and tilt are
     // per frame; the radius is the suit's median, so the glass never resizes.
-    "suit:ember": [183.97, 101.49, 38.88, 1.83],
-    "ember-tap-1": [183.97, 101.49, 38.88, 1.83],
-    "ember-tap-2": [182.77, 98.45, 38.88, -1.85],
-    "ember-tap-3": [181.94, 96.94, 38.88, -4.19],
-    "ember-tap-4": [181.82, 97.21, 38.88, -4.57],
-    "ember-tap-5": [182.4, 99.17, 38.88, -2.88],
-    "ember-tap-6": [183.41, 102.43, 38.88, 0.42],
-    "ember-tap-7": [184.43, 106.21, 38.88, 4.44],
-    "ember-tap-8": [185.21, 109.5, 38.88, 8.08],
-    "ember-tap-9": [185.7, 111.34, 38.88, 10.39],
-    "ember-tap-10": [185.89, 111.13, 38.88, 10.77],
-    "ember-tap-11": [185.7, 108.89, 38.88, 9.1],
-    "ember-tap-12": [185.04, 105.32, 38.88, 5.84],
-    "ember-desc-1": [183.97, 101.49, 38.88, 1.83],
-    "ember-desc-2": [184.95, 115.48, 38.88, 15.54],
-    "ember-desc-3": [184.68, 129.78, 38.88, 28.72],
-    "ember-desc-4": [181.15, 142.71, 38.88, 41.18],
+    "suit:ember": [183.97, 101.49, 27.22, 1.83],
+    "ember-tap-1": [183.97, 101.49, 27.22, 1.83],
+    "ember-tap-2": [182.77, 98.45, 27.22, -1.85],
+    "ember-tap-3": [181.94, 96.94, 27.22, -4.19],
+    "ember-tap-4": [181.82, 97.21, 27.22, -4.57],
+    "ember-tap-5": [182.4, 99.17, 27.22, -2.88],
+    "ember-tap-6": [183.41, 102.43, 27.22, 0.42],
+    "ember-tap-7": [184.43, 106.21, 27.22, 4.44],
+    "ember-tap-8": [185.21, 109.5, 27.22, 8.08],
+    "ember-tap-9": [185.7, 111.34, 27.22, 10.39],
+    "ember-tap-10": [185.89, 111.13, 27.22, 10.77],
+    "ember-tap-11": [185.7, 108.89, 27.22, 9.1],
+    "ember-tap-12": [185.04, 105.32, 27.22, 5.84],
+    "ember-desc-1": [183.97, 101.49, 27.22, 1.83],
+    "ember-desc-2": [184.95, 115.48, 27.22, 15.54],
+    "ember-desc-3": [184.68, 129.78, 27.22, 28.72],
+    "ember-desc-4": [181.15, 142.71, 27.22, 41.18],
     "suit:voidsuit": [182.69, 112.11, 27.72, 1.82],
     "voidsuit-tap-1": [182.69, 112.11, 27.72, 1.82],
     "voidsuit-tap-2": [181.35, 109.62, 27.72, -1.87],
@@ -3588,40 +3588,40 @@ const DOME = {
     "groveguard-desc-2": [187.89, 120.87, 26.17, 15.42],
     "groveguard-desc-3": [186.57, 132.56, 26.17, 28.58],
     "groveguard-desc-4": [183.01, 144.6, 26.17, 41.04],
-    "suit:cinderforge": [185.02, 106.88, 33.97, 1.8],
-    "cinderforge-tap-1": [185.02, 106.88, 33.97, 1.8],
-    "cinderforge-tap-2": [183.7, 104.15, 33.97, -1.88],
-    "cinderforge-tap-3": [182.9, 102.97, 33.97, -4.22],
-    "cinderforge-tap-4": [182.69, 103.4, 33.97, -4.6],
-    "cinderforge-tap-5": [183.1, 105.19, 33.97, -2.91],
-    "cinderforge-tap-6": [183.85, 108.2, 33.97, 0.39],
-    "cinderforge-tap-7": [185.68, 111.58, 33.97, 4.41],
-    "cinderforge-tap-8": [187.28, 114.16, 33.97, 8.05],
-    "cinderforge-tap-9": [188.33, 115.42, 33.97, 10.36],
-    "cinderforge-tap-10": [188.68, 115.06, 33.97, 10.73],
-    "cinderforge-tap-11": [188.21, 113.11, 33.97, 9.07],
-    "cinderforge-tap-12": [186.91, 110.17, 33.97, 5.81],
-    "cinderforge-desc-1": [185.02, 106.88, 33.97, 1.8],
-    "cinderforge-desc-2": [188.8, 119.63, 33.97, 15.51],
-    "cinderforge-desc-3": [189.89, 132.77, 33.97, 28.69],
-    "cinderforge-desc-4": [188.62, 146.22, 33.97, 41.14],
-    "suit:sunforged": [184.69, 105.65, 33.8, 1.79],
-    "sunforged-tap-1": [184.69, 105.65, 33.8, 1.79],
-    "sunforged-tap-2": [183.6, 102.96, 33.8, -1.89],
-    "sunforged-tap-3": [182.76, 101.59, 33.8, -4.23],
-    "sunforged-tap-4": [182.48, 101.88, 33.8, -4.61],
-    "sunforged-tap-5": [182.82, 103.72, 33.8, -2.92],
-    "sunforged-tap-6": [183.56, 106.67, 33.8, 0.38],
-    "sunforged-tap-7": [185.19, 109.97, 33.8, 4.4],
-    "sunforged-tap-8": [187.01, 112.84, 33.8, 8.05],
-    "sunforged-tap-9": [188.16, 114.49, 33.8, 10.37],
-    "sunforged-tap-10": [188.57, 114.32, 33.8, 10.74],
-    "sunforged-tap-11": [188.14, 112.3, 33.8, 9.08],
-    "sunforged-tap-12": [186.8, 109.04, 33.8, 5.81],
-    "sunforged-desc-1": [184.69, 105.65, 33.8, 1.79],
-    "sunforged-desc-2": [188.8, 118.83, 33.8, 15.52],
-    "sunforged-desc-3": [190.08, 132.44, 33.8, 28.71],
-    "sunforged-desc-4": [188.1, 145.92, 33.8, 41.18],
+    "suit:cinderforge": [185.02, 106.88, 27.18, 1.8],
+    "cinderforge-tap-1": [185.02, 106.88, 27.18, 1.8],
+    "cinderforge-tap-2": [183.7, 104.15, 27.18, -1.88],
+    "cinderforge-tap-3": [182.9, 102.97, 27.18, -4.22],
+    "cinderforge-tap-4": [182.69, 103.4, 27.18, -4.6],
+    "cinderforge-tap-5": [183.1, 105.19, 27.18, -2.91],
+    "cinderforge-tap-6": [183.85, 108.2, 27.18, 0.39],
+    "cinderforge-tap-7": [185.68, 111.58, 27.18, 4.41],
+    "cinderforge-tap-8": [187.28, 114.16, 27.18, 8.05],
+    "cinderforge-tap-9": [188.33, 115.42, 27.18, 10.36],
+    "cinderforge-tap-10": [188.68, 115.06, 27.18, 10.73],
+    "cinderforge-tap-11": [188.21, 113.11, 27.18, 9.07],
+    "cinderforge-tap-12": [186.91, 110.17, 27.18, 5.81],
+    "cinderforge-desc-1": [185.02, 106.88, 27.18, 1.8],
+    "cinderforge-desc-2": [188.8, 119.63, 27.18, 15.51],
+    "cinderforge-desc-3": [189.89, 132.77, 27.18, 28.69],
+    "cinderforge-desc-4": [188.62, 146.22, 27.18, 41.14],
+    "suit:sunforged": [184.69, 105.65, 27.04, 1.79],
+    "sunforged-tap-1": [184.69, 105.65, 27.04, 1.79],
+    "sunforged-tap-2": [183.6, 102.96, 27.04, -1.89],
+    "sunforged-tap-3": [182.76, 101.59, 27.04, -4.23],
+    "sunforged-tap-4": [182.48, 101.88, 27.04, -4.61],
+    "sunforged-tap-5": [182.82, 103.72, 27.04, -2.92],
+    "sunforged-tap-6": [183.56, 106.67, 27.04, 0.38],
+    "sunforged-tap-7": [185.19, 109.97, 27.04, 4.4],
+    "sunforged-tap-8": [187.01, 112.84, 27.04, 8.05],
+    "sunforged-tap-9": [188.16, 114.49, 27.04, 10.37],
+    "sunforged-tap-10": [188.57, 114.32, 27.04, 10.74],
+    "sunforged-tap-11": [188.14, 112.3, 27.04, 9.08],
+    "sunforged-tap-12": [186.8, 109.04, 27.04, 5.81],
+    "sunforged-desc-1": [184.69, 105.65, 27.04, 1.79],
+    "sunforged-desc-2": [188.8, 118.83, 27.04, 15.52],
+    "sunforged-desc-3": [190.08, 132.44, 27.04, 28.71],
+    "sunforged-desc-4": [188.1, 145.92, 27.04, 41.18],
     "suit:abyssal": [184.85, 114.5, 25.88, 1.82],
     "abyssal-tap-1": [184.85, 114.5, 25.88, 1.82],
     "abyssal-tap-2": [184.07, 111.63, 25.88, -1.87],
@@ -3639,23 +3639,23 @@ const DOME = {
     "abyssal-desc-2": [184.52, 127.1, 25.88, 15.57],
     "abyssal-desc-3": [182.65, 139.3, 25.88, 28.78],
     "abyssal-desc-4": [178.01, 150.6, 25.88, 41.24],
-    "suit:gemmie": [183.43, 99.44, 36.18, 1.82],
-    "gemmie-tap-1": [183.43, 99.44, 36.18, 1.82],
-    "gemmie-tap-2": [182.35, 96.36, 36.18, -1.86],
-    "gemmie-tap-3": [181.61, 94.53, 36.18, -4.21],
-    "gemmie-tap-4": [181.5, 94.73, 36.18, -4.59],
-    "gemmie-tap-5": [182.03, 97.04, 36.18, -2.9],
-    "gemmie-tap-6": [182.94, 100.59, 36.18, 0.41],
-    "gemmie-tap-7": [184.34, 104.23, 36.18, 4.43],
-    "gemmie-tap-8": [186.4, 107, 36.18, 8.08],
-    "gemmie-tap-9": [187.72, 108.35, 36.18, 10.39],
-    "gemmie-tap-10": [188.03, 108.09, 36.18, 10.77],
-    "gemmie-tap-11": [187.21, 105.92, 36.18, 9.1],
-    "gemmie-tap-12": [185.38, 102.92, 36.18, 5.83],
-    "gemmie-desc-1": [183.43, 99.44, 36.18, 1.82],
-    "gemmie-desc-2": [188.66, 113.27, 36.18, 15.55],
-    "gemmie-desc-3": [190.83, 128.76, 36.18, 28.74],
-    "gemmie-desc-4": [189.93, 144.01, 36.18, 41.19],
+    "suit:gemmie": [183.43, 99.44, 27.13, 1.82],
+    "gemmie-tap-1": [183.43, 99.44, 27.13, 1.82],
+    "gemmie-tap-2": [182.35, 96.36, 27.13, -1.86],
+    "gemmie-tap-3": [181.61, 94.53, 27.13, -4.21],
+    "gemmie-tap-4": [181.5, 94.73, 27.13, -4.59],
+    "gemmie-tap-5": [182.03, 97.04, 27.13, -2.9],
+    "gemmie-tap-6": [182.94, 100.59, 27.13, 0.41],
+    "gemmie-tap-7": [184.34, 104.23, 27.13, 4.43],
+    "gemmie-tap-8": [186.4, 107.0, 27.13, 8.08],
+    "gemmie-tap-9": [187.72, 108.35, 27.13, 10.39],
+    "gemmie-tap-10": [188.03, 108.09, 27.13, 10.77],
+    "gemmie-tap-11": [187.21, 105.92, 27.13, 9.1],
+    "gemmie-tap-12": [185.38, 102.92, 27.13, 5.83],
+    "gemmie-desc-1": [183.43, 99.44, 27.13, 1.82],
+    "gemmie-desc-2": [188.66, 113.27, 27.13, 15.55],
+    "gemmie-desc-3": [190.83, 128.76, 27.13, 28.74],
+    "gemmie-desc-4": [189.93, 144.01, 27.13, 41.19],
     "suit:sammie": [185.89, 114.58, 26.09, 1.83],
     "sammie-tap-1": [185.89, 114.58, 26.09, 1.83],
     "sammie-tap-2": [184.91, 112.4, 26.09, -1.84],
@@ -3673,23 +3673,23 @@ const DOME = {
     "sammie-desc-2": [186.55, 127.66, 26.09, 15.52],
     "sammie-desc-3": [185.53, 139.88, 26.09, 28.68],
     "sammie-desc-4": [181.44, 151.15, 26.09, 41.12],
-    "suit:cosmic": [184.32, 101.02, 35.29, 1.83],
-    "cosmic-tap-1": [184.32, 101.02, 35.29, 1.83],
-    "cosmic-tap-2": [183.15, 98.55, 35.29, -1.85],
-    "cosmic-tap-3": [182.31, 97.42, 35.29, -4.21],
-    "cosmic-tap-4": [182.1, 97.75, 35.29, -4.59],
-    "cosmic-tap-5": [182.57, 99.46, 35.29, -2.89],
-    "cosmic-tap-6": [183.44, 102.21, 35.29, 0.42],
-    "cosmic-tap-7": [184.99, 105.39, 35.29, 4.45],
-    "cosmic-tap-8": [187.08, 108.2, 35.29, 8.11],
-    "cosmic-tap-9": [188.42, 109.75, 35.29, 10.42],
-    "cosmic-tap-10": [188.8, 109.48, 35.29, 10.8],
-    "cosmic-tap-11": [188.13, 107.45, 35.29, 9.13],
-    "cosmic-tap-12": [186.43, 104.3, 35.29, 5.85],
-    "cosmic-desc-1": [184.32, 101.02, 35.29, 1.83],
-    "cosmic-desc-2": [189.28, 113.87, 35.29, 15.58],
-    "cosmic-desc-3": [191.36, 128.37, 35.29, 28.79],
-    "cosmic-desc-4": [190.6, 142.66, 35.29, 41.25],
+    "suit:cosmic": [184.32, 101.02, 27.17, 1.83],
+    "cosmic-tap-1": [184.32, 101.02, 27.17, 1.83],
+    "cosmic-tap-2": [183.15, 98.55, 27.17, -1.85],
+    "cosmic-tap-3": [182.31, 97.42, 27.17, -4.21],
+    "cosmic-tap-4": [182.1, 97.75, 27.17, -4.59],
+    "cosmic-tap-5": [182.57, 99.46, 27.17, -2.89],
+    "cosmic-tap-6": [183.44, 102.21, 27.17, 0.42],
+    "cosmic-tap-7": [184.99, 105.39, 27.17, 4.45],
+    "cosmic-tap-8": [187.08, 108.2, 27.17, 8.11],
+    "cosmic-tap-9": [188.42, 109.75, 27.17, 10.42],
+    "cosmic-tap-10": [188.8, 109.48, 27.17, 10.8],
+    "cosmic-tap-11": [188.13, 107.45, 27.17, 9.13],
+    "cosmic-tap-12": [186.43, 104.3, 27.17, 5.85],
+    "cosmic-desc-1": [184.32, 101.02, 27.17, 1.83],
+    "cosmic-desc-2": [189.28, 113.87, 27.17, 15.58],
+    "cosmic-desc-3": [191.36, 128.37, 27.17, 28.79],
+    "cosmic-desc-4": [190.6, 142.66, 27.17, 41.25],
     "suit:seraph": [192.36, 121.33, 25.14, 2.3],
     "seraph-tap-1": [192.36, 121.33, 25.14, 2.3],
     "seraph-tap-2": [190.56, 118.3, 25.14, -1.36],
@@ -3792,23 +3792,23 @@ const DOME = {
     "robodog-desc-2": [192.3, 123.12, 25.09, 15.49],
     "robodog-desc-3": [193.23, 137.37, 25.09, 28.67],
     "robodog-desc-4": [189.9, 150.55, 25.09, 41.13],
-    "suit:geode": [183.83, 121.67, 38.99, 1.77],
-    "geode-tap-1": [183.83, 121.67, 38.99, 1.77],
-    "geode-tap-2": [182.77, 119.03, 38.99, -1.91],
-    "geode-tap-3": [182, 117.73, 38.99, -4.26],
-    "geode-tap-4": [181.81, 118.06, 38.99, -4.64],
-    "geode-tap-5": [182.24, 119.91, 38.99, -2.95],
-    "geode-tap-6": [183.05, 122.81, 38.99, 0.36],
-    "geode-tap-7": [183.93, 126.03, 38.99, 4.38],
-    "geode-tap-8": [184.62, 128.71, 38.99, 8.03],
-    "geode-tap-9": [185.09, 130.14, 38.99, 10.34],
-    "geode-tap-10": [185.34, 129.89, 38.99, 10.71],
-    "geode-tap-11": [185.27, 128, 38.99, 9.05],
-    "geode-tap-12": [184.76, 124.97, 38.99, 5.78],
-    "geode-desc-1": [183.83, 121.67, 38.99, 1.77],
-    "geode-desc-2": [184.41, 133.84, 38.99, 15.5],
-    "geode-desc-3": [183.92, 144.47, 38.99, 28.69],
-    "geode-desc-4": [181.2, 151.8, 38.99, 41.16],
+    "suit:geode": [183.83, 121.67, 27.29, 1.77],
+    "geode-tap-1": [183.83, 121.67, 27.29, 1.77],
+    "geode-tap-2": [182.77, 119.03, 27.29, -1.91],
+    "geode-tap-3": [182.0, 117.73, 27.29, -4.26],
+    "geode-tap-4": [181.81, 118.06, 27.29, -4.64],
+    "geode-tap-5": [182.24, 119.91, 27.29, -2.95],
+    "geode-tap-6": [183.05, 122.81, 27.29, 0.36],
+    "geode-tap-7": [183.93, 126.03, 27.29, 4.38],
+    "geode-tap-8": [184.62, 128.71, 27.29, 8.03],
+    "geode-tap-9": [185.09, 130.14, 27.29, 10.34],
+    "geode-tap-10": [185.34, 129.89, 27.29, 10.71],
+    "geode-tap-11": [185.27, 128.0, 27.29, 9.05],
+    "geode-tap-12": [184.76, 124.97, 27.29, 5.78],
+    "geode-desc-1": [183.83, 121.67, 27.29, 1.77],
+    "geode-desc-2": [184.41, 133.84, 27.29, 15.5],
+    "geode-desc-3": [183.92, 144.47, 27.29, 28.69],
+    "geode-desc-4": [181.2, 151.8, 27.29, 41.16],
     "suit:ghost": [191.69, 101.54, 26.36, 2.03],
     "ghost-tap-1": [191.69, 101.54, 26.36, 2.03],
     "ghost-tap-2": [190.17, 99, 26.36, -1.66],
@@ -3962,23 +3962,23 @@ const DOME = {
     "leviathan-desc-2": [190, 120.7, 24.93, 15.69],
     "leviathan-desc-3": [188.79, 138.78, 24.93, 29],
     "leviathan-desc-4": [184.5, 156.43, 24.93, 41.51],
-    "suit:copper": [185.92, 105.99, 26.56, 1.81],
-    "copper-tap-1": [185.92, 105.99, 26.56, 1.81],
-    "copper-tap-2": [184.32, 103.19, 26.56, -1.86],
-    "copper-tap-3": [183.15, 101.84, 26.56, -4.2],
-    "copper-tap-4": [183, 102.18, 26.56, -4.57],
-    "copper-tap-5": [183.84, 104.11, 26.56, -2.89],
-    "copper-tap-6": [185.39, 107.24, 26.56, 0.4],
-    "copper-tap-7": [186.65, 110.83, 26.56, 4.41],
-    "copper-tap-8": [187.71, 113.92, 26.56, 8.05],
-    "copper-tap-9": [188.59, 115.58, 26.56, 10.36],
-    "copper-tap-10": [188.79, 115.27, 26.56, 10.73],
-    "copper-tap-11": [188.23, 113.05, 26.56, 9.07],
-    "copper-tap-12": [187.24, 109.61, 26.56, 5.81],
-    "copper-desc-1": [185.92, 105.99, 26.56, 1.81],
-    "copper-desc-2": [188.69, 119.68, 26.56, 15.5],
-    "copper-desc-3": [188.8, 133.27, 26.56, 28.66],
-    "copper-desc-4": [185.84, 145.51, 26.56, 41.11],
+    "suit:copper": [190.92, 108.99, 26.56, 1.81],
+    "copper-tap-1": [190.92, 108.99, 26.56, 1.81],
+    "copper-tap-2": [189.32, 106.19, 26.56, -1.86],
+    "copper-tap-3": [188.15, 104.84, 26.56, -4.2],
+    "copper-tap-4": [188.0, 105.18, 26.56, -4.57],
+    "copper-tap-5": [188.84, 107.11, 26.56, -2.89],
+    "copper-tap-6": [190.39, 110.24, 26.56, 0.4],
+    "copper-tap-7": [191.65, 113.83, 26.56, 4.41],
+    "copper-tap-8": [192.71, 116.92, 26.56, 8.05],
+    "copper-tap-9": [193.59, 118.58, 26.56, 10.36],
+    "copper-tap-10": [193.79, 118.27, 26.56, 10.73],
+    "copper-tap-11": [193.23, 116.05, 26.56, 9.07],
+    "copper-tap-12": [192.24, 112.61, 26.56, 5.81],
+    "copper-desc-1": [190.92, 108.99, 26.56, 1.81],
+    "copper-desc-2": [193.69, 122.68, 26.56, 15.5],
+    "copper-desc-3": [193.8, 136.27, 26.56, 28.66],
+    "copper-desc-4": [190.84, 148.51, 26.56, 41.11],
     "suit:alien": [188.74, 121.7, 22.29, 1.82],
     "alien-tap-1": [188.74, 121.7, 22.29, 1.82],
     "alien-tap-2": [187.8, 119.23, 22.29, -1.85],

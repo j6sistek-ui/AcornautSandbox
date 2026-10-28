@@ -1,7 +1,7 @@
-import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=326";
-import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=326";
-import { IS_BETA, PALS } from "./catalog.js?v=326";
-import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=326";
+import { BETA_MISSION_ROWS } from "./beta-campaign-manifest.js?v=328";
+import { MISSION_ROWS, BETA_VARIANTS } from "./campaign-manifest.js?v=328";
+import { IS_BETA, PALS } from "./catalog.js?v=328";
+import { RACE_MAX_ACORNS, RACE_RINGS, RACE_THREE_STAR_TICKS, RACE_TWO_STAR_TICKS, } from "./race.js?v=328";
 // ------------------------------------------------------------------ stages
 const lerp = (a, b, t) => a + (b - a) * t;
 export const STAGES = [
@@ -537,7 +537,9 @@ export const STAR_REWARDS = [
     { stars: 45, kind: "mode", id: "lost", name: "Lost in Space", desc: "Endless mode: the sky rotates, drifts and mirrors." },
     { stars: 50, kind: "acorns", name: "170 Acorns", desc: "Spending acorns for the hangar.", amount: 170 },
     { stars: 55, kind: "trail", id: "bloom", name: "Nebula Bloom", desc: "Petals of nebula light." },
-    { stars: 60, kind: "helmet", id: "sammie", name: "Samurai Helmet", desc: "Earned on the Star Chart." },
+    // the Samurai and Cosmic helmets left the chart (owner, 27 Oct 2026: "both can be removed, cosmos is
+    // broken anyways"); their rungs pay like their neighbours
+    { stars: 60, kind: "acorns", name: "200 Acorns", desc: "Spending acorns for the hangar.", amount: 200 },
     { stars: 65, kind: "suit", id: "sammie", name: "Stone Suit", desc: "Earned on the Star Chart." },
     { stars: 70, kind: "mod", id: "flightmods", name: "Flight Mods", desc: "Steady Gates and Thrill Seeker unlock in the hangar." },
     { stars: 75, kind: "acorns", name: "240 Acorns", desc: "Spending acorns for the hangar.", amount: 240 },
@@ -562,7 +564,7 @@ export const STAR_REWARDS = [
     { stars: 170, kind: "suit", id: "groveguard", name: "Groveguard", desc: "Forest green and brass, its own sealed helm." },
     { stars: 175, kind: "acorns", name: "520 Acorns", desc: "Spending acorns for the hangar.", amount: 520 },
     { stars: 180, kind: "trail", id: "frost", name: "Frostbite", desc: "A wake of hoarfrost." },
-    { stars: 185, kind: "helmet", id: "cosmic", name: "Cosmic Helmet", desc: "Nebula glass. Arrives with the suit." },
+    { stars: 185, kind: "dust", name: "38 Star Dust", desc: "Premium dust for the shop.", amount: 38 },
     { stars: 190, kind: "suit", id: "cosmic", name: "Cupcake", desc: "Frosted pink, sprinkles and all." },
     { stars: 195, kind: "dust", name: "40 Star Dust", desc: "Premium dust for the shop.", amount: 40 },
     { stars: 200, kind: "acorns", name: "590 Acorns", desc: "Spending acorns for the hangar.", amount: 590 },

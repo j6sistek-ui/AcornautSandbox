@@ -160,12 +160,13 @@ ok(BOOST_IDS.length === 2 && BOOSTS.levelskip.dust === 10 && BOOSTS.starunlock.d
     "an owned item's rung pays 250 acorns anywhere on the road");
   // a suit and its helmet on two rungs are two items: both pay (owner, 8 Sep 2026)
   {
-    const s = defaultSave(); s.purchased = ["sammie"];
-    const rungs = STAR_REWARDS.filter((r) => r.id === "sammie");
+    // Gemmie since the Samurai helmet left the chart (27 Oct 2026)
+    const s = defaultSave(); s.purchased = ["gemmie"];
+    const rungs = STAR_REWARDS.filter((r) => r.id === "gemmie");
     reach(s, Math.max(...rungs.map((r) => r.stars)));
     const before = s.acorns; settleStarRewards(s);
     ok(rungs.length === 2 && rungs.every((r) => s.rewardSubs[Prog2.rewardId(r)]?.amount === 250),
-      "both Sammie rungs pay when the id is owned");
+      "both Gemmie rungs pay when the id is owned");
   }
 }
 

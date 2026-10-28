@@ -18,7 +18,7 @@ import { FLIGHT_GRAVITY, QUICK_DROP_VY } from "./control-constants";
 // is registered.
 export const GAME_VERSION = "V1.0.0";
 export const STUDIO = "Acornaut by QuarterDrop Games";
-export const ART_VER = "326";
+export const ART_VER = "328";
 
 // TWO PAGES, ONE BUNDLE. The root page is the PRODUCTION game and sets
 // nothing: every gate is real and everything is earned on the Star Chart.
@@ -166,6 +166,14 @@ export type Helmet = {
   opaqueVisor?: boolean;
   /** visible only on the beta host while fitment is being reviewed. */
   beta?: boolean;
+};
+
+/** RETIRED HELMETS (owner, 27 Oct 2026: "both can be removed, cosmos is broken anyways"): off
+ *  the shelves, the Star Chart and the Regalia Pack. A pilot who had already earned or bought one
+ *  keeps it - past its old rung, or with the pack it came in - and nobody else is offered it. */
+export const RETIRED_HELMETS: Record<string, { stars: number; bundle?: string }> = {
+  sammie: { stars: 60, bundle: "bundle-regalia" },
+  cosmic: { stars: 185 },
 };
 
 export const HELMETS: Helmet[] = [
@@ -677,7 +685,8 @@ export const BUNDLES: Bundle[] = [
     items: [
       { kind: "suit", id: "gemmie" }, { kind: "suit", id: "sammie" },
       { kind: "suit", id: "seraph" }, { kind: "suit", id: "leviathan" },
-      { kind: "helm", id: "gemmie" }, { kind: "helm", id: "sammie" },
+      // the Samurai helmet left the pack and the shelves (owner, 27 Oct 2026); owners keep it
+      { kind: "helm", id: "gemmie" },
       { kind: "helm", id: "seraph" }, { kind: "helm", id: "leviathan" },
       { kind: "trail", id: "opalfeather" }, { kind: "trail", id: "clockwork" }, { kind: "trail", id: "phoenixplume" },
     ],
@@ -1074,9 +1083,10 @@ export const SUIT_SHELF: { title: string; ids: string[]; shop?: boolean }[] = [
 // they arrive with their suit and equipping them elsewhere does nothing,
 // so a card would be a lie.
 export const HELMET_SHELF: { title: string; ids: string[] }[] = [
-  { title: "CLEAR VISORS", ids: ["clear", "lunar", "gemmie", "phoenix", "sammie", "seraph", "chronarch"] },
+  // Samurai and Cosmic retired from the shelves (owner, 27 Oct 2026); owners keep them
+  { title: "CLEAR VISORS", ids: ["clear", "lunar", "gemmie", "phoenix", "seraph", "chronarch"] },
   { title: "COLOR VISORS", ids: ["ion", "solar", "void", "comet", "cherry", "meteor", "chrono", "amethyst", "reactor"] },
-  { title: "GRAPHIC VISORS", ids: ["nebula", "royal", "aurora", "princess", "verdant", "cryostar", "eclipse", "cinderforge", "cosmic", "abyssal", "ivoryguard"] },
+  { title: "GRAPHIC VISORS", ids: ["nebula", "royal", "aurora", "princess", "verdant", "cryostar", "eclipse", "cinderforge", "abyssal", "ivoryguard"] },
 ];
 
 export function isIap(id: string) {
