@@ -1,0 +1,77 @@
+# Builds the iOS app for the Simulator on a GitHub-hosted Mac, so the native
+# project is proven to compile without owning a Mac or an Apple Developer
+# membership (owner, 30 Oct 2026: "i don't have a mac"). Nothing is signed or
+# uploaded; TestFlight is a separate workflow once the membership is active.
+#
+# Run it from the Actions tab -> "iOS build check" -> Run workflow. macOS
+# minutes count 10x against a private repo's free allowance, so it only runs
+# when asked.
+name: iOS build check
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ios-build-check
+  cancel-in-progress: true
+
+jobs:
+  simulator:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: shell
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: shell/package-lock.json
+
+      - name: Install the shell's packages
+        run: npm ci --no-audit --no-fund
+
+      # the same two steps `npm run ios` runs before it opens Xcode
+      - name: Build the web bundle (www) from docs
+        run: node build-web.mjs
+
+      - name: Copy it into the iOS project
+        run: npx cap sync ios
+
+      # Capacitor 8 wants a recent Xcode: take the newest one the runner has
+      - name: Pick the newest Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - name: What Xcode sees
+        run: xcodebuild -list -project ios/App/App.xcodeproj
+
+      - name: Build for the iOS Simulator (no signing)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/dd" \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee "$RUNNER_TEMP/xcodebuild.log" | grep -E "error:|warning: .*deprecated|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" "$RUNNER_TEMP/xcodebuild.log"
+
+      - name: Keep the full build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: ${{ runner.temp }}/xcodebuild.log
+          if-no-files-found: ignore
