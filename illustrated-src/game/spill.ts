@@ -6,39 +6,40 @@ import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag";
 // Survive the wave; the next one is harder.
 //
 // This module is the RULES of the mode and nothing else — no canvas, no DOM,
-// no art, no save. It is fed a dt and a handful of semantic inputs (a tap,
-// a burst, a lunge, a Depot purchase) and it answers with state and a list
+// no art, no save. It is fed a dt and a handful of semantic inputs (launch,
+// steering, dodge, fire, a Depot purchase) and it answers with state and a list
 // of cues for the frame. The sim mirrors its ship into the world so
 // the shared draw path can paint it; draw.ts paints the field; standalone.ts
 // builds the Depot sheet. That split is the same one Hyper Run made
 // (race.ts), and for the same reason: everything in here can be driven from
 // a node test with no browser at all.
 //
-// SECOND PASS (owner's flight notes, 2026-09-02). The first promotion kept
-// the lab's squirrel and tap; this one flies the scout ship with the Hyper
-// Run hand - hold to rise, release to fall, a swipe up or down for a burst -
-// tuned to normal flight's response rather than the race's. FLIP is gone:
-// gravity that inverts in a frame was the one rule that read as unfair. Its
-// rung is DRIFT, a continuous tilt of the whole field, and every rule now
-// phases in over three seconds with its name pinned beside the controls.
-// A wave hands control back on a counted-down GO rather than whenever the
-// card finished; the Depot docks for a second and holds its shelves inert
-// for a moment, so a thumb still tapping cannot buy by accident. And the
-// shelves are not rolled any more: the ship has four meters - PLATING,
-// SHIELD, THRUSTERS, POWER-UPS - and a purchase fills one. PULSE is no
-// longer a button the thumb has to find: unlocking it makes it fire on its
-// own at the next impact, and charged coins are what charge it.
+// Wave rules phase in over three seconds. The counted-down GO introduces
+// each wave; steering or dodging can take control early in the empty field.
+// The Depot holds its shelves inert briefly to prevent accidental purchases.
+// Its four meters are PLATING, SHIELD, THRUSTERS and POWER-UPS. An unlocked
+// PULSE fires at the next impact; charged coins replenish it.
 //
-// THIRD PASS (owner, 2026-09-10: "tap to fly instead of hold to rise ...
-// feel should be similar to other modes"). The Hyper Run hand above is
-// history: the field now flies on the same tap as normal flight and the
-// Wormhole - a kick per tap, gravity between - with the numbers and the
-// sweep that chose them documented at SPILL below. Hyper Run alone keeps
-// hold-to-rise. Everything else the second pass set still stands.
+// DIRECT STEERING (owner, 2026-10-29). The stick commands climb/descent;
+// releasing it brakes to an altitude hold. Horizontal swipes dodge in
+// either direction. The earlier tap/gravity hand is retired for this mode.
 
 import { ENVS, LEGACY_DEBRIS_COUNT, PHYS } from "./catalog";
+import { spillPrimeEcho } from "./spill-builds";
+import { createSpillLoadout, restoreSpillLoadout, spillChassisStats, type SpillLoadout } from "./spill-career";
+import { beginSpillExpedition, createSpillExpedition, restoreSpillExpedition, settleSpillExpedition,
+  type SpillExpedition } from "./spill-expeditions";
+import { admitSpillClimax, createSpillClimax, resizeSpillClimax, restoreSpillClimax, spillClimaxReserved,
+  spillClimaxWave, type SpillClimax } from "./spill-climax";
+import { admitSpillHazards, beginSpillHazardWave, clearSpillHazards, createSpillHazards,
+  resizeSpillHazards, restoreSpillHazards, spillGravityBend, spillGravityBendDelta, spillGravityDrift,
+  spillHazardPathClear, spillHazardPlan, spillHazardPressure, stepSpillHazards, SPILL_HAZARDS,
+  type SpillHazardState, type SpillHazardContact } from "./spill-hazards";
 import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor,
   type SpillContract, type SpillContractKind, type SpillEvent, type SpillSpecialty, type SpillUtility } from "./spill-content";
+import { admitSpillEnemies, beginSpillCombatWave, captureSpillCombatMotion, clearSpillCombat, createSpillCombat,
+  resizeSpillCombat, restoreSpillCombat, spillCombatPressure, spillCombatPulse, spillCombatRockClear, stepSpillCombat,
+  type SpillCombat } from "./spill-combat";
 
 // ---------------------------------------------------------------- tuning
 
@@ -56,35 +57,12 @@ export const SPILL = {
   lungeSpeed: 320,
   lungeTime: 0.15,
   lungeCooldown: 0.55,
-  /** THE HAND: TAP TO FLY (owner, 10 Sep 2026: "tap to fly instead of
-   *  hold to rise"). A tap is an instant kick skyward and gravity has the
-   *  ship the rest of the time - the same contract as normal flight and
-   *  the Wormhole, so a thumb trained on one mode is trained on all three.
-   *  Hyper Run alone keeps hold-to-rise. The numbers sit between those two
-   *  hands: flight is 450 against 1300 (a 78px hop, apex in 0.35s), the
-   *  corridor 315 against 975 (51px, 0.32s); the field, denser and flown in
-   *  a ship twice the pilot's length, takes 400 against 1000 (80px, 0.40s)
-   *  so a hop clears a spinner and two taps clear a hulk. CHOSEN BY SWEEP:
-   *  seven candidate hands from 900/360 to 1300/450 were flown by the
-   *  test's tapping bot over twelve seeds; this one cleared wave 3 on all
-   *  twelve and wave 5 on eight, flight's own 1300/450 cleared wave 3 on
-   *  six, and the floatier 900/360 bought two more wave-5 clears at the
-   *  cost of no longer feeling like the other modes. Taps never stack: a
-   *  second tap mid-hop resets the climb to the kick, it does not add to
-   *  it. The fall is capped so a descent stays readable; a dive is an
-   *  instant velocity past that cap that only decays back to it, the way
-   *  a swipe down carries in every other mode. The hold model (600 down,
-   *  720 net hold, climb capped at 330) was flown against this and retired
-   *  with the owner's note that the field should feel like the other modes */
-  gravity: 1000,
-  tapVy: 400,
-  fallCap: 420,
-  burstUp: 520,
-  burstDown: 520,
-  /** how fast a burst's speed past the cap bleeds back to the cap */
-  burstDecay: 600,
-  /** A brush is free. Sustained contact goes through ordinary protection
-   *  and kicks the ship clear; the boundary never bypasses the hull. */
+  /** Symmetric vertical control. Release brakes without a gravity term. */
+  steerSpeed: 300,
+  steerAcceleration: 1800,
+  steerBrake: 2400,
+  edgeEase: 58,
+  /** Retained for the legacy boundary painter; floorT now stays zero. */
   floorGrace: 0.25,
   floorWarn: 0.1,
   shipR: PHYS.squirrelR,
@@ -135,7 +113,7 @@ export type SpillMod = "none" | "surge" | "lowg" | "heavy" | "cross" | "blackout
 /** every rule, in the order the ladder teaches them */
 export const SPILL_MODS: readonly SpillMod[] = ["surge", "lowg", "heavy", "cross", "blackout", "swarm", "drift"];
 
-/** the gravity rules cannot stack: a wave carries at most one of them */
+/** the steering response rules cannot stack: a wave carries at most one */
 const GRAVITY_MODS: readonly SpillMod[] = ["lowg", "heavy"];
 
 export const SPILL_MOD_INFO: Record<SpillMod, { name: string; teach: string; short: string }> = {
@@ -145,16 +123,16 @@ export const SPILL_MOD_INFO: Record<SpillMod, { name: string; teach: string; sho
     teach: "SURGE: double debris for 6s · hold your lane",
   },
   lowg: {
-    name: "LOW-G", short: "low gravity",
-    teach: "LOW-G: lighter · tap less · swipe down to drop",
+    name: "LOW-G", short: "quick response",
+    teach: "LOW-G: quicker steering response · release to hold altitude",
   },
   heavy: {
-    name: "HEAVY", short: "heavy gravity",
-    teach: "HEAVY: heavier · tap more · swipe up to recover",
+    name: "HEAVY", short: "slow response",
+    teach: "HEAVY: slower steering response · plan your moves",
   },
   cross: {
     name: "CROSSWIND", short: "crosswind",
-    teach: "CROSSWIND: pushed to the wall · lunge to hold your lane",
+    teach: "CROSSWIND: pushed to the wall · dodge right to hold your lane",
   },
   blackout: {
     name: "BLACKOUT", short: "blackout",
@@ -170,7 +148,7 @@ export const SPILL_MOD_INFO: Record<SpillMod, { name: string; teach: string; sho
   },
 };
 
-export const SPILL_CONTROL_HINT = "CONTROLS: tap ▲ fly · swipe ▼ dive · swipe ▶ lunge";
+export const SPILL_CONTROL_HINT = "CONTROLS: drag up/down to steer · release to hold · swipe left/right to dodge";
 
 // ------------------------------------------------------------ the ladder
 
@@ -236,12 +214,20 @@ function intervalFor(n: number) {
   return Math.max(0.22, 0.78 - 0.42 * ramp - 0.01 * beyond);
 }
 
+function hazardCompatibleMods(n: number, seed: number, mods: SpillMod[]) {
+  if (spillClimaxWave(n)) return [];
+  const plan = spillHazardPlan(n, seed);
+  if (plan.families.some(kind => SPILL_HAZARDS[kind].unlock === n)) return [];
+  return mods.filter(mod => !(plan.families.includes("gravity") && ["heavy", "cross", "drift"].includes(mod))
+    && !((plan.families.includes("ion") || plan.families.includes("flare")) && mod === "blackout"));
+}
+
 /** what wave n asks of the pilot. Authored through 20; rolled from the seed
  *  after that, so one run's wave 27 is repeatable and another run's is not */
 export function spillWaveSpec(n: number, seed = 0): SpillWaveSpec {
   if (n >= 1 && n <= SPILL_AUTHORED_WAVES) {
     const [dur, cap, speed, mod, hulks] = LADDER[n - 1];
-    return { n, dur, cap, speed, mods: mod === "none" ? [] : [mod], hulks, interval: intervalFor(n) };
+    return { n, dur, cap, speed, mods: hazardCompatibleMods(n, seed, mod === "none" ? [] : [mod]), hulks, interval: intervalFor(n) };
   }
   const beyond = Math.max(1, n - SPILL_AUTHORED_WAVES);
   const roll = hash(seed, n);
@@ -257,7 +243,7 @@ export function spillWaveSpec(n: number, seed = 0): SpillWaveSpec {
     dur: 40,
     cap: Math.min(16, 14 + Math.floor((beyond - 1) / 3)),
     speed: Math.min(2.05, 1.9 * Math.pow(1.02, beyond)),
-    mods,
+    mods: hazardCompatibleMods(n, seed, mods),
     hulks: 2,
     interval: intervalFor(n),
   };
@@ -283,7 +269,7 @@ export const SPILL_SHOP: Record<SpillBuyable, { name: string; prices: readonly n
   thrusters: {
     name: "Thrusters",
     prices: [50, 100, 170],
-    levels: ["15% stronger bursts", "Carry 2 dash charges", "Dashes break small debris"],
+    levels: ["15% quicker steering and dodges", "30% quicker · carry 2 dodge charges", "45% quicker · dodges break small debris"],
   },
   pulse: {
     name: "Impact pulse",
@@ -307,8 +293,7 @@ export const SPILL_SHOP: Record<SpillBuyable, { name: string; prices: readonly n
   },
 };
 
-/** how hard a burst kicks at each THRUSTERS level. The tap is never
- *  scaled: the owner asked for a hand that gets steadier, not twitchier */
+/** Thrusters improve acceleration and dodge speed; normal steering speed stays predictable. */
 const THRUST_MUL = [1, 1.15, 1.3, 1.45] as const;
 
 // ------------------------------------------------------------- the state
@@ -318,6 +303,11 @@ export type SpillPhase = "ready" | "countdown" | "wave" | "drain" | "docking" | 
 export type SpillKind = "shard" | "tumbler" | "hulk" | "spinner";
 
 export type SpillRock = {
+  /** Projectile damage is lazy; original rocks retain their exact spawn shape until hit. */
+  hp?: number;
+  /** Captured, bounded gravity arc; prediction and integration use its exact integral. */
+  gravityBend?: { start: number; duration: number; strength: number };
+  gravityWell?: number;
   x: number;
   y: number;
   vx: number;
@@ -344,7 +334,8 @@ export type SpillBurst = { x: number; y: number; n: number; power: number; tone:
 export type SpillCue =
   | "press" | "burst" | "lunge" | "hit" | "shatter" | "ore" | "gold" | "shield" | "hull" | "graze"
   | "pulse" | "wave" | "go" | "count" | "clear" | "dock" | "depot" | "armed" | "depot-close" | "buy" | "deny"
-  | "respawn" | "dead" | "mission" | "milestone" | "surge" | "warn" | "recharge" | "charged" | "contract" | "event";
+  | "respawn" | "dead" | "mission" | "milestone" | "surge" | "warn" | "recharge" | "charged" | "contract" | "event"
+  | "laser" | "cannon" | "enemy-fire" | "enemy-down";
 
 export type SpillDepot = {
   /** the shelves are inert until this runs out */
@@ -354,6 +345,13 @@ export type SpillDepot = {
 };
 
 export type SpillState = {
+  combat: SpillCombat;
+  hazards: SpillHazardState;
+  loadout: SpillLoadout;
+  expedition: SpillExpedition;
+  climax: SpillClimax;
+  /** Evaluation runs cannot create checkpoints or advance career records. */
+  practice?: boolean;
   /** Cosmetic mission family; absent in legacy/endless checkpoints. */
   zoneEnv?: number;
   seed: number;
@@ -381,10 +379,12 @@ export type SpillState = {
   /** a mission: the wave that must be cleared. 0 for the endless mode */
   target: number;
   pilot: { x: number; y: number; vx: number; vy: number; rot: number };
-  /** the tap's flash, for the plume: seconds left on the kick's glow.
-   *  Optional so a checkpoint written before tap-to-fly still restores */
+  /** Negative climbs, positive descends, zero brakes to an altitude hold. Transient input. */
+  steerY: number;
+  lungeDir: -1 | 1;
+  /** Steering plume glow. Optional so older checkpoints still restore. */
   thrustT?: number;
-  /** the count is being flown by hand: a tap took the stick early */
+  /** Steering or a dodge took control before GO. */
   manual: boolean;
   /** inputs made while the control hint showed */
   hintInputs: number;
@@ -494,6 +494,9 @@ function rand(s: SpillState) {
 
 export function createSpill(W: number, H: number, seed: number, target = 0, hints = true, welcome = true): SpillState {
   return {
+    combat: createSpillCombat(seed),
+    hazards: createSpillHazards(seed),
+    loadout: createSpillLoadout(), expedition: createSpillExpedition(), climax: createSpillClimax(),
     seed: seed >>> 0,
     rng: seed >>> 0,
     W,
@@ -508,6 +511,7 @@ export function createSpill(W: number, H: number, seed: number, target = 0, hint
     t: 0,
     target: Math.max(0, Math.floor(target)),
     pilot: { x: W * SPILL.homeX, y: H * 0.45, vx: 0, vy: 0, rot: 0 },
+    steerY: 0, lungeDir: 1,
     manual: false,
     hintInputs: 0,
     burstT: 0,
@@ -583,7 +587,14 @@ export function resizeSpill(s: SpillState, W: number, H: number) {
   if (!(W > 0 && H > 0) || (W === s.W && H === s.H)) return;
   const sx = W / s.W;
   const sy = H / s.H;
-  for (const r of s.rocks) { r.x *= sx; r.y *= sy; r.vx *= sx; r.vy *= sy; r.arc *= sy; }
+  resizeSpillCombat(s, sx, sy);
+  resizeSpillHazards(s, sx, sy);
+  resizeSpillClimax(s, sy);
+  s.steerY = 0; s.lunge = 0; s.lungeDir = 1;
+  s.pilot.vx = 0; s.pilot.vy = 0;
+  for (const r of s.rocks) { r.x *= sx; r.y *= sy; r.vx *= sx; r.vy *= sy; r.arc *= sy;
+    if (r.gravityBend) r.gravityBend.strength *= sy;
+  }
   for (const n of s.nuts) { n.x *= sx; n.y *= sy; n.vx *= sx; n.vy *= sy; }
   s.eventSafeY *= sy;
   s.pilot.x *= sx;
@@ -607,9 +618,9 @@ function ramp(s: SpillState) {
   return Math.min(1, s.modRamp / SPILL.modRamp);
 }
 
-function gravityOf(s: SpillState) {
-  const g = spillMod(s, "lowg") ? 0.7 : spillMod(s, "heavy") ? 1.35 : 1;
-  return SPILL.gravity * (1 + (g - 1) * ramp(s));
+function steeringResponse(s: SpillState) {
+  const response = spillMod(s, "lowg") ? 1.2 : spillMod(s, "heavy") ? 0.8 : 1;
+  return 1 + (response - 1) * ramp(s);
 }
 
 function thrustMul(s: SpillState) {
@@ -698,6 +709,7 @@ export function spillRockAt(s: SpillState, r: SpillRock, t: number) {
     const t0 = s.t + r.warn;
     y += (Math.sin(r.arcPhase + ARC_RATE * (t0 + move)) - Math.sin(r.arcPhase + ARC_RATE * t0)) * r.arc / ARC_RATE;
   }
+  y += spillGravityBendDelta(r, s.t, s.t + move);
   return { x, y };
 }
 
@@ -707,6 +719,8 @@ export function spillRockAt(s: SpillState, r: SpillRock, t: number) {
  * forward against every piece in flight, and any overlap rejects the spawn.
  */
 export function spillPathClear(s: SpillState, cand: SpillRock) {
+  if (!spillCombatRockClear(s, cand)) return false;
+  if (!spillHazardPathClear(s, cand, ahead => spillRockAt(s, cand, ahead))) return false;
   for (const r of s.rocks) {
     if (r.dead) continue;
     for (let k = 0; k <= 18; k++) {
@@ -766,7 +780,7 @@ function spawnRock(s: SpillState) {
   return true;
 }
 
-/** Acorn Coins spills in arcs, so collecting a stream is a line you fly, not a dot */
+/** Acorn Coins spill in arcs, so collecting a stream is a line you fly, not a dot */
 function spawnStream(s: SpillState) {
   const n = 4 + Math.floor(rand(s) * 5);
   const y0 = 70 + rand(s) * (s.H - 140);
@@ -812,6 +826,7 @@ export function spillEventGap(s: SpillState) { return Math.max(130, s.H * (s.eve
 
 function stepEvent(s: SpillState, dt: number) {
   if (s.event === "none") return;
+  if (spillClimaxReserved(s) && s.eventWarn <= 0) return;
   if (s.eventWarn > 0) {
     s.eventWarn = Math.max(0, s.eventWarn - dt);
     if (s.eventWarn === 0) {
@@ -834,7 +849,7 @@ function stepEvent(s: SpillState, dt: number) {
       cue(s, "surge");
     }
   }
-  if (s.waveT >= s.eventNext && s.waveT < s.spec.dur - 3) {
+  if (!spillClimaxReserved(s) && s.waveT >= s.eventNext && s.waveT < s.spec.dur - 3) {
     s.eventNext += s.event === "rig" ? 9 : 10;
     s.eventPass++;
     const desired = s.pilot.y + (s.event === "rig" ? (s.eventPass % 2 ? -60 : 60) : (rand(s) - 0.5) * 160);
@@ -868,57 +883,42 @@ function noteInput(s: SpillState) {
   if (s.hintInputs >= SPILL.hintInputs) s.hintT = 1;
 }
 
-/** THE TAP. On the ready card it launches; during the count it takes the
- *  stick from the autopilot early and kicks, so the ship is never dropped
- *  on the GO into a hand that was waiting; in flight it is the kick
- *  skyward. Taps never stack - a tap mid-hop resets the climb to the kick.
- *  Returns whether the tap did anything, so the sim can sound it */
+/** Compatibility launch action. Tapping during flight never moves the ship. */
 export function spillTap(s: SpillState) {
   if (s.phase === "ready") {
     if (s.openingEnabled !== false) { s.welcome = true; s.freeUpgrade = true; s.wave = 0; beginDocking(s); }
     else beginCountdown(s, 1);
     return true;
   }
-  if (s.phase === "countdown" && !s.manual) {
-    s.manual = true;
-    s.pilot.vy = 0;
-  }
-  if (!handOn(s)) return false;
-  noteInput(s);
-  s.pilot.vy = Math.min(s.pilot.vy, -SPILL.tapVy);
-  s.thrustT = 0.22;
-  burst(s, s.pilot.x - 16, s.pilot.y + 4, 4, "thrust", 0.45);
-  cue(s, "press");
+  return false;
+}
+
+/** Semantic stick input. Releasing always clears input, including outside flight. */
+export function spillSteer(s: SpillState, axis: number): boolean {
+  const next = Number.isFinite(axis) ? Math.max(-1, Math.min(1, axis)) : 0;
+  if (!flying(s) && s.phase !== "countdown") { s.steerY = 0; return false; }
+  if (next && s.phase === "countdown" && !s.manual) { s.manual = true; s.pilot.vy = 0; }
+  if (next && Math.sign(next) !== Math.sign(s.steerY)) noteInput(s);
+  s.steerY = next;
   return true;
 }
 
-/** a swipe: up is a harder kick than the tap, down is the dive. Instant */
-export function spillBurst(s: SpillState, dir: -1 | 1) {
-  if (!handOn(s)) return false;
-  noteInput(s);
-  const mul = thrustMul(s);
-  if (dir < 0) s.pilot.vy = Math.min(s.pilot.vy, -SPILL.burstUp * mul);
-  else s.pilot.vy = Math.max(s.pilot.vy, SPILL.burstDown * mul);
-  s.burstT = 0.22;
-  burst(s, s.pilot.x - 14, s.pilot.y - dir * 10, 8, "thrust", 0.6);
-  cue(s, "burst");
-  return true;
-}
+/** Older shared helpers route to direct steering, never to a tap/gravity impulse. */
+export function spillBurst(s: SpillState, dir: -1 | 1) { return spillSteer(s, dir); }
 
-/**
- * The mode's own control. A short forward dash on a cooldown: the only move
- * that spends horizontal room, which is what makes an angled field playable.
- * Forward only — a backward lunge was a free retreat into a corner.
- */
-export function spillLunge(s: SpillState) {
+/** Both dodge directions spend the same charges and return toward the home lane. */
+export function spillLunge(s: SpillState, dir: -1 | 1 = 1) {
   if (s.phase === "ready") return spillTap(s);
-  if (!handOn(s) || s.lungeCharges <= 0) return false;
+  if ((!handOn(s) && s.phase !== "countdown") || s.lungeCharges <= 0 || (dir !== -1 && dir !== 1)) return false;
+  if (s.phase === "countdown" && !s.manual) { s.manual = true; s.pilot.vy = 0; }
   noteInput(s);
   s.lunge = SPILL.lungeTime;
+  s.lungeDir = dir;
   s.lungeCharges -= 1;
+  spillPrimeEcho(s);
   if (spillHas(s, "brake") || s.specialties.thrusters === "precision") s.pilot.vy *= 0.25;
   if (s.cool <= 0) s.cool = SPILL.lungeCooldown;
-  burst(s, s.pilot.x - 14, s.pilot.y, 8, "lunge", 0.5);
+  burst(s, s.pilot.x - dir * 14, s.pilot.y, 8, "lunge", 0.5);
   cue(s, "lunge");
   return true;
 }
@@ -942,7 +942,7 @@ function firePulse(s: SpillState) {
   s.pulseFlash = 0.45;
   s.shake = 0.5;
   const reach = pulseRadius(s);
-  let hit = 0;
+  let hit = spillCombatPulse(s, reach);
   for (const r of s.rocks) {
     if (r.dead || r.warn > 0) continue;
     const dx = r.x - s.pilot.x;
@@ -970,12 +970,12 @@ export function spillPulse(s: SpillState) {
 // ---------------------------------------------------------------- waves
 
 function beginWave(s: SpillState) {
+  beginSpillCombatWave(s);
+  beginSpillHazardWave(s);
+  s.climax = createSpillClimax();
   s.phase = "wave";
   s.phaseT = 0;
-  // the GO hands over a level ship at rest: gravity starts from zero, so
-  // the first tap can land on a readable fall rather than a drop already
-  // under way. A hand that took the stick during the count keeps whatever
-  // climb it had
+  // A held stick during the countdown keeps its direction through GO.
   s.manual = false;
   s.waveT = 0;
   s.modRamp = 0;
@@ -994,6 +994,8 @@ function beginWave(s: SpillState) {
 /** the intermission: the ship flies itself home while the next wave is
  *  named and counted down. Control comes back on the GO */
 function beginCountdown(s: SpillState, n: number) {
+  clearSpillCombat(s);
+  clearSpillHazards(s);
   s.wave = n;
   s.spec = spillWaveSpec(n, s.seed);
   s.event = spillEventFor(n, s.seed);
@@ -1002,7 +1004,8 @@ function beginCountdown(s: SpillState, n: number) {
   s.phase = "countdown";
   s.phaseT = 0;
   s.manual = false;
-  s.lunge = 0;
+  s.steerY = 0;
+  s.lunge = 0; s.lungeDir = 1;
   s.knock = 0;
   s.pilot.vx = 0;
   s.rocks = [];
@@ -1019,6 +1022,11 @@ function beginCountdown(s: SpillState, n: number) {
     s.hint = SPILL_CONTROL_HINT;
     s.hintT = s.hints ? SPILL.countdown + SPILL.hintTime : 0;
   }
+  const hazardLesson = spillHazardPlan(n, s.seed).families.find(kind => SPILL_HAZARDS[kind].unlock === n);
+  if (hazardLesson) {
+    s.hint = SPILL_HAZARDS[hazardLesson].teach;
+    s.hintT = s.hints ? SPILL.countdown + SPILL.hintTime : 0;
+  }
   if (s.event !== "none" && s.hints) {
     s.hint = SPILL_EVENTS[s.event].hint;
     s.hintT = SPILL.countdown + SPILL.hintTime;
@@ -1033,6 +1041,9 @@ function afterClear(s: SpillState) {
 }
 
 function endWave(s: SpillState) {
+  clearSpillCombat(s);
+  clearSpillHazards(s);
+  s.steerY = 0; s.lunge = 0; s.lungeDir = 1;
   // the wave is cleared the moment the field has drained. A mission ends
   // on a win here, not on the crash that was coming eventually
   s.cleared = s.wave;
@@ -1040,6 +1051,7 @@ function endWave(s: SpillState) {
   s.ore += SPILL.clearOre;
   s.stipend += SPILL.clearOre;
   settleContract(s);
+  settleSpillExpedition(s);
   if (s.wave === 20) s.expeditionDone = true;
   cue(s, "clear");
   if (s.wave % SPILL_DEPOT_EVERY === 0) cue(s, "milestone");
@@ -1062,6 +1074,9 @@ export function spillDockDuration(s: SpillState) {
 }
 
 function beginDocking(s: SpillState) {
+  clearSpillCombat(s);
+  clearSpillHazards(s);
+  s.steerY = 0; s.lungeDir = 1;
   s.phase = "docking";
   s.phaseT = 0;
   s.depotGag = undefined;
@@ -1145,6 +1160,7 @@ function settleContract(s: SpillState) {
 }
 
 function closeDepot(s: SpillState) {
+  beginSpillExpedition(s);
   // the contract line belongs to the Depot it was settled at; it does not
   // greet the next one (audit, 30 Sep 2026)
   s.contractMessage = "";
@@ -1183,7 +1199,7 @@ export function spillBuy(s: SpillState, what: SpillBuyable): "ok" | "poor" | "ma
   switch (what) {
     case "plating":
       s.up.plating += 1;
-      s.maxHull = SPILL.hull + s.up.plating;
+      s.maxHull = SPILL.hull + s.up.plating + spillChassisStats(s.loadout.chassis).hull;
       s.hull += 1;                       // the new pip arrives filled
       break;
     case "thrusters":
@@ -1222,7 +1238,7 @@ export function spillLeaveDepot(s: SpillState) {
 
 // ----------------------------------------------------------------- hits
 
-function takeHit(s: SpillState, r: SpillRock | null) {
+function takeHit(s: SpillState, r: SpillRock | null, cause: "STRUCK" | "GROUNDED" = r ? "STRUCK" : "GROUNDED") {
   if (s.iframes > 0 || s.gold > 0) return;
   // A boundary has no debris to shatter, but protection applies equally.
   const breakRock = (power = 1.2) => { if (r) shatter(s, r, power); };
@@ -1264,10 +1280,13 @@ function takeHit(s: SpillState, r: SpillRock | null) {
     say(s, s.hull === 1 ? "HEALTH CRITICAL" : "HEALTH LOST", 1.2);
     return;
   }
-  lose(s, r ? "STRUCK" : "GROUNDED");
+  lose(s, cause);
 }
 
 function lose(s: SpillState, cause: "STRUCK" | "GROUNDED") {
+  clearSpillCombat(s);
+  clearSpillHazards(s);
+  s.steerY = 0; s.lunge = 0; s.lungeDir = 1;
   if (s.coreArmed) {
     // the extra life: the field freezes, and the ship comes back whole and
     // golden, to the phase it left
@@ -1294,19 +1313,71 @@ function lose(s: SpillState, cause: "STRUCK" | "GROUNDED") {
 
 // ----------------------------------------------------------------- step
 
-/** THE HAND. Gravity has the ship between taps; a tap set the velocity
- *  itself, so there is nothing to integrate upward. The fall is capped,
- *  but a dive that started past the cap keeps its momentum and only
- *  decays: the cap stops gravity from building speed, never a swipe from
- *  carrying. THRUSTERS never touch the tap - a steadier hand is not a
- *  faster one; they sharpen the swipes */
+/** Both flight and manual countdown share dodge, cooldown and horizontal bounds. */
+function handHorizontal(s: SpillState, dt: number) {
+  if (s.cool > 0) {
+    s.cool = Math.max(0, s.cool - dt);
+    if (s.cool === 0) {
+      s.lungeCharges = maxLunges(s);
+      cue(s, "recharge");
+    }
+  } else if (s.lungeCharges < maxLunges(s)) s.lungeCharges = maxLunges(s);
+  if (s.knock > 0) {
+    s.knock = Math.max(0, s.knock - dt);
+    s.pilot.vx = SPILL.knockSpeed;
+  } else if (s.lunge > 0) {
+    s.lunge = Math.max(0, s.lunge - dt);
+    s.pilot.vx = s.lungeDir * SPILL.lungeSpeed * thrustMul(s);
+    if (s.up.thrusters >= 3 || s.specialties.thrusters === "sweep") {
+      for (const r of s.rocks) {
+        if (r.dead || r.warn > 0 || r.kind !== "shard") continue;
+        const dx = r.x - s.pilot.x;
+        const dy = r.y - s.pilot.y;
+        const reach = r.r + SPILL.shipR + (s.specialties.thrusters === "sweep" ? 28 : 6);
+        if (dx * dx + dy * dy < reach * reach) shatter(s, r, 0.9);
+      }
+    }
+  } else {
+    // slides to a stop rather than stopping dead, so a dash has weight,
+    // then drifts back to the home lane slowly
+    s.pilot.vx *= 1 - Math.min(1, dt * 8.5);
+    const home = s.W * SPILL.homeX;
+    if (Math.abs(s.pilot.x - home) > 1) s.pilot.x += (home - s.pilot.x) * Math.min(1, dt * SPILL.driftHome);
+  }
+  // the crosswind is a steady push toward the wall; the lunge is the counter
+  if (spillMod(s, "cross") && s.knock <= 0 && s.lunge <= 0) s.pilot.x -= 40 * lane(s) * ramp(s) * dt;
+
+  s.pilot.x += s.pilot.vx * dt;
+  s.pilot.x += spillGravityDrift(s).x * dt;
+
+  const lo = s.W * SPILL.bandLeft;
+  const hi = s.W * SPILL.bandRight;
+  if (s.pilot.x < lo) { s.pilot.x = lo; s.pilot.vx = Math.max(0, s.pilot.vx); }
+  if (s.pilot.x > hi) { s.pilot.x = hi; s.pilot.vx = 0; }
+  s.pilot.rot = Math.max(-0.5, Math.min(0.5, s.pilot.vy / 700)) + s.pilot.vx / 2600;
+}
+
+/** Direct velocity with acceleration, responsive release and symmetric soft edges. */
 function handVertical(s: SpillState, dt: number) {
-  const g = gravityOf(s);
-  const prev = s.pilot.vy;
-  s.pilot.vy += g * dt;
-  if (s.pilot.vy > SPILL.fallCap) s.pilot.vy = Math.min(s.pilot.vy, Math.max(SPILL.fallCap, prev - SPILL.burstDecay * dt));
+  const axis = s.steerY;
+  const top = 22, bottom = s.H - 22;
+  const command = axis * SPILL.steerSpeed * spillChassisStats(s.loadout.chassis).steer + spillGravityDrift(s).y;
+  const room = command < 0 ? s.pilot.y - top : bottom - s.pilot.y;
+  const edge = command ? Math.max(0, Math.min(1, room / SPILL.edgeEase)) : 1;
+  const wanted = command * edge;
+  const braking = axis === 0 || (s.pilot.vy !== 0 && Math.sign(wanted) !== Math.sign(s.pilot.vy))
+    || Math.abs(wanted) < Math.abs(s.pilot.vy);
+  const acceleration = braking
+    ? SPILL.steerBrake * (spillHas(s, "brake") ? 1.5 : 1)
+    : SPILL.steerAcceleration * thrustMul(s) * steeringResponse(s);
+  const change = acceleration * dt;
+  s.pilot.vy += Math.max(-change, Math.min(change, wanted - s.pilot.vy));
+  if (Math.abs(s.pilot.vy) < 0.001) s.pilot.vy = 0;
   s.pilot.y += s.pilot.vy * dt;
-  s.pilot.rot = Math.max(-0.5, Math.min(0.9, s.pilot.vy / 700)) + s.pilot.vx / 2600;
+  if (s.pilot.y < top) { s.pilot.y = top; s.pilot.vy = Math.max(0, s.pilot.vy); }
+  if (s.pilot.y > bottom) { s.pilot.y = bottom; s.pilot.vy = Math.min(0, s.pilot.vy); }
+  if (axis) s.thrustT = 0.1;
+  s.pilot.rot = Math.max(-0.5, Math.min(0.5, s.pilot.vy / 700)) + s.pilot.vx / 2600;
 }
 
 /** the ship flies itself: home lane, mid height, level. Used through the
@@ -1416,13 +1487,9 @@ function stepSpillBody(s: SpillState, dt: number) {
   if (s.phase === "countdown") {
     s.phaseT += dt;
     if (s.manual) {
-      // the hand took the stick: it flies the empty field until the GO
+      // Direct input flies the empty field until GO.
+      handHorizontal(s, dt);
       handVertical(s, dt);
-      // the edges hold. The floor is not yet fatal, and cannot be parked
-      // on either: the GO must not open with the ship in the killzone
-      s.pilot.y = Math.max(22, Math.min(s.H - 80, s.pilot.y));
-      const home = s.W * SPILL.homeX;
-      s.pilot.x += (home - s.pilot.x) * Math.min(1, dt * 3);
     } else autopilot(s, dt);
     // the ore still drifts: a stream that was mid-screen is still there,
     // and the ship COLLECTS it (owner, 30 Sep 2026: "coins show up but
@@ -1486,7 +1553,7 @@ function stepSpillBody(s: SpillState, dt: number) {
     s.waveT += dt;
     // the surge is a wave's mid-act: six seconds of doubled spawns, called
     // before it lands so a pilot can find a lane first
-    if (spillMod(s, "surge") && !s.surgeFired && s.waveT >= 8) {
+    if (!spillClimaxReserved(s) && spillMod(s, "surge") && !s.surgeFired && s.waveT >= 8 && spillHazardPressure(s) === 0) {
       s.surgeFired = true;
       s.surgeT = 6;
       say(s, "SURGE", 1.8);
@@ -1497,7 +1564,9 @@ function stepSpillBody(s: SpillState, dt: number) {
       s.phaseT = 0;
     }
   } else if (s.phase === "drain") {
-    const live = s.rocks.some((r) => !r.dead && r.x > -r.r);
+    const live = s.rocks.some((r) => !r.dead && r.x > -r.r)
+      || s.combat.enemies.some(e => !e.dead) || s.combat.shots.some(shot => !shot.dead && shot.team === "enemy")
+      || spillHazardPressure(s) > 0;
     if (!live || s.phaseT >= SPILL.drainCap) {
       endWave(s);
       return;
@@ -1524,6 +1593,8 @@ function stepSpillBody(s: SpillState, dt: number) {
   }
 
   // ---- the ship
+  admitSpillHazards(s, dt, (rock, ahead) => spillRockAt(s, rock, ahead));
+  const combatMotion = captureSpillCombatMotion(s);
   if (s.iframes > 0) s.iframes = Math.max(0, s.iframes - dt);
   if (s.gold > 0) s.gold = Math.max(0, s.gold - dt);
   if (s.brakeCool > 0) s.brakeCool = Math.max(0, s.brakeCool - dt);
@@ -1531,84 +1602,29 @@ function stepSpillBody(s: SpillState, dt: number) {
     s.pulseQueue = Math.max(0, s.pulseQueue - dt);
     if (s.pulseQueue === 0) { s.echoReady = true; cue(s, "charged"); }
   }
-  if (s.cool > 0) {
-    s.cool = Math.max(0, s.cool - dt);
-    if (s.cool === 0) {
-      s.lungeCharges = maxLunges(s);
-      cue(s, "recharge");
-    }
-  } else if (s.lungeCharges < maxLunges(s)) s.lungeCharges = maxLunges(s);
-  if (s.knock > 0) {
-    s.knock = Math.max(0, s.knock - dt);
-    s.pilot.vx = SPILL.knockSpeed;
-  } else if (s.lunge > 0) {
-    s.lunge = Math.max(0, s.lunge - dt);
-    s.pilot.vx = SPILL.lungeSpeed;
-    if (s.up.thrusters >= 3 || s.specialties.thrusters === "sweep") {
-      for (const r of s.rocks) {
-        if (r.dead || r.warn > 0 || r.kind !== "shard") continue;
-        const dx = r.x - s.pilot.x;
-        const dy = r.y - s.pilot.y;
-        const reach = r.r + SPILL.shipR + (s.specialties.thrusters === "sweep" ? 28 : 6);
-        if (dx * dx + dy * dy < reach * reach) shatter(s, r, 0.9);
-      }
-    }
-  } else {
-    // slides to a stop rather than stopping dead, so a dash has weight,
-    // then drifts back to the home lane slowly
-    s.pilot.vx *= 1 - Math.min(1, dt * 8.5);
-    const home = s.W * SPILL.homeX;
-    if (Math.abs(s.pilot.x - home) > 1) s.pilot.x += (home - s.pilot.x) * Math.min(1, dt * SPILL.driftHome);
-  }
-  // the crosswind is a steady push toward the wall; the lunge is the counter
-  if (spillMod(s, "cross") && s.knock <= 0 && s.lunge <= 0) s.pilot.x -= 40 * lane(s) * ramp(s) * dt;
-
+  handHorizontal(s, dt);
   handVertical(s, dt);
-  s.pilot.x += s.pilot.vx * dt;
 
-  const lo = s.W * SPILL.bandLeft;
-  const hi = s.W * SPILL.bandRight;
-  if (s.pilot.x < lo) { s.pilot.x = lo; s.pilot.vx = Math.max(0, s.pilot.vx); }
-  if (s.pilot.x > hi) { s.pilot.x = hi; s.pilot.vx = 0; }
-  s.pilot.rot = Math.max(-0.5, Math.min(0.9, s.pilot.vy / 700)) + s.pilot.vx / 2600;
-
-  // The lower boundary is a hazard, not an execution. Recovery moves the
-  // ship out of it even when an active protection window absorbs the hit.
-  const top = 22;
-  const bottom = s.H - 22;
-  if (spillHas(s, "brake") && s.brakeCool <= 0 && s.pilot.y > bottom - 55 && s.pilot.vy > 100) {
-    s.pilot.vy = -220; s.pilot.y = Math.min(s.pilot.y, bottom - 30);
-    s.brakeCool = 12; s.floorT = 0; say(s, "EMERGENCY BRAKE", 1.2); cue(s, "burst");
-  }
-  const grounded = s.pilot.y > bottom;
-  if (s.pilot.y < top) { s.pilot.y = top; s.pilot.vy = Math.max(0, s.pilot.vy); }
-  if (s.pilot.y > bottom) { s.pilot.y = bottom; s.pilot.vy = Math.min(0, s.pilot.vy); }
-  if (grounded) {
-    s.floorT += dt;
-    if (s.floorT > SPILL.floorGrace) {
-      s.floorT = 0;
-      takeHit(s, null);
-      if (!flying(s)) return;
-      s.pilot.y = bottom - 28;
-      s.pilot.vy = -260;
-      if (s.hull > 0) say(s, "BOUNDARY · PULL UP", 1.2);
-    }
-  } else if (s.floorT > 0) {
-    s.floorT = Math.max(0, s.floorT - dt * 2.5);
-  }
+  // Steering eases toward both boundaries. Edges never damage the ship or force it upward.
+  s.floorT = 0;
 
   // ---- the spawn director
   if (s.phase === "wave") {
     stepEvent(s, dt);
+    admitSpillClimax(s);
+    if (!spillClimaxReserved(s)) admitSpillEnemies(s, dt);
     s.nextRock -= dt;
-    const cap = s.spec.cap + (spillMod(s, "swarm") ? 2 : 0) + (surging(s) ? 2 : 0);
-    if (s.nextRock <= 0 && s.rocks.filter((r) => !r.dead).length < cap) {
+    const combatPressure = spillCombatPressure(s);
+    const hazardPressure = spillHazardPressure(s);
+    const cap = Math.max(2, s.spec.cap + (spillMod(s, "swarm") ? 2 : 0) + (surging(s) ? 2 : 0) - combatPressure * 2 - hazardPressure * 3);
+    if (!spillClimaxReserved(s) && s.nextRock <= 0 && s.rocks.filter((r) => !r.dead).length < cap) {
       const base = s.spec.interval;
       // a wave that is teaching something opens easier than its number
       const teaching = s.hintT > 0 && s.wave > 1 ? 1.35 : 1;
       const act = s.waveT / s.spec.dur;
       const pacing = act < 0.2 ? 1.35 : act < 0.5 ? 1 : act < 0.78 ? 0.8 : 1.4;
-      s.nextRock = Math.max(0.1, (surging(s) ? base * 0.45 : base) * teaching * pacing * (0.65 + rand(s) * 0.7));
+      s.nextRock = Math.max(0.1, (surging(s) ? base * 0.45 : base) * teaching * pacing * (0.65 + rand(s) * 0.7)
+        * (combatPressure || hazardPressure ? 1.5 : 1));
       for (let k = 0; k < 6; k++) if (spawnRock(s)) break;
     }
     s.nextNut -= dt;
@@ -1624,7 +1640,14 @@ function stepSpillBody(s: SpillState, dt: number) {
   }
 
   // ---- debris
-  const golden = s.gold > 0;
+  for (const rock of s.rocks) {
+    const proposal = spillGravityBend(s, rock);
+    if (!proposal) continue;
+    rock.gravityWell = proposal.wellId;
+    const candidate = { ...rock, gravityBend: proposal.bend };
+    const withoutSelf = { ...s, rocks: s.rocks.filter(other => other !== rock) };
+    if (spillPathClear(withoutSelf, candidate) && escapeClear(s, candidate)) rock.gravityBend = proposal.bend;
+  }
   for (const r of s.rocks) {
     if (r.dead) continue;
     // a hulk waits offscreen while it warns. The frame the warning runs
@@ -1639,7 +1662,19 @@ function stepSpillBody(s: SpillState, dt: number) {
     }
     r.x += r.vx * move;
     r.y += r.vy * move + (r.arc ? Math.cos(r.arcPhase + s.t * ARC_RATE) * r.arc * move : 0);
+    r.y += spillGravityBendDelta(r, s.t - move, s.t);
     r.rot += r.spin * move;
+  }
+  const hazardContacts: SpillHazardContact[] = [];
+  stepSpillHazards(s, dt, combatMotion.pilot, { contacts: hazardContacts, damagePilot: () => takeHit(s, null, "STRUCK"),
+    predictRock: (rock, ahead) => spillRockAt(s, rock, ahead) });
+  if (!flying(s)) return;
+  stepSpillCombat(s, dt, combatMotion, { shipRadius: SPILL.shipR, hazardContacts,
+    shatter: rock => shatter(s, rock), damagePilot: () => takeHit(s, null, "STRUCK") });
+  if (!flying(s)) return;
+  const golden = s.gold > 0;
+  for (const r of s.rocks) {
+    if (r.dead || r.warn > 0) continue;
     const dx = r.x - s.pilot.x;
     const dy = r.y - s.pilot.y;
     const d2 = dx * dx + dy * dy;
@@ -1699,11 +1734,14 @@ export type SpillCheckpoint = { version: 1; state: SpillState };
 /** Only a docked, ordinary expedition may be suspended. The checkpoint
  *  carries its RNG and bank ledger, so resuming cannot reroll or repay it. */
 export function spillCheckpoint(s: SpillState): SpillCheckpoint | null {
-  if (s.phase !== "depot" || !s.depot || s.target) return null;
+  if (s.phase !== "depot" || !s.depot || s.target || s.practice) return null;
   const state: SpillState = JSON.parse(JSON.stringify(s));
+  clearSpillCombat(state);
+  clearSpillHazards(state);
   delete state.depotGag; delete state.depotGagReady;
   state.rocks = []; state.nuts = []; state.bursts = []; state.cues = [];
   state.thrustT = 0; state.manual = false;
+  state.steerY = 0; state.lunge = 0; state.lungeDir = 1;
   state.pilot.vx = 0; state.pilot.vy = 0;
   state.depot!.arm = SPILL.depotArm;
   return { version: 1, state };
@@ -1712,17 +1750,35 @@ export function spillCheckpoint(s: SpillState): SpillCheckpoint | null {
 export function restoreSpill(raw: unknown, W: number, H: number): SpillState | null {
   if (!raw || typeof raw !== "object" || (raw as SpillCheckpoint).version !== 1) return null;
   const value = (raw as SpillCheckpoint).state;
-  if (!value || typeof value !== "object" || value.phase !== "depot" || !value.depot || value.target !== 0) return null;
+  if (!value || typeof value !== "object" || value.phase !== "depot" || !value.depot || value.target !== 0 || value.practice) return null;
   const s = createSpill(W, H, 0);
   // Copy only the known schema. Every numeric field must be finite. A
   // malformed save is ignored, never allowed to crash the launch screen.
   for (const key of Object.keys(s) as (keyof SpillState)[]) {
     if (typeof s[key] === "number") {
       const n = value[key];
+      // New transient controls were absent from original version-1 checkpoints.
+      // Validate them when present, but never restore a held direction or dodge.
+      if (key === "steerY" || key === "lungeDir") {
+        if (n !== undefined && (typeof n !== "number" || !Number.isFinite(n)
+          || (key === "steerY" ? Math.abs(n) > 1 : n !== -1 && n !== 1))) return null;
+        continue;
+      }
       if (typeof n !== "number" || !Number.isFinite(n) || Math.abs(n) > 1e12) return null;
       (s as any)[key] = n;
     }
   }
+  const combat = restoreSpillCombat(value.combat, s.seed, s.wave);
+  if (!combat) return null;
+  s.combat = combat;
+  const hazards = restoreSpillHazards(value.hazards, s.seed);
+  if (!hazards) return null;
+  s.hazards = hazards;
+  const loadout = restoreSpillLoadout(value.loadout);
+  const expedition = restoreSpillExpedition(value.expedition, s.wave);
+  const climax = restoreSpillClimax(value.climax);
+  if (!loadout || !expedition || !climax) return null;
+  s.loadout = loadout; s.expedition = expedition; s.climax = climax;
   s.welcome = value.welcome === true && s.wave === 0;
   s.freeUpgrade = s.welcome && value.freeUpgrade === true;
   if (!Number.isInteger(s.wave) || (!s.welcome && s.wave < 5) || s.wave % 5 || s.cleared !== s.wave || s.W <= 0 || s.H <= 0 || s.ore < 0) return null;
@@ -1738,7 +1794,7 @@ export function restoreSpill(raw: unknown, W: number, H: number): SpillState | n
   for (const key of ["hull", "shield", "canopyLevel", "oreMined", "ore", "hits", "shards", "contractsDone", "depotVisits"] as const) {
     if (!Number.isInteger(s[key]) || s[key] < 0) return null;
   }
-  if (s.maxHull !== SPILL.hull + s.up.plating || s.hull < 1 || s.hull > s.maxHull || s.shield < 0 || s.shield > 2 || s.canopyLevel < s.shield || s.canopyLevel > 2) return null;
+  if (s.maxHull !== SPILL.hull + s.up.plating + spillChassisStats(s.loadout.chassis).hull || s.hull < 1 || s.hull > s.maxHull || s.shield < 0 || s.shield > 2 || s.canopyLevel < s.shield || s.canopyLevel > 2) return null;
   if (s.welcome && (s.cleared !== 0 || s.depotVisits !== 0 || s.oreMined !== 0
       || s.up.plating + s.up.thrusters + s.up.pulse + s.shield !== (s.freeUpgrade ? 0 : 1))) return null;
   const utilityList = (v: unknown): v is SpillUtility[] => Array.isArray(v) && v.length <= 4 && new Set(v).size === v.length && v.every(id => SPILL_UTILITY_IDS.includes(id));
@@ -1776,6 +1832,7 @@ export function restoreSpill(raw: unknown, W: number, H: number): SpillState | n
   s.liveMods = s.spec.mods.slice();
   s.pilot = { x: s.W * SPILL.homeX, y: s.H * 0.45, vx: 0, vy: 0, rot: 0 };
   s.phaseT = 0; s.floorT = 0; s.eventWarn = 0;
+  s.steerY = 0; s.lunge = 0; s.lungeDir = 1;
   resizeSpill(s, W, H);
   return s;
 }

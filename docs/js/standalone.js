@@ -1,28 +1,30 @@
-import { selectShopCycle } from "./shop-cycle.js?v=328";
-import { spillControlArt, SPILL_CONTROL_LAYOUT } from "./spill-control-art.js?v=328";
-import { suitPitchFor, tapShapeFor, tailSpringFor, tapAccentStrengthFor } from "./save.js?v=328";
-import { platform } from "./platform.js?v=328";
-import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=328";
-import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=328";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=328";
-import { addChartScenery } from "./star-map-view.js?v=328";
-import { mapDebrisIndex } from "./zone-visuals.js?v=328";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=328";
-import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=328";
-import { repeatTapMode, FLIGHT_TEST_PATTERNS } from "./sim.js?v=328";
-import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=328";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=328";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, REMOVE_ADS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, ACORNS_PER_DUST } from "./catalog.js?v=328";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=328";
-import { bundleQuote } from "./catalog.js?v=328";
-import { drawSprite as drawSpriteOn } from "./art.js?v=328";
-import { createEngine } from "./engine.js?v=328";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=328";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=328";
-import { formatRaceTicks } from "./race.js?v=328";
-import { SPILL_UTILITIES, spillMastery, spillEngineColor } from "./spill-content.js?v=328";
-import { spillPreviewState } from "./spill-presentation.js?v=328";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet } from "./spill-workshop.js?v=328";
+import { selectShopCycle } from "./shop-cycle.js?v=329";
+import { suitPitchFor, tapShapeFor, tailSpringFor, tapAccentStrengthFor } from "./save.js?v=329";
+import { platform } from "./platform.js?v=329";
+import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=329";
+import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=329";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=329";
+import { addChartScenery } from "./star-map-view.js?v=329";
+import { mapDebrisIndex } from "./zone-visuals.js?v=329";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=329";
+import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=329";
+import { repeatTapMode, FLIGHT_TEST_PATTERNS } from "./sim.js?v=329";
+import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=329";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=329";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, REMOVE_ADS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, ACORNS_PER_DUST } from "./catalog.js?v=329";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=329";
+import { bundleQuote } from "./catalog.js?v=329";
+import { drawSprite as drawSpriteOn } from "./art.js?v=329";
+import { createEngine } from "./engine.js?v=329";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=329";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=329";
+import { formatRaceTicks } from "./race.js?v=329";
+import { SPILL_UTILITIES, spillMastery, spillEngineColor } from "./spill-content.js?v=329";
+import { spillPreviewState } from "./spill-presentation.js?v=329";
+import { SPILL_WEAPONS } from "./spill-combat.js?v=329";
+import { SPILL_ARTIFACTS } from "./spill-builds.js?v=329";
+import { SPILL_RISKS } from "./spill-expeditions.js?v=329";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet, drawSpillDepthHelp, hazardGuide } from "./spill-workshop.js?v=329";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -99,16 +101,19 @@ export async function bootStandalone(root) {
     const canvas = document.createElement("canvas");
     canvas.className = "ac-canvas";
     const overlay = el("div", "ac-overlay");
-    // Held controls must survive HUD/menu re-renders without losing pointer capture.
-    const spillControls = el("div", "ac-spillbar ac-spillcontrols");
-    spillControls.hidden = true;
-    spillControls.setAttribute("role", "group");
-    spillControls.setAttribute("aria-label", "Debris Field flight controls");
+    // DEBRIS FIELD STEERING (owner, 3 Nov 2026: carry the Spill's controls
+    // over). Hold anywhere and drag to steer; a faint stick follows the
+    // finger. It lives on the stage so HUD re-renders never touch it.
+    const joystick = el("div", "ac-floating-stick");
+    joystick.hidden = true;
+    joystick.setAttribute("aria-hidden", "true");
+    const stickKnob = el("span", "ac-floating-stick-knob");
+    joystick.append(stickKnob);
     // The launch film lives on the STAGE, not in the overlay: render() clears
     // the overlay wholesale on every notify, and a film mounted inside it
     // would restart from frame one each time the engine so much as ticked.
     const filmHost = el("div", "ac-filmhost");
-    stage.append(canvas, overlay, spillControls, filmHost);
+    stage.append(canvas, overlay, joystick, filmHost);
     root.append(stage);
     // Screen 1 of the cold open. The acorn IS the progress bar: a drained
     // shell with the full-colour acorn revealed from the base up as the art
@@ -270,79 +275,25 @@ export async function bootStandalone(root) {
     };
     let disposeChart = () => { };
     let disposeHomeWallet = () => { };
-    // TAP TO FLY (owner, 10 Sep 2026). The centre pad is THRUST: one press,
-    // one kick, exactly what a tap on the field does. The Throttle it
-    // replaced was a hold - pointer capture, an owner per finger or key, a
-    // release watched on the window - and all of that went with it. Hyper
-    // Run keeps hold-to-rise; the field flies like the other modes now.
-    const thrust = el("button", "ac-thrust");
-    const diveButton = el("button", "ac-dive");
-    const lungeButton = el("button", "ac-lunge");
-    for (const [kind, button] of [["dive", diveButton], ["thrust", thrust], ["lunge", lungeButton]]) {
-        button.innerHTML = spillControlArt(kind);
-        const box = SPILL_CONTROL_LAYOUT[kind];
-        button.style.left = `${box.x / SPILL_CONTROL_LAYOUT.width * 100}%`;
-        button.style.top = `${box.y / SPILL_CONTROL_LAYOUT.height * 100}%`;
-        button.style.width = `${box.width / SPILL_CONTROL_LAYOUT.width * 100}%`;
-        button.style.height = `${box.height / SPILL_CONTROL_LAYOUT.height * 100}%`;
-    }
-    const lungeStatus = el("span", "ac-control-status");
-    lungeButton.append(lungeStatus);
-    thrust.setAttribute("aria-label", "Thrust: tap to fly");
-    diveButton.setAttribute("aria-label", "Dive: downward burst");
-    for (const b of [thrust, diveButton, lungeButton]) {
-        b.addEventListener("keydown", e => { if (e.code === "Space" || e.code.startsWith("Arrow") || e.code === "Enter")
-            e.stopPropagation(); });
-        b.addEventListener("keyup", e => { if (e.code === "Space" || e.code.startsWith("Arrow") || e.code === "Enter")
-            e.stopPropagation(); });
-        b.addEventListener("contextmenu", e => e.preventDefault());
-    }
-    // The kick fires on the press, not the click, so the pad answers as fast
-    // as a tap on the field. A pointer press still synthesises a click, which
-    // arrives with detail >= 1 and is ignored; a click-only assistive input
-    // arrives with detail 0 and is the one click that counts.
-    thrust.onpointerdown = e => {
-        if (e.pointerType === "mouse" && e.button !== 0)
-            return;
-        e.preventDefault();
-        engine.spillThrust();
-        updateSpillControls();
-    };
-    thrust.onkeydown = e => {
-        if (!["Space", "Enter"].includes(e.code))
-            return;
-        e.preventDefault();
-        // a key held on the pad is one tap, never a stream of them
-        if (e.repeat)
-            return;
-        engine.spillThrust();
-        updateSpillControls();
-    };
-    thrust.onclick = e => { if (e.detail === 0) {
-        engine.spillThrust();
-        updateSpillControls();
-    } };
-    diveButton.onclick = () => engine.spillDive();
-    lungeButton.onclick = () => engine.spillLunge();
-    spillControls.append(diveButton, thrust, lungeButton);
+    let controlState = "";
     function updateSpillControls() {
         const sp = engine.world.spill;
-        const visible = engine.world.screen === "play" && sp && !engine.save.spillButtonsOff
-            && ["countdown", "wave", "drain"].includes(sp.phase);
-        spillControls.hidden = !visible;
+        const activeFlight = engine.world.screen === "play" && !!sp && ["countdown", "wave", "drain"].includes(sp.phase);
+        canvas.classList.toggle("ac-flight-surface", activeFlight);
+        const stick = engine.spillControls();
+        const visible = activeFlight && stick.active;
+        const key = visible ? `${stick.x}:${stick.y}:${stick.dx}:${stick.dy}` : "hidden";
+        if (key === controlState)
+            return;
+        controlState = key;
+        joystick.hidden = !visible;
         if (!visible)
             return;
-        const manual = sp.phase !== "countdown" || sp.manual;
-        diveButton.disabled = !manual;
-        lungeButton.disabled = !manual || sp.lungeCharges <= 0;
-        lungeButton.classList.toggle("spent", lungeButton.disabled);
-        const cap = sp.up.thrusters >= 2 ? 2 : 1;
-        lungeStatus.textContent = sp.lungeCharges ? `${sp.lungeCharges}/${cap} READY` : "RECHARGING";
-        lungeButton.setAttribute("aria-label", `Lunge: forward dash, ${sp.lungeCharges} of ${cap} charges ready`);
-        // the pad glows for the length of the kick's plume, so a press is seen
-        // to land even when the ship is already at the top of a hop
-        thrust.classList.toggle("firing", (sp.thrustT ?? 0) > 0);
+        joystick.style.left = `${stick.x * 100}%`;
+        joystick.style.top = `${stick.y * 100}%`;
+        stickKnob.style.transform = `translate(${stick.dx * 25}px, ${stick.dy * 25}px)`;
     }
+    engine.subscribeFrame(updateSpillControls);
     const paint = () => {
         disposeChart();
         disposeChart = () => { };
@@ -530,10 +481,14 @@ export async function bootStandalone(root) {
                     settings.append(b);
                     return b;
                 };
-                option("On-screen buttons", "Thrust, Dive and Lunge. Taps and swipes also work.", !engine.save.spillButtonsOff, () => engine.setSpillButtonsOff(!engine.save.spillButtonsOff));
                 const prompts = option("Instructional prompts", engine.save.helpOff ? "Help is disabled in Settings." : "Control tips and wave lessons. Hazard warnings stay visible.", !engine.save.spillPromptsOff && !engine.save.helpOff, () => engine.setSpillPromptsOff(!engine.save.spillPromptsOff));
                 prompts.disabled = !!engine.save.helpOff;
-                settings.append(el("p", "ac-sub", "Tap to fly: every tap is a kick upward and gravity brings you down. Dive gives a downward burst. Lunge dashes forward and recharges."));
+                settings.append(el("p", "ac-sub", "Drag to steer · release to hold · flick ◀ ▶ to dodge · second finger or F / Space fires."));
+                // one line of loadout, so a pause answers "what am I flying?"
+                const sp = engine.world.spill, combat = sp.combat;
+                const artifact = combat.build.artifact ? SPILL_ARTIFACTS[combat.build.artifact].name : "No artifact";
+                const route = sp.expedition.active !== "standard" ? ` · ${SPILL_RISKS[sp.expedition.active].name}` : "";
+                settings.append(el("p", "ac-sub ac-spillloadout", `${SPILL_WEAPONS[combat.weapon].name} ${["", "I", "II", "III"][combat.levels[combat.weapon]] ?? "I"} · ${artifact}${route}`));
                 sheet.append(settings);
             }
             // THE WAY OUT IS PINNED. With the calibration panel open this sheet runs
@@ -592,6 +547,8 @@ export async function bootStandalone(root) {
                 row("Health hits", spill.hits);
                 row("Grazes", spill.grazes);
                 row("Debris shattered", spill.shattered);
+                if (spill.combat?.kills)
+                    row("Patrols downed", spill.combat.kills);
                 row("Best wave", engine.save.spillBest ?? 0, true);
                 row("Best salvage score", engine.save.spillRecords?.bestScore ?? 0);
                 sheet.append(rows);
@@ -5210,7 +5167,7 @@ export async function bootStandalone(root) {
         const debris = modeSection("spill", "Debris Field Mode", "m-spill");
         // Reuse the actual pad colors and input labels without the briefing's
         // explanatory paragraphs. The shared launch/briefing renderer stays intact.
-        const spillHelp = drawSpillFlightHelp();
+        const spillHelp = drawSpillFlightHelp(false);
         const spillControls = spillHelp.querySelector(".ac-spillhelp-controls");
         if (spillControls)
             debris.append(spillControls);
@@ -5224,6 +5181,7 @@ export async function bootStandalone(root) {
         briefing.onclick = openSpillHelp;
         extras.append(briefing);
         debris.append(extras);
+        debris.append(drawSpillDepthHelp(), hazardGuide());
         const hyper = modeSection("hyper", "Hyper Run Mode", "m-race");
         const hyperControls = el("div", "ac-helpcontrols");
         hyperControls.append(control("\u25B2", "HOLD TO RISE", "RELEASE TO FALL", "Hold Space / \u2191", "rise"), control("\u25BC", "DIVE", "SWIPE DOWN", "\u2193 / S / Ctrl", "dive"));
