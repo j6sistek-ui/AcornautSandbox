@@ -86,6 +86,9 @@ export type ArtBank = {
    *  in the lab's Ship Bench and read from transforms.json beside the art */
   spillShip: Record<string, Sprite>;
   spillShipFit: SpillShipFit | null;
+  /** Debris Field patrol hulls (Pursuer, Flanker), loaded with the mode's scene. */
+  spillCombat: Partial<Record<"pursuer" | "flanker", Sprite>>;
+  spillCombatStatus: "pending" | "ready" | "fallback";
   spillScene?: { depot?: HTMLImageElement; panorama?: HTMLImageElement; bear?: DepotBearFrame[];
     vanguardDepot?: HTMLImageElement };
 };
@@ -133,9 +136,48 @@ function loadImg(src: string) {
 }
 
 const spillSceneLoads = new WeakMap<ArtBank, Promise<void>>();
+export const SPILL_ENEMY_IDS = ["pursuer", "flanker"] as const;
+function asCombatSprite(img: HTMLImageElement): Sprite {
+  const width = img.naturalWidth || img.width, height = img.naturalHeight || img.height;
+  const canvas = document.createElement("canvas"); canvas.width = width; canvas.height = height;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  let left = width, top = height, right = -1, bottom = -1;
+  if (ctx) {
+    ctx.drawImage(img, 0, 0);
+    const pixels = ctx.getImageData(0, 0, width, height).data;
+    for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+      if (pixels[(y * width + x) * 4 + 3] < 16) continue;
+      left = Math.min(left, x); right = Math.max(right, x);
+      top = Math.min(top, y); bottom = Math.max(bottom, y);
+    }
+  }
+  if (right < left) { left = top = 0; right = width - 1; bottom = height - 1; }
+  const x = Math.max(0, left - 2), y = Math.max(0, top - 2);
+  const box = { x, y, w: Math.min(width, right + 3) - x, h: Math.min(height, bottom + 3) - y };
+  const sprite = img as Sprite;
+  sprite.box = box; sprite.core = Math.max(box.w, box.h);
+  sprite.coreX = box.x + box.w / 2; sprite.coreY = box.y + box.h / 2;
+  return sprite;
+}
+
+const combatLoads = new WeakMap<ArtBank, Promise<void>>();
+export function loadSpillCombat(bank: ArtBank): Promise<void> {
+  const existing = combatLoads.get(bank);
+  if (existing) return existing;
+  const promise = Promise.all(SPILL_ENEMY_IDS.map(async id => {
+    try { bank.spillCombat[id] = asCombatSprite(await loadImg(artUrl(`spill-combat/${id}.png`))); }
+    catch { /* A failed request uses the corresponding visible silhouette; readiness still settles. */ }
+  })).then(() => {
+    bank.spillCombatStatus = SPILL_ENEMY_IDS.every(id => bank.spillCombat[id]) ? "ready" : "fallback";
+  });
+  combatLoads.set(bank, promise);
+  return promise;
+}
+
 const vanguardDepotLoads = new WeakMap<ArtBank, Promise<void>>();
 /** Mode art loads only when this mode is opened, without holding its launch. */
 export function loadSpillScene(bank: ArtBank, suit = ""): Promise<void> {
+  void loadSpillCombat(bank);
   bank.spillScene ??= {};
   let cameo = vanguardDepotLoads.get(bank) ?? Promise.resolve();
   if (suit === "vanguard" && !vanguardDepotLoads.has(bank)) {
@@ -289,7 +331,7 @@ export function emptyArt(): ArtBank {
     suits: {}, sky: null, arcadeAcorn: null, frozen: null, shieldnut: null, ore: null,
     frozenAnim: [], shieldAnim: [], wormAnim: [], holeAnim: [], holeEnter: [],
     suitTail: {}, suitBody: {}, suitTap: {}, suitLoop: {}, suitTapTail: {}, suitBounce: {}, suitAsc: {}, suitDesc: {}, hyperRun: {},
-    spillShip: {}, spillShipFit: null,
+    spillShip: {}, spillShipFit: null, spillCombat: {}, spillCombatStatus: "pending",
   };
 }
 
@@ -891,7 +933,7 @@ export async function loadArt(eagerSuits: string[] = [], eagerPals: string[] = [
     suitDesc,
     hyperRun,
     spillShip,
-    spillShipFit,
+    spillShipFit, spillCombat: {}, spillCombatStatus: "pending",
   };
   // FLIGHT is the game's face — its banks always ride the boot load — and
   // the suit the save is wearing must be flyable the moment PLAY is hit.

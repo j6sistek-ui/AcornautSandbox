@@ -1,38 +1,41 @@
-import { spillDockTravelDuration } from "./spill.js?v=328";
-import { clipHelmetGlass } from "./helmet-openings.js?v=328";
-import { paintFittedHelmet } from "./helmet-fit.js?v=328";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=328";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=328";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=328";
-import { arcflashPreview } from "./arcflash-motion.js?v=328";
-import { paintLiveStarTrail } from "./star-trails.js?v=328";
-import { trailWornBy } from "./catalog.js?v=328";
-import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=328";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=328";
-import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=328";
-import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=328";
-import { RIG3D_BOOTS } from "./rig3d-boots.js?v=328";
-import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=328";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=328";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=328";
-import { spillAppearance } from "./spill-appearance.js?v=328";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=328";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=328";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=328";
-import { goalHud } from "./campaign.js?v=328";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=328";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=328";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=328";
-import { spriteImageFor } from "./sprite-detail.js?v=328";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=328";
-import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=328";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=328";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=328";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=328";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=328";
-import { spillEngineColor } from "./spill-content.js?v=328";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=328";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=328";
+import { spillDockTravelDuration } from "./spill.js?v=329";
+import { clipHelmetGlass } from "./helmet-openings.js?v=329";
+import { paintFittedHelmet } from "./helmet-fit.js?v=329";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=329";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=329";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=329";
+import { arcflashPreview } from "./arcflash-motion.js?v=329";
+import { paintLiveStarTrail } from "./star-trails.js?v=329";
+import { trailWornBy } from "./catalog.js?v=329";
+import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=329";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=329";
+import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=329";
+import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=329";
+import { RIG3D_BOOTS } from "./rig3d-boots.js?v=329";
+import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=329";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=329";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=329";
+import { spillAppearance } from "./spill-appearance.js?v=329";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=329";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=329";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=329";
+import { goalHud } from "./campaign.js?v=329";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=329";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=329";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=329";
+import { spriteImageFor } from "./sprite-detail.js?v=329";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=329";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=329";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=329";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=329";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=329";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=329";
+import { spillEngineColor } from "./spill-content.js?v=329";
+import { drawSpillCombat, drawSpillCombatHud } from "./spill-combat-view.js?v=329";
+import { drawSpillHazards, drawSpillHazardHint } from "./spill-hazard-view.js?v=329";
+import { drawSpillClimax } from "./spill-climax-view.js?v=329";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=329";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=329";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2172,12 +2175,15 @@ function drawSpillWorld(ctx, w, save, art) {
     }
     for (const p of w.particles)
         drawParticle(ctx, p);
+    drawSpillHazards(ctx, s, !!save.motionOff || raceReducedMotion());
+    drawSpillCombat(ctx, s, art);
+    drawSpillClimax(ctx, s);
     if (s.phase !== "over" && w.screen !== "dead") {
-        // a lunge leaves a ghost behind it, so the dash reads as a dash
+        // a dodge leaves a ghost behind it, either way; the ship keeps facing forward
         if (s.lunge > 0) {
             ctx.save();
             ctx.globalAlpha = 0.3;
-            drawSpillShip(ctx, w, save, art, s, s.pilot.x - 18);
+            drawSpillShip(ctx, w, save, art, s, s.pilot.x - 18 * (s.lungeDir ?? 1));
             ctx.restore();
         }
         // the hull's invulnerability blinks the ship rather than hiding it
@@ -2293,7 +2299,7 @@ function drawSpillHint(ctx, w, text, alpha, bottom) {
     }
     ctx.restore();
 }
-function drawSpillHud(ctx, w, art, hidePrompts = false, padsOn = true) {
+function drawSpillHud(ctx, w, art, hidePrompts = false) {
     const s = w.spill;
     const { W, H } = w;
     ctx.textAlign = "center";
@@ -2378,6 +2384,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false, padsOn = true) {
     ctx.fillText("HEALTH", W - 58, 15);
     ctx.fillStyle = "#a3e6ff";
     ctx.fillText(`SHIELDS ${s.shield}`, W - 58, 44);
+    drawSpillCombatHud(ctx, s);
     // status lines stack under the meter
     let hudY = 100;
     const hudLine = (text, color) => {
@@ -2434,7 +2441,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false, padsOn = true) {
         const label = names;
         const tw = ctx.measureText(label).width;
         // above the DIVE pad while the pads are on, the way the hint card is
-        const cx = 16, cy = H - (w.insetTop || 0) - (padsOn ? 156 : 40);
+        const cx = 16, cy = H - (w.insetTop || 0) - 40;
         const cw = tw + 26;
         ctx.fillStyle = "rgba(14,20,38,.8)";
         round(ctx, cx, cy - 15, cw, 30, 15);
@@ -2450,12 +2457,13 @@ function drawSpillHud(ctx, w, art, hidePrompts = false, padsOn = true) {
         ctx.fillStyle = "#ff9a4c";
         ctx.fillRect(cx + 13, cy + 9, tw * (s.phase === "countdown" ? 0 : spillRamp(s)), 2);
     }
-    // the free lesson, while it runs. The DOM flight pads sit on the bottom
-    // 110px or so of a phone (plus its safe area), so the card climbs above
-    // them while they are on; it sat across the Thrust pad otherwise
+    // the free lesson, while it runs, above the rule chip; a hazard's own
+    // warning takes the same slot when no lesson is showing
     if (!hidePrompts && s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
-        drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - (padsOn ? 156 : 96));
+        drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
     }
+    if (!hidePrompts && s.hintT <= 0)
+        drawSpillHazardHint(ctx, s, H - (w.insetTop || 0) - 64);
     if (s.phase === "ready" && s.target) {
         const compact = W < 520;
         // a phone gets the same briefing in shorter lines, never a clipped one
@@ -2469,8 +2477,8 @@ function drawSpillHud(ctx, w, art, hidePrompts = false, padsOn = true) {
             "COLLECT ACORN COINS",
             compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
                 : "DEPOT EVERY 5 WAVES · SPEND ACORN COINS",
-            compact ? "TAP ▲ FLY · SWIPE ▼ DIVE · SWIPE ▶ LUNGE"
-                : "TAP ▲ FLY · SWIPE ▼ DIVE · SWIPE ▲ BURST · SWIPE ▶ LUNGE",
+            compact ? "DRAG ▲▼ STEER · FLICK ◀▶ DODGE"
+                : "DRAG ▲▼ STEER · FLICK ◀▶ DODGE · 2ND FINGER FIRE",
             "TAP TO LAUNCH",
         ];
         const oreLine = 1;
@@ -2541,7 +2549,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false, padsOn = true) {
         ctx.globalAlpha = 1;
         ctx.fillStyle = "rgba(215,230,247,.7)";
         ctx.font = "700 11px Figtree, system-ui";
-        ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · TAP TO TAKE THE STICK", W / 2, H * 0.34 + 146);
+        ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · DRAG TO TAKE THE STICK", W / 2, H * 0.34 + 146);
         ctx.restore();
     }
     if (s.phase === "wave" && s.phaseT < 0.6) {
@@ -5841,7 +5849,7 @@ export function drawHud(ctx, w, art, save) {
 function drawHudBody(ctx, w, art, save) {
     const { W } = w;
     if (w.spill) {
-        drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff, !save?.spillButtonsOff);
+        drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff);
         return;
     }
     if (w.race) {

@@ -41,6 +41,9 @@ import {
   type SpillState,
 } from "./spill";
 import { spillEngineColor } from "./spill-content";
+import { drawSpillCombat, drawSpillCombatHud } from "./spill-combat-view";
+import { drawSpillHazards, drawSpillHazardHint } from "./spill-hazard-view";
+import { drawSpillClimax } from "./spill-climax-view";
 import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState, type SpillBuild } from "./spill-presentation";
 import {
   RACE_ACORNS,
@@ -2263,13 +2266,16 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
   }
 
   for (const p of w.particles) drawParticle(ctx, p);
+  drawSpillHazards(ctx, s, !!save.motionOff || raceReducedMotion());
+  drawSpillCombat(ctx, s, art);
+  drawSpillClimax(ctx, s);
 
   if (s.phase !== "over" && w.screen !== "dead") {
-    // a lunge leaves a ghost behind it, so the dash reads as a dash
+    // a dodge leaves a ghost behind it, either way; the ship keeps facing forward
     if (s.lunge > 0) {
       ctx.save();
       ctx.globalAlpha = 0.3;
-      drawSpillShip(ctx, w, save, art, s, s.pilot.x - 18);
+      drawSpillShip(ctx, w, save, art, s, s.pilot.x - 18 * (s.lungeDir ?? 1));
       ctx.restore();
     }
     // the hull's invulnerability blinks the ship rather than hiding it
@@ -2382,7 +2388,7 @@ function drawSpillHint(ctx: CanvasRenderingContext2D, w: World, text: string, al
   ctx.restore();
 }
 
-function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null, hidePrompts = false, padsOn = true) {
+function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null, hidePrompts = false) {
   const s = w.spill!;
   const { W, H } = w;
   ctx.textAlign = "center";
@@ -2452,6 +2458,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   ctx.textAlign = "right"; ctx.font = "800 10px Figtree, system-ui";
   ctx.fillStyle = "#b3f1d2"; ctx.fillText("HEALTH", W - 58, 15);
   ctx.fillStyle = "#a3e6ff"; ctx.fillText(`SHIELDS ${s.shield}`, W - 58, 44);
+  drawSpillCombatHud(ctx, s);
   // status lines stack under the meter
   let hudY = 100;
   const hudLine = (text: string, color: string) => {
@@ -2503,7 +2510,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     const label = names;
     const tw = ctx.measureText(label).width;
     // above the DIVE pad while the pads are on, the way the hint card is
-    const cx = 16, cy = H - (w.insetTop || 0) - (padsOn ? 156 : 40);
+    const cx = 16, cy = H - (w.insetTop || 0) - 40;
     const cw = tw + 26;
     ctx.fillStyle = "rgba(14,20,38,.8)";
     round(ctx, cx, cy - 15, cw, 30, 15);
@@ -2519,12 +2526,12 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.fillStyle = "#ff9a4c";
     ctx.fillRect(cx + 13, cy + 9, tw * (s.phase === "countdown" ? 0 : spillRamp(s)), 2);
   }
-  // the free lesson, while it runs. The DOM flight pads sit on the bottom
-  // 110px or so of a phone (plus its safe area), so the card climbs above
-  // them while they are on; it sat across the Thrust pad otherwise
+  // the free lesson, while it runs, above the rule chip; a hazard's own
+  // warning takes the same slot when no lesson is showing
   if (!hidePrompts && s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
-    drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - (padsOn ? 156 : 96));
+    drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
   }
+  if (!hidePrompts && s.hintT <= 0) drawSpillHazardHint(ctx, s, H - (w.insetTop || 0) - 64);
   if (s.phase === "ready" && s.target) {
     const compact = W < 520;
     // a phone gets the same briefing in shorter lines, never a clipped one
@@ -2538,8 +2545,8 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
       "COLLECT ACORN COINS",
       compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
               : "DEPOT EVERY 5 WAVES · SPEND ACORN COINS",
-      compact ? "TAP ▲ FLY · SWIPE ▼ DIVE · SWIPE ▶ LUNGE"
-              : "TAP ▲ FLY · SWIPE ▼ DIVE · SWIPE ▲ BURST · SWIPE ▶ LUNGE",
+      compact ? "DRAG ▲▼ STEER · FLICK ◀▶ DODGE"
+              : "DRAG ▲▼ STEER · FLICK ◀▶ DODGE · 2ND FINGER FIRE",
       "TAP TO LAUNCH",
     ];
     const oreLine = 1;
@@ -2609,7 +2616,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.globalAlpha = 1;
     ctx.fillStyle = "rgba(215,230,247,.7)";
     ctx.font = "700 11px Figtree, system-ui";
-    ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · TAP TO TAKE THE STICK", W / 2, H * 0.34 + 146);
+    ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · DRAG TO TAKE THE STICK", W / 2, H * 0.34 + 146);
     ctx.restore();
   }
   if (s.phase === "wave" && s.phaseT < 0.6) {
@@ -5986,7 +5993,7 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank |
 function drawHudBody(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null, save?: SaveData) {
   const { W } = w;
   if (w.spill) {
-    drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff, !save?.spillButtonsOff);
+    drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff);
     return;
   }
   if (w.race) {

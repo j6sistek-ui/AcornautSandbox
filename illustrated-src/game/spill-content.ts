@@ -3,27 +3,27 @@ export type SpillUtility = "magnet" | "scanner" | "brake" | "capacitor";
 export const SPILL_UTILITIES: Record<SpillUtility, { name: string; short: string; guide: string; price: number; desc: string; detail: string; unlock: number; icon: string }> = {
   magnet: { name: "Salvage Magnet", short: "Magnet", guide: "Pull Acorn Coins", price: 40, desc: "Pulls in nearby Acorn Coins and gold.", detail: "Health pickups still need a direct hit.", unlock: 5, icon: "◎" },
   scanner: { name: "Debris Scanner", short: "Scanner", guide: "Spot debris", price: 35, desc: "Shows incoming debris sooner.", detail: "Keeps debris outlines visible in Blackout.", unlock: 10, icon: "⌁" },
-  brake: { name: "Emergency Brake", short: "Brake", guide: "Edge recovery", price: 35, desc: "Helps recover near the edges.", detail: "Automatic recovery every 12 seconds. Dashing also slows a fast dive.", unlock: 10, icon: "↟" },
+  brake: { name: "Emergency Brake", short: "Brake", guide: "Quicker stopping", price: 35, desc: "Stops drift sooner when steering is released.", detail: "Neutral steering brakes 50% faster. Dodging also damps vertical motion.", unlock: 10, icon: "↟" },
   capacitor: { name: "Pulse Battery", short: "Battery", guide: "Extra Pulse", price: 45, desc: "Stores a second Pulse charge.", detail: "Needs the Impact pulse upgrade. Collect gold to charge it.", unlock: 20, icon: "ϟ" },
 };
 export const SPILL_UTILITY_IDS = Object.keys(SPILL_UTILITIES) as SpillUtility[];
 export type SpillSpecialty = "brace" | "salvage" | "precision" | "sweep" | "efficient" | "yield";
-export const SPILL_SPECIALTIES: Record<SpillSpecialty, { axis: "plating" | "thrusters" | "pulse"; name: string; desc: string }> = {
-  brace: { axis: "plating", name: "Impact Bracing", desc: "Half the knockback; 0.4 seconds more protection after a hit." },
-  salvage: { axis: "plating", name: "Salvage Armor", desc: "Collect 30 Acorn Coins to restore 1 health, at most twice per wave." },
-  precision: { axis: "thrusters", name: "Precision Jets", desc: "Lunges brake vertical motion; burst strength stays at tier I." },
-  sweep: { axis: "thrusters", name: "Wide Sweep", desc: "Lunges clear shards in a wider path, including at tier II." },
-  efficient: { axis: "pulse", name: "Efficient Coil", desc: "Gold charges 65% of a Pulse instead of 50%." },
-  yield: { axis: "pulse", name: "Salvage Coil", desc: "Shattered debris yields Acorn Coins at tier II; tier III yields double." },
+export const SPILL_SPECIALTIES: Record<SpillSpecialty, { axis: "plating" | "thrusters" | "pulse"; name: string; desc: string; detail: string }> = {
+  brace: { axis: "plating", name: "Impact Bracing", desc: "Improved collision recovery", detail: "Half the knockback; 0.4 seconds more protection after a hit." },
+  salvage: { axis: "plating", name: "Salvage Armor", desc: "Coins occasionally restore health", detail: "Collect 30 Acorn Coins to restore 1 health, at most twice per wave." },
+  precision: { axis: "thrusters", name: "Precision Jets", desc: "Dodges stop vertical drift", detail: "Dodges brake vertical motion; steering acceleration and dodge speed stay at tier I." },
+  sweep: { axis: "thrusters", name: "Wide Sweep", desc: "Dodges clear a wider path", detail: "Dodges clear shards in a wider path, including at tier II." },
+  efficient: { axis: "pulse", name: "Efficient Coil", desc: "Gold charges Pulse faster", detail: "Gold charges 65% of a Pulse instead of 50%." },
+  yield: { axis: "pulse", name: "Salvage Coil", desc: "Shattered debris drops coins", detail: "Shattered debris yields Acorn Coins at tier II; tier III yields double." },
 };
 export type SpillContractKind = "salvage" | "clean" | "shards";
 export type SpillContract = { kind: SpillContractKind; target: number; reward: number; startWave: number; endWave: number; startOre: number; startHits: number; startShards: number };
 export function spillContractOffers(wave: number): { kind: SpillContractKind; name: string; target: number; reward: number; desc: string }[] {
   const target = 35 + Math.min(40, Math.floor(wave / 5) * 5);
   return [
-    { kind: "salvage", name: "Salvage Run", target, reward: 35, desc: `Collect ${target} Acorn Coins across the next five waves.` },
-    { kind: "clean", name: "Clean Passage", target: 0, reward: 50, desc: "Clear the next five waves without losing health." },
-    { kind: "shards", name: "Clear a Path", target: 8, reward: 45, desc: "Break 8 small debris pieces across the next five waves. Use Impact pulse or upgraded dashes." },
+    { kind: "salvage", name: "Salvage Run", target, reward: 35, desc: `Collect ${target} coins` },
+    { kind: "clean", name: "Clean Passage", target: 0, reward: 50, desc: "Lose no health" },
+    { kind: "shards", name: "Clear a Path", target: 8, reward: 45, desc: "Break 8 small debris" },
   ];
 }
 export type SpillEvent = "none" | "cargo" | "vein" | "lanes" | "rig";

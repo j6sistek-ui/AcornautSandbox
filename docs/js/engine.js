@@ -1,25 +1,31 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, AD_RULES, REMOVE_ADS } from "./catalog.js?v=328";
-import { platform } from "./platform.js?v=328";
-import { beginFlightTest } from "./sim.js?v=328";
-import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=328";
-import { isPremiumFrames, isPremiumSuit } from "./high-orbit-config.js?v=328";
-import { spillAppearance } from "./spill-appearance.js?v=328";
-import { routeMasks, rewardId } from "./campaign-progress.js?v=328";
-import { reachedGate } from "./campaign.js?v=328";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks } from "./art.js?v=328";
-import { vanguardDepotEligible } from "./spill-depot-gag.js?v=328";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=328";
-import { wearsOwnHead, GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=328";
-import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=328";
-import { setVanguardPitchTrim } from "./vanguard.js?v=328";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=328";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=328";
-import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, canRevive, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, spillBurstUp, updateWorld, } from "./sim.js?v=328";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=328";
-import { raceViewport } from "./race-viewport.js?v=328";
-import { spillBuy, spillLeaveDepot, spillLunge, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill } from "./spill.js?v=328";
-import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=328";
-import { bankSpill, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards, sealSave } from "./save.js?v=328";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, AD_RULES, REMOVE_ADS } from "./catalog.js?v=329";
+import { platform } from "./platform.js?v=329";
+import { beginFlightTest } from "./sim.js?v=329";
+import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=329";
+import { isPremiumFrames, isPremiumSuit } from "./high-orbit-config.js?v=329";
+import { spillAppearance } from "./spill-appearance.js?v=329";
+import { routeMasks, rewardId } from "./campaign-progress.js?v=329";
+import { reachedGate } from "./campaign.js?v=329";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks } from "./art.js?v=329";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=329";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=329";
+import { wearsOwnHead, GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=329";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=329";
+import { setVanguardPitchTrim } from "./vanguard.js?v=329";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=329";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=329";
+import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, canRevive, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, updateWorld, } from "./sim.js?v=329";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=329";
+import { raceViewport } from "./race-viewport.js?v=329";
+import { spillBuy, spillLeaveDepot, spillLunge, spillSteer, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill, createSpill, spillWaveSpec, SPILL } from "./spill.js?v=329";
+import { applySpillTrialBuild, SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS, SPILL_TRIAL_BUILDS, createSpillCareer, restoreSpillCareer, spillChassisStats } from "./spill-career.js?v=329";
+import { spillSelectRisk } from "./spill-expeditions.js?v=329";
+import { spillSetFiring, spillTapFire, spillClearFireInput, spillSelectWeapon, spillUpgradeWeapon } from "./spill-combat.js?v=329";
+import { spillClaimArtifact, spillEquipArtifact } from "./spill-builds.js?v=329";
+import { spillShelfAction, spillShelfUndo } from "./spill-shop.js?v=329";
+import { createSpillStick, moveSpillStick, sampleSpillStick, spillStickAxis } from "./spill-gesture.js?v=329";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=329";
+import { bankSpill, cloneSaveForTrial, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards, sealSave } from "./save.js?v=329";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -94,6 +100,12 @@ export async function createEngine(canvas) {
     let raceGesture = createRaceGestureState();
     let raceResizeKeyboardReleasePending = null;
     const listeners = new Set();
+    const frameListeners = new Set();
+    const fireOwners = new Set();
+    const steerKeys = new Set();
+    let spillStick = null;
+    let trial = null;
+    let trialSave = null;
     const notify = () => listeners.forEach((fn) => fn());
     // The Spill used to live on a lab page and post its mission result back
     // through localStorage for the boot to bank. It flies inside the engine
@@ -114,6 +126,7 @@ export async function createEngine(canvas) {
             raf = requestAnimationFrame(loop);
         },
         stop() {
+            clearSpillFire();
             cancelRaceControls();
             swipe = null;
             running = false;
@@ -137,7 +150,10 @@ export async function createEngine(canvas) {
                 return;
             unlockAudio();
             const needTut = !save.tutorialDone && mode === "fly";
+            trial = null;
+            trialSave = null;
             resetRun(world, save, mode, needTut);
+            applySpillLoadout();
             void loadZoneArt(engine.art, world.envB).then(notify);
             resize();
             if (mode === "spill") {
@@ -185,6 +201,9 @@ export async function createEngine(canvas) {
             // stored identity seed, so reordering cannot change its corridor.
             // A Spill mission does the same with its wave ladder (see resetRun).
             resetRun(world, save, def.base === "race" ? "fly" : def.base, false, def, def.base === "tunnel" ? def.seed ?? undefined : undefined);
+            trial = null;
+            trialSave = null;
+            applySpillLoadout();
             void loadZoneArt(engine.art, def.fx.env ?? 0).then(notify);
             resize();
             if (def.base === "spill")
@@ -206,6 +225,7 @@ export async function createEngine(canvas) {
         },
         open(s) {
             if (s !== "play") {
+                clearSpillFire();
                 cancelRaceControls();
                 swipe = null;
                 // every route out of a run passes here: the portal's clock stops
@@ -216,7 +236,8 @@ export async function createEngine(canvas) {
                 // one choke point where "you crossed a dust line" can be noticed.
                 // settleDust is idempotent, so calling it on every screen change is
                 // free when nothing is owed.
-                settleDust();
+                if (!trial)
+                    settleDust();
                 // THE DAILY IS PAID FOR SHOWING UP, AND SHOWING UP IS OPENING THE
                 // GAME (owner, 2 Sep 2026: "just count log in, not store tap").
                 // It used to land on arrival at the shop, which quietly made the
@@ -244,18 +265,20 @@ export async function createEngine(canvas) {
                 world.tut = null;
             // the graduation gift is collected on the crash sheet; leaving that
             // sheet any other way still moves the guide on
-            if (save.guide === "reward" && s !== "dead" && s !== "pause") {
+            if (!trial && save.guide === "reward" && s !== "dead" && s !== "pause") {
                 save.guide = "hangar";
                 writeSave(save);
             }
             if (s === "title" || s === "log" || s === "hangar" || s === "shop" || s === "profile" || s === "help" || s === "scores") {
                 // an aborted Debris Field run still banks its waves and records
-                if (world.spill && (world.screen === "play" || world.screen === "pause")) {
+                if (!trial && world.spill && (world.screen === "play" || world.screen === "pause")) {
                     bankSpill(save, world.spill, true);
                     writeSave(save);
                 }
                 world.race = null;
                 world.spill = null;
+                trial = null;
+                trialSave = null;
                 raceAccumulator = 0;
             }
             notify();
@@ -400,6 +423,8 @@ export async function createEngine(canvas) {
             notify();
         },
         setSpillButtonsOff(off) {
+            if (off)
+                clearSpillFire();
             save.spillButtonsOff = off;
             writeSave(save);
             notify();
@@ -705,21 +730,207 @@ export async function createEngine(canvas) {
             }
             playInterstitial("level", next);
         },
-        spillThrust() {
-            if (!world.spill || world.screen !== "play" || save.spillButtonsOff)
+        spillFire(held, owner = "manual") {
+            if (held) {
+                if (!running || world.screen !== "play" || !world.spill
+                    || !["wave", "drain"].includes(world.spill.phase))
+                    return;
+                if (!fireOwners.has(owner))
+                    spillTapFire(world.spill);
+                fireOwners.add(owner);
+                unlockAudio();
+            }
+            else
+                fireOwners.delete(owner);
+            if (world.spill)
+                spillSetFiring(world.spill, fireOwners.size > 0);
+        },
+        spillControls() {
+            const rect = canvas.getBoundingClientRect(), stick = spillStick;
+            return { active: !!stick, x: stick ? stick.x0 / rect.width : 0, y: stick ? stick.y0 / rect.height : 0,
+                dx: stick ? Math.max(-1, Math.min(1, (stick.x - stick.x0) / 44)) : 0,
+                dy: stick ? Math.max(-1, Math.min(1, (stick.y - stick.y0) / 44)) : 0 };
+        },
+        spillTrial() { return trial ? { ...trial, complete: world.spill?.cause === "MISSION COMPLETE" } : null; },
+        spillStartTrial(id, build) {
+            const selected = SPILL_TRIALS.find(t => t.id === id);
+            if (!selected || !SPILL_TRIAL_BUILDS.some(b => b.id === build) || !engine.art
+                || (!trial && !["title", "hangar", "dead"].includes(world.screen)))
+                return false;
+            clearSpillFire();
+            resetInputTracking();
+            trial = { id, build };
+            trialSave = cloneSaveForTrial(save);
+            unlockAudio();
+            resetRun(world, trialSave, "spill", false);
+            const s = createSpill(world.W, world.H, selected.seed, selected.endWave ?? selected.wave, true, false);
+            s.practice = true;
+            s.phase = "depot";
+            s.wave = selected.wave - 1;
+            s.cleared = s.wave;
+            s.spec = spillWaveSpec(Math.max(1, s.wave), s.seed);
+            s.depot = { arm: SPILL.depotArm, bought: [] };
+            s.banked.waves = s.wave;
+            s.banked.run = true;
+            s.signal = spillEngineColor(save).color;
+            if (selected.risk)
+                s.expedition.selected = selected.risk;
+            applySpillTrialBuild(s, build);
+            world.spill = s;
+            world.ready = false;
+            world.screen = "play";
+            world.squirrel.y = s.pilot.y;
+            world.squirrel.vy = 0;
+            world.score = s.cleared;
+            resize();
+            void loadSpillScene(engine.art, save.equippedSuit).then(notify);
+            raceAccumulator = 0;
+            last = performance.now();
+            platform.gameplayStart();
+            notify();
+            return true;
+        },
+        spillRetryTrial() { return trial ? engine.spillStartTrial(trial.id, trial.build) : false; },
+        spillEndTrial() {
+            if (!trial)
                 return;
-            if (flap(world, save) === "flap")
-                sfx.flap();
+            clearSpillFire();
+            resetInputTracking();
+            platform.gameplayStop();
+            world.spill = null;
+            world.lastRun = null;
+            world.screen = "title";
+            trial = null;
+            trialSave = null;
+            raceAccumulator = 0;
             notify();
         },
-        spillDive() {
-            if (!world.spill || world.screen !== "play")
-                return;
-            if (dive(world, save) === "dive")
-                sfx.dive();
+        spillSelectChassis(id) {
+            const choice = SPILL_CHASSIS.find(c => c.id === id), s = world.spill;
+            const preparing = world.screen === "play" && s && (s.phase === "ready"
+                || (s.phase === "depot" && (s.welcome || (!!trial && s.wave === SPILL_TRIALS.find(t => t.id === trial.id).wave - 1))));
+            if (!choice || (!trial && choice.unlock > save.spillBest) || (world.screen !== "hangar" && !preparing))
+                return false;
+            if (preparing) {
+                const maxHull = SPILL.hull + s.up.plating + spillChassisStats(id).hull;
+                s.hull = Math.max(1, Math.min(maxHull, s.hull + maxHull - s.maxHull));
+                s.maxHull = maxHull;
+                s.loadout.chassis = id;
+            }
+            if (!trial) {
+                save.spillCareer = { ...(save.spillCareer ?? createSpillCareer()), chassis: id };
+                if (preparing)
+                    checkpointSpill();
+                writeSave(save);
+            }
+            sfx.ui();
             notify();
+            return true;
         },
-        spillLunge() {
+        spillSelectWeaponModule(id) {
+            const choice = SPILL_WEAPON_MODULES.find(m => m.id === id), s = world.spill;
+            const preparing = world.screen === "play" && s && (s.phase === "ready"
+                || (s.phase === "depot" && (s.welcome || (!!trial && s.wave === SPILL_TRIALS.find(t => t.id === trial.id).wave - 1))));
+            if (!choice || (!trial && choice.unlock > save.spillBest) || (world.screen !== "hangar" && !preparing))
+                return false;
+            if (preparing)
+                s.loadout.module = id;
+            if (!trial) {
+                save.spillCareer = { ...(save.spillCareer ?? createSpillCareer()), module: id };
+                if (preparing)
+                    checkpointSpill();
+                writeSave(save);
+            }
+            sfx.ui();
+            notify();
+            return true;
+        },
+        spillSelectRisk(id) {
+            if (world.screen !== "play" || !world.spill)
+                return false;
+            const ok = spillSelectRisk(world.spill, id);
+            if (ok) {
+                checkpointSpill();
+                sfx.ui();
+                notify();
+            }
+            return ok;
+        },
+        spillSelectWeapon(id) {
+            if (world.screen !== "play" || !world.spill)
+                return false;
+            const ok = spillSelectWeapon(world.spill, id);
+            if (ok) {
+                checkpointSpill();
+                sfx.ui();
+                notify();
+            }
+            return ok;
+        },
+        spillUpgradeWeapon(id) {
+            if (world.screen !== "play" || !world.spill)
+                return false;
+            const ok = spillUpgradeWeapon(world.spill, id);
+            if (ok) {
+                checkpointSpill();
+                sfx.ui();
+            }
+            else
+                sfx.warning();
+            notify();
+            return ok;
+        },
+        spillClaimArtifact(id) {
+            if (world.screen !== "play" || !world.spill)
+                return false;
+            const ok = spillClaimArtifact(world.spill, id);
+            if (ok) {
+                checkpointSpill();
+                sfx.ui();
+            }
+            else
+                sfx.warning();
+            notify();
+            return ok;
+        },
+        spillShelf(item, replace) {
+            if (world.screen !== "play" || !world.spill)
+                return "closed";
+            const r = spillShelfAction(world.spill, item, replace);
+            if (r === "ok") {
+                checkpointSpill();
+                sfx.ui();
+            }
+            else if (r === "poor")
+                sfx.warning();
+            notify();
+            return r;
+        },
+        spillShelfUndo(item) {
+            if (world.screen !== "play" || !world.spill)
+                return false;
+            const ok = spillShelfUndo(world.spill, item);
+            if (ok) {
+                checkpointSpill();
+                sfx.ui();
+            }
+            notify();
+            return ok;
+        },
+        spillEquipArtifact(id) {
+            if (world.screen !== "play" || !world.spill)
+                return false;
+            const ok = spillEquipArtifact(world.spill, id);
+            if (ok) {
+                checkpointSpill();
+                sfx.ui();
+            }
+            else
+                sfx.warning();
+            notify();
+            return ok;
+        },
+        spillLunge(direction = 1) {
             if (!world.spill || world.screen !== "play")
                 return;
             // on the ready card a lunge is a launch, and a launch has to go
@@ -731,7 +942,7 @@ export async function createEngine(canvas) {
                 notify();
                 return;
             }
-            if (spillLunge(world.spill)) {
+            if (spillLunge(world.spill, direction)) {
                 sfx.near();
                 notify();
             }
@@ -753,7 +964,7 @@ export async function createEngine(canvas) {
             if (!world.spill || world.screen !== "play")
                 return;
             if (spillLeaveDepot(world.spill)) {
-                if (!world.spill.target) {
+                if (!trial && !world.spill.target) {
                     save.spillSuspended = null;
                     writeSave(save);
                 }
@@ -793,6 +1004,8 @@ export async function createEngine(canvas) {
             return !!ok;
         },
         spillSuspend() {
+            if (trial)
+                return false;
             if (world.screen !== "play" || !world.spill || !spillCheckpoint(world.spill))
                 return false;
             checkpointSpill();
@@ -807,6 +1020,8 @@ export async function createEngine(canvas) {
             const restored = restoreSpill(save.spillSuspended, world.W, world.H);
             if (!restored)
                 return false;
+            trial = null;
+            trialSave = null;
             unlockAudio();
             resetRun(world, save, "spill", false);
             world.spill = restored;
@@ -827,6 +1042,8 @@ export async function createEngine(canvas) {
             return true;
         },
         spillStarter(id) {
+            if (trial)
+                return;
             const preparing = world.screen === "play" && world.spill?.phase === "ready" && !world.spill.target;
             if (world.screen !== "hangar" && !preparing)
                 return;
@@ -845,6 +1062,11 @@ export async function createEngine(canvas) {
             const color = SPILL_ENGINE_COLORS.find(c => c.id === id && save.spillBest >= c.at);
             if ((world.screen !== "hangar" && !fitting) || !color)
                 return false;
+            if (trial && fitting) {
+                world.spill.signal = color.color;
+                notify();
+                return true;
+            }
             save.spillEngineColor = id;
             save.spillSignal = id !== "stock";
             if (fitting) {
@@ -856,6 +1078,11 @@ export async function createEngine(canvas) {
             return true;
         },
         dismissDead() {
+            if (trial) {
+                engine.spillEndTrial();
+                return;
+            }
+            clearSpillFire();
             world.screen = "title";
             world.lastRun = null;
             world.spill = null;
@@ -873,6 +1100,7 @@ export async function createEngine(canvas) {
             notify();
         },
         pause() {
+            clearSpillFire();
             cancelRaceControls();
             swipe = null;
             // A race pause discards the incomplete presentation-frame remainder.
@@ -885,6 +1113,7 @@ export async function createEngine(canvas) {
             notify();
         },
         resume() {
+            clearSpillFire();
             resumePlay(world);
             raceAccumulator = 0;
             last = performance.now();
@@ -899,6 +1128,10 @@ export async function createEngine(canvas) {
         subscribe(fn) {
             listeners.add(fn);
             return () => listeners.delete(fn);
+        },
+        subscribeFrame(fn) {
+            frameListeners.add(fn);
+            return () => frameListeners.delete(fn);
         },
         snap: () => snapshot(world),
     };
@@ -1464,6 +1697,10 @@ export async function createEngine(canvas) {
         if (!parent)
             return;
         const rect = parent.getBoundingClientRect();
+        // Mobile rotation can briefly report an empty stage. Never scale a live
+        // run through zero (or clear its controls) before the new viewport arrives.
+        if (!Number.isFinite(rect.width) || !Number.isFinite(rect.height) || rect.width <= 0 || rect.height <= 0)
+            return;
         const dpr = Math.min(window.devicePixelRatio || 1, world.race || world.spill ? 2 : renderCap);
         // widescreen everywhere: the play area takes the whole window. The old
         // 1600px cap left a dark bar down the right of a wide monitor (owner,
@@ -1506,8 +1743,11 @@ export async function createEngine(canvas) {
             raceAccumulator = 0;
             pausePlay(world);
         }
-        canvas.width = Math.floor(W * dpr);
-        canvas.height = Math.floor(H * dpr);
+        const pixelWidth = Math.floor(W * dpr), pixelHeight = Math.floor(H * dpr);
+        if (canvas.width !== pixelWidth)
+            canvas.width = pixelWidth;
+        if (canvas.height !== pixelHeight)
+            canvas.height = pixelHeight;
         canvas.style.width = `${W}px`;
         canvas.style.height = `${H}px`;
         canvas.style.left = `${Math.max(0, Math.floor((rect.width - W) / 2))}px`;
@@ -1530,9 +1770,42 @@ export async function createEngine(canvas) {
         return accepted;
     }
     function resetInputTracking() {
+        clearSpillFire();
         raceGesture = createRaceGestureState();
         raceResizeKeyboardReleasePending = null;
         swipe = null;
+    }
+    /** The earned chassis and weapon module ride every new Debris Field run,
+     *  endless or Star Chart mission alike. */
+    function applySpillLoadout() {
+        if (!world.spill)
+            return;
+        const loadout = restoreSpillCareer(save.spillCareer, save.spillBest);
+        world.spill.loadout = { chassis: loadout.chassis, module: loadout.module };
+        world.spill.maxHull = world.spill.hull = SPILL.hull + spillChassisStats(loadout.chassis).hull;
+    }
+    function clearSpillFire() {
+        fireOwners.clear();
+        steerKeys.clear();
+        spillStick = null;
+        if (world.spill) {
+            spillClearFireInput(world.spill);
+            spillSteer(world.spill, 0);
+        }
+    }
+    function spillReadyCard() {
+        return world.ready || world.spill?.phase === "ready";
+    }
+    function spillFlightInput() {
+        return running && world.screen === "play" && !!world.spill
+            && ["countdown", "wave", "drain"].includes(world.spill.phase);
+    }
+    function updateSpillSteering() {
+        if (!world.spill)
+            return;
+        const up = steerKeys.has("KeyW") || steerKeys.has("ArrowUp");
+        const down = steerKeys.has("KeyS") || steerKeys.has("ArrowDown");
+        spillSteer(world.spill, spillStick ? spillStickAxis(spillStick) : Number(down) - Number(up));
     }
     function cancelRaceControls(owner) {
         return applyRaceGesture(cancelRaceGesture(raceGesture, owner));
@@ -1551,6 +1824,27 @@ export async function createEngine(canvas) {
     canvas.addEventListener("pointerdown", (e) => {
         if (world.screen !== "play")
             return;
+        // A Debris Field ready card (a Star Chart mission's) still launches on
+        // the ordinary tap below; from the count on, the field is a stick.
+        if (world.spill && !spillReadyCard()) {
+            if (!spillFlightInput() || (e.pointerType === "mouse" && e.button !== 0))
+                return;
+            e.preventDefault();
+            try {
+                canvas.setPointerCapture(e.pointerId);
+            }
+            catch { /* capture may be unavailable */ }
+            if (spillStick?.owner === e.pointerId || fireOwners.has(`pointer:${e.pointerId}`))
+                return;
+            if (!spillStick) {
+                const rect = canvas.getBoundingClientRect();
+                spillStick = createSpillStick(e.pointerId, e.clientX - rect.left, e.clientY - rect.top, performance.now());
+                updateSpillSteering();
+            }
+            else
+                engine.spillFire(true, `pointer:${e.pointerId}`);
+            return;
+        }
         if (!e.isPrimary || (e.pointerType === "mouse" && e.button !== 0))
             return;
         e.preventDefault();
@@ -1568,19 +1862,7 @@ export async function createEngine(canvas) {
             return;
         }
         swipe = { owner: e.pointerId, x0: p.x, y0: p.y, t0: performance.now(), fired: false };
-        // the field captures the pointer so a swipe that leaves the canvas
-        // still lands; its tap is the same flap as everywhere else
-        if (world.spill) {
-            try {
-                canvas.setPointerCapture(e.pointerId);
-            }
-            catch { /* browser cancelled the pointer */ }
-        }
-        // A tap is a tap everywhere, the corridor and the debris field
-        // included. Hold-to-rise and slide-and-hold were flown against it and
-        // retired - see the note in updateTunnel - so nothing intercepts this
-        // any more. Hyper Run, the one hold-to-rise mode left, took the
-        // race branch above.
+        // Shared support modes retain their original tap behavior.
         const ev = flap(world, save);
         if (ev === "flap")
             sfx.flap();
@@ -1591,6 +1873,17 @@ export async function createEngine(canvas) {
         notify();
     }, { passive: false });
     canvas.addEventListener("pointermove", (e) => {
+        if (world.spill) {
+            if (!spillFlightInput() || spillStick?.owner !== e.pointerId)
+                return;
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const dodge = moveSpillStick(spillStick, e.clientX - rect.left, e.clientY - rect.top, performance.now());
+            updateSpillSteering();
+            if (dodge)
+                engine.spillLunge(dodge);
+            return;
+        }
         if (world.race && world.screen === "play") {
             const p = pos(e);
             const canonicalY = raceInputY(p.y);
@@ -1608,30 +1901,9 @@ export async function createEngine(canvas) {
         if (!swipe || swipe.owner !== e.pointerId || swipe.fired || world.screen !== "play" || world.flight === "tunnel")
             return;
         const p = pos(e);
-        if (!world.spill && performance.now() - swipe.t0 > 320) {
+        if (performance.now() - swipe.t0 > 320) {
             swipe = null;
             return;
-        }
-        // THE SPILL's swipes: RIGHT is the lunge, UP is the kick skyward, and
-        // DOWN falls through to the dive below. Each is read against the
-        // other axis so a diagonal goes to whichever way it mostly travelled.
-        if (world.spill) {
-            const dx = p.x - swipe.x0;
-            const dy = p.y - swipe.y0;
-            if (dx >= 40 && dx > Math.abs(dy)) {
-                swipe.fired = true;
-                if (spillLunge(world.spill))
-                    sfx.near();
-                notify();
-                return;
-            }
-            if (dy <= -34 && -dy > Math.abs(dx)) {
-                swipe.fired = true;
-                if (spillBurstUp(world))
-                    sfx.flap();
-                notify();
-                return;
-            }
         }
         if (p.y - swipe.y0 >= 34) {
             swipe.fired = true;
@@ -1640,8 +1912,25 @@ export async function createEngine(canvas) {
                 sfx.dive();
             notify();
         }
-    }, { passive: true });
+    }, { passive: false });
     const end = (e) => {
+        if (world.spill) {
+            const steering = spillStick?.owner === e.pointerId, firing = fireOwners.has(`pointer:${e.pointerId}`);
+            if (!steering && !firing)
+                return;
+            e.preventDefault();
+            if (e.type !== "pointerup")
+                clearSpillFire();
+            else {
+                if (steering) {
+                    spillStick = null;
+                    updateSpillSteering();
+                }
+                if (firing)
+                    engine.spillFire(false, `pointer:${e.pointerId}`);
+            }
+            return;
+        }
         if (raceGesture.owner === e.pointerId) {
             if (e.type === "pointercancel")
                 cancelRaceControls(e.pointerId);
@@ -1659,10 +1948,14 @@ export async function createEngine(canvas) {
     canvas.addEventListener("pointerup", end);
     canvas.addEventListener("pointercancel", end);
     canvas.addEventListener("lostpointercapture", end);
+    window.addEventListener("pointerup", end);
+    window.addEventListener("pointercancel", end);
     // A finger resting on the field is a long-press to the browser: without
     // these, phones answer it with text selection and the copy bubble over
     // the whole HUD.
-    canvas.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
+    for (const type of ["touchstart", "touchmove", "touchend", "touchcancel", "gesturestart", "gesturechange", "gestureend"])
+        canvas.addEventListener(type, e => { if (spillFlightInput())
+            e.preventDefault(); }, { passive: false });
     canvas.addEventListener("contextmenu", (e) => e.preventDefault());
     document.addEventListener("selectstart", (e) => {
         const t = e.target;
@@ -1690,6 +1983,28 @@ export async function createEngine(canvas) {
                 engine.resume();
             else if (world.screen !== "dead")
                 engine.open("title");
+            return;
+        }
+        if (world.spill && !spillReadyCard() && ["KeyW", "KeyS", "ArrowUp", "ArrowDown", "KeyA", "KeyD", "ArrowLeft", "ArrowRight", "KeyF", "Space"].includes(e.code)) {
+            if (world.screen === "play")
+                e.preventDefault();
+            if (!spillFlightInput() || e.repeat)
+                return;
+            if (["KeyF", "Space"].includes(e.code))
+                engine.spillFire(true, `keyboard:${e.code}`);
+            else if (["KeyA", "ArrowLeft", "KeyD", "ArrowRight"].includes(e.code))
+                engine.spillLunge(["KeyA", "ArrowLeft"].includes(e.code) ? -1 : 1);
+            else {
+                steerKeys.add(e.code);
+                updateSpillSteering();
+            }
+            return;
+        }
+        if (e.code === "KeyF") {
+            if (world.screen === "play")
+                e.preventDefault();
+            if (!e.repeat)
+                engine.spillFire(true, "keyboard-f");
             return;
         }
         if (e.code === "Space" || e.code === "ArrowUp") {
@@ -1745,27 +2060,13 @@ export async function createEngine(canvas) {
                 sfx.dive();
             notify();
         }
-        else if (DIVE_KEYS.has(e.code) && world.screen === "play" && world.flight !== "tunnel") {
+        else if (DIVE_KEYS.has(e.code) && !world.spill && world.screen === "play" && world.flight !== "tunnel") {
             if (e.repeat)
                 return;
             const ev = dive(world, save);
             if (ev === "dive")
                 sfx.dive();
             notify();
-        }
-        // the Spill's extra keys: right (or D) for the lunge, W for the harder
-        // kick skyward. Space is the tap and ArrowDown the dive, as everywhere
-        if (world.spill && world.screen === "play" && !e.repeat) {
-            if (e.code === "ArrowRight" || e.code === "KeyD") {
-                e.preventDefault();
-                engine.spillLunge();
-            }
-            else if (e.code === "KeyW") {
-                e.preventDefault();
-                if (spillBurstUp(world))
-                    sfx.flap();
-                notify();
-            }
         }
     });
     window.addEventListener("keyup", (e) => {
@@ -1788,6 +2089,15 @@ export async function createEngine(canvas) {
             }
         }
     });
+    // Capture releases even when a focused menu button consumes keyboard events.
+    window.addEventListener("keyup", e => {
+        if (e.code === "KeyF")
+            engine.spillFire(false, "keyboard-f");
+        if (["KeyF", "Space"].includes(e.code))
+            engine.spillFire(false, `keyboard:${e.code}`);
+        if (steerKeys.delete(e.code))
+            updateSpillSteering();
+    }, true);
     window.addEventListener("blur", () => {
         if (world.screen === "play") {
             engine.pause();
@@ -1795,6 +2105,7 @@ export async function createEngine(canvas) {
         }
         cancelRaceControls();
         swipe = null;
+        clearSpillFire();
     });
     document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
@@ -1804,6 +2115,7 @@ export async function createEngine(canvas) {
             }
             cancelRaceControls();
             swipe = null;
+            clearSpillFire();
         }
     });
     function dispatchWorldEvent(ev) {
@@ -1831,7 +2143,8 @@ export async function createEngine(canvas) {
             // the interstitial cadence counts every crash; afterCrash spends it
             if (!world.lvl && !world.race && !world.spill && !world.continued)
                 save.crashesSinceAd = (save.crashesSinceAd ?? 0) + 1;
-            writeSave(save);
+            if (!trial)
+                writeSave(save);
             sfx.die();
             platform.gameplayStop();
             notify();
@@ -1870,7 +2183,7 @@ export async function createEngine(canvas) {
         if (!cues.length)
             return;
         const spill = world.spill;
-        if (spill && cues.some(c => ["dead", "mission"].includes(c))) {
+        if (spill && !trial && cues.some(c => ["dead", "mission"].includes(c))) {
             bankSpill(save, spill, true);
             // AND THE BOARD HEARS ABOUT IT (App Store prep audit, section 2). The
             // "spill" board has been declared and configured since the shell
@@ -1885,8 +2198,10 @@ export async function createEngine(canvas) {
                 save.spillSuspended = null;
             writeSave(save);
         }
-        else if (cues.includes("depot"))
+        else if (!trial && cues.includes("depot"))
             checkpointSpill();
+        if (trial && cues.some(c => c === "dead" || c === "mission"))
+            platform.gameplayStop();
         // one sound per SOUND per frame, not per cue: a hit and the shatter it
         // causes share the hull thud, a Depot-wave clear and its milestone share
         // the fanfare, and neither should play twice
@@ -1902,6 +2217,7 @@ export async function createEngine(canvas) {
             graze: "near", pulse: "shift", count: "ui", go: "section", clear: "milestone", milestone: "milestone",
             dock: "region", depot: "region", buy: "ui", deny: "warning", respawn: "shift", surge: "warning",
             warn: "warning", event: "warning", contract: "milestone", mission: "milestone",
+            laser: "near", cannon: "bounce", "enemy-fire": "warning", "enemy-down": "shield",
         };
         for (const c of new Set(cues)) {
             const snd = SOUND[c];
@@ -1917,7 +2233,7 @@ export async function createEngine(canvas) {
     }
     function checkpointSpill() {
         const spill = world.spill;
-        if (!spill || spill.phase !== "depot")
+        if (trial || !spill || spill.phase !== "depot")
             return;
         if (!spill.target && spill.wave === 20 && save.spillBest < 20)
             spill.firstPass = true;
@@ -1928,6 +2244,8 @@ export async function createEngine(canvas) {
     }
     let nextSpillPaint = 0;
     function loop(now) {
+        if (spillStick)
+            sampleSpillStick(spillStick, now);
         const frameDt = Math.min(0.25, (now - last) / 1000);
         noteFrameCost(now - last);
         last = now;
@@ -1950,7 +2268,12 @@ export async function createEngine(canvas) {
             // Race cues are drained after every authority step, not once per
             // render frame. This preserves simultaneous pass/debris feedback and
             // prevents high-refresh rendering from replaying audio side effects.
-            const ev = updateWorld(world, save, 1 / 60);
+            if (!spillFlightInput())
+                clearSpillFire();
+            const priorSpillPhase = world.spill?.phase;
+            const ev = updateWorld(world, trialSave ?? save, 1 / 60);
+            if (!spillFlightInput() || (world.spill?.phase === "countdown" && priorSpillPhase !== "countdown"))
+                clearSpillFire();
             if (world.race)
                 dispatchRaceCues(takeRaceCueEffects(world));
             else {
@@ -2014,6 +2337,7 @@ export async function createEngine(canvas) {
             ctx.fillStyle = "#070b16";
             ctx.fillRect(0, 0, world.W, world.H);
         }
+        frameListeners.forEach(fn => fn());
         if (running)
             raf = requestAnimationFrame(loop);
     }
@@ -2072,4 +2396,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=328";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=329";
