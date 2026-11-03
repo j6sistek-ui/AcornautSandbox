@@ -23,6 +23,7 @@ export function createSpillBuild() {
 }
 const validId = (id) => SPILL_ARTIFACT_IDS.includes(id);
 const milestone = (wave) => Number.isInteger(wave) && wave >= 5 && wave % 10 === 5;
+const depotWave = (wave) => Number.isInteger(wave) && wave >= 5 && wave % 5 === 0;
 const depotOpen = (s) => s.phase === "depot" && !!s.depot && !s.welcome && s.depot.arm <= 0;
 /** A seed-local ordering, never a draw from the encounter or debris RNG. */
 function choices(seed, wave, owned) {
@@ -70,7 +71,9 @@ export function clearSpillBuildEffects(s) {
     s.combat.build.echo = 0;
     s.combat.build.blasts = [];
 }
-/** Original checkpoints have no build. New saves must prove each recovery was offered. */
+/** Original checkpoints have no build. Each owned artifact records the Depot
+ *  visit it came from: a free recovery wave (5, 15, 25...) or, since the shelf
+ *  merged artifacts with utilities (3 Nov 2026), any Depot it was bought at. */
 export function restoreSpillBuild(value, seed, wave) {
     if (value === undefined)
         return createSpillBuild();
@@ -83,8 +86,7 @@ export function restoreSpillBuild(value, seed, wave) {
         return null;
     for (let i = 0; i < b.owned.length; i++) {
         const claimed = b.claimedWaves[i];
-        if (!milestone(claimed) || claimed > wave || (i > 0 && claimed <= b.claimedWaves[i - 1])
-            || !choices(seed, claimed, b.owned.slice(0, i)).includes(b.owned[i]))
+        if (!depotWave(claimed) || claimed > wave || (i > 0 && claimed < b.claimedWaves[i - 1]))
             return null;
     }
     if (b.artifact !== null && (!validId(b.artifact) || !b.owned.includes(b.artifact)))

@@ -87,21 +87,34 @@ export function spillSelectWeapon(s: SpillState, id: SpillWeaponId): boolean {
   s.cues.push("buy");
   return true;
 }
-export function spillWeaponPrice(s: SpillState): number | null {
-  const level = s.combat.levels[s.combat.weapon];
+export function spillWeaponPrice(s: SpillState, id: SpillWeaponId = s.combat.weapon): number | null {
+  const level = s.combat.levels[id];
   return level >= 3 ? null : level === 1 ? 65 : 130;
 }
 export function spillWeaponStats(s: SpillState, id: SpillWeaponId = s.combat.weapon) {
   const weapon = SPILL_WEAPONS[id], level = s.combat.levels[id];
   return { ...weapon, damage: weapon.damage * level,
     speed: weapon.speed * spillWeaponModuleStats(s.loadout?.module).speed,
-    cooldown: weapon.cooldown * (1 - (level - 1) * 0.07) * (s.combat.build.artifact === "siege" ? 1.3 : 1) };
+    cooldown: weapon.cooldown * (1 - (level - 1) * 0.07) * (s.combat.build.artifact === "siege" ? 1.3 : 1),
+    aim: spillWeaponAim(s, id) };
 }
-export function spillUpgradeWeapon(s: SpillState): boolean {
-  const price = spillWeaponPrice(s);
+/** ACCURACY (owner, 3 Nov 2026): the aim-assist cone, read as one word. The
+ *  Laser starts wider than the Cannon, each tier widens it 20%, and the
+ *  chosen lens scales the result. 1 is the original cone. */
+const WEAPON_AIM: Record<SpillWeaponId, number> = { laser: 1, cannon: .8 };
+export function spillWeaponAim(s: SpillState, id: SpillWeaponId = s.combat.weapon) {
+  return WEAPON_AIM[id] * (1 + (s.combat.levels[id] - 1) * .2) * spillWeaponModuleStats(s.loadout?.module).aim;
+}
+export function spillAccuracyLabel(aim: number) {
+  return aim < .9 ? "Average" : aim < 1.1 ? "Good" : aim < 1.3 ? "Great" : "Best";
+}
+/** Either weapon can be upgraded at the Depot; levels stay with that weapon for the run. */
+export function spillUpgradeWeapon(s: SpillState, id: SpillWeaponId = s.combat.weapon): boolean {
+  if (!validWeapon(id)) return false;
+  const price = spillWeaponPrice(s, id);
   if (!depotOpen(s) || price === null || s.ore < price) return false;
   s.ore -= price;
-  s.combat.levels[s.combat.weapon]++;
+  s.combat.levels[id]++;
   s.cues.push("buy");
   return true;
 }
@@ -285,7 +298,7 @@ function aimTarget(s: SpillState) {
   const targets = [...s.combat.enemies, ...s.hazards.actors.filter(spillHazardTarget)];
   for (const e of targets) {
     const dx = e.x - s.pilot.x, dy = e.y - s.pilot.y;
-    if (e.dead || dx <= 20 || e.x > s.W || Math.abs(Math.atan2(dy, dx)) > 0.24 * spillWeaponModuleStats(s.loadout?.module).aim) continue;
+    if (e.dead || dx <= 20 || e.x > s.W || Math.abs(Math.atan2(dy, dx)) > 0.24 * spillWeaponAim(s)) continue;
     const d = Math.hypot(dx, dy);
     if (d < distance) { best = e; distance = d; }
   }

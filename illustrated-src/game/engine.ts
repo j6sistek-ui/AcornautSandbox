@@ -80,6 +80,7 @@ import { applySpillTrialBuild, SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS
 import { spillSelectRisk, type SpillRiskId } from "./spill-expeditions";
 import { spillSetFiring, spillTapFire, spillClearFireInput, spillSelectWeapon, spillUpgradeWeapon, type SpillWeaponId } from "./spill-combat";
 import { spillClaimArtifact, spillEquipArtifact, type SpillArtifactId } from "./spill-builds";
+import { spillShelfAction, spillShelfUndo, type SpillShelfItem } from "./spill-shop";
 import { createSpillStick, moveSpillStick, sampleSpillStick, spillStickAxis, type SpillStick } from "./spill-gesture";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor, type SpillEngineColor, type SpillUtility, type SpillSpecialty, type SpillContractKind } from "./spill-content";
 import { bankSpill, cloneSaveForTrial, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards, sealSave } from "./save";
@@ -186,9 +187,12 @@ export type Engine = {
   spillFire: (held: boolean, owner?: string) => void;
   spillControls: () => { active: boolean; x: number; y: number; dx: number; dy: number };
   spillSelectWeapon: (id: SpillWeaponId) => boolean;
-  spillUpgradeWeapon: () => boolean;
+  spillUpgradeWeapon: (id?: SpillWeaponId) => boolean;
   spillClaimArtifact: (id: SpillArtifactId) => boolean;
   spillEquipArtifact: (id: SpillArtifactId | null) => boolean;
+  /** The Depot shelf: utilities and artifacts in one list (see spill-shop). */
+  spillShelf: (item: SpillShelfItem, replace?: SpillShelfItem) => string;
+  spillShelfUndo: (item: SpillShelfItem) => boolean;
   spillSelectRisk: (id: SpillRiskId) => boolean;
   spillSelectChassis: (id: SpillChassisId) => boolean;
   spillSelectWeaponModule: (id: SpillWeaponModuleId) => boolean;
@@ -943,9 +947,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (ok) { checkpointSpill(); sfx.ui(); notify(); }
       return ok;
     },
-    spillUpgradeWeapon() {
+    spillUpgradeWeapon(id) {
       if (world.screen !== "play" || !world.spill) return false;
-      const ok = spillUpgradeWeapon(world.spill);
+      const ok = spillUpgradeWeapon(world.spill, id);
       if (ok) { checkpointSpill(); sfx.ui(); } else sfx.warning();
       notify(); return ok;
     },
@@ -953,6 +957,18 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (world.screen !== "play" || !world.spill) return false;
       const ok = spillClaimArtifact(world.spill, id);
       if (ok) { checkpointSpill(); sfx.ui(); } else sfx.warning();
+      notify(); return ok;
+    },
+    spillShelf(item, replace) {
+      if (world.screen !== "play" || !world.spill) return "closed";
+      const r = spillShelfAction(world.spill, item, replace);
+      if (r === "ok") { checkpointSpill(); sfx.ui(); } else if (r === "poor") sfx.warning();
+      notify(); return r;
+    },
+    spillShelfUndo(item) {
+      if (world.screen !== "play" || !world.spill) return false;
+      const ok = spillShelfUndo(world.spill, item);
+      if (ok) { checkpointSpill(); sfx.ui(); }
       notify(); return ok;
     },
     spillEquipArtifact(id) {

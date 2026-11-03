@@ -22,6 +22,7 @@ import { applySpillTrialBuild, SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS
 import { spillSelectRisk } from "./spill-expeditions.js?v=329";
 import { spillSetFiring, spillTapFire, spillClearFireInput, spillSelectWeapon, spillUpgradeWeapon } from "./spill-combat.js?v=329";
 import { spillClaimArtifact, spillEquipArtifact } from "./spill-builds.js?v=329";
+import { spillShelfAction, spillShelfUndo } from "./spill-shop.js?v=329";
 import { createSpillStick, moveSpillStick, sampleSpillStick, spillStickAxis } from "./spill-gesture.js?v=329";
 import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=329";
 import { bankSpill, cloneSaveForTrial, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards, sealSave } from "./save.js?v=329";
@@ -866,10 +867,10 @@ export async function createEngine(canvas) {
             }
             return ok;
         },
-        spillUpgradeWeapon() {
+        spillUpgradeWeapon(id) {
             if (world.screen !== "play" || !world.spill)
                 return false;
-            const ok = spillUpgradeWeapon(world.spill);
+            const ok = spillUpgradeWeapon(world.spill, id);
             if (ok) {
                 checkpointSpill();
                 sfx.ui();
@@ -889,6 +890,30 @@ export async function createEngine(canvas) {
             }
             else
                 sfx.warning();
+            notify();
+            return ok;
+        },
+        spillShelf(item, replace) {
+            if (world.screen !== "play" || !world.spill)
+                return "closed";
+            const r = spillShelfAction(world.spill, item, replace);
+            if (r === "ok") {
+                checkpointSpill();
+                sfx.ui();
+            }
+            else if (r === "poor")
+                sfx.warning();
+            notify();
+            return r;
+        },
+        spillShelfUndo(item) {
+            if (world.screen !== "play" || !world.spill)
+                return false;
+            const ok = spillShelfUndo(world.spill, item);
+            if (ok) {
+                checkpointSpill();
+                sfx.ui();
+            }
             notify();
             return ok;
         },

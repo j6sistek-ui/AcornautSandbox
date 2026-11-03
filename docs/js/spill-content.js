@@ -6,19 +6,19 @@ export const SPILL_UTILITIES = {
 };
 export const SPILL_UTILITY_IDS = Object.keys(SPILL_UTILITIES);
 export const SPILL_SPECIALTIES = {
-    brace: { axis: "plating", name: "Impact Bracing", desc: "Half the knockback; 0.4 seconds more protection after a hit." },
-    salvage: { axis: "plating", name: "Salvage Armor", desc: "Collect 30 Acorn Coins to restore 1 health, at most twice per wave." },
-    precision: { axis: "thrusters", name: "Precision Jets", desc: "Dodges brake vertical motion; steering acceleration and dodge speed stay at tier I." },
-    sweep: { axis: "thrusters", name: "Wide Sweep", desc: "Dodges clear shards in a wider path, including at tier II." },
-    efficient: { axis: "pulse", name: "Efficient Coil", desc: "Gold charges 65% of a Pulse instead of 50%." },
-    yield: { axis: "pulse", name: "Salvage Coil", desc: "Shattered debris yields Acorn Coins at tier II; tier III yields double." },
+    brace: { axis: "plating", name: "Impact Bracing", desc: "Improved collision recovery", detail: "Half the knockback; 0.4 seconds more protection after a hit." },
+    salvage: { axis: "plating", name: "Salvage Armor", desc: "Coins occasionally restore health", detail: "Collect 30 Acorn Coins to restore 1 health, at most twice per wave." },
+    precision: { axis: "thrusters", name: "Precision Jets", desc: "Dodges stop vertical drift", detail: "Dodges brake vertical motion; steering acceleration and dodge speed stay at tier I." },
+    sweep: { axis: "thrusters", name: "Wide Sweep", desc: "Dodges clear a wider path", detail: "Dodges clear shards in a wider path, including at tier II." },
+    efficient: { axis: "pulse", name: "Efficient Coil", desc: "Gold charges Pulse faster", detail: "Gold charges 65% of a Pulse instead of 50%." },
+    yield: { axis: "pulse", name: "Salvage Coil", desc: "Shattered debris drops coins", detail: "Shattered debris yields Acorn Coins at tier II; tier III yields double." },
 };
 export function spillContractOffers(wave) {
     const target = 35 + Math.min(40, Math.floor(wave / 5) * 5);
     return [
-        { kind: "salvage", name: "Salvage Run", target, reward: 35, desc: `Collect ${target} Acorn Coins across the next five waves.` },
-        { kind: "clean", name: "Clean Passage", target: 0, reward: 50, desc: "Clear the next five waves without losing health." },
-        { kind: "shards", name: "Clear a Path", target: 8, reward: 45, desc: "Break 8 small debris pieces across the next five waves. Use Impact pulse or upgraded dashes." },
+        { kind: "salvage", name: "Salvage Run", target, reward: 35, desc: `Collect ${target} coins` },
+        { kind: "clean", name: "Clean Passage", target: 0, reward: 50, desc: "Lose no health" },
+        { kind: "shards", name: "Clear a Path", target: 8, reward: 45, desc: "Break 8 small debris" },
     ];
 }
 export const SPILL_EVENTS = {

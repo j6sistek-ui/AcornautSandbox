@@ -37,7 +37,7 @@ const beforeHelp=JSON.stringify(engine.save);
 const helpBriefing=helpFlight.querySelector('[data-spill-briefing]');assert(helpBriefing);helpBriefing.click();assert(app.querySelector('.ac-spillhelpwrap'));
 assert(app.textContent.includes('HOW TO FLY · DEBRIS FIELD'));assert.deepEqual(cardsOf(app.querySelector('.ac-spillhelpwrap')),STICK_CARDS);
 for(const word of OLD_WORDS) assert(!app.querySelector('.ac-spillhelpwrap').textContent.includes(word),`the briefing never says ${word}`);
-assert.equal(app.querySelectorAll('.ac-spillhelpwrap [data-guide-utility]').length,4,'the briefing lists the four utilities in one compact row');
+assert.equal(app.querySelectorAll('.ac-spillhelpwrap [data-guide-utility]').length,3,'the briefing lists the shelf utilities in one compact row');
 assert.equal(control('enter-depot').textContent,'BACK TO HELP');
 app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true}));
 assert(!app.querySelector('.ac-spillhelpwrap'));assert.equal(engine.world.screen,'help');
@@ -76,7 +76,7 @@ assert.deepEqual(engine.world.spill.utilities,['magnet']);assert.equal(engine.sa
 assert.equal(engine.save.spillDepotGuideSeen,false,'a fresh save has not seen the briefing');
 const beforeBriefing=JSON.stringify(engine.world.spill);
 control('setup-guide').click();assert(app.querySelector('.ac-spillhelpwrap'));assert.equal(control('enter-depot').textContent,'BACK TO LAUNCH');
-assert.equal(app.querySelectorAll('.ac-spillhelpwrap [data-guide-utility]').length,4);
+assert.equal(app.querySelectorAll('.ac-spillhelpwrap [data-guide-utility]').length,3);
 app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('keydown',{key:' ',code:'Space',bubbles:true}));
 app.querySelector('.ac-depotguidecard').dispatchEvent(new win.KeyboardEvent('keyup',{key:' ',code:'Space',bubbles:true}));
 assert.equal(JSON.stringify(engine.world.spill),beforeBriefing,'briefing keys never start or steer the ship');
@@ -96,8 +96,8 @@ assert(!app.querySelector('.ac-workshop-utilities'),'utilities do not appear in 
 for(const id of ['magnet','scanner','brake','capacitor']) assert(!app.querySelector(`[data-spill-control="${id}"]`));
 assert(!app.querySelector('[data-spill-control="repair"]'));assert(!app.querySelector('[data-spill-control="core"]'));assert(!app.querySelector('[data-spill-control^="contract-"]'),'no repair, extra life or contracts before takeoff');
 control('guide').click();assert(app.querySelector('.ac-depotguidecard'));assert.equal(control('enter-depot').textContent,'BACK TO DEPOT');
-assert(app.textContent.includes('Unlocks stay'));assert(app.textContent.includes('From the wave 5 Depot · fit 2'));
-assert.equal(app.querySelectorAll('[data-guide-utility]').length,4,'the guide shows the four utilities in one compact row');assert(!app.querySelector('.ac-guide-kit'));
+assert(app.textContent.includes('Unlocks stay'));assert(app.textContent.includes('2 new each Depot · 2nd slot after wave 10'));
+assert.equal(app.querySelectorAll('[data-guide-utility]').length,3,'the guide shows the shelf utilities in one compact row');assert(!app.querySelector('.ac-guide-kit'));
 assert(!app.textContent.includes('Pull Acorn Coins'),'guide utilities carry a short name, no description');
 const guideCardOrder=[...app.querySelector('.ac-depotguidecard').children].map(c=>c.className);assert(guideCardOrder.indexOf('ac-guide-systems')<guideCardOrder.indexOf('ac-guide-utilityrow'),'systems come before utilities');
 control('enter-depot').click();assert(!app.querySelector('.ac-depotguidecard'));assert.equal(JSON.stringify(engine.world.spill),guidedState,'the guide changes no run state');assert(control('launch').disabled);
@@ -137,16 +137,25 @@ ctx.fillText=()=>{};flight.lunge=0;flight.lungeCharges=1;flight.cool=0;flight.pi
 function pointer(type,id,x,y){canvas.dispatchEvent(new win.PointerEvent(type,{pointerId:id,clientX:x,clientY:y,pointerType:'touch',isPrimary:true,bubbles:true}));}
 pointer('pointerdown',1,100,300);now+=800;pointer('pointerup',2,100,300);assert(engine.spillControls().active,'a stray release leaves the stick alone');pointer('pointerup',1,100,300);
 pointer('pointerdown',3,100,300);win.dispatchEvent(new win.Event('blur'));assert.equal(engine.world.screen,'pause');engine.resume();assert.equal(engine.world.screen,'play');pointer('pointerdown',4,100,300);width=320;engine.resize();assert.equal(engine.world.screen,'pause');engine.resume();
-const s=fixture();const initial=s.ore;assert.equal(app.querySelectorAll('.ac-workshop-system').length,4);assert.equal(app.querySelectorAll('.ac-workshop-slots > span').length,2);
+const s=fixture();const initial=s.ore;assert.equal(app.querySelectorAll('.ac-workshop-system').length,4);assert.equal(app.querySelectorAll('.ac-workshop-utility').length,2,'two new shelf items per Depot');assert.equal(app.querySelectorAll('.ac-workshop-weapon').length,2,'one card per weapon');
 control('inspect-pulse').click();assert.equal(s.ore,initial,'inspecting a system is not a purchase');control('inspect-plating').click();
 control('plating').click();assert.equal(s.up.plating,1);assert.equal(s.ore,initial-60);assert.equal(engine.save.spillSuspended.state.up.plating,1);
 control('plating').click();assert(button('Impact Bracing'));control('brace').click();assert.equal(s.specialties.plating,'brace');
 control('inspect-shield').click();control('shield').click();assert.equal(s.canopyLevel,1);assert.equal(s.shield,1);
-assert.equal(app.querySelectorAll('.ac-workshop-utility').length,4,'all four utilities appear at the wave 5 Depot');const card=app.querySelector('.ac-depotcard');card.scrollTop=820;control('magnet').focus();control('magnet').click();
-assert.equal(app.querySelector('.ac-depotcard').scrollTop,820);assert.equal(document.activeElement.dataset.spillControl,'magnet');control('scanner').click();assert(app.querySelector('.ac-workshop-utilities').textContent.includes('2 / 2 fitted'),'the live utility shelf is capped at two slots');assert(control('brake').textContent.includes('Swap'),'a third utility at the cap offers a swap, never a third slot');assert(!control('brake').disabled);control('brake').click();assert(app.querySelector('.ac-workshop-swap'),'the cap opens the replace prompt instead of fitting a third');assert.deepEqual(s.utilities,['magnet','scanner']);
-control('cancel-swap').click();assert.deepEqual(s.utilities,['magnet','scanner']);control('brake').click();control('replace-magnet').click();assert.deepEqual(s.utilities,['brake','scanner']);
-const swapOre=s.ore;control('scanner').click();control('magnet').click();assert.equal(s.ore,swapOre,'owned utilities refit free');assert.deepEqual(s.utilities,['brake','magnet']);
-const extras=app.querySelector('.ac-workshop-extras');extras.open=true;extras.dispatchEvent(new win.Event('toggle'));control('contract-clean').click();assert(app.querySelector('.ac-workshop-extras').open,'bonus goals stay open after choosing');assert(s.contract);
+// THE SHELF: utilities and artifacts in one list, two new items per Depot, one slot before wave 10.
+const shelfCards=()=>[...app.querySelectorAll('.ac-workshop-utility')];const shelfButton=key=>app.querySelector(`[data-shelf="${key}"] button`);
+assert.equal(shelfCards().length,2,'two offers at the wave 5 Depot');assert(!app.querySelector('[data-spill-control="brake"]'),'the Brake left the shelf');
+const [first,second]=shelfCards().map(c=>c.dataset.shelf);const card=app.querySelector('.ac-depotcard');card.scrollTop=820;
+const fittedNote=()=>app.querySelector('.ac-shelf-fitted').textContent;assert(fittedNote().includes('nothing yet'));
+const before=s.ore;shelfButton(first).click();const firstPrice=before-s.ore;assert(firstPrice>0,'a new item is bought');assert.equal(app.querySelector('.ac-depotcard').scrollTop,820);
+assert(shelfButton(first).textContent.includes('Undo'),'a purchase this visit can be undone');assert(!fittedNote().includes('nothing yet'),'the fitted note names it');
+assert(app.querySelector('.ac-workshop-utilities').textContent.includes('2nd after wave 10'),'one slot before wave 10');
+assert(shelfButton(second).textContent.includes('Swap'),'a second item at the cap offers a swap');shelfButton(second).click();
+if(first.startsWith('artifact:')&&second.startsWith('artifact:'))assert(!app.querySelector('.ac-workshop-swap'),'a second artifact trades places directly');
+else{assert(app.querySelector('.ac-workshop-swap'),'the cap opens the replace prompt');control('cancel-swap').click();assert(!app.querySelector('.ac-workshop-swap'));shelfButton(second).click();app.querySelector('.ac-workshop-swap .ac-workshop-secondary').click();}
+assert(shelfButton(second).textContent.includes('Undo'));const swapped=s.ore;shelfButton(second).click();assert.equal(s.ore,before-firstPrice,'undo refunds the swap');
+assert(shelfButton(first).textContent.includes('Undo'),'and puts the replaced item back');assert.equal(shelfCards().length,2,'only the two offers are listed');
+assert(!app.querySelector('.ac-workshop-extras'),'no extra-life / bonus-goal page');assert.equal(control('risk-standard').getAttribute('aria-pressed'),'true','Harder defaults to No');control('risk-volatile').click();assert.equal(s.expedition.selected,'volatile');assert.equal(control('risk-volatile').getAttribute('aria-pressed'),'true');
 const records=structuredClone(engine.save.spillRecords),ore=s.ore;control('save').click();assert.equal(engine.world.screen,'title');assert(engine.save.spillSuspended);
 engine.open('hangar');engine.setShopTab('ship');const savedCheckpoint=JSON.stringify(engine.save.spillSuspended);assert(![...app.querySelectorAll('button')].some(b=>b.textContent==='VIEW SAVED BUILD'),'the saved-build inspector left the ship tab with the planner');assert.equal(JSON.stringify(engine.save.spillSuspended),savedCheckpoint,'opening the ship tab does not edit the checkpoint');
 ship('color','cobalt').click();assert(engine.spillResume());tick(50);assert.equal(engine.world.spill.signal,'#79cfff','resuming uses the selected engine color');engine.setSpillEngineColor('copper');assert.equal(engine.world.spill.ore,ore);assert.deepEqual(engine.save.spillRecords,records);assert(app.querySelector('[role="dialog"]'));control('launch').click();assert.equal(engine.world.spill.wave,6);assert.equal(engine.save.spillSuspended,null);

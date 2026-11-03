@@ -102,7 +102,11 @@ test('recovery saves preserve choices and reject forged ownership or milestone c
   }
   const excluded = B.SPILL_ARTIFACT_IDS.find(v => !B.spillArtifactOffers(depot()).includes(v));
   const bad = structuredClone(cp); bad.state.combat.build.owned = [excluded]; bad.state.combat.build.artifact = excluded;
-  assert.equal(S.restoreSpill(bad, 390, 760), null, 'a valid ID was not necessarily offered');
+  // Acornaut's Depot shelf sells artifacts at any Depot visit (3 Nov 2026), so a
+  // checkpoint proves the visit, not a free-recovery draw.
+  assert.ok(S.restoreSpill(bad, 390, 760), 'an artifact bought at a recorded Depot visit restores');
+  const early = structuredClone(bad); early.state.combat.build.claimedWaves = [3];
+  assert.equal(S.restoreSpill(early, 390, 760), null, 'a purchase must come from a real Depot visit');
   const skipped = depot(15); B.spillClaimArtifact(skipped, B.spillArtifactOffers(skipped)[0]);
   assert(S.restoreSpill(S.spillCheckpoint(skipped), 390, 760), 'skipping wave5 is legal');
 });
