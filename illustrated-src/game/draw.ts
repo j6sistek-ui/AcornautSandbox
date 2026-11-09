@@ -34,6 +34,7 @@ import {
   SPILL_MOD_INFO,
   spillHas, spillChargeCap, spillContractProgress, spillEventGap,
   spillCount,
+  SPILL_DRILL,
   spillMod,
   spillRamp,
   spillWaveLeft,
@@ -2589,7 +2590,8 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
       ctx.fillText("A mining rig let go one system over. What reached us is travelling one way.", W / 2, titleY + 22);
     }
   }
-  if (s.phase === "countdown") {
+  if (s.phase === "countdown" && s.drill) drawSpillDrill(ctx, w, s);
+  else if (s.phase === "countdown") {
     // THE COUNT. The ship flies itself; the hand rests; control returns on
     // the GO and never before. The number is the biggest thing on screen
     const n = spillCount(s);
@@ -6412,6 +6414,35 @@ function drawPrompt(ctx: CanvasRenderingContext2D, w: World, title: string, body
       ctx.globalAlpha = 1;
     }
   }
+}
+
+/** THE CONTROLS DRILL CARD: one step at a time, the same navy card and
+ *  cyan edge as the lesson card, four dots for the four controls. */
+function drawSpillDrill(ctx: CanvasRenderingContext2D, w: World, s: NonNullable<World["spill"]>) {
+  const d = s.drill!, step = SPILL_DRILL[d.step] ?? SPILL_DRILL[SPILL_DRILL.length - 1];
+  const ready = step.id === "ready", W = w.W, H = w.H;
+  const bw = Math.min(W - 32, 340), bh = ready ? 92 : 128, x = (W - bw) / 2, y = Math.max(96, H * 0.2);
+  const pulse = 0.55 + 0.45 * Math.abs(Math.sin(w.time * 2.4));
+  ctx.save();
+  ctx.fillStyle = "rgba(12,18,36,0.88)";
+  ctx.strokeStyle = ready ? "rgba(112,227,160,.8)" : `rgba(127,214,255,${0.35 + 0.4 * pulse})`;
+  ctx.lineWidth = 2; round(ctx, x, y, bw, bh, 16); ctx.fill(); ctx.stroke();
+  ctx.textAlign = "center";
+  ctx.fillStyle = "rgba(255,224,128,.9)"; ctx.font = "800 11px Figtree, system-ui";
+  ctx.fillText(ready ? "CONTROLS LEARNED" : `LEARN THE CONTROLS · ${d.step + 1} / 4`, W / 2, y + 22);
+  ctx.fillStyle = ready ? "#9ff0c2" : "#fff"; ctx.font = "900 26px Figtree, system-ui";
+  ctx.fillText(step.title, W / 2, y + 52);
+  ctx.fillStyle = "rgba(225,236,250,.92)"; ctx.font = "700 14px Figtree, system-ui";
+  ctx.fillText(step.touch, W / 2, y + 76, bw - 24);
+  if (!ready) {
+    ctx.fillStyle = "rgba(200,190,255,.75)"; ctx.font = "700 11px Figtree, system-ui";
+    ctx.fillText(`Keyboard: ${step.keys}`, W / 2, y + 96, bw - 24);
+    for (let i = 0; i < 4; i++) {
+      ctx.fillStyle = i < d.step ? "#70e3a0" : i === d.step ? `rgba(127,214,255,${0.5 + 0.5 * pulse})` : "rgba(255,255,255,.18)";
+      ctx.beginPath(); ctx.arc(W / 2 + (i - 1.5) * 16, y + 114, 4, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.restore();
 }
 
 function round(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {

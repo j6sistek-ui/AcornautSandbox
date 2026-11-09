@@ -1,4 +1,4 @@
-import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=329";
+import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=330";
 // DEBRIS FIELD (mode id "spill") — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
@@ -23,14 +23,14 @@ import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=329";
 // DIRECT STEERING (owner, 2026-10-29). The stick commands climb/descent;
 // releasing it brakes to an altitude hold. Horizontal swipes dodge in
 // either direction. The earlier tap/gravity hand is retired for this mode.
-import { ENVS, LEGACY_DEBRIS_COUNT, PHYS } from "./catalog.js?v=329";
-import { spillPrimeEcho } from "./spill-builds.js?v=329";
-import { createSpillLoadout, restoreSpillLoadout, spillChassisStats } from "./spill-career.js?v=329";
-import { beginSpillExpedition, createSpillExpedition, restoreSpillExpedition, settleSpillExpedition } from "./spill-expeditions.js?v=329";
-import { admitSpillClimax, createSpillClimax, resizeSpillClimax, restoreSpillClimax, spillClimaxReserved, spillClimaxWave } from "./spill-climax.js?v=329";
-import { admitSpillHazards, beginSpillHazardWave, clearSpillHazards, createSpillHazards, resizeSpillHazards, restoreSpillHazards, spillGravityBend, spillGravityBendDelta, spillGravityDrift, spillHazardPathClear, spillHazardPlan, spillHazardPressure, stepSpillHazards, SPILL_HAZARDS } from "./spill-hazards.js?v=329";
-import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=329";
-import { admitSpillEnemies, beginSpillCombatWave, captureSpillCombatMotion, clearSpillCombat, createSpillCombat, resizeSpillCombat, restoreSpillCombat, spillCombatPressure, spillCombatPulse, spillCombatRockClear, stepSpillCombat } from "./spill-combat.js?v=329";
+import { ENVS, LEGACY_DEBRIS_COUNT, PHYS } from "./catalog.js?v=330";
+import { spillPrimeEcho } from "./spill-builds.js?v=330";
+import { createSpillLoadout, restoreSpillLoadout, spillChassisStats } from "./spill-career.js?v=330";
+import { beginSpillExpedition, createSpillExpedition, restoreSpillExpedition, settleSpillExpedition } from "./spill-expeditions.js?v=330";
+import { admitSpillClimax, createSpillClimax, resizeSpillClimax, restoreSpillClimax, spillClimaxReserved, spillClimaxWave } from "./spill-climax.js?v=330";
+import { admitSpillHazards, beginSpillHazardWave, clearSpillHazards, createSpillHazards, resizeSpillHazards, restoreSpillHazards, spillGravityBend, spillGravityBendDelta, spillGravityDrift, spillHazardPathClear, spillHazardPlan, spillHazardPressure, stepSpillHazards, SPILL_HAZARDS } from "./spill-hazards.js?v=330";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=330";
+import { admitSpillEnemies, beginSpillCombatWave, captureSpillCombatMotion, clearSpillCombat, createSpillCombat, resizeSpillCombat, restoreSpillCombat, spillCombatPressure, spillCombatPulse, spillCombatRockClear, stepSpillCombat } from "./spill-combat.js?v=330";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
@@ -131,6 +131,62 @@ export const SPILL_MOD_INFO = {
         teach: "DRIFT: the field tilts · debris follows the angle",
     },
 };
+export const SPILL_DRILL = [
+    { id: "steer", title: "STEER", touch: "Hold anywhere and drag up or down", keys: "W / S or ↑ / ↓" },
+    { id: "hold", title: "HOLD", touch: "Let go to hold your height", keys: "Release the key" },
+    { id: "fire", title: "FIRE", touch: "Keep holding, tap with a second finger", keys: "F or Space" },
+    { id: "dodge", title: "DODGE", touch: "Flick left or right", keys: "A / D or ← / →" },
+    { id: "ready", title: "READY", touch: "Good flying. Wave 1 is coming", keys: "" },
+];
+const DRILL_READY = SPILL_DRILL.length - 1;
+function drillNext(s) {
+    const d = s.drill;
+    d.step++;
+    d.t = 0;
+    cue(s, d.step === DRILL_READY ? "milestone" : "drill-step");
+}
+function stepDrill(s, dt) {
+    const d = s.drill, id = SPILL_DRILL[d.step]?.id;
+    if (id === "steer") {
+        if (Math.abs(s.steerY) > 0.3)
+            d.t += dt;
+        if (d.t >= 0.45)
+            drillNext(s);
+    }
+    else if (id === "hold") {
+        d.t = s.steerY === 0 ? d.t + dt : 0;
+        if (d.t >= 0.35)
+            drillNext(s);
+    }
+    else if (id === "dodge") {
+        if (s.lunge > 0)
+            drillNext(s);
+    }
+    else if (id === "ready") {
+        d.t += dt;
+        if (d.t >= 1.2) {
+            s.drill = null;
+            cue(s, "drill-done");
+        }
+    }
+}
+/** The fire step listens for the press itself: no weapon runs before GO. */
+export function spillDrillFire(s) {
+    const d = s.drill;
+    if (!d || SPILL_DRILL[d.step]?.id !== "fire")
+        return false;
+    burst(s, s.pilot.x + 34, s.pilot.y, 6, "graze", 0.6);
+    cue(s, "laser");
+    drillNext(s);
+    return true;
+}
+export function spillSkipDrill(s) {
+    if (!s.drill)
+        return false;
+    s.drill = null;
+    cue(s, "drill-done");
+    return true;
+}
 export const SPILL_CONTROL_HINT = "CONTROLS: drag up/down to steer · release to hold · swipe left/right to dodge";
 /** Twenty authored waves. Every rule is taught alone the first time it
  *  appears; after wave 20 the game rolls them. Speed and crowding climb on
@@ -805,6 +861,15 @@ function beginCountdown(s, n) {
         s.hint = SPILL_CONTROL_HINT;
         s.hintT = s.hints ? SPILL.countdown + SPILL.hintTime : 0;
     }
+    if (n === 1 && s.drillWanted) {
+        // the drill replaces the controls card; the ship waits, level, for a hand
+        s.drillWanted = false;
+        s.drill = { step: 0, t: 0 };
+        s.manual = true;
+        s.pilot.vy = 0;
+        if (s.hint === SPILL_CONTROL_HINT)
+            s.hintT = 0;
+    }
     const hazardLesson = spillHazardPlan(n, s.seed).families.find(kind => SPILL_HAZARDS[kind].unlock === n);
     if (hazardLesson) {
         s.hint = SPILL_HAZARDS[hazardLesson].teach;
@@ -1342,7 +1407,10 @@ function stepSpillBody(s, dt) {
         return;
     }
     if (s.phase === "countdown") {
-        s.phaseT += dt;
+        if (s.drill)
+            stepDrill(s, dt);
+        else
+            s.phaseT += dt;
         if (s.manual) {
             // Direct input flies the empty field until GO.
             handHorizontal(s, dt);
@@ -1357,7 +1425,7 @@ function stepSpillBody(s, dt) {
         stepNuts(s, dt);
         const before = Math.ceil(SPILL.countdown - (s.phaseT - dt));
         const now = Math.ceil(SPILL.countdown - s.phaseT);
-        if (now !== before && now > 0)
+        if (now !== before && now > 0 && !s.drill)
             cue(s, "count");
         if (s.phaseT >= SPILL.countdown)
             beginWave(s);

@@ -1775,6 +1775,9 @@
       opacity: 1; visibility: visible; transition: opacity 100ms ease,visibility 0s; }
     .ac-floating-stick[hidden] { display: block; opacity: 0; visibility: hidden; transition: opacity 100ms ease,visibility 0s 100ms; }
     @media(prefers-reduced-motion:reduce) { .ac-floating-stick,.ac-floating-stick[hidden] { transition: none; } }
+    .ac-drill-skip { position: absolute; z-index: 4; left: 50%; transform: translateX(-50%); bottom: max(28px, calc(env(safe-area-inset-bottom) + 16px));
+      min-height: 40px; padding: 0 18px; font-size: 12px; letter-spacing: .08em; }
+    .ac-drill-skip[hidden] { display: none; }
     .ac-floating-stick-knob { position: absolute; left: 28px; top: 28px; width: 30px; height: 30px;
       border-radius: 50%; border: 1.5px solid #bdffe499; background: #bdffe433; pointer-events: none; }
     .ac-spillsetting:focus-visible, .ac-hardpoint:focus-visible { outline: 2px solid #fff1b2; outline-offset: 3px; }
@@ -2400,7 +2403,7 @@ body .ac-loadout .ac-platebtn, body .ac-loadout .ac-shopbanner {
     // versioned folders (see export-sandbox.mjs), and this import falls
     // back to ./js, which is always the current build and is never
     // deleted. A stale page then loads today's code instead of nothing.
-    import("./js329/standalone.js")
+    import("./js330/standalone.js")
       .catch(() => import("./js/standalone.js"))
       .then((m) => m.bootStandalone(document.getElementById("app")));
   </script>

@@ -148,6 +148,43 @@ export const SPILL_MOD_INFO: Record<SpillMod, { name: string; teach: string; sho
   },
 };
 
+/** THE CONTROLS DRILL (owner, 9 Nov 2026: "the spill mode needs a tutorial for
+ *  controls for first time play through"). Wave 1's countdown holds on an
+ *  empty field while each control is tried once: steer, let go, fire, dodge.
+ *  Each step waits for the pilot, never a timer. Then the count resumes. */
+export type SpillDrill = { step: number; t: number };
+export const SPILL_DRILL: { id: "steer" | "hold" | "fire" | "dodge" | "ready"; title: string; touch: string; keys: string }[] = [
+  { id: "steer", title: "STEER", touch: "Hold anywhere and drag up or down", keys: "W / S or ↑ / ↓" },
+  { id: "hold", title: "HOLD", touch: "Let go to hold your height", keys: "Release the key" },
+  { id: "fire", title: "FIRE", touch: "Keep holding, tap with a second finger", keys: "F or Space" },
+  { id: "dodge", title: "DODGE", touch: "Flick left or right", keys: "A / D or ← / →" },
+  { id: "ready", title: "READY", touch: "Good flying. Wave 1 is coming", keys: "" },
+];
+const DRILL_READY = SPILL_DRILL.length - 1;
+function drillNext(s: SpillState) {
+  const d = s.drill!;
+  d.step++; d.t = 0;
+  cue(s, d.step === DRILL_READY ? "milestone" : "drill-step");
+}
+function stepDrill(s: SpillState, dt: number) {
+  const d = s.drill!, id = SPILL_DRILL[d.step]?.id;
+  if (id === "steer") { if (Math.abs(s.steerY) > 0.3) d.t += dt; if (d.t >= 0.45) drillNext(s); }
+  else if (id === "hold") { d.t = s.steerY === 0 ? d.t + dt : 0; if (d.t >= 0.35) drillNext(s); }
+  else if (id === "dodge") { if (s.lunge > 0) drillNext(s); }
+  else if (id === "ready") { d.t += dt; if (d.t >= 1.2) { s.drill = null; cue(s, "drill-done"); } }
+}
+/** The fire step listens for the press itself: no weapon runs before GO. */
+export function spillDrillFire(s: SpillState) {
+  const d = s.drill;
+  if (!d || SPILL_DRILL[d.step]?.id !== "fire") return false;
+  burst(s, s.pilot.x + 34, s.pilot.y, 6, "graze", 0.6);
+  cue(s, "laser"); drillNext(s); return true;
+}
+export function spillSkipDrill(s: SpillState) {
+  if (!s.drill) return false;
+  s.drill = null; cue(s, "drill-done"); return true;
+}
+
 export const SPILL_CONTROL_HINT = "CONTROLS: drag up/down to steer · release to hold · swipe left/right to dodge";
 
 // ------------------------------------------------------------ the ladder
@@ -335,7 +372,7 @@ export type SpillCue =
   | "press" | "burst" | "lunge" | "hit" | "shatter" | "ore" | "gold" | "shield" | "hull" | "graze"
   | "pulse" | "wave" | "go" | "count" | "clear" | "dock" | "depot" | "armed" | "depot-close" | "buy" | "deny"
   | "respawn" | "dead" | "mission" | "milestone" | "surge" | "warn" | "recharge" | "charged" | "contract" | "event"
-  | "laser" | "cannon" | "enemy-fire" | "enemy-down";
+  | "laser" | "cannon" | "enemy-fire" | "enemy-down" | "drill-step" | "drill-done";
 
 export type SpillDepot = {
   /** the shelves are inert until this runs out */
@@ -352,6 +389,10 @@ export type SpillState = {
   climax: SpillClimax;
   /** Evaluation runs cannot create checkpoints or advance career records. */
   practice?: boolean;
+  /** FIRST-RUN CONTROLS DRILL: set by the host for a pilot who has not
+   *  finished it; wave 1's countdown then waits on each control in turn. */
+  drillWanted?: boolean;
+  drill?: SpillDrill | null;
   /** Cosmetic mission family; absent in legacy/endless checkpoints. */
   zoneEnv?: number;
   seed: number;
@@ -1022,6 +1063,13 @@ function beginCountdown(s: SpillState, n: number) {
     s.hint = SPILL_CONTROL_HINT;
     s.hintT = s.hints ? SPILL.countdown + SPILL.hintTime : 0;
   }
+  if (n === 1 && s.drillWanted) {
+    // the drill replaces the controls card; the ship waits, level, for a hand
+    s.drillWanted = false;
+    s.drill = { step: 0, t: 0 };
+    s.manual = true; s.pilot.vy = 0;
+    if (s.hint === SPILL_CONTROL_HINT) s.hintT = 0;
+  }
   const hazardLesson = spillHazardPlan(n, s.seed).families.find(kind => SPILL_HAZARDS[kind].unlock === n);
   if (hazardLesson) {
     s.hint = SPILL_HAZARDS[hazardLesson].teach;
@@ -1485,7 +1533,8 @@ function stepSpillBody(s: SpillState, dt: number) {
   }
 
   if (s.phase === "countdown") {
-    s.phaseT += dt;
+    if (s.drill) stepDrill(s, dt);
+    else s.phaseT += dt;
     if (s.manual) {
       // Direct input flies the empty field until GO.
       handHorizontal(s, dt);
@@ -1498,7 +1547,7 @@ function stepSpillBody(s: SpillState, dt: number) {
     stepNuts(s, dt);
     const before = Math.ceil(SPILL.countdown - (s.phaseT - dt));
     const now = Math.ceil(SPILL.countdown - s.phaseT);
-    if (now !== before && now > 0) cue(s, "count");
+    if (now !== before && now > 0 && !s.drill) cue(s, "count");
     if (s.phaseT >= SPILL.countdown) beginWave(s);
     return;
   }

@@ -1,30 +1,30 @@
-import { selectShopCycle } from "./shop-cycle.js?v=329";
-import { suitPitchFor, tapShapeFor, tailSpringFor, tapAccentStrengthFor } from "./save.js?v=329";
-import { platform } from "./platform.js?v=329";
-import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=329";
-import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=329";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=329";
-import { addChartScenery } from "./star-map-view.js?v=329";
-import { mapDebrisIndex } from "./zone-visuals.js?v=329";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=329";
-import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=329";
-import { repeatTapMode, FLIGHT_TEST_PATTERNS } from "./sim.js?v=329";
-import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=329";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=329";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, REMOVE_ADS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, ACORNS_PER_DUST } from "./catalog.js?v=329";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=329";
-import { bundleQuote } from "./catalog.js?v=329";
-import { drawSprite as drawSpriteOn } from "./art.js?v=329";
-import { createEngine } from "./engine.js?v=329";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=329";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=329";
-import { formatRaceTicks } from "./race.js?v=329";
-import { SPILL_UTILITIES, spillMastery, spillEngineColor } from "./spill-content.js?v=329";
-import { spillPreviewState } from "./spill-presentation.js?v=329";
-import { SPILL_WEAPONS } from "./spill-combat.js?v=329";
-import { SPILL_ARTIFACTS } from "./spill-builds.js?v=329";
-import { SPILL_RISKS } from "./spill-expeditions.js?v=329";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet, drawSpillDepthHelp, hazardGuide } from "./spill-workshop.js?v=329";
+import { selectShopCycle } from "./shop-cycle.js?v=330";
+import { suitPitchFor, tapShapeFor, tailSpringFor, tapAccentStrengthFor } from "./save.js?v=330";
+import { platform } from "./platform.js?v=330";
+import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=330";
+import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=330";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=330";
+import { addChartScenery } from "./star-map-view.js?v=330";
+import { mapDebrisIndex } from "./zone-visuals.js?v=330";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=330";
+import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=330";
+import { repeatTapMode, FLIGHT_TEST_PATTERNS } from "./sim.js?v=330";
+import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=330";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=330";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, REMOVE_ADS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, ACORNS_PER_DUST } from "./catalog.js?v=330";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=330";
+import { bundleQuote } from "./catalog.js?v=330";
+import { drawSprite as drawSpriteOn } from "./art.js?v=330";
+import { createEngine } from "./engine.js?v=330";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=330";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=330";
+import { formatRaceTicks } from "./race.js?v=330";
+import { SPILL_UTILITIES, spillMastery, spillEngineColor } from "./spill-content.js?v=330";
+import { spillPreviewState } from "./spill-presentation.js?v=330";
+import { SPILL_WEAPONS } from "./spill-combat.js?v=330";
+import { SPILL_ARTIFACTS } from "./spill-builds.js?v=330";
+import { SPILL_RISKS } from "./spill-expeditions.js?v=330";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet, drawSpillDepthHelp, hazardGuide } from "./spill-workshop.js?v=330";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -113,7 +113,12 @@ export async function bootStandalone(root) {
     // the overlay wholesale on every notify, and a film mounted inside it
     // would restart from frame one each time the engine so much as ticked.
     const filmHost = el("div", "ac-filmhost");
-    stage.append(canvas, overlay, joystick, filmHost);
+    // the first-run controls drill can always be skipped
+    const drillSkip = el("button", "ac-ghost ac-drill-skip", "SKIP TUTORIAL");
+    drillSkip.hidden = true;
+    drillSkip.dataset.spillControl = "skip-drill";
+    drillSkip.onclick = () => engine.spillSkipDrill();
+    stage.append(canvas, overlay, joystick, drillSkip, filmHost);
     root.append(stage);
     // Screen 1 of the cold open. The acorn IS the progress bar: a drained
     // shell with the full-colour acorn revealed from the base up as the art
@@ -280,6 +285,7 @@ export async function bootStandalone(root) {
         const sp = engine.world.spill;
         const activeFlight = engine.world.screen === "play" && !!sp && ["countdown", "wave", "drain"].includes(sp.phase);
         canvas.classList.toggle("ac-flight-surface", activeFlight);
+        drillSkip.hidden = !(activeFlight && !!sp?.drill && sp.drill.step < 4);
         const stick = engine.spillControls();
         const visible = activeFlight && stick.active;
         const key = visible ? `${stick.x}:${stick.y}:${stick.dx}:${stick.dy}` : "hidden";
@@ -5181,7 +5187,12 @@ export async function bootStandalone(root) {
         briefing.onclick = openSpillHelp;
         extras.append(briefing);
         debris.append(extras);
-        debris.append(drawSpillDepthHelp(), hazardGuide());
+        // the first-run controls drill, on request
+        const drillAgain = el("button", "ac-ghost ac-helpbriefing", engine.save.spillDrillDone ? "REPLAY CONTROLS TUTORIAL" : "TUTORIAL PLAYS ON YOUR NEXT RUN");
+        drillAgain.dataset.spillDrill = "";
+        drillAgain.disabled = !engine.save.spillDrillDone;
+        drillAgain.onclick = () => engine.replaySpillDrill();
+        debris.append(drillAgain, drawSpillDepthHelp(), hazardGuide());
         const hyper = modeSection("hyper", "Hyper Run Mode", "m-race");
         const hyperControls = el("div", "ac-helpcontrols");
         hyperControls.append(control("\u25B2", "HOLD TO RISE", "RELEASE TO FALL", "Hold Space / \u2191", "rise"), control("\u25BC", "DIVE", "SWIPE DOWN", "\u2193 / S / Ctrl", "dive"));
