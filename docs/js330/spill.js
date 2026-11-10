@@ -30,7 +30,7 @@ import { beginSpillExpedition, createSpillExpedition, restoreSpillExpedition, se
 import { admitSpillClimax, createSpillClimax, resizeSpillClimax, restoreSpillClimax, spillClimaxReserved, spillClimaxWave } from "./spill-climax.js?v=330";
 import { admitSpillHazards, beginSpillHazardWave, clearSpillHazards, createSpillHazards, resizeSpillHazards, restoreSpillHazards, spillGravityBend, spillGravityBendDelta, spillGravityDrift, spillHazardPathClear, spillHazardPlan, spillHazardPressure, stepSpillHazards, SPILL_HAZARDS } from "./spill-hazards.js?v=330";
 import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=330";
-import { admitSpillEnemies, beginSpillCombatWave, captureSpillCombatMotion, clearSpillCombat, createSpillCombat, resizeSpillCombat, restoreSpillCombat, spillCombatPressure, spillCombatPulse, spillCombatRockClear, stepSpillCombat } from "./spill-combat.js?v=330";
+import { admitSpillEnemies, beginSpillCombatWave, captureSpillCombatMotion, clearSpillCombat, createSpillCombat, resizeSpillCombat, restoreSpillCombat, spillCombatPressure, spillCombatPulse, spillCombatRockClear, spillClearFireInput, stepSpillCombat } from "./spill-combat.js?v=330";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
@@ -132,21 +132,101 @@ export const SPILL_MOD_INFO = {
     },
 };
 export const SPILL_DRILL = [
-    { id: "steer", title: "STEER", touch: "Hold anywhere and drag up or down", keys: "W / S or ↑ / ↓" },
-    { id: "hold", title: "HOLD", touch: "Let go to hold your height", keys: "Release the key" },
-    { id: "fire", title: "FIRE", touch: "Keep holding, tap with a second finger", keys: "F or Space" },
-    { id: "dodge", title: "DODGE", touch: "Flick left or right", keys: "A / D or ← / →" },
-    { id: "ready", title: "READY", touch: "Good flying. Wave 1 is coming", keys: "" },
+    { id: "steer", stage: "FLIGHT", title: "STEER", touch: "Hold anywhere and drag up or down", keys: "W / S or ↑ / ↓" },
+    { id: "hold", stage: "FLIGHT", title: "HOLD", touch: "Let go to hold your height", keys: "Release the key" },
+    { id: "dash", stage: "DEBRIS", title: "DASH", touch: "Flick left or right", keys: "A / D or ← / →" },
+    { id: "debris", stage: "DEBRIS", title: "DODGE THE DEBRIS", touch: "Steer or dash clear of three", keys: "" },
+    { id: "evade", stage: "ENEMY", title: "EVADE", touch: "A dashed line warns before it fires. Move off it", keys: "" },
+    { id: "fire", stage: "ENEMY", title: "FIRE", touch: "Keep steering, tap or hold a second finger", keys: "F or Space" },
+    { id: "ready", stage: "", title: "READY", touch: "Good flying. Wave 1 is coming", keys: "" },
 ];
+export const SPILL_DRILL_DEBRIS = 3;
 const DRILL_READY = SPILL_DRILL.length - 1;
+export const spillDrillStep = (s) => s.drill ? SPILL_DRILL[s.drill.step]?.id ?? "ready" : null;
+function beginDrill(s) {
+    clearSpillCombat(s);
+    clearSpillHazards(s);
+    s.drillWanted = false;
+    s.wave = 1;
+    s.spec = spillWaveSpec(1, s.seed);
+    s.event = "none";
+    s.liveMods = [];
+    s.modRamp = 0;
+    s.phase = "wave";
+    s.phaseT = 0;
+    s.waveT = 0;
+    s.manual = false;
+    s.steerY = 0;
+    s.lunge = 0;
+    s.lungeDir = 1;
+    s.knock = 0;
+    s.pilot.vx = 0;
+    s.pilot.vy = 0;
+    s.rocks = [];
+    s.tiltTarget = 0;
+    s.tilt = 0;
+    s.surgeT = 0;
+    s.eventWarn = 0;
+    s.hintT = 0;
+    s.drill = { step: 0, t: 0, count: 0, hit: false, watch: false, gap: 0, rock: null,
+        keep: { score: s.score, ore: s.ore, oreMined: s.oreMined, grazes: s.grazes, hits: s.hits, shards: s.shards,
+            charge: s.charge, kills: s.combat.kills } };
+    cue(s, "wave");
+}
+function endDrill(s) {
+    const keep = s.drill.keep;
+    s.drill = null;
+    Object.assign(s, { score: keep.score, ore: keep.ore, oreMined: keep.oreMined, grazes: keep.grazes, hits: keep.hits,
+        shards: keep.shards, charge: keep.charge });
+    s.combat.kills = keep.kills;
+    s.rocks = [];
+    s.nuts = [];
+    s.iframes = 0;
+    s.lungeCharges = maxLunges(s);
+    s.cool = 0;
+    cue(s, "drill-done");
+    beginCountdown(s, 1);
+    // the pilot has just flown every control: no controls card on top of it
+    if (s.hint === SPILL_CONTROL_HINT)
+        s.hintT = 0;
+}
 function drillNext(s) {
     const d = s.drill;
     d.step++;
     d.t = 0;
+    d.count = 0;
+    d.hit = false;
+    d.watch = false;
+    d.gap = 0.5;
+    d.rock = null;
     cue(s, d.step === DRILL_READY ? "milestone" : "drill-step");
 }
+/** A hit in training costs nothing: the piece breaks, the ship blinks, the step repeats. */
+function drillHit(s, r) {
+    if (s.iframes > 0)
+        return;
+    if (r)
+        shatter(s, r, 0.9);
+    s.drill.hit = true;
+    s.iframes = 1;
+    s.hitFlash = 0.3;
+    say(s, "HIT · NO DAMAGE IN TRAINING", 1.4);
+    cue(s, "hit");
+}
+function drillRock(s) {
+    const r = 20, x = s.W + r + 20;
+    const y = Math.max(70, Math.min(s.H - 110, s.pilot.y));
+    return { x, y, vx: -Math.max(180, (x - s.pilot.x) / 1.7), vy: 0, r, kind: "tumbler",
+        sprite: s.zoneEnv == null ? 0 : ENVS[s.zoneEnv]?.debrisBias[0] ?? 0,
+        spin: 1.1, rot: 0, arc: 0, arcPhase: 0, warn: 0, grazed: false, dead: false };
+}
 function stepDrill(s, dt) {
-    const d = s.drill, id = SPILL_DRILL[d.step]?.id;
+    const d = s.drill, id = spillDrillStep(s);
+    // no weapon before its lesson
+    if (id !== "fire")
+        spillClearFireInput(s);
+    // training never scores: the HUD stays at the run's own number
+    s.score = d.keep.score;
     if (id === "steer") {
         if (Math.abs(s.steerY) > 0.3)
             d.t += dt;
@@ -158,33 +238,74 @@ function stepDrill(s, dt) {
         if (d.t >= 0.35)
             drillNext(s);
     }
-    else if (id === "dodge") {
+    else if (id === "dash") {
         if (s.lunge > 0)
+            drillNext(s);
+    }
+    else if (id === "debris") {
+        if (d.rock) {
+            const passed = d.rock.x < s.pilot.x - d.rock.r - SPILL.shipR;
+            if (d.rock.dead || passed) {
+                if (!d.hit) {
+                    d.count++;
+                    cue(s, "graze");
+                }
+                d.hit = false;
+                d.rock = null;
+                d.gap = 0.55;
+                if (d.count >= SPILL_DRILL_DEBRIS)
+                    drillNext(s);
+            }
+        }
+        else if ((d.gap -= dt) <= 0) {
+            d.rock = drillRock(s);
+            s.rocks.push(d.rock);
+        }
+    }
+    else if (id === "evade" || id === "fire") {
+        const enemy = s.combat.enemies.find(e => !e.dead);
+        if (id === "fire" && !enemy && d.watch) {
+            drillNext(s);
+            return;
+        }
+        if (!enemy) {
+            if ((d.gap -= dt) > 0)
+                return;
+            const c = s.combat, r = 18, y = Math.max(90, Math.min(s.H - 130, s.pilot.y < s.H / 2 ? s.pilot.y + 120 : s.pilot.y - 120));
+            c.enemies.push({ id: c.nextId++, kind: "pursuer", x: s.W + r + 12, y, vx: -100, vy: 0, r, hp: 3, maxHp: 3,
+                age: 0, life: 9999, cooldown: 1.4, telegraph: 0, telegraphTotal: 1.1, aimX: s.pilot.x, aimY: y, shotSpeed: 0,
+                homeY: y, side: 1, hitFlash: 0, dead: false });
+            if (id === "fire")
+                d.watch = true;
+            cue(s, "warn");
+            return;
+        }
+        if (id === "fire") {
+            d.watch = true;
+            return;
+        }
+        // EVADE: one warned shot has to go by without touching the ship
+        const shots = s.combat.shots.filter(shot => !shot.dead && shot.team === "enemy");
+        if (shots.length)
+            d.watch = true;
+        if (d.hit) {
+            d.hit = false;
+            d.watch = false;
+            return;
+        }
+        if (d.watch && shots.every(shot => shot.x < s.pilot.x - 30))
             drillNext(s);
     }
     else if (id === "ready") {
         d.t += dt;
-        if (d.t >= 1.2) {
-            s.drill = null;
-            cue(s, "drill-done");
-        }
+        if (d.t >= 1.2)
+            endDrill(s);
     }
-}
-/** The fire step listens for the press itself: no weapon runs before GO. */
-export function spillDrillFire(s) {
-    const d = s.drill;
-    if (!d || SPILL_DRILL[d.step]?.id !== "fire")
-        return false;
-    burst(s, s.pilot.x + 34, s.pilot.y, 6, "graze", 0.6);
-    cue(s, "laser");
-    drillNext(s);
-    return true;
 }
 export function spillSkipDrill(s) {
     if (!s.drill)
         return false;
-    s.drill = null;
-    cue(s, "drill-done");
+    endDrill(s);
     return true;
 }
 export const SPILL_CONTROL_HINT = "CONTROLS: drag up/down to steer · release to hold · swipe left/right to dodge";
@@ -830,6 +951,10 @@ function beginWave(s) {
 /** the intermission: the ship flies itself home while the next wave is
  *  named and counted down. Control comes back on the GO */
 function beginCountdown(s, n) {
+    if (n === 1 && s.drillWanted) {
+        beginDrill(s);
+        return;
+    }
     clearSpillCombat(s);
     clearSpillHazards(s);
     s.wave = n;
@@ -860,15 +985,6 @@ function beginCountdown(s, n) {
     else if (n === 1) {
         s.hint = SPILL_CONTROL_HINT;
         s.hintT = s.hints ? SPILL.countdown + SPILL.hintTime : 0;
-    }
-    if (n === 1 && s.drillWanted) {
-        // the drill replaces the controls card; the ship waits, level, for a hand
-        s.drillWanted = false;
-        s.drill = { step: 0, t: 0 };
-        s.manual = true;
-        s.pilot.vy = 0;
-        if (s.hint === SPILL_CONTROL_HINT)
-            s.hintT = 0;
     }
     const hazardLesson = spillHazardPlan(n, s.seed).families.find(kind => SPILL_HAZARDS[kind].unlock === n);
     if (hazardLesson) {
@@ -1121,6 +1237,10 @@ export function spillLeaveDepot(s) {
 }
 // ----------------------------------------------------------------- hits
 function takeHit(s, r, cause = r ? "STRUCK" : "GROUNDED") {
+    if (s.drill) {
+        drillHit(s, r);
+        return;
+    }
     if (s.iframes > 0 || s.gold > 0)
         return;
     // A boundary has no debris to shatter, but protection applies equally.
@@ -1407,10 +1527,7 @@ function stepSpillBody(s, dt) {
         return;
     }
     if (s.phase === "countdown") {
-        if (s.drill)
-            stepDrill(s, dt);
-        else
-            s.phaseT += dt;
+        s.phaseT += dt;
         if (s.manual) {
             // Direct input flies the empty field until GO.
             handHorizontal(s, dt);
@@ -1425,7 +1542,7 @@ function stepSpillBody(s, dt) {
         stepNuts(s, dt);
         const before = Math.ceil(SPILL.countdown - (s.phaseT - dt));
         const now = Math.ceil(SPILL.countdown - s.phaseT);
-        if (now !== before && now > 0 && !s.drill)
+        if (now !== before && now > 0)
             cue(s, "count");
         if (s.phaseT >= SPILL.countdown)
             beginWave(s);
@@ -1476,7 +1593,7 @@ function stepSpillBody(s, dt) {
     s.phaseT += dt;
     s.modRamp = Math.min(SPILL.modRamp, s.modRamp + dt);
     const climb = Math.min(1, (s.wave - 1) / (SPILL_AUTHORED_WAVES - 1));
-    if (s.phase === "wave") {
+    if (s.phase === "wave" && !s.drill) {
         s.waveT += dt;
         // the surge is a wave's mid-act: six seconds of doubled spawns, called
         // before it lands so a pilot can find a lane first
@@ -1540,8 +1657,10 @@ function stepSpillBody(s, dt) {
     handVertical(s, dt);
     // Steering eases toward both boundaries. Edges never damage the ship or force it upward.
     s.floorT = 0;
-    // ---- the spawn director
-    if (s.phase === "wave") {
+    // ---- the spawn director (training scripts its own field)
+    if (s.drill)
+        stepDrill(s, dt);
+    else if (s.phase === "wave") {
         stepEvent(s, dt);
         admitSpillClimax(s);
         if (!spillClimaxReserved(s))
@@ -1635,7 +1754,7 @@ function stepSpillBody(s, dt) {
         // near miss: once per piece, once it is alongside or past. Points,
         // not charge - the meter is the charged coins fill it
         const graze = r.r + SPILL.grazeR;
-        if (!r.grazed && r.x < s.pilot.x + r.r && d2 < graze * graze) {
+        if (!s.drill && !r.grazed && r.x < s.pilot.x + r.r && d2 < graze * graze) {
             r.grazed = true;
             s.grazes += 1;
             s.score += 6;
@@ -1646,7 +1765,8 @@ function stepSpillBody(s, dt) {
     s.rocks = s.rocks.filter((r) => !r.dead && r.x > -r.r - 60 && r.y > -r.r - 80 && r.y < s.H + r.r + 80);
     stepNuts(s, dt);
     // surviving is worth points on its own, so a cautious run still scores
-    s.score += dt * 10 * (1 + climb);
+    if (!s.drill)
+        s.score += dt * 10 * (1 + climb);
 }
 // -------------------------------------------------------------- readouts
 /** waves CLEARED: the number the record keeps */

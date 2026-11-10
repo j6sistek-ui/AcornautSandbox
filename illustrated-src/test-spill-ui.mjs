@@ -90,7 +90,8 @@ tick(200);
 // The Depot opens straight onto the free upgrade: no guide sheet on arrival, ever.
 assert.equal(engine.world.spill.depotVisits,0);assert(!app.querySelector('.ac-depotguidecard'),'the Depot never opens its guide on its own');assert(control('plating'));
 const guidedState=JSON.stringify(engine.world.spill);assert(control('launch').disabled);assert.equal(control('launch').textContent,'CHOOSE FREE UPGRADE');
-assert(app.textContent.includes('Choose one free upgrade'));assert(app.textContent.includes('One free upgrade before takeoff'));
+assert(app.querySelector('.ac-setup-coach').textContent.includes('FIRST FLIGHT SETUP · 1 / 3'),'a first run is a guided three-step setup');assert(app.textContent.includes('Pick one free upgrade for your ship'));
+assert(!app.querySelector('.ac-career-fold')&&!app.querySelector('.ac-hazard-forecast'),'guided setup shows the three steps and nothing else');
 assert.equal(app.querySelectorAll('.ac-workshop-system').length,4,'the opening Depot offers the four core upgrades');
 assert(!app.querySelector('.ac-workshop-utilities'),'utilities do not appear in the opening Depot');
 for(const id of ['magnet','scanner','brake','capacitor']) assert(!app.querySelector(`[data-spill-control="${id}"]`));
@@ -102,16 +103,31 @@ assert(!app.textContent.includes('Pull Acorn Coins'),'guide utilities carry a sh
 const guideCardOrder=[...app.querySelector('.ac-depotguidecard').children].map(c=>c.className);assert(guideCardOrder.indexOf('ac-guide-systems')<guideCardOrder.indexOf('ac-guide-utilityrow'),'systems come before utilities');
 control('enter-depot').click();assert(!app.querySelector('.ac-depotguidecard'));assert.equal(JSON.stringify(engine.world.spill),guidedState,'the guide changes no run state');assert(control('launch').disabled);
 control('inspect-thrusters').click();control('thrusters').click();assert.equal(engine.world.spill.up.thrusters,1);assert.equal(engine.world.spill.ore,0);
-assert.equal(control('launch').textContent,'LAUNCH WAVE 1');control('launch').click();assert.equal(engine.world.spill.phase,'countdown');
-// FIRST-RUN CONTROLS DRILL: wave 1's count waits while each control is tried once.
-{const d=engine.world.spill,cv=engine.canvas,skip=app.querySelector('.ac-drill-skip');assert(d.drill&&d.drill.step===0,'a first run starts the drill');
- tick(240);assert.equal(d.phase,'countdown','the count waits for the pilot');tick(1);assert(!skip.hidden,'the drill can be skipped');
+// step 2: the weapon is a tap either way; step 3: launch the training flight
+assert(control('launch').disabled);assert.equal(control('launch').textContent,'PICK YOUR WEAPON');assert(app.querySelector('.ac-setup-coach').textContent.includes('2 / 3'));
+assert.equal(control('weapon-laser').textContent,'Keep');control('weapon-laser').click();assert(app.querySelector('.ac-setup-coach').textContent.includes('3 / 3'));
+assert.equal(control('launch').textContent,'START TRAINING FLIGHT');assert(!control('launch').disabled);control('launch').click();
+// TRAINING FLIGHT: a live but harmless field - flight, a dash, three pieces of debris, one patrol to evade and shoot down.
+{const d=engine.world.spill,cv=engine.canvas,skip=app.querySelector('.ac-drill-skip'),stepId=()=>S.spillDrillStep(d);
+ assert.equal(d.phase,'wave');assert.equal(stepId(),'steer','a first run starts in training');
+ tick(240);assert.equal(stepId(),'steer','training waits for the pilot');assert(!skip.hidden,'training can be skipped');
  const tp=(type,id,x,y,primary=true)=>cv.dispatchEvent(new win.PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:primary,clientX:x,clientY:y,bubbles:true,cancelable:true}));
- tp('pointerdown',31,100,300);tp('pointermove',31,100,350);tick(40);assert.equal(d.drill.step,1,'steering passes step 1');
- tp('pointerup',31,100,350);win.dispatchEvent(new win.PointerEvent('pointerup',{pointerId:31,bubbles:true}));tick(30);assert.equal(d.drill.step,2,'letting go passes step 2');
- win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'KeyF'}));win.dispatchEvent(new win.KeyboardEvent('keyup',{code:'KeyF'}));assert.equal(d.drill.step,3,'fire passes step 3');
- win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'KeyD'}));win.dispatchEvent(new win.KeyboardEvent('keyup',{code:'KeyD'}));tick(2);assert.equal(d.drill.step,4,'a dodge passes step 4');
- tick(90);assert(!d.drill,'the drill ends');assert.equal(Save.loadSave().spillDrillDone,true,'and is remembered');tick(1);assert(skip.hidden);}
+ const key=(type,code)=>win.dispatchEvent(new win.KeyboardEvent(type,{code}));
+ let heldKey=0;const steer=dir=>{if(dir===heldKey)return;if(heldKey)key('keyup',heldKey<0?'KeyW':'KeyS');if(dir)key('keydown',dir<0?'KeyW':'KeyS');heldKey=dir;};
+ tp('pointerdown',31,100,300);tp('pointermove',31,100,350);tick(40);assert.equal(stepId(),'hold','steering passes');
+ tp('pointerup',31,100,350);win.dispatchEvent(new win.PointerEvent('pointerup',{pointerId:31,bubbles:true}));tick(30);assert.equal(stepId(),'dash','letting go passes');
+ key('keydown','KeyF');tick(6);assert.equal(d.combat.shots.length,0,'no weapon before its lesson');key('keyup','KeyF');
+ key('keydown','KeyD');key('keyup','KeyD');tick(2);assert.equal(stepId(),'debris','a dash passes');
+ const hull=d.hull;let guard=0;
+ while(stepId()==='debris'&&guard++<4000){const rock=d.rocks.find(r=>!r.dead);steer(rock&&Math.abs(rock.y-d.pilot.y)<90?(rock.y>d.H/2?-1:1):0);tick(1);}
+ assert.equal(stepId(),'evade','three dodged pieces pass the debris stage');steer(0);
+ guard=0;while(stepId()==='evade'&&guard++<5000){const e=d.combat.enemies.find(x=>!x.dead),shot=d.combat.shots.find(x=>!x.dead&&x.team==='enemy');
+  const y=shot?shot.y:e&&e.telegraph>0?e.aimY:null;steer(y!=null&&Math.abs(y-d.pilot.y)<70?(d.pilot.y>d.H/2?-1:1):0);tick(1);}
+ assert.equal(stepId(),'fire','evading a warned shot passes');steer(0);key('keydown','KeyF');
+ guard=0;while(stepId()==='fire'&&guard++<5000){const e=d.combat.enemies.find(x=>!x.dead);if(e)steer(Math.abs(e.y-d.pilot.y)<12?0:e.y>d.pilot.y?1:-1);tick(1);}
+ key('keyup','KeyF');steer(0);assert.equal(stepId(),'ready','shooting the patrol down passes');assert.equal(d.hull,hull,'training costs no health');
+ tick(90);assert(!d.drill,'training ends');assert.equal(d.phase,'countdown');assert.equal(Save.loadSave().spillDrillDone,true,'and is remembered');tick(1);assert(skip.hidden);
+ assert.deepEqual([d.score,d.ore,d.combat.kills],[0,0,0],'nothing from training is kept');}
 tick(181);
 assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:1,pulse:0},'only the chosen starting upgrade is fitted');
 // DEBRIS FIELD STEERING (3 Nov 2026): hold + drag steers, release holds altitude, a second

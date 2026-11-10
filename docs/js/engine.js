@@ -17,7 +17,7 @@ import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign
 import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, canRevive, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, updateWorld, } from "./sim.js?v=330";
 import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=330";
 import { raceViewport } from "./race-viewport.js?v=330";
-import { spillDrillFire, spillSkipDrill } from "./spill.js?v=330";
+import { spillSkipDrill } from "./spill.js?v=330";
 import { spillBuy, spillLeaveDepot, spillLunge, spillSteer, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill, createSpill, spillWaveSpec, SPILL } from "./spill.js?v=330";
 import { applySpillTrialBuild, SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS, SPILL_TRIAL_BUILDS, createSpillCareer, restoreSpillCareer, spillChassisStats } from "./spill-career.js?v=330";
 import { spillSelectRisk } from "./spill-expeditions.js?v=330";
@@ -732,13 +732,6 @@ export async function createEngine(canvas) {
             playInterstitial("level", next);
         },
         spillFire(held, owner = "manual") {
-            // the controls drill hears the press before any weapon is live
-            if (held && running && world.screen === "play" && world.spill?.drill) {
-                unlockAudio();
-                spillDrillFire(world.spill);
-                notify();
-                return;
-            }
             if (held) {
                 if (!running || world.screen !== "play" || !world.spill
                     || !["wave", "drain"].includes(world.spill.phase))

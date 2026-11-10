@@ -72,7 +72,7 @@ import {
   type RaceGestureResult,
 } from "./race-gesture";
 import { raceViewport } from "./race-viewport";
-import { spillDrillFire, spillSkipDrill } from "./spill";
+import { spillSkipDrill } from "./spill";
 import { spillBuy, spillLeaveDepot, spillLunge, spillSteer, spillUtility, spillSpecialize, spillTakeContract,
   spillCheckpoint, restoreSpill, createSpill, spillWaveSpec, SPILL, type SpillBuyable, type SpillCue } from "./spill";
 import { applySpillTrialBuild, SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS, SPILL_TRIAL_BUILDS,
@@ -866,10 +866,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       playInterstitial("level", next);
     },
     spillFire(held, owner = "manual") {
-      // the controls drill hears the press before any weapon is live
-      if (held && running && world.screen === "play" && world.spill?.drill) {
-        unlockAudio(); spillDrillFire(world.spill); notify(); return;
-      }
       if (held) {
         if (!running || world.screen !== "play" || !world.spill
             || !["wave", "drain"].includes(world.spill.phase)) return;

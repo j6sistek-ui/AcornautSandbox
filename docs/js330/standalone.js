@@ -22,6 +22,7 @@ import { formatRaceTicks } from "./race.js?v=330";
 import { SPILL_UTILITIES, spillMastery, spillEngineColor } from "./spill-content.js?v=330";
 import { spillPreviewState } from "./spill-presentation.js?v=330";
 import { SPILL_WEAPONS } from "./spill-combat.js?v=330";
+import { SPILL_DRILL } from "./spill.js?v=330";
 import { SPILL_ARTIFACTS } from "./spill-builds.js?v=330";
 import { SPILL_RISKS } from "./spill-expeditions.js?v=330";
 import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet, drawSpillDepthHelp, hazardGuide } from "./spill-workshop.js?v=330";
@@ -285,7 +286,7 @@ export async function bootStandalone(root) {
         const sp = engine.world.spill;
         const activeFlight = engine.world.screen === "play" && !!sp && ["countdown", "wave", "drain"].includes(sp.phase);
         canvas.classList.toggle("ac-flight-surface", activeFlight);
-        drillSkip.hidden = !(activeFlight && !!sp?.drill && sp.drill.step < 4);
+        drillSkip.hidden = !(activeFlight && !!sp?.drill && sp.drill.step < SPILL_DRILL.length - 1);
         const stick = engine.spillControls();
         const visible = activeFlight && stick.active;
         const key = visible ? `${stick.x}:${stick.y}:${stick.dx}:${stick.dy}` : "hidden";
