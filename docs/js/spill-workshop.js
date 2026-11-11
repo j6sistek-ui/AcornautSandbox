@@ -1,19 +1,19 @@
-import { SUITS } from "./catalog.js?v=329";
-import { SPILL_CONTROL_COLORS } from "./spill-control-art.js?v=329";
-import { artUrl } from "./art.js?v=329";
-import { spillAppearance } from "./spill-appearance.js?v=329";
-import { paintShipPreview } from "./draw.js?v=329";
-import { writeSave } from "./save.js?v=329";
-import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, SPILL_EVENTS, spillEngineColor, spillEventFor } from "./spill-content.js?v=329";
-import { spillBuildFromState } from "./spill-presentation.js?v=329";
-import { SPILL_SHOP, spillPrice } from "./spill.js?v=329";
-import { SPILL_WEAPONS, spillWeaponPrice, spillWeaponStats, spillAccuracyLabel } from "./spill-combat.js?v=329";
-import { SPILL_ARTIFACTS } from "./spill-builds.js?v=329";
-import { spillShelf, spillSlotCap, spillFittedCount, spillFittedItems, spillItemInfo, spillItemFitted, spillItemPrice, spillShelfUndoable, itemKey } from "./spill-shop.js?v=329";
-import { SPILL_HAZARDS, SPILL_HAZARD_IDS, spillHazardPlan } from "./spill-hazards.js?v=329";
-import { SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS } from "./spill-career.js?v=329";
-import { SPILL_RISKS } from "./spill-expeditions.js?v=329";
-import { spillClimaxWave } from "./spill-climax.js?v=329";
+import { SUITS } from "./catalog.js?v=330";
+import { SPILL_CONTROL_COLORS } from "./spill-control-art.js?v=330";
+import { artUrl } from "./art.js?v=330";
+import { spillAppearance } from "./spill-appearance.js?v=330";
+import { paintShipPreview } from "./draw.js?v=330";
+import { writeSave } from "./save.js?v=330";
+import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, SPILL_EVENTS, spillEngineColor, spillEventFor } from "./spill-content.js?v=330";
+import { spillBuildFromState } from "./spill-presentation.js?v=330";
+import { SPILL_SHOP, spillPrice } from "./spill.js?v=330";
+import { SPILL_WEAPONS, spillWeaponPrice, spillWeaponStats, spillAccuracyLabel } from "./spill-combat.js?v=330";
+import { SPILL_ARTIFACTS } from "./spill-builds.js?v=330";
+import { spillShelf, spillSlotCap, spillFittedCount, spillFittedItems, spillItemInfo, spillItemFitted, spillItemPrice, spillShelfUndoable, itemKey } from "./spill-shop.js?v=330";
+import { SPILL_HAZARDS, SPILL_HAZARD_IDS, spillHazardPlan } from "./spill-hazards.js?v=330";
+import { SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS } from "./spill-career.js?v=330";
+import { SPILL_RISKS } from "./spill-expeditions.js?v=330";
+import { spillClimaxWave } from "./spill-climax.js?v=330";
 const el = (tag, cls = "", text = "") => {
     const n = document.createElement(tag);
     n.className = cls;
@@ -218,7 +218,7 @@ export function drawSpillLaunchSetup(engine, onGuide) {
     wrap.append(actions);
     return wrap;
 }
-export const createDepotView = () => ({ key: "", part: "plating", extras: false, specialties: false, builds: false, forecast: false, risk: false, guide: false, swap: null, receipt: "", flashAt: -10000, openedAt: performance.now(), picked: false });
+export const createDepotView = () => ({ key: "", part: "plating", extras: false, specialties: false, builds: false, forecast: false, risk: false, guide: false, swap: null, weaponPicked: false, receipt: "", flashAt: -10000, openedAt: performance.now(), picked: false });
 /** THE FREE-PICK NUDGE (owner, 26 Sep 2026: "after a few seconds a pulsing ring
  *  around the free button and arrows to each of the upgraded options to help
  *  prompt a selection pick and clear selection route"). It waits this long
@@ -429,6 +429,11 @@ export function drawDepotWorkshop(engine, view, rerender) {
     // A redraw must not restart the nudge, so its delay is measured from when
     // this Depot opened: negative once the wait is over, which resumes the
     // pulse mid-cycle instead of hiding it again.
+    // FIRST FLIGHT SETUP (owner, 10 Nov 2026: "a quick guided first flight set
+    // up of ship upgrades"). Until the training flight is done, the pre-flight
+    // Depot is three steps and nothing else: free upgrade, weapon, launch.
+    const guided = !!sp.welcome && !engine.spillTrial() && !engine.save.spillDrillDone;
+    const setupStep = !guided ? 0 : sp.freeUpgrade ? 1 : !view.weaponPicked ? 2 : 3;
     const hinting = !!(sp.welcome && sp.freeUpgrade) && !arming;
     if (hinting) {
         sheet.classList.add("ac-workshop-hinting");
@@ -486,7 +491,17 @@ export function drawDepotWorkshop(engine, view, rerender) {
     if (sp.firstPass && !trial)
         sheet.append(el("p", "ac-workshop-milestone", "Wave 20 complete. Victory recorded. Keep your ship and fly on."));
     sheet.append(status);
-    if (sp.welcome)
+    if (guided) {
+        const coach = el("div", "ac-setup-coach");
+        coach.dataset.setupStep = String(setupStep);
+        coach.setAttribute("role", "status");
+        const dots = el("span", "ac-setup-dots");
+        for (let n = 1; n <= 3; n++)
+            dots.append(el("i", n < setupStep ? "done" : n === setupStep ? "on" : ""));
+        coach.append(el("b", "", `FIRST FLIGHT SETUP · ${setupStep} / 3`), el("span", "", setupStep === 1 ? "Pick one free upgrade for your ship" : setupStep === 2 ? "Pick your weapon" : "Ready. Launch your training flight"), dots);
+        sheet.append(coach);
+    }
+    else if (sp.welcome)
         sheet.append(el("p", "ac-workshop-free", sp.freeUpgrade ? "Choose one free upgrade" : "✓ Upgrade fitted · ready to launch"));
     // Acornaut's Depot is one scrolling card: the systems bay first, then the
     // run's outfitting (weapons, artifacts, routes, forecast, utilities).
@@ -597,13 +612,22 @@ export function drawDepotWorkshop(engine, view, rerender) {
             }
         };
         tierRow.append(pips, upgrade);
-        const fit = el("button", `ac-workshop-buy ac-weapon-equip${selected ? " fitted" : ""}`, selected ? "✓ Equipped" : "Equip");
+        // guided setup: the fitted weapon can be confirmed, so the choice is a tap either way
+        const confirm = setupStep === 2 && selected;
+        const fit = el("button", `ac-workshop-buy ac-weapon-equip${selected && !confirm ? " fitted" : ""}`, confirm ? "Keep" : selected ? "✓ Equipped" : "Equip");
         fit.dataset.spillControl = `weapon-${id}`;
         fit.setAttribute("aria-pressed", String(selected));
         fit.setAttribute("aria-label", `${spec.name}: ${selected ? "equipped" : "equip free"}`);
-        fit.disabled = arming || selected;
-        uiState(fit, selected ? "selected" : arming ? "arming" : "available");
+        fit.disabled = arming || (selected && !confirm);
+        uiState(fit, selected && !confirm ? "selected" : arming ? "arming" : "available");
         fit.onclick = () => {
+            if (guided)
+                view.weaponPicked = true;
+            if (confirm) {
+                feedback(`${spec.name} kept`);
+                rerender();
+                return;
+            }
             feedback(`${spec.name} equipped`);
             if (!engine.spillSelectWeapon(id)) {
                 view.receipt = "Weapon unavailable";
@@ -613,11 +637,16 @@ export function drawDepotWorkshop(engine, view, rerender) {
         card.title = spec.description;
         const top = el("div", "ac-weapon-top");
         top.append(el("h4", "", spec.name), statLine);
-        card.append(top, tierRow, fit);
+        if (guided)
+            card.append(top, el("p", "ac-weapon-line", id === "laser" ? "Fast and light" : "Slow and heavy"), fit);
+        else
+            card.append(top, tierRow, fit);
         weapons.append(card);
     }
+    if (setupStep === 2)
+        weapons.classList.add("ac-setup-focus");
     outfitting.append(weapons);
-    if (sp.welcome || trial) {
+    if ((sp.welcome || trial) && !guided) {
         // folded: the earned sidegrades are a choice for players who want one, not a step
         const tuning = el("details", "ac-career-fold"), loadout = sp.loadout;
         tuning.open = view.builds;
@@ -712,12 +741,15 @@ export function drawDepotWorkshop(engine, view, rerender) {
     if (!sp.welcome && sp.wave >= 5 && (!trial || SPILL_TRIALS.find(item => item.id === trial.id)?.endWave)) {
         outfitting.append(difficultyToggle(engine, view, arming, rerender));
     }
-    outfitting.append(hazardForecast(engine, view));
+    if (!guided)
+        outfitting.append(hazardForecast(engine, view));
     if (sp.contractMessage)
         outfitting.append(el("p", "ac-workshop-contract", sp.contractMessage));
     const footer = el("footer", "ac-workshop-footer"), actions = el("div", "ac-workshop-actions");
-    const receipt = el("p", "ac-workshop-receipt", view.receipt || (trial ? "Practice loadout · changes stay in this trial" : sp.welcome ? "One free upgrade before takeoff"
-        : "Take your time · next depot in 5 waves"));
+    const receipt = el("p", "ac-workshop-receipt", view.receipt || (trial ? "Practice loadout · changes stay in this trial"
+        : guided ? (setupStep === 1 ? "Step 1 · tap an upgrade, then Free" : setupStep === 2 ? "Step 2 · Keep the Laser or Equip the Cannon" : "Step 3 · a short training flight comes first")
+            : sp.welcome ? "One free upgrade before takeoff"
+                : "Take your time · next depot in 5 waves"));
     receipt.setAttribute("aria-live", "polite");
     footer.append(receipt);
     if (trial) {
@@ -733,11 +765,15 @@ export function drawDepotWorkshop(engine, view, rerender) {
         save.onclick = () => engine.spillSuspend();
         actions.append(save);
     }
-    const go = el("button", "ac-primary ac-workshop-launch", sp.welcome && sp.freeUpgrade ? "CHOOSE FREE UPGRADE" : `LAUNCH WAVE ${sp.welcome ? 1 : sp.wave + 1}`);
-    go.disabled = arming || !!(sp.welcome && sp.freeUpgrade);
+    const go = el("button", "ac-primary ac-workshop-launch", sp.welcome && sp.freeUpgrade ? "CHOOSE FREE UPGRADE"
+        : setupStep === 2 ? "PICK YOUR WEAPON" : setupStep === 3 ? "START TRAINING FLIGHT" : `LAUNCH WAVE ${sp.welcome ? 1 : sp.wave + 1}`);
+    const held = !!(sp.welcome && sp.freeUpgrade) || setupStep === 2;
+    go.disabled = arming || held;
     go.dataset.spillControl = "launch";
     go.onclick = () => engine.spillLeaveDepot();
-    uiState(go, arming ? "arming" : sp.welcome && sp.freeUpgrade ? "locked" : "available");
+    uiState(go, arming ? "arming" : held ? "locked" : "available");
+    if (setupStep === 3)
+        go.classList.add("ac-setup-focus");
     actions.append(go);
     footer.append(actions);
     sheet.append(footer);

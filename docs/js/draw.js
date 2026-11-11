@@ -1,41 +1,41 @@
-import { spillDockTravelDuration } from "./spill.js?v=329";
-import { clipHelmetGlass } from "./helmet-openings.js?v=329";
-import { paintFittedHelmet } from "./helmet-fit.js?v=329";
-import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=329";
-import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=329";
-import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=329";
-import { arcflashPreview } from "./arcflash-motion.js?v=329";
-import { paintLiveStarTrail } from "./star-trails.js?v=329";
-import { trailWornBy } from "./catalog.js?v=329";
-import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=329";
-import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=329";
-import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=329";
-import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=329";
-import { RIG3D_BOOTS } from "./rig3d-boots.js?v=329";
-import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=329";
-import { paintHighOrbitWake } from "./high-orbit-effects.js?v=329";
-import { runPals, fxOf, worldFlipped } from "./sim.js?v=329";
-import { spillAppearance } from "./spill-appearance.js?v=329";
-import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=329";
-import { samplePlanetBackdrop } from "./planet-contrast.js?v=329";
-import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=329";
-import { goalHud } from "./campaign.js?v=329";
-import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=329";
-import { proceduralSky, hueShifted } from "./sky-gen.js?v=329";
-import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=329";
-import { spriteImageFor } from "./sprite-detail.js?v=329";
-import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=329";
-import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=329";
-import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=329";
-import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=329";
-import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=329";
-import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=329";
-import { spillEngineColor } from "./spill-content.js?v=329";
-import { drawSpillCombat, drawSpillCombatHud } from "./spill-combat-view.js?v=329";
-import { drawSpillHazards, drawSpillHazardHint } from "./spill-hazard-view.js?v=329";
-import { drawSpillClimax } from "./spill-climax-view.js?v=329";
-import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=329";
-import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=329";
+import { spillDockTravelDuration } from "./spill.js?v=330";
+import { clipHelmetGlass } from "./helmet-openings.js?v=330";
+import { paintFittedHelmet } from "./helmet-fit.js?v=330";
+import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag.js?v=330";
+import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard.js?v=330";
+import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig } from "./arcflash.js?v=330";
+import { arcflashPreview } from "./arcflash-motion.js?v=330";
+import { paintLiveStarTrail } from "./star-trails.js?v=330";
+import { trailWornBy } from "./catalog.js?v=330";
+import { isHighOrbit, isHighOrbitRig, isPremiumSuit, isPremiumFrames, highOrbitTrailSuit, CUT_RIG_RETIRED } from "./high-orbit-config.js?v=330";
+import { paintHighOrbit, paintHighOrbitCockpit } from "./high-orbit.js?v=330";
+import { highOrbitPreview, premiumWakePreview } from "./high-orbit-motion.js?v=330";
+import { paintPremiumBankWake, paintBootWake } from "./premium-bank-wake.js?v=330";
+import { RIG3D_BOOTS } from "./rig3d-boots.js?v=330";
+import { CYBER_TRIO_REGISTRATION } from "./cyber-trio-registration.js?v=330";
+import { paintHighOrbitWake } from "./high-orbit-effects.js?v=330";
+import { runPals, fxOf, worldFlipped } from "./sim.js?v=330";
+import { spillAppearance } from "./spill-appearance.js?v=330";
+import { hasZoneRemaster, zonePainting, zoneVisual } from "./zone-visuals.js?v=330";
+import { samplePlanetBackdrop } from "./planet-contrast.js?v=330";
+import { SKY_RGB, PLANET_RGB, BOUNCE_ANIM_DURATION, ENVS, PHYS, SUITS, TAIL, TAP_ANIM_DURATION, helmetWornBy, skyIdFor, washScale, wearsOwnHead } from "./catalog.js?v=330";
+import { goalHud } from "./campaign.js?v=330";
+import { drawTrailPreviewOn, drawPalOn, drawAstronautOn, canDrawPal } from "./cosmetics.js?v=330";
+import { proceduralSky, hueShifted } from "./sky-gen.js?v=330";
+import { drawSprite, skyImage, spriteHalo, SPRITE_HALO_PAD } from "./art.js?v=330";
+import { spriteImageFor } from "./sprite-detail.js?v=330";
+import { retroBackdrop, retroPlanet, retroObstacle, retroAcorn, retroBlocker } from "./retro.js?v=330";
+import { suitPitchFor, tapShapeFor, tapAccentStrengthFor } from "./save.js?v=330";
+import { blockerX, gateOffset, liveGapY, pilotSuitId, tiltNow, tunnelBoundsAt, WORM_TRIP_SECONDS } from "./sim.js?v=330";
+import { WORM_EXIT_LEAD, suitLean, SUIT_LEAN_DEFAULT, PAINTED_TAP_EASE } from "./control-constants.js?v=330";
+import { raceViewport, raceViewportX, raceViewportY } from "./race-viewport.js?v=330";
+import { SPILL, SPILL_MOD_INFO, spillHas, spillChargeCap, spillContractProgress, spillEventGap, spillCount, SPILL_DRILL, SPILL_DRILL_DEBRIS, spillMod, spillRamp, spillWaveLeft, } from "./spill.js?v=330";
+import { spillEngineColor } from "./spill-content.js?v=330";
+import { drawSpillCombat, drawSpillCombatHud } from "./spill-combat-view.js?v=330";
+import { drawSpillHazards, drawSpillHazardHint } from "./spill-hazard-view.js?v=330";
+import { drawSpillClimax } from "./spill-climax-view.js?v=330";
+import { SPILL_MODULE_MARKS, spillDockBear, spillDockView, spillPreviewState } from "./spill-presentation.js?v=330";
+import { RACE_ACORNS, RACE_BASE_SPEED, RACE_DEBRIS, RACE_ENTRY_TICKS, RACE_GATE_CLEARANCE, RACE_GATE_MISS_FADE_TICKS, RACE_GATE_PASS_FADE_TICKS, RACE_HZ, RACE_LENGTH, RACE_MAX_INTERACTIVE_GAP, RACE_MAX_SPEED, RACE_PILOT_X, RACE_READY_COPY, RACE_RETURN_TICKS, RACE_RINGS, RACE_TUNNEL_PERFECT_APERTURE, RACE_TUNNEL_RING_APERTURE, RACE_TUNNEL_SPEED, RACE_TUNNEL_TICKS, formatRaceTicks, raceDecisionAge, raceRouteTarget, raceTunnelGeometry, raceTunnelQuality, raceTunnelRings, } from "./race.js?v=330";
 function frameOf(list, t, speed = 6) {
     if (!list.length)
         return null;
@@ -2311,12 +2311,13 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
     ctx.font = "700 11px Figtree, system-ui";
     ctx.fillStyle = "rgba(255,224,128,0.9)";
     const names = s.liveMods.map((m) => SPILL_MOD_INFO[m].name).filter(Boolean).join(" + ");
-    const sub = s.phase === "wave" ? `WAVE ${s.wave}${names ? ` · ${names}` : ""} · ${Math.ceil(spillWaveLeft(s))}s`
-        : s.phase === "drain" ? `WAVE ${s.wave} · FIELD DRAINING`
-            : s.phase === "countdown" ? `NEXT · WAVE ${s.wave}${names ? ` · ${names}` : ""}`
-                : s.phase === "docking" ? s.welcome ? "PRE-FLIGHT · ARRIVING AT THE DEPOT" : `WAVE ${s.wave} CLEARED`
-                    : s.phase === "depot" ? "DEPOT · TAKE YOUR TIME"
-                        : s.phase === "respawn" ? "RESPAWN CORE" : "DEBRIS FIELD";
+    const sub = s.drill ? "TRAINING FLIGHT"
+        : s.phase === "wave" ? `WAVE ${s.wave}${names ? ` · ${names}` : ""} · ${Math.ceil(spillWaveLeft(s))}s`
+            : s.phase === "drain" ? `WAVE ${s.wave} · FIELD DRAINING`
+                : s.phase === "countdown" ? `NEXT · WAVE ${s.wave}${names ? ` · ${names}` : ""}`
+                    : s.phase === "docking" ? s.welcome ? "PRE-FLIGHT · ARRIVING AT THE DEPOT" : `WAVE ${s.wave} CLEARED`
+                        : s.phase === "depot" ? "DEPOT · TAKE YOUR TIME"
+                            : s.phase === "respawn" ? "RESPAWN CORE" : "DEBRIS FIELD";
     ctx.fillText(sub, W / 2, 64);
     // the PULSE meter. Locked, it is dim and says so; unlocked and full it
     // is armed, and fires by itself at the next impact
@@ -2522,6 +2523,8 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
             ctx.fillText("A mining rig let go one system over. What reached us is travelling one way.", W / 2, titleY + 22);
         }
     }
+    if (s.drill && (s.phase === "wave" || s.phase === "drain"))
+        drawSpillDrill(ctx, w, s);
     if (s.phase === "countdown") {
         // THE COUNT. The ship flies itself; the hand rests; control returns on
         // the GO and never before. The number is the biggest thing on screen
@@ -2552,7 +2555,7 @@ function drawSpillHud(ctx, w, art, hidePrompts = false) {
         ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · DRAG TO TAKE THE STICK", W / 2, H * 0.34 + 146);
         ctx.restore();
     }
-    if (s.phase === "wave" && s.phaseT < 0.6) {
+    if (s.phase === "wave" && s.phaseT < 0.6 && !s.drill) {
         // the GO, for the half second it takes to read it
         ctx.save();
         ctx.globalAlpha = Math.min(1, (0.6 - s.phaseT) * 3);
@@ -6272,6 +6275,47 @@ function drawPrompt(ctx, w, title, body, cy) {
             ctx.globalAlpha = 1;
         }
     }
+}
+/** THE TRAINING CARD: one step at a time under the HUD, the same navy card
+ *  and cyan edge as the lesson card, a dot per step. Kept short so the field
+ *  below it stays readable while debris and the patrol ship are live. */
+function drawSpillDrill(ctx, w, s) {
+    const d = s.drill, last = SPILL_DRILL.length - 1, step = SPILL_DRILL[Math.min(d.step, last)];
+    const ready = step.id === "ready", W = w.W, steps = last;
+    const bw = Math.min(W - 24, 350), bh = ready ? 78 : 102, x = (W - bw) / 2, y = 104;
+    const pulse = 0.55 + 0.45 * Math.abs(Math.sin(w.time * 2.4));
+    ctx.save();
+    ctx.fillStyle = "rgba(12,18,36,0.86)";
+    ctx.strokeStyle = ready ? "rgba(112,227,160,.8)" : `rgba(127,214,255,${0.35 + 0.4 * pulse})`;
+    ctx.lineWidth = 2;
+    round(ctx, x, y, bw, bh, 16);
+    ctx.fill();
+    ctx.stroke();
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,224,128,.9)";
+    ctx.font = "800 10px Figtree, system-ui";
+    ctx.fillText(ready ? "TRAINING COMPLETE" : `TRAINING · ${step.stage} · ${d.step + 1} / ${steps}`, W / 2, y + 18);
+    ctx.fillStyle = ready ? "#9ff0c2" : "#fff";
+    ctx.font = "900 22px Figtree, system-ui";
+    const progress = step.id === "debris" ? `  ${d.count} / ${SPILL_DRILL_DEBRIS}` : "";
+    ctx.fillText(step.title + progress, W / 2, y + 43, bw - 20);
+    ctx.fillStyle = "rgba(225,236,250,.92)";
+    ctx.font = "700 13px Figtree, system-ui";
+    ctx.fillText(step.touch, W / 2, y + 63, bw - 20);
+    if (!ready) {
+        if (step.keys) {
+            ctx.fillStyle = "rgba(200,190,255,.75)";
+            ctx.font = "700 10px Figtree, system-ui";
+            ctx.fillText(`Keyboard: ${step.keys}`, W / 2, y + 79, bw - 20);
+        }
+        for (let i = 0; i < steps; i++) {
+            ctx.fillStyle = i < d.step ? "#70e3a0" : i === d.step ? `rgba(127,214,255,${0.5 + 0.5 * pulse})` : "rgba(255,255,255,.18)";
+            ctx.beginPath();
+            ctx.arc(W / 2 + (i - (steps - 1) / 2) * 14, y + 92, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+    ctx.restore();
 }
 function round(ctx, x, y, w, h, r) {
     ctx.beginPath();

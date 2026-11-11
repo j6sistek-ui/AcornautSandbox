@@ -1,4 +1,4 @@
-import { PHYS } from "./catalog.js?v=329";
+import { PHYS } from "./catalog.js?v=330";
 export const createSpillClimax = () => ({ version: 1, spawned: false });
 export const spillClimaxWave = (wave) => wave >= 10 && wave % 5 === 0;
 export function spillClimaxReserved(s) {

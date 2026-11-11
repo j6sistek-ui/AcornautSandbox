@@ -1,0 +1,144 @@
+# Builds, signs and uploads the iOS app to TestFlight on a GitHub-hosted Mac
+# (owner, 9 Nov 2026: Apple membership approved; there is no Mac to build on).
+#
+# Run it from the Actions tab -> "iOS TestFlight upload" -> Run workflow.
+# It needs three repository secrets (Settings -> Secrets and variables ->
+# Actions), all from App Store Connect -> Users and Access -> Integrations ->
+# App Store Connect API, a key with the "App Manager" role:
+#   ASC_KEY_ID       the key's Key ID
+#   ASC_ISSUER_ID    the Issuer ID shown above the key list
+#   ASC_KEY_P8       the full text of the downloaded AuthKey_XXXX.p8 file
+# Never paste the .p8 into a chat, an issue or a commit; only into the secret.
+# The app record must exist in App Store Connect first (bundle ID
+# com.quarterdropgames.acornaut). Signing is automatic: Xcode creates the
+# certificate and profile with the key. The build number is the run number.
+name: iOS TestFlight upload
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: false
+
+jobs:
+  testflight:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: shell
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Secrets are present
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          missing=""
+          [ -n "$ASC_KEY_ID" ] || missing="$missing ASC_KEY_ID"
+          [ -n "$ASC_ISSUER_ID" ] || missing="$missing ASC_ISSUER_ID"
+          [ -n "$ASC_KEY_P8" ] || missing="$missing ASC_KEY_P8"
+          if [ -n "$missing" ]; then echo "::error::Missing repository secrets:$missing"; exit 1; fi
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: shell/package-lock.json
+
+      - name: Install the shell's packages
+        run: npm ci --no-audit --no-fund
+
+      - name: Store values (warnings only)
+        run: node check.mjs || true
+
+      - name: Build the web bundle (www) from docs
+        run: node build-web.mjs
+
+      - name: Copy it into the iOS project
+        run: npx cap sync ios
+
+      - name: Pick the newest Xcode
+        run: |
+          XCODE=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - name: Write the API key
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/asc"
+          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/asc/AuthKey_${ASC_KEY_ID}.p8"
+          chmod 600 "$RUNNER_TEMP/asc/AuthKey_${ASC_KEY_ID}.p8"
+
+      - name: Archive (automatic signing)
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Acornaut.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/asc/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            | tee "$RUNNER_TEMP/archive.log" | grep -E "error:|ARCHIVE (SUCCEEDED|FAILED)" || true
+          grep -q "ARCHIVE SUCCEEDED" "$RUNNER_TEMP/archive.log"
+
+      - name: Export and upload to App Store Connect
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: |
+          set -o pipefail
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>7DH55F49XW</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/Acornaut.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$RUNNER_TEMP/asc/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            | tee "$RUNNER_TEMP/export.log" | grep -E "error:|EXPORT (SUCCEEDED|FAILED)|Upload" || true
+          grep -q "EXPORT SUCCEEDED" "$RUNNER_TEMP/export.log"
+          echo "Uploaded build ${{ github.run_number }}. It appears in App Store Connect -> TestFlight after Apple finishes processing (usually 10-30 minutes)."
+
+      - name: Remove the API key
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/asc"
+
+      - name: Keep the build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testflight-logs
+          path: |
+            ${{ runner.temp }}/archive.log
+            ${{ runner.temp }}/export.log
+          if-no-files-found: ignore

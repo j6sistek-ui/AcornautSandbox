@@ -72,6 +72,7 @@ import {
   type RaceGestureResult,
 } from "./race-gesture";
 import { raceViewport } from "./race-viewport";
+import { spillSkipDrill } from "./spill";
 import { spillBuy, spillLeaveDepot, spillLunge, spillSteer, spillUtility, spillSpecialize, spillTakeContract,
   spillCheckpoint, restoreSpill, createSpill, spillWaveSpec, SPILL, type SpillBuyable, type SpillCue } from "./spill";
 import { applySpillTrialBuild, SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS, SPILL_TRIAL_BUILDS,
@@ -186,6 +187,10 @@ export type Engine = {
   spillLunge: (direction?: -1 | 1) => void;
   spillFire: (held: boolean, owner?: string) => void;
   spillControls: () => { active: boolean; x: number; y: number; dx: number; dy: number };
+  /** skip the first-run controls drill (counts as done) */
+  spillSkipDrill: () => void;
+  /** play the controls drill again on the next Debris Field run */
+  replaySpillDrill: () => void;
   spillSelectWeapon: (id: SpillWeaponId) => boolean;
   spillUpgradeWeapon: (id?: SpillWeaponId) => boolean;
   spillClaimArtifact: (id: SpillArtifactId) => boolean;
@@ -869,6 +874,12 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
         unlockAudio();
       } else fireOwners.delete(owner);
       if (world.spill) spillSetFiring(world.spill, fireOwners.size > 0);
+    },
+    spillSkipDrill() {
+      if (world.spill && spillSkipDrill(world.spill)) notify();
+    },
+    replaySpillDrill() {
+      save.spillDrillDone = false; writeSave(save); notify();
     },
     spillControls() {
       const rect = canvas.getBoundingClientRect(), stick = spillStick;
@@ -1675,6 +1686,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     const loadout = restoreSpillCareer(save.spillCareer, save.spillBest);
     world.spill.loadout = { chassis: loadout.chassis, module: loadout.module };
     world.spill.maxHull = world.spill.hull = SPILL.hull + spillChassisStats(loadout.chassis).hull;
+    // a pilot who has not finished the controls drill flies it before wave 1
+    world.spill.drillWanted = !save.spillDrillDone;
   }
 
   function clearSpillFire() {
@@ -2013,6 +2026,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function dispatchSpillCues(cues: SpillCue[]) {
     if (!cues.length) return;
     const spill = world.spill;
+    if (cues.includes("drill-done") && !trial && !save.spillDrillDone) { save.spillDrillDone = true; writeSave(save); }
     if (spill && !trial && cues.some(c => ["dead", "mission"].includes(c))) {
       bankSpill(save, spill, true);
       // AND THE BOARD HEARS ABOUT IT (App Store prep audit, section 2). The
@@ -2043,6 +2057,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       dock: "region", depot: "region", buy: "ui", deny: "warning", respawn: "shift", surge: "warning",
       warn: "warning", event: "warning", contract: "milestone", mission: "milestone",
       laser: "near", cannon: "bounce", "enemy-fire": "warning", "enemy-down": "shield",
+      "drill-step": "ui", "drill-done": "section",
     };
     for (const c of new Set(cues)) {
       const snd = SOUND[c];

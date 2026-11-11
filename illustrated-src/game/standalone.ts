@@ -23,6 +23,7 @@ import { formatRaceTicks } from "./race";
 import { SPILL_UTILITIES, SPILL_SPECIALTIES, spillMastery, type SpillSpecialty , spillEngineColor } from "./spill-content";
 import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-presentation";
 import { SPILL_WEAPONS } from "./spill-combat";
+import { SPILL_DRILL } from "./spill";
 import { SPILL_ARTIFACTS } from "./spill-builds";
 import { SPILL_RISKS } from "./spill-expeditions";
 import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet, drawSpillDepthHelp, hazardGuide } from "./spill-workshop";
@@ -113,7 +114,11 @@ export async function bootStandalone(root: HTMLElement) {
   // the overlay wholesale on every notify, and a film mounted inside it
   // would restart from frame one each time the engine so much as ticked.
   const filmHost = el("div", "ac-filmhost");
-  stage.append(canvas, overlay, joystick, filmHost);
+  // the first-run controls drill can always be skipped
+  const drillSkip = el("button", "ac-ghost ac-drill-skip", "SKIP TUTORIAL");
+  drillSkip.hidden = true; drillSkip.dataset.spillControl = "skip-drill";
+  drillSkip.onclick = () => engine.spillSkipDrill();
+  stage.append(canvas, overlay, joystick, drillSkip, filmHost);
   root.append(stage);
 
   // Screen 1 of the cold open. The acorn IS the progress bar: a drained
@@ -275,6 +280,7 @@ export async function bootStandalone(root: HTMLElement) {
     const sp = engine.world.spill;
     const activeFlight = engine.world.screen === "play" && !!sp && ["countdown", "wave", "drain"].includes(sp.phase);
     canvas.classList.toggle("ac-flight-surface", activeFlight);
+    drillSkip.hidden = !(activeFlight && !!sp?.drill && sp.drill.step < SPILL_DRILL.length - 1);
     const stick = engine.spillControls();
     const visible = activeFlight && stick.active;
     const key = visible ? `${stick.x}:${stick.y}:${stick.dx}:${stick.dy}` : "hidden";
@@ -4915,7 +4921,11 @@ export async function bootStandalone(root: HTMLElement) {
     briefing.setAttribute("aria-label", "Debris Field briefing");
     briefing.dataset.spillBriefing = ""; briefing.onclick = openSpillHelp;
     extras.append(briefing); debris.append(extras);
-    debris.append(drawSpillDepthHelp(), hazardGuide());
+    // the first-run controls drill, on request
+    const drillAgain = el("button", "ac-ghost ac-helpbriefing", engine.save.spillDrillDone ? "REPLAY CONTROLS TUTORIAL" : "TUTORIAL PLAYS ON YOUR NEXT RUN");
+    drillAgain.dataset.spillDrill = ""; drillAgain.disabled = !engine.save.spillDrillDone;
+    drillAgain.onclick = () => engine.replaySpillDrill();
+    debris.append(drillAgain, drawSpillDepthHelp(), hazardGuide());
 
     const hyper = modeSection("hyper", "Hyper Run Mode", "m-race");
     const hyperControls = el("div", "ac-helpcontrols");

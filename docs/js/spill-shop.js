@@ -15,9 +15,9 @@
 //
 // This layer sits above spill.ts / spill-builds.ts: those keep their own
 // primitives (and their tests); the engine routes Depot purchases through here.
-import { spillChargeCap } from "./spill.js?v=329";
-import { SPILL_UTILITIES } from "./spill-content.js?v=329";
-import { SPILL_ARTIFACTS, SPILL_ARTIFACT_IDS } from "./spill-builds.js?v=329";
+import { spillChargeCap } from "./spill.js?v=330";
+import { SPILL_UTILITIES } from "./spill-content.js?v=330";
+import { SPILL_ARTIFACTS, SPILL_ARTIFACT_IDS } from "./spill-builds.js?v=330";
 export const SPILL_ARTIFACT_PRICE = 70;
 const SHELF_UTILITIES = ["magnet", "scanner", "capacitor"];
 const depotOpen = (s) => s.phase === "depot" && !!s.depot && !s.welcome && s.depot.arm <= 0;

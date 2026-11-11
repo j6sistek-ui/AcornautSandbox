@@ -73,6 +73,8 @@ export type SaveData = {
   spillSignal?: boolean;
   spillEngineColor?: SpillEngineColor;
   spillDepotGuideSeen?: boolean;
+  /** the first-run Debris Field controls drill has been finished or skipped */
+  spillDrillDone?: boolean;
   /** FIRST-TIME GUIDES (owner, 26 Sep 2026): the pals sheet the first time the
    *  Loadout's PALS tab opens, and the Star Chart sheet the first time the
    *  chart opens after the guided start. Each shows once; its "?" reopens it. */
@@ -615,6 +617,7 @@ export function loadSave(): SaveData {
   s.spillEngineColor = spillEngineColor(s).id;
   s.spillSignal = s.spillEngineColor !== "stock";
   s.spillDepotGuideSeen = s.spillDepotGuideSeen === true;
+  s.spillDrillDone = s.spillDrillDone === true;
   s.palGuideSeen = s.palGuideSeen === true;
   s.chartGuideSeen = s.chartGuideSeen === true;
   // favourites are ids only; anything else in the array is a hand-edit

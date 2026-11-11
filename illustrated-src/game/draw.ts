@@ -34,6 +34,8 @@ import {
   SPILL_MOD_INFO,
   spillHas, spillChargeCap, spillContractProgress, spillEventGap,
   spillCount,
+  SPILL_DRILL,
+  SPILL_DRILL_DEBRIS,
   spillMod,
   spillRamp,
   spillWaveLeft,
@@ -2400,7 +2402,8 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   ctx.font = "700 11px Figtree, system-ui";
   ctx.fillStyle = "rgba(255,224,128,0.9)";
   const names = s.liveMods.map((m) => SPILL_MOD_INFO[m].name).filter(Boolean).join(" + ");
-  const sub = s.phase === "wave" ? `WAVE ${s.wave}${names ? ` · ${names}` : ""} · ${Math.ceil(spillWaveLeft(s))}s`
+  const sub = s.drill ? "TRAINING FLIGHT"
+    : s.phase === "wave" ? `WAVE ${s.wave}${names ? ` · ${names}` : ""} · ${Math.ceil(spillWaveLeft(s))}s`
     : s.phase === "drain" ? `WAVE ${s.wave} · FIELD DRAINING`
       : s.phase === "countdown" ? `NEXT · WAVE ${s.wave}${names ? ` · ${names}` : ""}`
         : s.phase === "docking" ? s.welcome ? "PRE-FLIGHT · ARRIVING AT THE DEPOT" : `WAVE ${s.wave} CLEARED`
@@ -2589,6 +2592,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
       ctx.fillText("A mining rig let go one system over. What reached us is travelling one way.", W / 2, titleY + 22);
     }
   }
+  if (s.drill && (s.phase === "wave" || s.phase === "drain")) drawSpillDrill(ctx, w, s);
   if (s.phase === "countdown") {
     // THE COUNT. The ship flies itself; the hand rests; control returns on
     // the GO and never before. The number is the biggest thing on screen
@@ -2619,7 +2623,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
     ctx.fillText(s.manual ? "YOU HAVE THE STICK · FIELD ON GO" : "AUTOPILOT · DRAG TO TAKE THE STICK", W / 2, H * 0.34 + 146);
     ctx.restore();
   }
-  if (s.phase === "wave" && s.phaseT < 0.6) {
+  if (s.phase === "wave" && s.phaseT < 0.6 && !s.drill) {
     // the GO, for the half second it takes to read it
     ctx.save();
     ctx.globalAlpha = Math.min(1, (0.6 - s.phaseT) * 3);
@@ -6412,6 +6416,39 @@ function drawPrompt(ctx: CanvasRenderingContext2D, w: World, title: string, body
       ctx.globalAlpha = 1;
     }
   }
+}
+
+/** THE TRAINING CARD: one step at a time under the HUD, the same navy card
+ *  and cyan edge as the lesson card, a dot per step. Kept short so the field
+ *  below it stays readable while debris and the patrol ship are live. */
+function drawSpillDrill(ctx: CanvasRenderingContext2D, w: World, s: NonNullable<World["spill"]>) {
+  const d = s.drill!, last = SPILL_DRILL.length - 1, step = SPILL_DRILL[Math.min(d.step, last)];
+  const ready = step.id === "ready", W = w.W, steps = last;
+  const bw = Math.min(W - 24, 350), bh = ready ? 78 : 102, x = (W - bw) / 2, y = 104;
+  const pulse = 0.55 + 0.45 * Math.abs(Math.sin(w.time * 2.4));
+  ctx.save();
+  ctx.fillStyle = "rgba(12,18,36,0.86)";
+  ctx.strokeStyle = ready ? "rgba(112,227,160,.8)" : `rgba(127,214,255,${0.35 + 0.4 * pulse})`;
+  ctx.lineWidth = 2; round(ctx, x, y, bw, bh, 16); ctx.fill(); ctx.stroke();
+  ctx.textAlign = "center";
+  ctx.fillStyle = "rgba(255,224,128,.9)"; ctx.font = "800 10px Figtree, system-ui";
+  ctx.fillText(ready ? "TRAINING COMPLETE" : `TRAINING · ${step.stage} · ${d.step + 1} / ${steps}`, W / 2, y + 18);
+  ctx.fillStyle = ready ? "#9ff0c2" : "#fff"; ctx.font = "900 22px Figtree, system-ui";
+  const progress = step.id === "debris" ? `  ${d.count} / ${SPILL_DRILL_DEBRIS}` : "";
+  ctx.fillText(step.title + progress, W / 2, y + 43, bw - 20);
+  ctx.fillStyle = "rgba(225,236,250,.92)"; ctx.font = "700 13px Figtree, system-ui";
+  ctx.fillText(step.touch, W / 2, y + 63, bw - 20);
+  if (!ready) {
+    if (step.keys) {
+      ctx.fillStyle = "rgba(200,190,255,.75)"; ctx.font = "700 10px Figtree, system-ui";
+      ctx.fillText(`Keyboard: ${step.keys}`, W / 2, y + 79, bw - 20);
+    }
+    for (let i = 0; i < steps; i++) {
+      ctx.fillStyle = i < d.step ? "#70e3a0" : i === d.step ? `rgba(127,214,255,${0.5 + 0.5 * pulse})` : "rgba(255,255,255,.18)";
+      ctx.beginPath(); ctx.arc(W / 2 + (i - (steps - 1) / 2) * 14, y + 92, 3.5, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  ctx.restore();
 }
 
 function round(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
