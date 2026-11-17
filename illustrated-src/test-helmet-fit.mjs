@@ -13,6 +13,17 @@ function equalPixels(message){
  for(let i=0;i<x.length;i++)if(x[i]!==y[i])different++;
  assert.equal(different,0,message+' (different channels)');
 }
+// Cold portraits fall back to a sprite that already wears a helmet.
+const flight=r.cat.SUITS.find(s=>s.id==='flight');
+const coldArt={...r.bank,suits:{}};
+r.draw.paintPortrait(ac,coldArt,r.cat.HELMETS[0],flight,128,128,150);
+for(const helmet of r.cat.HELMETS){
+ bc.clearRect(0,0,256,256);
+ r.draw.paintPortrait(bc,coldArt,helmet,flight,128,128,150);
+ equalPixels(helmet.id+' must not stack over the fallback sprite’s painted helmet');
+}
+ac.clearRect(0,0,256,256);
+bc.clearRect(0,0,256,256);
 let composites=0,pairs=0,poses=0;
 assert.equal(r.cat.SUITS.length,39,'review inventory includes every current character');  // + five from the owner's board (27 Oct 2026)
 assert.deepEqual(Object.keys(fit.HELMET_SEATS).sort(),r.cat.HELMETS.map(h=>h.id).sort(),'every helmet has a reviewed seat');
@@ -34,19 +45,24 @@ for(const suit of r.cat.SUITS){
   for(const h of r.cat.HELMETS){bc.clearRect(0,0,256,256);r.draw.paintPortrait(bc,r.bank,h,suit,100,128,100);equalPixels(suit.id+' integrated head with '+h.id);}
   continue;
  }
+ if(suit.id==='origamist'){
+  const neutral=readFileSync(new URL('../docs/art/suits/origamist-tap-1.png',import.meta.url));
+  const dive=readFileSync(new URL('../docs/art/suits/origamist-desc-1.png',import.meta.url));
+  assert.deepEqual(dive,neutral,'Patriot enters the dive on the same bare-headed neutral frame');
+ }
  const helmets=r.cat.HELMETS.filter(h=>!h.suitOnly||h.suitOnly===suit.id);pairs+=helmets.length;
  assert.deepEqual(model.dome,r.draw.DOME['suit:'+suit.id],suit.id+' Studio portrait socket');
  for(const kind of ['asc','desc','tap']){
   const frames=r.bank['suit'+kind[0].toUpperCase()+kind.slice(1)][suit.id]||[];
-  const anchors=frames.map((_,i)=>r.draw.DOME[`${suit.id}-${kind}-${i+1}`]||r.draw.DOME['suit:'+suit.id]);
-  // a suit the owner fitted frame by frame keeps a radius per pose (helmet-art-baseline per_frame_radii)
-  if(!perFrame.has(suit.id))assert.equal(new Set(anchors.map(a=>a[2])).size,frames.length?1:0,suit.id+' '+kind+' has no helmet scale pulse');
+  const anchors=frames.map((_,i)=>r.draw.DOME[`${suit.id}-${kind}-${i+1}`]);
   for(const [i,anchor]of anchors.entries()){
    const key=`${suit.id}-${kind}-${i+1}`;
-   assert(anchor.every(Number.isFinite)&&anchor[2]>0,key+' valid socket');
-   assert.deepEqual(manifest.anchors[key]||model.dome,anchor,key+' game/Studio socket parity');
+   assert(anchor?.every(Number.isFinite)&&anchor[2]>0,key+' valid socket');
+   assert.deepEqual(manifest.anchors[key],anchor,key+' game/Studio socket parity');
    for(const h of helmets){ac.clearRect(0,0,256,256);ac.drawImage(frames[i],0,0);r.draw.paintRegisteredDome(ac,h,anchor[0],anchor[1],anchor[2],anchor[3]||0,r.bank);poses++;}
   }
+  // Owner-fitted painted banks may specify a different radius for each pose.
+  if(!perFrame.has(suit.id))assert.equal(new Set(anchors.map(a=>a[2])).size,frames.length?1:0,suit.id+' '+kind+' has no helmet scale pulse');
  }
  for(const h of helmets){ac.clearRect(0,0,256,256);r.draw.paintPortrait(ac,r.bank,h,suit,100,128,100);assert(ac.getImageData(0,0,256,256).data.some((v,i)=>i%4===3&&v>0),suit.id+'/'+h.id+' actual portrait rendered');}
 }
@@ -59,5 +75,5 @@ assert.equal(pairs,813,'no valid pairing was omitted');
 const cold=new StudioRenderer(manifest),loaded=[];cold.load=async path=>loaded.push(path);
 await cold.loadModel(manifest.models.find(m=>m.id==='copper'),'sunforged');
 assert(loaded.includes('helms/clear.png'));assert(!loaded.includes('helms/sunforged.png'));
-console.log(`PASS: ${pairs} pairings; ${composites} pixel-identical game/Studio helmet renders; ${poses} bank/helmet cases; all 13 integrated-head characters preserved.`);
+console.log(`PASS: ${pairs} pairings; ${composites} pixel-identical game/Studio helmet renders; ${poses} bank/helmet cases; all ${r.cat.SUITS.filter(r.cat.wearsOwnHead).length} integrated-head characters preserved.`);
 r.dispose();

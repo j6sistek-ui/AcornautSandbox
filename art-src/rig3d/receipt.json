@@ -60,7 +60,8 @@
    "model": "arcflash3d"
   },
   "origamist": {
-   "model": "patriot-pbr"
+   "model": "patriot-pbr",
+   "note": "Dive uses the current tap-1 render, rigidly rotated and translated from its neutral helmet socket to each measured dive socket. The retired painted dive was a different suit model."
   },
   "eclipse": {
    "model": "eclipse3d"
@@ -74,8 +75,8 @@
   "ferret": {
    "model": "meerkat3d",
    "head": "tripoHead_1",
-   "args": "--head tripoHead_1 --tailamp 0.3 --tailrest 160",
-   "note": "owner, 28 Oct 2026: \"noodles tail flaps into his body oddly\" - swing cut to 30% and rested straighter back"
+   "args": "--head tripoHead_1 --tailamp 0.43 --tailrest 128 --spineamp 1.5",
+   "note": "The 28 Oct render reduced the swing. On 17 Nov the tail was lifted at rest, with a brief dip during the tap and a little more spine flex."
   },
   "raccoon": {
    "model": "raccoon3d"
@@ -425,10 +426,10 @@
   "suits/arcflash-tap-11.png": "e7ed9eeb22d2a039894a8edadf4a668af955772a",
   "suits/arcflash-tap-12.png": "8db9a565d81392b025128f8252830fb20e4aed31",
   "suits/arcflash.png": "7766d270fd698a574bcdd87649d229be1a3d7950",
-  "suits/origamist-desc-1.png": "07fceffe8c52fb9c4d7abc9094dc413200c04c08",
-  "suits/origamist-desc-2.png": "9c3297e4eba8f49fa4f5100de6084a137faf9e5c",
-  "suits/origamist-desc-3.png": "6b38b368c69f9dcbaf76c9223db72c0eee295b90",
-  "suits/origamist-desc-4.png": "dfb4f36fa10d723451b36b6ddf8c285a56198fda",
+  "suits/origamist-desc-1.png": "5c753275ae42a3fa911cce9b8a88126399e63ddc",
+  "suits/origamist-desc-2.png": "897b10484f1cb737feccd2ff4dcbe2de1d4ede56",
+  "suits/origamist-desc-3.png": "7b9ae0731bcf7cca9ddd3625eaca60d3ed43f754",
+  "suits/origamist-desc-4.png": "8d8d949062b0a56ad5bdcea2f6bd423d6ed8a987",
   "suits/origamist-tap-1.png": "5c753275ae42a3fa911cce9b8a88126399e63ddc",
   "suits/origamist-tap-2.png": "0d7ebf7151e21b76295ed5afdafab5ea50dac316",
   "suits/origamist-tap-3.png": "1b368025008396a69096b6c2c9fd9ec9caa73dc3",
@@ -493,23 +494,23 @@
   "suits/verdant-tap-11.png": "dce8c25e9ae37833cb238fa3d29e406af3587f6d",
   "suits/verdant-tap-12.png": "bb4aa75f6edc70179bbddfa1c589d1ac26b81a25",
   "suits/verdant.png": "a9ef23b3d1432c7bda707c6374178dd98ff030cc",
-  "suits/ferret-desc-1.png": "8d4c9c202c324576c229066a6ccc554d6f52d47b",
-  "suits/ferret-desc-2.png": "823896a9b7db6ab44a453655ea0064ce5f704da2",
-  "suits/ferret-desc-3.png": "35c34c8d328ae48129449147b375e04f16bdd279",
-  "suits/ferret-desc-4.png": "e383cf40b4309a56a1882f2002904c7d79d202d3",
-  "suits/ferret-tap-1.png": "8d4c9c202c324576c229066a6ccc554d6f52d47b",
-  "suits/ferret-tap-2.png": "144eb02f8241c360d3f05bdd00f0f078bd1df3a4",
-  "suits/ferret-tap-3.png": "fad58b8582ccd6f468ccf0d2df8ebdc7a8a86581",
-  "suits/ferret-tap-4.png": "375634d15965ce03cae710fe14ea62f0aac9d2d2",
-  "suits/ferret-tap-5.png": "8dbd002df85af9070ccfa0c543b9ff9a586edef5",
-  "suits/ferret-tap-6.png": "0a378e34cc4f17ee598904835db2a6a824714b8e",
-  "suits/ferret-tap-7.png": "34e04cf96fd770daabebbbea7fa29c56239a6fd0",
-  "suits/ferret-tap-8.png": "7b81aa28dd61da973b391d4c2615f768673b909f",
-  "suits/ferret-tap-9.png": "a314ea91e51bb164f5d63ff7cbcef796611bf163",
-  "suits/ferret-tap-10.png": "c0575d803a5af0cb32a706d15a17966ce30cc79a",
-  "suits/ferret-tap-11.png": "d415199b217ee80516b2fb2924e627a762d8c38a",
-  "suits/ferret-tap-12.png": "a7436c82411116d872e5b9fcd996ea51b72196a4",
-  "suits/ferret.png": "8d4c9c202c324576c229066a6ccc554d6f52d47b",
+  "suits/ferret-desc-1.png": "6690d686f22ac5125712ebe3a44f3c52af26fd78",
+  "suits/ferret-desc-2.png": "bbf7d0b66b14913e8e00aecc2d2d1110f9a0b524",
+  "suits/ferret-desc-3.png": "09231ecadd3dcfee3fc6803a2b08cf58a35703df",
+  "suits/ferret-desc-4.png": "37cc7c3a7d144b5de5af0e8ca9c46b70925882ea",
+  "suits/ferret-tap-1.png": "6690d686f22ac5125712ebe3a44f3c52af26fd78",
+  "suits/ferret-tap-2.png": "63577f6c2c70a418984800e1e20c99302e48b92a",
+  "suits/ferret-tap-3.png": "595831f10012538e809b95f98fb3f3c9eebcc740",
+  "suits/ferret-tap-4.png": "5f25107c4803ebc883102c73020371d4416a954a",
+  "suits/ferret-tap-5.png": "3df9c6def105525af4c15437ce2837f8ef49303e",
+  "suits/ferret-tap-6.png": "a7eca1af0a35c25a23cef88013b26109948b78ee",
+  "suits/ferret-tap-7.png": "e0832c11f43fe2e9be051cc2599bc18200cbc110",
+  "suits/ferret-tap-8.png": "f428c47ba00cb5f5241de60eb3f6a6f27fa54a8d",
+  "suits/ferret-tap-9.png": "b71ef842207e59a03a17da7b827b57db0bad9843",
+  "suits/ferret-tap-10.png": "234ce792bdd3e9647a944233daf3eee7275b0201",
+  "suits/ferret-tap-11.png": "d0821d492746822b88c9abeb773a72c9f63db632",
+  "suits/ferret-tap-12.png": "1b6f83a200a617b0814ede649a81c0f718d8ad7f",
+  "suits/ferret.png": "6690d686f22ac5125712ebe3a44f3c52af26fd78",
   "suits/raccoon-desc-1.png": "00d9d9888d2d52c250d2eb7be868130760d87841",
   "suits/raccoon-desc-2.png": "86b9c7063fc82c2240b2b37561eb853ef9c6388e",
   "suits/raccoon-desc-3.png": "a87feff0a2072ac554410523d72e75124f1d6257",

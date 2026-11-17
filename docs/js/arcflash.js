@@ -1,6 +1,6 @@
-import { ARCFLASH_PARTS } from './arcflash-parts.js?v=330';
-import { arcflashTailAngles, createArcflashMotion } from './arcflash-motion.js?v=330';
-import { rigLimbFit, rigPartMatrix } from './rig-limb-fit.js?v=330';
+import { ARCFLASH_PARTS } from './arcflash-parts.js?v=333';
+import { arcflashTailAngles, createArcflashMotion } from './arcflash-motion.js?v=333';
+import { rigLimbFit, rigPartMatrix } from './rig-limb-fit.js?v=333';
 const DEG = Math.PI / 180;
 const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 const mix = (a, b, t) => a + (b - a) * t;

@@ -1,5 +1,5 @@
 {
- "artVer": "330",
+ "artVer": "333",
  "suits": [
   {
    "id": "flight",
@@ -101,8 +101,8 @@
    "key": "suit:iontrim",
    "file": "suits/iontrim.png",
    "dome": [
-    191.55,
-    107.14,
+    193.52,
+    108.2,
     24.07,
     1.7
    ],
@@ -133,8 +133,8 @@
    "key": "suit:glasssuit",
    "file": "suits/glasssuit.png",
    "dome": [
-    186.04,
-    112.31,
+    188.04,
+    112.37,
     26.32,
     1.71
    ],
@@ -149,8 +149,8 @@
    "key": "suit:redline",
    "file": "suits/redline.png",
    "dome": [
-    189.5,
-    106.74,
+    192.47,
+    107.83,
     29.22,
     1.65
    ],
@@ -165,8 +165,8 @@
    "key": "suit:robodog",
    "file": "suits/robodog.png",
    "dome": [
-    189.04,
-    108.64,
+    191.01,
+    109.7,
     25.09,
     1.78
    ],
@@ -181,8 +181,8 @@
    "key": "suit:geode",
    "file": "suits/geode.png",
    "dome": [
-    183.83,
-    121.67,
+    186.92,
+    118.76,
     27.29,
     1.77
    ],
@@ -245,8 +245,8 @@
    "key": "suit:ember",
    "file": "suits/ember.png",
    "dome": [
-    183.97,
-    101.49,
+    188.74,
+    108.65,
     27.22,
     1.83
    ],
@@ -277,8 +277,8 @@
    "key": "suit:alien",
    "file": "suits/alien.png",
    "dome": [
-    188.74,
-    121.7,
+    189.68,
+    123.73,
     22.29,
     1.82
    ],
@@ -293,9 +293,9 @@
    "key": "suit:ghost",
    "file": "suits/ghost.png",
    "dome": [
-    191.69,
-    101.54,
-    26.36,
+    193.62,
+    103.61,
+    25.36,
     2.03
    ],
    "box": null,
@@ -309,8 +309,8 @@
    "key": "suit:bigbooty",
    "file": "suits/bigbooty.png",
    "dome": [
-    197.85,
-    110.52,
+    199.85,
+    110.56,
     26.23,
     1.25
    ],
@@ -385,8 +385,8 @@
    "key": "suit:gemmie",
    "file": "suits/gemmie.png",
    "dome": [
-    183.43,
-    99.44,
+    188.21,
+    106.6,
     27.13,
     1.82
    ],
@@ -433,8 +433,8 @@
    "key": "suit:leviathan",
    "file": "suits/leviathan.png",
    "dome": [
-    186.86,
-    102.5,
+    188.8,
+    104.56,
     24.93,
     1.8
    ],
@@ -512,8 +512,8 @@
    "key": "suit:cinderforge",
    "file": "suits/cinderforge.png",
    "dome": [
-    185.02,
-    106.88,
+    189.83,
+    113.03,
     27.18,
     1.8
    ],
@@ -544,8 +544,8 @@
    "key": "suit:cosmic",
    "file": "suits/cosmic.png",
    "dome": [
-    184.32,
-    101.02,
+    189.09,
+    108.18,
     27.17,
     1.83
    ],
@@ -575,8 +575,8 @@
    "key": "suit:sunforged",
    "file": "suits/sunforged.png",
    "dome": [
-    184.69,
-    105.65,
+    188.5,
+    111.77,
     27.04,
     1.79
    ],
@@ -591,8 +591,8 @@
    "key": "suit:abyssal",
    "file": "suits/abyssal.png",
    "dome": [
-    184.85,
-    114.5,
+    186.82,
+    115.56,
     25.88,
     1.82
    ],
@@ -623,8 +623,8 @@
    "key": "abyssal-desc-1",
    "file": "suits/abyssal-desc-1.png",
    "dome": [
-    184.85,
-    114.5,
+    186.82,
+    115.56,
     25.88,
     1.82
    ],
@@ -640,8 +640,8 @@
    "key": "abyssal-desc-2",
    "file": "suits/abyssal-desc-2.png",
    "dome": [
-    184.52,
-    127.1,
+    186.18,
+    128.6,
     25.88,
     15.57
    ],
@@ -657,8 +657,8 @@
    "key": "abyssal-desc-3",
    "file": "suits/abyssal-desc-3.png",
    "dome": [
-    182.65,
-    139.3,
+    183.92,
+    141.14,
     25.88,
     28.78
    ],
@@ -674,8 +674,8 @@
    "key": "abyssal-desc-4",
    "file": "suits/abyssal-desc-4.png",
    "dome": [
-    178.01,
-    150.6,
+    178.85,
+    152.67,
     25.88,
     41.24
    ],
@@ -691,8 +691,8 @@
    "key": "abyssal-tap-1",
    "file": "suits/abyssal-tap-1.png",
    "dome": [
-    184.85,
-    114.5,
+    186.82,
+    115.56,
     25.88,
     1.82
    ],
@@ -708,8 +708,8 @@
    "key": "abyssal-tap-2",
    "file": "suits/abyssal-tap-2.png",
    "dome": [
-    184.07,
-    111.63,
+    186.1,
+    112.56,
     25.88,
     -1.87
    ],
@@ -725,8 +725,8 @@
    "key": "abyssal-tap-3",
    "file": "suits/abyssal-tap-3.png",
    "dome": [
-    183.48,
-    110.17,
+    185.55,
+    111.02,
     25.88,
     -4.22
    ],
@@ -742,8 +742,8 @@
    "key": "abyssal-tap-4",
    "file": "suits/abyssal-tap-4.png",
    "dome": [
-    183.34,
-    110.43,
+    185.41,
+    111.27,
     25.88,
     -4.6
    ],
@@ -759,8 +759,8 @@
    "key": "abyssal-tap-5",
    "file": "suits/abyssal-tap-5.png",
    "dome": [
-    183.65,
-    112.35,
+    185.7,
+    113.25,
     25.88,
     -2.91
    ],
@@ -776,8 +776,8 @@
    "key": "abyssal-tap-6",
    "file": "suits/abyssal-tap-6.png",
    "dome": [
-    184.23,
-    115.44,
+    186.22,
+    116.45,
     25.88,
     0.4
    ],
@@ -793,8 +793,8 @@
    "key": "abyssal-tap-7",
    "file": "suits/abyssal-tap-7.png",
    "dome": [
-    184.74,
-    118.94,
+    186.66,
+    120.09,
     25.88,
     4.43
    ],
@@ -810,8 +810,8 @@
    "key": "abyssal-tap-8",
    "file": "suits/abyssal-tap-8.png",
    "dome": [
-    185.08,
-    121.89,
+    186.92,
+    123.16,
     25.88,
     8.09
    ],
@@ -827,8 +827,8 @@
    "key": "abyssal-tap-9",
    "file": "suits/abyssal-tap-9.png",
    "dome": [
-    185.28,
-    123.48,
+    187.07,
+    124.82,
     25.88,
     10.41
    ],
@@ -844,8 +844,8 @@
    "key": "abyssal-tap-10",
    "file": "suits/abyssal-tap-10.png",
    "dome": [
-    185.48,
-    123.26,
+    187.26,
+    124.62,
     25.88,
     10.78
    ],
@@ -861,8 +861,8 @@
    "key": "abyssal-tap-11",
    "file": "suits/abyssal-tap-11.png",
    "dome": [
-    185.58,
-    121.28,
+    187.4,
+    122.58,
     25.88,
     9.12
    ],
@@ -878,8 +878,8 @@
    "key": "abyssal-tap-12",
    "file": "suits/abyssal-tap-12.png",
    "dome": [
-    185.42,
-    118.06,
+    187.31,
+    119.26,
     25.88,
     5.84
    ],
@@ -895,8 +895,8 @@
    "key": "alien-desc-1",
    "file": "suits/alien-desc-1.png",
    "dome": [
-    188.74,
-    121.7,
+    189.68,
+    123.73,
     22.29,
     1.82
    ],
@@ -912,8 +912,8 @@
    "key": "alien-desc-2",
    "file": "suits/alien-desc-2.png",
    "dome": [
-    188.54,
-    134.72,
+    188.97,
+    136.91,
     22.29,
     15.5
    ],
@@ -929,8 +929,8 @@
    "key": "alien-desc-3",
    "file": "suits/alien-desc-3.png",
    "dome": [
-    185.29,
-    146.95,
+    185.21,
+    149.18,
     22.29,
     28.66
    ],
@@ -946,8 +946,8 @@
    "key": "alien-desc-4",
    "file": "suits/alien-desc-4.png",
    "dome": [
-    179.25,
-    157.86,
+    178.69,
+    160.02,
     22.29,
     41.1
    ],
@@ -963,8 +963,8 @@
    "key": "alien-tap-1",
    "file": "suits/alien-tap-1.png",
    "dome": [
-    188.74,
-    121.7,
+    189.68,
+    123.73,
     22.29,
     1.82
    ],
@@ -980,8 +980,8 @@
    "key": "alien-tap-2",
    "file": "suits/alien-tap-2.png",
    "dome": [
-    187.8,
-    119.23,
+    188.86,
+    121.2,
     22.29,
     -1.85
    ],
@@ -997,8 +997,8 @@
    "key": "alien-tap-3",
    "file": "suits/alien-tap-3.png",
    "dome": [
-    187.09,
-    118.11,
+    188.23,
+    120.03,
     22.29,
     -4.19
    ],
@@ -1014,8 +1014,8 @@
    "key": "alien-tap-4",
    "file": "suits/alien-tap-4.png",
    "dome": [
-    186.89,
-    118.53,
+    188.05,
+    120.44,
     22.29,
     -4.57
    ],
@@ -1031,8 +1031,8 @@
    "key": "alien-tap-5",
    "file": "suits/alien-tap-5.png",
    "dome": [
-    187.23,
-    120.36,
+    188.33,
+    122.31,
     22.29,
     -2.88
    ],
@@ -1048,8 +1048,8 @@
    "key": "alien-tap-6",
    "file": "suits/alien-tap-6.png",
    "dome": [
-    187.87,
-    123.17,
+    188.86,
+    125.18,
     22.29,
     0.41
    ],
@@ -1065,8 +1065,8 @@
    "key": "alien-tap-7",
    "file": "suits/alien-tap-7.png",
    "dome": [
-    188.55,
-    126.4,
+    189.39,
+    128.47,
     22.29,
     4.42
    ],
@@ -1082,8 +1082,8 @@
    "key": "alien-tap-8",
    "file": "suits/alien-tap-8.png",
    "dome": [
-    189.1,
-    129.21,
+    189.81,
+    131.33,
     22.29,
     8.06
    ],
@@ -1099,8 +1099,8 @@
    "key": "alien-tap-9",
    "file": "suits/alien-tap-9.png",
    "dome": [
-    189.51,
-    130.68,
+    190.13,
+    132.83,
     22.29,
     10.36
    ],
@@ -1116,8 +1116,8 @@
    "key": "alien-tap-10",
    "file": "suits/alien-tap-10.png",
    "dome": [
-    189.8,
-    130.35,
+    190.41,
+    132.5,
     22.29,
     10.73
    ],
@@ -1133,8 +1133,8 @@
    "key": "alien-tap-11",
    "file": "suits/alien-tap-11.png",
    "dome": [
-    189.87,
-    128.29,
+    190.54,
+    130.42,
     22.29,
     9.08
    ],
@@ -1150,8 +1150,8 @@
    "key": "alien-tap-12",
    "file": "suits/alien-tap-12.png",
    "dome": [
-    189.51,
-    125.09,
+    190.3,
+    127.18,
     22.29,
     5.82
    ],
@@ -1439,8 +1439,8 @@
    "key": "bigbooty-desc-1",
    "file": "suits/bigbooty-desc-1.png",
    "dome": [
-    197.85,
-    110.52,
+    199.85,
+    110.56,
     26.23,
     1.25
    ],
@@ -1456,8 +1456,8 @@
    "key": "bigbooty-desc-2",
    "file": "suits/bigbooty-desc-2.png",
    "dome": [
-    198.06,
-    123.37,
+    200.02,
+    123.75,
     26.23,
     11.05
    ],
@@ -1473,8 +1473,8 @@
    "key": "bigbooty-desc-3",
    "file": "suits/bigbooty-desc-3.png",
    "dome": [
-    195.01,
-    135.55,
+    196.88,
+    136.26,
     26.23,
     20.85
    ],
@@ -1490,8 +1490,8 @@
    "key": "bigbooty-desc-4",
    "file": "suits/bigbooty-desc-4.png",
    "dome": [
-    188.82,
-    146.13,
+    190.54,
+    147.15,
     26.23,
     30.67
    ],
@@ -1507,8 +1507,8 @@
    "key": "bigbooty-tap-1",
    "file": "suits/bigbooty-tap-1.png",
    "dome": [
-    197.85,
-    110.52,
+    199.85,
+    110.56,
     26.23,
     1.25
    ],
@@ -1524,8 +1524,8 @@
    "key": "bigbooty-tap-2",
    "file": "suits/bigbooty-tap-2.png",
    "dome": [
-    196.78,
-    108.28,
+    198.78,
+    108.23,
     26.23,
     -1.34
    ],
@@ -1541,8 +1541,8 @@
    "key": "bigbooty-tap-3",
    "file": "suits/bigbooty-tap-3.png",
    "dome": [
-    196.04,
-    107.44,
+    198.04,
+    107.34,
     26.23,
     -2.99
    ],
@@ -1558,8 +1558,8 @@
    "key": "bigbooty-tap-4",
    "file": "suits/bigbooty-tap-4.png",
    "dome": [
-    195.88,
-    107.97,
+    197.88,
+    107.86,
     26.23,
     -3.25
    ],
@@ -1575,8 +1575,8 @@
    "key": "bigbooty-tap-5",
    "file": "suits/bigbooty-tap-5.png",
    "dome": [
-    196.35,
-    109.67,
+    198.35,
+    109.6,
     26.23,
     -2.06
    ],
@@ -1592,8 +1592,8 @@
    "key": "bigbooty-tap-6",
    "file": "suits/bigbooty-tap-6.png",
    "dome": [
-    197.16,
-    112.27,
+    199.16,
+    112.28,
     26.23,
     0.26
    ],
@@ -1609,8 +1609,8 @@
    "key": "bigbooty-tap-7",
    "file": "suits/bigbooty-tap-7.png",
    "dome": [
-    197.96,
-    115.28,
+    199.96,
+    115.39,
     26.23,
     3.1
    ],
@@ -1626,8 +1626,8 @@
    "key": "bigbooty-tap-8",
    "file": "suits/bigbooty-tap-8.png",
    "dome": [
-    198.57,
-    117.91,
+    200.56,
+    118.11,
     26.23,
     5.69
    ],
@@ -1643,8 +1643,8 @@
    "key": "bigbooty-tap-9",
    "file": "suits/bigbooty-tap-9.png",
    "dome": [
-    199.01,
-    119.33,
+    200.99,
+    119.59,
     26.23,
     7.34
    ],
@@ -1660,8 +1660,8 @@
    "key": "bigbooty-tap-10",
    "file": "suits/bigbooty-tap-10.png",
    "dome": [
-    199.3,
-    118.97,
+    201.28,
+    119.23,
     26.23,
     7.6
    ],
@@ -1677,8 +1677,8 @@
    "key": "bigbooty-tap-11",
    "file": "suits/bigbooty-tap-11.png",
    "dome": [
-    199.27,
-    116.84,
+    201.26,
+    117.06,
     26.23,
     6.41
    ],
@@ -1694,8 +1694,8 @@
    "key": "bigbooty-tap-12",
    "file": "suits/bigbooty-tap-12.png",
    "dome": [
-    198.78,
-    113.68,
+    200.77,
+    113.82,
     26.23,
     4.09
    ],
@@ -1711,8 +1711,8 @@
    "key": "cinderforge-desc-1",
    "file": "suits/cinderforge-desc-1.png",
    "dome": [
-    185.02,
-    106.88,
+    189.83,
+    113.03,
     27.18,
     1.8
    ],
@@ -1728,8 +1728,8 @@
    "key": "cinderforge-desc-2",
    "file": "suits/cinderforge-desc-2.png",
    "dome": [
-    188.8,
-    119.63,
+    192.01,
+    126.75,
     27.18,
     15.51
    ],
@@ -1745,8 +1745,8 @@
    "key": "cinderforge-desc-3",
    "file": "suits/cinderforge-desc-3.png",
    "dome": [
-    189.89,
-    132.77,
+    191.4,
+    140.43,
     27.18,
     28.69
    ],
@@ -1762,8 +1762,8 @@
    "key": "cinderforge-desc-4",
    "file": "suits/cinderforge-desc-4.png",
    "dome": [
-    188.62,
-    146.22,
+    188.44,
+    154.03,
     27.18,
     41.14
    ],
@@ -1779,8 +1779,8 @@
    "key": "cinderforge-tap-1",
    "file": "suits/cinderforge-tap-1.png",
    "dome": [
-    185.02,
-    106.88,
+    189.83,
+    113.03,
     27.18,
     1.8
    ],
@@ -1796,8 +1796,8 @@
    "key": "cinderforge-tap-2",
    "file": "suits/cinderforge-tap-2.png",
    "dome": [
-    183.7,
-    104.15,
+    188.89,
+    109.98,
     27.18,
     -1.88
    ],
@@ -1813,8 +1813,8 @@
    "key": "cinderforge-tap-3",
    "file": "suits/cinderforge-tap-3.png",
    "dome": [
-    182.9,
-    102.97,
+    188.33,
+    108.59,
     27.18,
     -4.22
    ],
@@ -1830,8 +1830,8 @@
    "key": "cinderforge-tap-4",
    "file": "suits/cinderforge-tap-4.png",
    "dome": [
-    182.69,
-    103.4,
+    188.16,
+    108.98,
     27.18,
     -4.6
    ],
@@ -1847,8 +1847,8 @@
    "key": "cinderforge-tap-5",
    "file": "suits/cinderforge-tap-5.png",
    "dome": [
-    183.1,
-    105.19,
+    188.4,
+    110.93,
     27.18,
     -2.91
    ],
@@ -1864,8 +1864,8 @@
    "key": "cinderforge-tap-6",
    "file": "suits/cinderforge-tap-6.png",
    "dome": [
-    183.85,
-    108.2,
+    188.81,
+    114.23,
     27.18,
     0.39
    ],
@@ -1881,8 +1881,8 @@
    "key": "cinderforge-tap-7",
    "file": "suits/cinderforge-tap-7.png",
    "dome": [
-    185.68,
-    111.58,
+    190.2,
+    117.95,
     27.18,
     4.41
    ],
@@ -1898,8 +1898,8 @@
    "key": "cinderforge-tap-8",
    "file": "suits/cinderforge-tap-8.png",
    "dome": [
-    187.28,
-    114.16,
+    191.39,
+    120.8,
     27.18,
     8.05
    ],
@@ -1915,8 +1915,8 @@
    "key": "cinderforge-tap-9",
    "file": "suits/cinderforge-tap-9.png",
    "dome": [
-    188.33,
-    115.42,
+    192.17,
+    122.22,
     27.18,
     10.36
    ],
@@ -1932,8 +1932,8 @@
    "key": "cinderforge-tap-10",
    "file": "suits/cinderforge-tap-10.png",
    "dome": [
-    188.68,
-    115.06,
+    192.48,
+    121.89,
     27.18,
     10.73
    ],
@@ -1949,8 +1949,8 @@
    "key": "cinderforge-tap-11",
    "file": "suits/cinderforge-tap-11.png",
    "dome": [
-    188.21,
-    113.11,
+    192.2,
+    119.82,
     27.18,
     9.07
    ],
@@ -1966,8 +1966,8 @@
    "key": "cinderforge-tap-12",
    "file": "suits/cinderforge-tap-12.png",
    "dome": [
-    186.91,
-    110.17,
+    191.28,
+    116.65,
     27.18,
     5.81
    ],
@@ -2255,8 +2255,8 @@
    "key": "cosmic-desc-1",
    "file": "suits/cosmic-desc-1.png",
    "dome": [
-    184.32,
-    101.02,
+    189.09,
+    108.18,
     27.17,
     1.83
    ],
@@ -2272,8 +2272,8 @@
    "key": "cosmic-desc-2",
    "file": "suits/cosmic-desc-2.png",
    "dome": [
-    189.28,
-    113.87,
+    192.22,
+    121.96,
     27.17,
     15.58
    ],
@@ -2289,8 +2289,8 @@
    "key": "cosmic-desc-3",
    "file": "suits/cosmic-desc-3.png",
    "dome": [
-    191.36,
-    128.37,
+    192.37,
+    136.91,
     27.17,
     28.79
    ],
@@ -2306,8 +2306,8 @@
    "key": "cosmic-desc-4",
    "file": "suits/cosmic-desc-4.png",
    "dome": [
-    190.6,
-    142.66,
+    189.74,
+    151.22,
     27.17,
     41.25
    ],
@@ -2323,8 +2323,8 @@
    "key": "cosmic-tap-1",
    "file": "suits/cosmic-tap-1.png",
    "dome": [
-    184.32,
-    101.02,
+    189.09,
+    108.18,
     27.17,
     1.83
    ],
@@ -2340,8 +2340,8 @@
    "key": "cosmic-tap-2",
    "file": "suits/cosmic-tap-2.png",
    "dome": [
-    183.15,
-    98.55,
+    188.37,
+    105.38,
     27.17,
     -1.85
    ],
@@ -2357,8 +2357,8 @@
    "key": "cosmic-tap-3",
    "file": "suits/cosmic-tap-3.png",
    "dome": [
-    182.31,
-    97.42,
+    187.81,
+    104.03,
     27.17,
     -4.21
    ],
@@ -2374,8 +2374,8 @@
    "key": "cosmic-tap-4",
    "file": "suits/cosmic-tap-4.png",
    "dome": [
-    182.1,
-    97.75,
+    187.64,
+    104.33,
     27.17,
     -4.59
    ],
@@ -2391,8 +2391,8 @@
    "key": "cosmic-tap-5",
    "file": "suits/cosmic-tap-5.png",
    "dome": [
-    182.57,
-    99.46,
+    187.92,
+    106.2,
     27.17,
     -2.89
    ],
@@ -2408,8 +2408,8 @@
    "key": "cosmic-tap-6",
    "file": "suits/cosmic-tap-6.png",
    "dome": [
-    183.44,
-    102.21,
+    188.39,
+    109.25,
     27.17,
     0.42
    ],
@@ -2425,8 +2425,8 @@
    "key": "cosmic-tap-7",
    "file": "suits/cosmic-tap-7.png",
    "dome": [
-    184.99,
-    105.39,
+    189.43,
+    112.76,
     27.17,
     4.45
    ],
@@ -2442,8 +2442,8 @@
    "key": "cosmic-tap-8",
    "file": "suits/cosmic-tap-8.png",
    "dome": [
-    187.08,
-    108.2,
+    191.04,
+    115.84,
     27.17,
     8.11
    ],
@@ -2459,8 +2459,8 @@
    "key": "cosmic-tap-9",
    "file": "suits/cosmic-tap-9.png",
    "dome": [
-    188.42,
-    109.75,
+    192.07,
+    117.54,
     27.17,
     10.42
    ],
@@ -2476,8 +2476,8 @@
    "key": "cosmic-tap-10",
    "file": "suits/cosmic-tap-10.png",
    "dome": [
-    188.8,
-    109.48,
+    192.4,
+    117.29,
     27.17,
     10.8
    ],
@@ -2493,8 +2493,8 @@
    "key": "cosmic-tap-11",
    "file": "suits/cosmic-tap-11.png",
    "dome": [
-    188.13,
-    107.45,
+    191.96,
+    115.15,
     27.17,
     9.13
    ],
@@ -2510,8 +2510,8 @@
    "key": "cosmic-tap-12",
    "file": "suits/cosmic-tap-12.png",
    "dome": [
-    186.43,
-    104.3,
+    190.69,
+    111.77,
     27.17,
     5.85
    ],
@@ -3071,8 +3071,8 @@
    "key": "ember-desc-1",
    "file": "suits/ember-desc-1.png",
    "dome": [
-    183.97,
-    101.49,
+    188.74,
+    108.65,
     27.22,
     1.83
    ],
@@ -3088,8 +3088,8 @@
    "key": "ember-desc-2",
    "file": "suits/ember-desc-2.png",
    "dome": [
-    184.95,
-    115.48,
+    187.89,
+    123.56,
     27.22,
     15.54
    ],
@@ -3105,8 +3105,8 @@
    "key": "ember-desc-3",
    "file": "suits/ember-desc-3.png",
    "dome": [
-    184.68,
-    129.78,
+    185.7,
+    138.32,
     27.22,
     28.72
    ],
@@ -3122,8 +3122,8 @@
    "key": "ember-desc-4",
    "file": "suits/ember-desc-4.png",
    "dome": [
-    181.15,
-    142.71,
+    180.3,
+    151.27,
     27.22,
     41.18
    ],
@@ -3139,8 +3139,8 @@
    "key": "ember-tap-1",
    "file": "suits/ember-tap-1.png",
    "dome": [
-    183.97,
-    101.49,
+    188.74,
+    108.65,
     27.22,
     1.83
    ],
@@ -3156,8 +3156,8 @@
    "key": "ember-tap-2",
    "file": "suits/ember-tap-2.png",
    "dome": [
-    182.77,
-    98.45,
+    187.99,
+    105.28,
     27.22,
     -1.85
    ],
@@ -3173,8 +3173,8 @@
    "key": "ember-tap-3",
    "file": "suits/ember-tap-3.png",
    "dome": [
-    181.94,
-    96.94,
+    187.44,
+    103.56,
     27.22,
     -4.19
    ],
@@ -3190,8 +3190,8 @@
    "key": "ember-tap-4",
    "file": "suits/ember-tap-4.png",
    "dome": [
-    181.82,
-    97.21,
+    187.36,
+    103.79,
     27.22,
     -4.57
    ],
@@ -3207,8 +3207,8 @@
    "key": "ember-tap-5",
    "file": "suits/ember-tap-5.png",
    "dome": [
-    182.4,
-    99.17,
+    187.75,
+    105.91,
     27.22,
     -2.88
    ],
@@ -3224,8 +3224,8 @@
    "key": "ember-tap-6",
    "file": "suits/ember-tap-6.png",
    "dome": [
-    183.41,
-    102.43,
+    188.36,
+    109.47,
     27.22,
     0.42
    ],
@@ -3241,8 +3241,8 @@
    "key": "ember-tap-7",
    "file": "suits/ember-tap-7.png",
    "dome": [
-    184.43,
-    106.21,
+    188.87,
+    113.58,
     27.22,
     4.44
    ],
@@ -3258,8 +3258,8 @@
    "key": "ember-tap-8",
    "file": "suits/ember-tap-8.png",
    "dome": [
-    185.21,
-    109.5,
+    189.18,
+    117.13,
     27.22,
     8.08
    ],
@@ -3275,8 +3275,8 @@
    "key": "ember-tap-9",
    "file": "suits/ember-tap-9.png",
    "dome": [
-    185.7,
-    111.34,
+    189.36,
+    119.13,
     27.22,
     10.39
    ],
@@ -3292,8 +3292,8 @@
    "key": "ember-tap-10",
    "file": "suits/ember-tap-10.png",
    "dome": [
-    185.89,
-    111.13,
+    189.49,
+    118.94,
     27.22,
     10.77
    ],
@@ -3309,8 +3309,8 @@
    "key": "ember-tap-11",
    "file": "suits/ember-tap-11.png",
    "dome": [
-    185.7,
-    108.89,
+    189.53,
+    116.59,
     27.22,
     9.1
    ],
@@ -3326,8 +3326,8 @@
    "key": "ember-tap-12",
    "file": "suits/ember-tap-12.png",
    "dome": [
-    185.04,
-    105.32,
+    189.3,
+    112.79,
     27.22,
     5.84
    ],
@@ -3887,8 +3887,8 @@
    "key": "gemmie-desc-1",
    "file": "suits/gemmie-desc-1.png",
    "dome": [
-    183.43,
-    99.44,
+    188.21,
+    106.6,
     27.13,
     1.82
    ],
@@ -3904,8 +3904,8 @@
    "key": "gemmie-desc-2",
    "file": "suits/gemmie-desc-2.png",
    "dome": [
-    188.66,
-    113.27,
+    191.6,
+    121.35,
     27.13,
     15.55
    ],
@@ -3921,8 +3921,8 @@
    "key": "gemmie-desc-3",
    "file": "suits/gemmie-desc-3.png",
    "dome": [
-    190.83,
-    128.76,
+    191.85,
+    137.3,
     27.13,
     28.74
    ],
@@ -3938,8 +3938,8 @@
    "key": "gemmie-desc-4",
    "file": "suits/gemmie-desc-4.png",
    "dome": [
-    189.93,
-    144.01,
+    189.08,
+    152.57,
     27.13,
     41.19
    ],
@@ -3955,8 +3955,8 @@
    "key": "gemmie-tap-1",
    "file": "suits/gemmie-tap-1.png",
    "dome": [
-    183.43,
-    99.44,
+    188.21,
+    106.6,
     27.13,
     1.82
    ],
@@ -3972,8 +3972,8 @@
    "key": "gemmie-tap-2",
    "file": "suits/gemmie-tap-2.png",
    "dome": [
-    182.35,
-    96.36,
+    187.57,
+    103.19,
     27.13,
     -1.86
    ],
@@ -3989,8 +3989,8 @@
    "key": "gemmie-tap-3",
    "file": "suits/gemmie-tap-3.png",
    "dome": [
-    181.61,
-    94.53,
+    187.11,
+    101.14,
     27.13,
     -4.21
    ],
@@ -4006,8 +4006,8 @@
    "key": "gemmie-tap-4",
    "file": "suits/gemmie-tap-4.png",
    "dome": [
-    181.5,
-    94.73,
+    187.04,
+    101.31,
     27.13,
     -4.59
    ],
@@ -4023,8 +4023,8 @@
    "key": "gemmie-tap-5",
    "file": "suits/gemmie-tap-5.png",
    "dome": [
-    182.03,
-    97.04,
+    187.38,
+    103.78,
     27.13,
     -2.9
    ],
@@ -4040,8 +4040,8 @@
    "key": "gemmie-tap-6",
    "file": "suits/gemmie-tap-6.png",
    "dome": [
-    182.94,
-    100.59,
+    187.89,
+    107.63,
     27.13,
     0.41
    ],
@@ -4057,8 +4057,8 @@
    "key": "gemmie-tap-7",
    "file": "suits/gemmie-tap-7.png",
    "dome": [
-    184.34,
-    104.23,
+    188.78,
+    111.6,
     27.13,
     4.43
    ],
@@ -4074,8 +4074,8 @@
    "key": "gemmie-tap-8",
    "file": "suits/gemmie-tap-8.png",
    "dome": [
-    186.4,
-    107,
+    190.37,
+    114.63,
     27.13,
     8.08
    ],
@@ -4091,8 +4091,8 @@
    "key": "gemmie-tap-9",
    "file": "suits/gemmie-tap-9.png",
    "dome": [
-    187.72,
-    108.35,
+    191.38,
+    116.14,
     27.13,
     10.39
    ],
@@ -4108,8 +4108,8 @@
    "key": "gemmie-tap-10",
    "file": "suits/gemmie-tap-10.png",
    "dome": [
-    188.03,
-    108.09,
+    191.63,
+    115.9,
     27.13,
     10.77
    ],
@@ -4125,8 +4125,8 @@
    "key": "gemmie-tap-11",
    "file": "suits/gemmie-tap-11.png",
    "dome": [
-    187.21,
-    105.92,
+    191.04,
+    113.62,
     27.13,
     9.1
    ],
@@ -4142,8 +4142,8 @@
    "key": "gemmie-tap-12",
    "file": "suits/gemmie-tap-12.png",
    "dome": [
-    185.38,
-    102.92,
+    189.64,
+    110.39,
     27.13,
     5.83
    ],
@@ -4159,8 +4159,8 @@
    "key": "geode-desc-1",
    "file": "suits/geode-desc-1.png",
    "dome": [
-    183.83,
-    121.67,
+    186.92,
+    118.76,
     27.29,
     1.77
    ],
@@ -4176,8 +4176,8 @@
    "key": "geode-desc-2",
    "file": "suits/geode-desc-2.png",
    "dome": [
-    184.41,
-    133.84,
+    188.1,
+    131.75,
     27.29,
     15.5
    ],
@@ -4193,8 +4193,8 @@
    "key": "geode-desc-3",
    "file": "suits/geode-desc-3.png",
    "dome": [
-    183.92,
-    144.47,
+    187.99,
+    143.28,
     27.29,
     28.69
    ],
@@ -4210,8 +4210,8 @@
    "key": "geode-desc-4",
    "file": "suits/geode-desc-4.png",
    "dome": [
-    181.2,
-    151.8,
+    185.43,
+    151.52,
     27.29,
     41.16
    ],
@@ -4227,8 +4227,8 @@
    "key": "geode-tap-1",
    "file": "suits/geode-tap-1.png",
    "dome": [
-    183.83,
-    121.67,
+    186.92,
+    118.76,
     27.29,
     1.77
    ],
@@ -4244,8 +4244,8 @@
    "key": "geode-tap-2",
    "file": "suits/geode-tap-2.png",
    "dome": [
-    182.77,
-    119.03,
+    185.67,
+    115.93,
     27.29,
     -1.91
    ],
@@ -4261,8 +4261,8 @@
    "key": "geode-tap-3",
    "file": "suits/geode-tap-3.png",
    "dome": [
-    182,
-    117.73,
+    184.77,
+    114.52,
     27.29,
     -4.26
    ],
@@ -4278,8 +4278,8 @@
    "key": "geode-tap-4",
    "file": "suits/geode-tap-4.png",
    "dome": [
-    181.81,
-    118.06,
+    184.56,
+    114.83,
     27.29,
     -4.64
    ],
@@ -4295,8 +4295,8 @@
    "key": "geode-tap-5",
    "file": "suits/geode-tap-5.png",
    "dome": [
-    182.24,
-    119.91,
+    185.08,
+    116.76,
     27.29,
     -2.95
    ],
@@ -4312,8 +4312,8 @@
    "key": "geode-tap-6",
    "file": "suits/geode-tap-6.png",
    "dome": [
-    183.05,
-    122.81,
+    186.07,
+    119.83,
     27.29,
     0.36
    ],
@@ -4329,8 +4329,8 @@
    "key": "geode-tap-7",
    "file": "suits/geode-tap-7.png",
    "dome": [
-    183.93,
-    126.03,
+    187.15,
+    123.27,
     27.29,
     4.38
    ],
@@ -4346,8 +4346,8 @@
    "key": "geode-tap-8",
    "file": "suits/geode-tap-8.png",
    "dome": [
-    184.62,
-    128.71,
+    188.01,
+    126.16,
     27.29,
     8.03
    ],
@@ -4363,8 +4363,8 @@
    "key": "geode-tap-9",
    "file": "suits/geode-tap-9.png",
    "dome": [
-    185.09,
-    130.14,
+    188.58,
+    127.73,
     27.29,
     10.34
    ],
@@ -4380,8 +4380,8 @@
    "key": "geode-tap-10",
    "file": "suits/geode-tap-10.png",
    "dome": [
-    185.34,
-    129.89,
+    188.85,
+    127.5,
     27.29,
     10.71
    ],
@@ -4397,8 +4397,8 @@
    "key": "geode-tap-11",
    "file": "suits/geode-tap-11.png",
    "dome": [
-    185.27,
-    128,
+    188.7,
+    125.51,
     27.29,
     9.05
    ],
@@ -4414,8 +4414,8 @@
    "key": "geode-tap-12",
    "file": "suits/geode-tap-12.png",
    "dome": [
-    184.76,
-    124.97,
+    188.05,
+    122.29,
     27.29,
     5.78
    ],
@@ -4431,9 +4431,9 @@
    "key": "ghost-desc-1",
    "file": "suits/ghost-desc-1.png",
    "dome": [
-    191.69,
-    101.54,
-    26.36,
+    193.62,
+    103.61,
+    25.36,
     2.03
    ],
    "box": null,
@@ -4448,9 +4448,9 @@
    "key": "ghost-desc-2",
    "file": "suits/ghost-desc-2.png",
    "dome": [
-    195.39,
-    116.14,
-    26.36,
+    196.77,
+    118.61,
+    25.36,
     15.8
    ],
    "box": null,
@@ -4465,9 +4465,9 @@
    "key": "ghost-desc-3",
    "file": "suits/ghost-desc-3.png",
    "dome": [
-    195.62,
-    132.15,
-    26.36,
+    196.4,
+    134.87,
+    25.36,
     28.99
    ],
    "box": null,
@@ -4482,9 +4482,9 @@
    "key": "ghost-desc-4",
    "file": "suits/ghost-desc-4.png",
    "dome": [
-    193.28,
-    148.77,
-    26.36,
+    193.46,
+    151.59,
+    25.36,
     41.42
    ],
    "box": null,
@@ -4499,9 +4499,9 @@
    "key": "ghost-tap-1",
    "file": "suits/ghost-tap-1.png",
    "dome": [
-    191.69,
-    101.54,
-    26.36,
+    193.62,
+    103.61,
+    25.36,
     2.03
    ],
    "box": null,
@@ -4516,9 +4516,9 @@
    "key": "ghost-tap-2",
    "file": "suits/ghost-tap-2.png",
    "dome": [
-    190.17,
-    99,
-    26.36,
+    192.23,
+    100.94,
+    25.36,
     -1.66
    ],
    "box": null,
@@ -4533,9 +4533,9 @@
    "key": "ghost-tap-3",
    "file": "suits/ghost-tap-3.png",
    "dome": [
-    189.14,
-    97.91,
-    26.36,
+    191.28,
+    99.76,
+    25.36,
     -4.02
    ],
    "box": null,
@@ -4550,9 +4550,9 @@
    "key": "ghost-tap-4",
    "file": "suits/ghost-tap-4.png",
    "dome": [
-    189.18,
-    98.47,
-    26.36,
+    191.33,
+    100.31,
+    25.36,
     -4.4
    ],
    "box": null,
@@ -4567,9 +4567,9 @@
    "key": "ghost-tap-5",
    "file": "suits/ghost-tap-5.png",
    "dome": [
-    190.38,
-    100.55,
-    26.36,
+    192.47,
+    102.45,
+    25.36,
     -2.7
    ],
    "box": null,
@@ -4584,9 +4584,9 @@
    "key": "ghost-tap-6",
    "file": "suits/ghost-tap-6.png",
    "dome": [
-    191.98,
-    103.69,
-    26.36,
+    193.96,
+    105.71,
+    25.36,
     0.61
    ],
    "box": null,
@@ -4601,9 +4601,9 @@
    "key": "ghost-tap-7",
    "file": "suits/ghost-tap-7.png",
    "dome": [
-    193.48,
-    107.17,
-    26.36,
+    195.31,
+    109.33,
+    25.36,
     4.65
    ],
    "box": null,
@@ -4618,9 +4618,9 @@
    "key": "ghost-tap-8",
    "file": "suits/ghost-tap-8.png",
    "dome": [
-    194.65,
-    110.05,
-    26.36,
+    196.34,
+    112.32,
+    25.36,
     8.31
    ],
    "box": null,
@@ -4635,9 +4635,9 @@
    "key": "ghost-tap-9",
    "file": "suits/ghost-tap-9.png",
    "dome": [
-    195.23,
-    111.44,
-    26.36,
+    196.83,
+    113.77,
+    25.36,
     10.63
    ],
    "box": null,
@@ -4652,9 +4652,9 @@
    "key": "ghost-tap-10",
    "file": "suits/ghost-tap-10.png",
    "dome": [
-    195.21,
-    110.86,
-    26.36,
+    196.79,
+    113.21,
+    25.36,
     11.01
    ],
    "box": null,
@@ -4669,9 +4669,9 @@
    "key": "ghost-tap-11",
    "file": "suits/ghost-tap-11.png",
    "dome": [
-    194.61,
-    108.47,
-    26.36,
+    196.26,
+    110.77,
+    25.36,
     9.34
    ],
    "box": null,
@@ -4686,9 +4686,9 @@
    "key": "ghost-tap-12",
    "file": "suits/ghost-tap-12.png",
    "dome": [
-    193.33,
-    105.01,
-    26.36,
+    195.11,
+    107.21,
+    25.36,
     6.06
    ],
    "box": null,
@@ -4703,8 +4703,8 @@
    "key": "glasssuit-desc-1",
    "file": "suits/glasssuit-desc-1.png",
    "dome": [
-    186.04,
-    112.31,
+    188.04,
+    112.37,
     26.32,
     1.71
    ],
@@ -4720,8 +4720,8 @@
    "key": "glasssuit-desc-2",
    "file": "suits/glasssuit-desc-2.png",
    "dome": [
-    187.19,
-    125.06,
+    189.12,
+    125.59,
     26.32,
     15.42
    ],
@@ -4737,8 +4737,8 @@
    "key": "glasssuit-desc-3",
    "file": "suits/glasssuit-desc-3.png",
    "dome": [
-    185.63,
-    137.24,
+    187.39,
+    138.2,
     26.32,
     28.61
    ],
@@ -4754,8 +4754,8 @@
    "key": "glasssuit-desc-4",
    "file": "suits/glasssuit-desc-4.png",
    "dome": [
-    182.08,
-    148.78,
+    183.59,
+    150.09,
     26.32,
     41.08
    ],
@@ -4771,8 +4771,8 @@
    "key": "glasssuit-tap-1",
    "file": "suits/glasssuit-tap-1.png",
    "dome": [
-    186.04,
-    112.31,
+    188.04,
+    112.37,
     26.32,
     1.71
    ],
@@ -4788,8 +4788,8 @@
    "key": "glasssuit-tap-2",
    "file": "suits/glasssuit-tap-2.png",
    "dome": [
-    185.04,
-    109.7,
+    187.04,
+    109.63,
     26.32,
     -1.96
    ],
@@ -4805,8 +4805,8 @@
    "key": "glasssuit-tap-3",
    "file": "suits/glasssuit-tap-3.png",
    "dome": [
-    184.37,
-    108.43,
+    186.36,
+    108.28,
     26.32,
     -4.31
    ],
@@ -4822,8 +4822,8 @@
    "key": "glasssuit-tap-4",
    "file": "suits/glasssuit-tap-4.png",
    "dome": [
-    184.35,
-    108.81,
+    186.34,
+    108.65,
     26.32,
     -4.68
    ],
@@ -4839,8 +4839,8 @@
    "key": "glasssuit-tap-5",
    "file": "suits/glasssuit-tap-5.png",
    "dome": [
-    184.98,
-    110.74,
+    186.98,
+    110.64,
     26.32,
     -3
    ],
@@ -4856,8 +4856,8 @@
    "key": "glasssuit-tap-6",
    "file": "suits/glasssuit-tap-6.png",
    "dome": [
-    185.88,
-    113.74,
+    187.88,
+    113.75,
     26.32,
     0.3
    ],
@@ -4873,8 +4873,8 @@
    "key": "glasssuit-tap-7",
    "file": "suits/glasssuit-tap-7.png",
    "dome": [
-    186.71,
-    117.08,
+    188.7,
+    117.23,
     26.32,
     4.32
    ],
@@ -4890,8 +4890,8 @@
    "key": "glasssuit-tap-8",
    "file": "suits/glasssuit-tap-8.png",
    "dome": [
-    187.28,
-    119.84,
+    189.26,
+    120.12,
     26.32,
     7.96
    ],
@@ -4907,8 +4907,8 @@
    "key": "glasssuit-tap-9",
    "file": "suits/glasssuit-tap-9.png",
    "dome": [
-    187.6,
-    121.22,
+    189.57,
+    121.58,
     26.32,
     10.27
    ],
@@ -4924,8 +4924,8 @@
    "key": "glasssuit-tap-10",
    "file": "suits/glasssuit-tap-10.png",
    "dome": [
-    187.71,
-    120.84,
+    189.68,
+    121.21,
     26.32,
     10.64
    ],
@@ -4941,8 +4941,8 @@
    "key": "glasssuit-tap-11",
    "file": "suits/glasssuit-tap-11.png",
    "dome": [
-    187.53,
-    118.8,
+    189.51,
+    119.11,
     26.32,
     8.98
    ],
@@ -4958,8 +4958,8 @@
    "key": "glasssuit-tap-12",
    "file": "suits/glasssuit-tap-12.png",
    "dome": [
-    186.96,
-    115.67,
+    188.95,
+    115.87,
     26.32,
     5.72
    ],
@@ -5247,8 +5247,8 @@
    "key": "iontrim-desc-1",
    "file": "suits/iontrim-desc-1.png",
    "dome": [
-    191.55,
-    107.14,
+    193.52,
+    108.2,
     24.07,
     1.7
    ],
@@ -5264,8 +5264,8 @@
    "key": "iontrim-desc-2",
    "file": "suits/iontrim-desc-2.png",
    "dome": [
-    193.45,
-    122.23,
+    195.11,
+    123.73,
     24.07,
     15.45
    ],
@@ -5281,8 +5281,8 @@
    "key": "iontrim-desc-3",
    "file": "suits/iontrim-desc-3.png",
    "dome": [
-    191.56,
-    137.73,
+    192.83,
+    139.57,
     24.07,
     28.68
    ],
@@ -5298,8 +5298,8 @@
    "key": "iontrim-desc-4",
    "file": "suits/iontrim-desc-4.png",
    "dome": [
-    186.22,
-    152.39,
+    187.07,
+    154.46,
     24.07,
     41.17
    ],
@@ -5315,8 +5315,8 @@
    "key": "iontrim-tap-1",
    "file": "suits/iontrim-tap-1.png",
    "dome": [
-    191.55,
-    107.14,
+    193.52,
+    108.2,
     24.07,
     1.7
    ],
@@ -5332,8 +5332,8 @@
    "key": "iontrim-tap-2",
    "file": "suits/iontrim-tap-2.png",
    "dome": [
-    190.33,
-    104.37,
+    192.36,
+    105.3,
     24.07,
     -1.99
    ],
@@ -5349,8 +5349,8 @@
    "key": "iontrim-tap-3",
    "file": "suits/iontrim-tap-3.png",
    "dome": [
-    189.6,
-    103.16,
+    191.67,
+    104.01,
     24.07,
     -4.34
    ],
@@ -5366,8 +5366,8 @@
    "key": "iontrim-tap-4",
    "file": "suits/iontrim-tap-4.png",
    "dome": [
-    189.66,
-    103.73,
+    191.74,
+    104.56,
     24.07,
     -4.72
    ],
@@ -5383,8 +5383,8 @@
    "key": "iontrim-tap-5",
    "file": "suits/iontrim-tap-5.png",
    "dome": [
-    190.45,
-    105.93,
+    192.5,
+    106.82,
     24.07,
     -3.03
    ],
@@ -5400,8 +5400,8 @@
    "key": "iontrim-tap-6",
    "file": "suits/iontrim-tap-6.png",
    "dome": [
-    191.63,
-    109.29,
+    193.63,
+    110.3,
     24.07,
     0.28
    ],
@@ -5417,8 +5417,8 @@
    "key": "iontrim-tap-7",
    "file": "suits/iontrim-tap-7.png",
    "dome": [
-    192.75,
-    113,
+    194.67,
+    114.15,
     24.07,
     4.31
    ],
@@ -5434,8 +5434,8 @@
    "key": "iontrim-tap-8",
    "file": "suits/iontrim-tap-8.png",
    "dome": [
-    193.54,
-    116.04,
+    195.38,
+    117.31,
     24.07,
     7.97
    ],
@@ -5451,8 +5451,8 @@
    "key": "iontrim-tap-9",
    "file": "suits/iontrim-tap-9.png",
    "dome": [
-    193.95,
-    117.51,
+    195.74,
+    118.85,
     24.07,
     10.29
    ],
@@ -5468,8 +5468,8 @@
    "key": "iontrim-tap-10",
    "file": "suits/iontrim-tap-10.png",
    "dome": [
-    194,
-    116.93,
+    195.78,
+    118.28,
     24.07,
     10.66
    ],
@@ -5485,8 +5485,8 @@
    "key": "iontrim-tap-11",
    "file": "suits/iontrim-tap-11.png",
    "dome": [
-    193.63,
-    114.46,
+    195.45,
+    115.76,
     24.07,
     9
    ],
@@ -5502,8 +5502,8 @@
    "key": "iontrim-tap-12",
    "file": "suits/iontrim-tap-12.png",
    "dome": [
-    192.78,
-    110.84,
+    194.67,
+    112.03,
     24.07,
     5.72
    ],
@@ -5519,8 +5519,8 @@
    "key": "leviathan-desc-1",
    "file": "suits/leviathan-desc-1.png",
    "dome": [
-    186.86,
-    102.5,
+    188.8,
+    104.56,
     24.93,
     1.8
    ],
@@ -5536,8 +5536,8 @@
    "key": "leviathan-desc-2",
    "file": "suits/leviathan-desc-2.png",
    "dome": [
-    190,
-    120.7,
+    191.38,
+    123.17,
     24.93,
     15.69
    ],
@@ -5553,8 +5553,8 @@
    "key": "leviathan-desc-3",
    "file": "suits/leviathan-desc-3.png",
    "dome": [
-    188.79,
-    138.78,
+    189.57,
+    141.5,
     24.93,
     29
    ],
@@ -5570,8 +5570,8 @@
    "key": "leviathan-desc-4",
    "file": "suits/leviathan-desc-4.png",
    "dome": [
-    184.5,
-    156.43,
+    184.67,
+    159.25,
     24.93,
     41.51
    ],
@@ -5587,8 +5587,8 @@
    "key": "leviathan-tap-1",
    "file": "suits/leviathan-tap-1.png",
    "dome": [
-    186.86,
-    102.5,
+    188.8,
+    104.56,
     24.93,
     1.8
    ],
@@ -5604,8 +5604,8 @@
    "key": "leviathan-tap-2",
    "file": "suits/leviathan-tap-2.png",
    "dome": [
-    185.3,
-    99.36,
+    187.37,
+    101.29,
     24.93,
     -1.93
    ],
@@ -5621,8 +5621,8 @@
    "key": "leviathan-tap-3",
    "file": "suits/leviathan-tap-3.png",
    "dome": [
-    184.38,
-    98.01,
+    186.52,
+    99.85,
     24.93,
     -4.31
    ],
@@ -5638,8 +5638,8 @@
    "key": "leviathan-tap-4",
    "file": "suits/leviathan-tap-4.png",
    "dome": [
-    184.44,
-    98.69,
+    186.6,
+    100.52,
     24.93,
     -4.69
    ],
@@ -5655,8 +5655,8 @@
    "key": "leviathan-tap-5",
    "file": "suits/leviathan-tap-5.png",
    "dome": [
-    185.43,
-    101.19,
+    187.53,
+    103.08,
     24.93,
     -2.98
    ],
@@ -5672,8 +5672,8 @@
    "key": "leviathan-tap-6",
    "file": "suits/leviathan-tap-6.png",
    "dome": [
-    186.94,
-    105,
+    188.93,
+    107.01,
     24.93,
     0.37
    ],
@@ -5689,8 +5689,8 @@
    "key": "leviathan-tap-7",
    "file": "suits/leviathan-tap-7.png",
    "dome": [
-    188.42,
-    109.22,
+    190.26,
+    111.37,
     24.93,
     4.44
    ],
@@ -5706,8 +5706,8 @@
    "key": "leviathan-tap-8",
    "file": "suits/leviathan-tap-8.png",
    "dome": [
-    189.53,
-    112.68,
+    191.23,
+    114.94,
     24.93,
     8.14
    ],
@@ -5723,8 +5723,8 @@
    "key": "leviathan-tap-9",
    "file": "suits/leviathan-tap-9.png",
    "dome": [
-    190.12,
-    114.35,
+    191.72,
+    116.68,
     24.93,
     10.48
    ],
@@ -5740,8 +5740,8 @@
    "key": "leviathan-tap-10",
    "file": "suits/leviathan-tap-10.png",
    "dome": [
-    190.18,
-    113.68,
+    191.77,
+    116.02,
     24.93,
     10.86
    ],
@@ -5757,8 +5757,8 @@
    "key": "leviathan-tap-11",
    "file": "suits/leviathan-tap-11.png",
    "dome": [
-    189.64,
-    110.85,
+    191.3,
+    113.14,
     24.93,
     9.17
    ],
@@ -5774,8 +5774,8 @@
    "key": "leviathan-tap-12",
    "file": "suits/leviathan-tap-12.png",
    "dome": [
-    188.46,
-    106.71,
+    190.24,
+    108.9,
     24.93,
     5.87
    ],
@@ -6335,8 +6335,8 @@
    "key": "redline-desc-1",
    "file": "suits/redline-desc-1.png",
    "dome": [
-    189.5,
-    106.74,
+    192.47,
+    107.83,
     29.22,
     1.65
    ],
@@ -6352,8 +6352,8 @@
    "key": "redline-desc-2",
    "file": "suits/redline-desc-2.png",
    "dome": [
-    191.39,
-    119.27,
+    194.02,
+    121.03,
     29.22,
     15.36
    ],
@@ -6369,8 +6369,8 @@
    "key": "redline-desc-3",
    "file": "suits/redline-desc-3.png",
    "dome": [
-    190.03,
-    132.01,
+    192.19,
+    134.32,
     29.22,
     28.56
    ],
@@ -6386,8 +6386,8 @@
    "key": "redline-desc-4",
    "file": "suits/redline-desc-4.png",
    "dome": [
-    187.21,
-    143.32,
+    188.82,
+    146.04,
     29.22,
     41.05
    ],
@@ -6403,8 +6403,8 @@
    "key": "redline-tap-1",
    "file": "suits/redline-tap-1.png",
    "dome": [
-    189.5,
-    106.74,
+    192.47,
+    107.83,
     29.22,
     1.65
    ],
@@ -6420,8 +6420,8 @@
    "key": "redline-tap-2",
    "file": "suits/redline-tap-2.png",
    "dome": [
-    188.4,
-    104.62,
+    191.43,
+    105.51,
     29.22,
     -2.02
    ],
@@ -6437,8 +6437,8 @@
    "key": "redline-tap-3",
    "file": "suits/redline-tap-3.png",
    "dome": [
-    187.68,
-    103.75,
+    190.75,
+    104.52,
     29.22,
     -4.36
    ],
@@ -6454,8 +6454,8 @@
    "key": "redline-tap-4",
    "file": "suits/redline-tap-4.png",
    "dome": [
-    187.63,
-    104.27,
+    190.7,
+    105.02,
     29.22,
     -4.74
    ],
@@ -6471,8 +6471,8 @@
    "key": "redline-tap-5",
    "file": "suits/redline-tap-5.png",
    "dome": [
-    188.23,
-    106.03,
+    191.28,
+    106.87,
     29.22,
     -3.06
    ],
@@ -6488,8 +6488,8 @@
    "key": "redline-tap-6",
    "file": "suits/redline-tap-6.png",
    "dome": [
-    189.21,
-    108.66,
+    192.21,
+    109.67,
     29.22,
     0.24
    ],
@@ -6505,8 +6505,8 @@
    "key": "redline-tap-7",
    "file": "suits/redline-tap-7.png",
    "dome": [
-    190.26,
-    111.52,
+    193.18,
+    112.74,
     29.22,
     4.26
    ],
@@ -6522,8 +6522,8 @@
    "key": "redline-tap-8",
    "file": "suits/redline-tap-8.png",
    "dome": [
-    191.16,
-    113.84,
+    193.99,
+    115.24,
     29.22,
     7.9
    ],
@@ -6539,8 +6539,8 @@
    "key": "redline-tap-9",
    "file": "suits/redline-tap-9.png",
    "dome": [
-    191.7,
-    114.93,
+    194.48,
+    116.45,
     29.22,
     10.21
    ],
@@ -6556,8 +6556,8 @@
    "key": "redline-tap-10",
    "file": "suits/redline-tap-10.png",
    "dome": [
-    191.84,
-    114.44,
+    194.61,
+    115.97,
     29.22,
     10.58
    ],
@@ -6573,8 +6573,8 @@
    "key": "redline-tap-11",
    "file": "suits/redline-tap-11.png",
    "dome": [
-    191.51,
-    112.48,
+    194.32,
+    113.93,
     29.22,
     8.92
    ],
@@ -6590,8 +6590,8 @@
    "key": "redline-tap-12",
    "file": "suits/redline-tap-12.png",
    "dome": [
-    190.67,
-    109.63,
+    193.56,
+    110.92,
     29.22,
     5.66
    ],
@@ -6879,8 +6879,8 @@
    "key": "robodog-desc-1",
    "file": "suits/robodog-desc-1.png",
    "dome": [
-    189.04,
-    108.64,
+    191.01,
+    109.7,
     25.09,
     1.78
    ],
@@ -6896,8 +6896,8 @@
    "key": "robodog-desc-2",
    "file": "suits/robodog-desc-2.png",
    "dome": [
-    192.3,
-    123.12,
+    193.96,
+    124.62,
     25.09,
     15.49
    ],
@@ -6913,8 +6913,8 @@
    "key": "robodog-desc-3",
    "file": "suits/robodog-desc-3.png",
    "dome": [
-    193.23,
-    137.37,
+    194.51,
+    139.21,
     25.09,
     28.67
    ],
@@ -6930,8 +6930,8 @@
    "key": "robodog-desc-4",
    "file": "suits/robodog-desc-4.png",
    "dome": [
-    189.9,
-    150.55,
+    190.75,
+    152.62,
     25.09,
     41.13
    ],
@@ -6947,8 +6947,8 @@
    "key": "robodog-tap-1",
    "file": "suits/robodog-tap-1.png",
    "dome": [
-    189.04,
-    108.64,
+    191.01,
+    109.7,
     25.09,
     1.78
    ],
@@ -6964,8 +6964,8 @@
    "key": "robodog-tap-2",
    "file": "suits/robodog-tap-2.png",
    "dome": [
-    187.63,
-    105.97,
+    189.66,
+    106.9,
     25.09,
     -1.9
    ],
@@ -6981,8 +6981,8 @@
    "key": "robodog-tap-3",
    "file": "suits/robodog-tap-3.png",
    "dome": [
-    186.82,
-    104.76,
+    188.89,
+    105.61,
     25.09,
     -4.24
    ],
@@ -6998,8 +6998,8 @@
    "key": "robodog-tap-4",
    "file": "suits/robodog-tap-4.png",
    "dome": [
-    186.94,
-    105.25,
+    189.01,
+    106.09,
     25.09,
     -4.62
    ],
@@ -7015,8 +7015,8 @@
    "key": "robodog-tap-5",
    "file": "suits/robodog-tap-5.png",
    "dome": [
-    187.91,
-    107.31,
+    189.96,
+    108.21,
     25.09,
     -2.93
    ],
@@ -7032,8 +7032,8 @@
    "key": "robodog-tap-6",
    "file": "suits/robodog-tap-6.png",
    "dome": [
-    189.33,
-    110.53,
+    191.32,
+    111.54,
     25.09,
     0.37
    ],
@@ -7049,8 +7049,8 @@
    "key": "robodog-tap-7",
    "file": "suits/robodog-tap-7.png",
    "dome": [
-    190.71,
-    114.1,
+    192.63,
+    115.25,
     25.09,
     4.39
    ],
@@ -7066,8 +7066,8 @@
    "key": "robodog-tap-8",
    "file": "suits/robodog-tap-8.png",
    "dome": [
-    191.7,
-    117.11,
+    193.54,
+    118.38,
     25.09,
     8.03
    ],
@@ -7083,8 +7083,8 @@
    "key": "robodog-tap-9",
    "file": "suits/robodog-tap-9.png",
    "dome": [
-    192.2,
-    118.63,
+    193.99,
+    119.97,
     25.09,
     10.34
    ],
@@ -7100,8 +7100,8 @@
    "key": "robodog-tap-10",
    "file": "suits/robodog-tap-10.png",
    "dome": [
-    192.18,
-    118.14,
+    193.96,
+    119.49,
     25.09,
     10.71
    ],
@@ -7117,8 +7117,8 @@
    "key": "robodog-tap-11",
    "file": "suits/robodog-tap-11.png",
    "dome": [
-    191.62,
-    115.76,
+    193.44,
+    117.06,
     25.09,
     9.05
    ],
@@ -7134,8 +7134,8 @@
    "key": "robodog-tap-12",
    "file": "suits/robodog-tap-12.png",
    "dome": [
-    190.51,
-    112.22,
+    192.4,
+    113.42,
     25.09,
     5.79
    ],
@@ -7695,8 +7695,8 @@
    "key": "sunforged-desc-1",
    "file": "suits/sunforged-desc-1.png",
    "dome": [
-    184.69,
-    105.65,
+    188.5,
+    111.77,
     27.04,
     1.79
    ],
@@ -7712,8 +7712,8 @@
    "key": "sunforged-desc-2",
    "file": "suits/sunforged-desc-2.png",
    "dome": [
-    188.8,
-    118.83,
+    191.05,
+    125.68,
     27.04,
     15.52
    ],
@@ -7729,8 +7729,8 @@
    "key": "sunforged-desc-3",
    "file": "suits/sunforged-desc-3.png",
    "dome": [
-    190.08,
-    132.44,
+    190.71,
+    139.62,
     27.04,
     28.71
    ],
@@ -7746,8 +7746,8 @@
    "key": "sunforged-desc-4",
    "file": "suits/sunforged-desc-4.png",
    "dome": [
-    188.1,
-    145.92,
+    187.16,
+    153.07,
     27.04,
     41.18
    ],
@@ -7763,8 +7763,8 @@
    "key": "sunforged-tap-1",
    "file": "suits/sunforged-tap-1.png",
    "dome": [
-    184.69,
-    105.65,
+    188.5,
+    111.77,
     27.04,
     1.79
    ],
@@ -7780,8 +7780,8 @@
    "key": "sunforged-tap-2",
    "file": "suits/sunforged-tap-2.png",
    "dome": [
-    183.6,
-    102.96,
+    187.8,
+    108.82,
     27.04,
     -1.89
    ],
@@ -7797,8 +7797,8 @@
    "key": "sunforged-tap-3",
    "file": "suits/sunforged-tap-3.png",
    "dome": [
-    182.76,
-    101.59,
+    187.19,
+    107.28,
     27.04,
     -4.23
    ],
@@ -7814,8 +7814,8 @@
    "key": "sunforged-tap-4",
    "file": "suits/sunforged-tap-4.png",
    "dome": [
-    182.48,
-    101.88,
+    186.95,
+    107.54,
     27.04,
     -4.61
    ],
@@ -7831,8 +7831,8 @@
    "key": "sunforged-tap-5",
    "file": "suits/sunforged-tap-5.png",
    "dome": [
-    182.82,
-    103.72,
+    187.12,
+    109.51,
     27.04,
     -2.92
    ],
@@ -7848,8 +7848,8 @@
    "key": "sunforged-tap-6",
    "file": "suits/sunforged-tap-6.png",
    "dome": [
-    183.56,
-    106.67,
+    187.52,
+    112.7,
     27.04,
     0.38
    ],
@@ -7865,8 +7865,8 @@
    "key": "sunforged-tap-7",
    "file": "suits/sunforged-tap-7.png",
    "dome": [
-    185.19,
-    109.97,
+    188.72,
+    116.26,
     27.04,
     4.4
    ],
@@ -7882,8 +7882,8 @@
    "key": "sunforged-tap-8",
    "file": "suits/sunforged-tap-8.png",
    "dome": [
-    187.01,
-    112.84,
+    190.13,
+    119.34,
     27.04,
     8.05
    ],
@@ -7899,8 +7899,8 @@
    "key": "sunforged-tap-9",
    "file": "suits/sunforged-tap-9.png",
    "dome": [
-    188.16,
-    114.49,
+    191.01,
+    121.11,
     27.04,
     10.37
    ],
@@ -7916,8 +7916,8 @@
    "key": "sunforged-tap-10",
    "file": "suits/sunforged-tap-10.png",
    "dome": [
-    188.57,
-    114.32,
+    191.38,
+    120.96,
     27.04,
     10.74
    ],
@@ -7933,8 +7933,8 @@
    "key": "sunforged-tap-11",
    "file": "suits/sunforged-tap-11.png",
    "dome": [
-    188.14,
-    112.3,
+    191.14,
+    118.86,
     27.04,
     9.08
    ],
@@ -7950,8 +7950,8 @@
    "key": "sunforged-tap-12",
    "file": "suits/sunforged-tap-12.png",
    "dome": [
-    186.8,
-    109.04,
+    190.17,
+    115.41,
     27.04,
     5.81
    ],
