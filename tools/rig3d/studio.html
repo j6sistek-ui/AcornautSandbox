@@ -25,9 +25,18 @@ const counts = Object.fromEntries((q.get('frames') || '').split(',').filter(Bool
 // (Seraph: "tail more straight back")
 const TAILAMP = +(q.get('tailamp') || 1), TAIL_REST = ALL_MOVES.tap.pose(0).tailAim?.[1] ?? 130;
 const TAILREST = q.get('tailrest') ? +q.get('tailrest') : TAIL_REST;
-const shaped = pose => TAILAMP === 1 && TAILREST === TAIL_REST ? pose : u => { const p = pose(u);
-  if (p.tailAim) p.tailAim = [p.tailAim[0], TAILREST + (p.tailAim[1] - TAIL_REST) * TAILAMP];
-  if (p.unfurl) p.unfurl *= TAILAMP; return p; };
+const SPINEAMP = +(q.get('spineamp') || 1);
+const shaped = (name, pose) => {
+  const spineAmp = name === 'tap' ? SPINEAMP : 1;
+  if (TAILAMP === 1 && TAILREST === TAIL_REST && spineAmp === 1) return pose;
+  return u => {
+    const p = pose(u);
+    if (p.tailAim) p.tailAim = [p.tailAim[0], TAILREST + (p.tailAim[1] - TAIL_REST) * TAILAMP];
+    if (p.unfurl) p.unfurl *= TAILAMP;
+    if (p.spine) p.spine *= spineAmp;
+    return p;
+  };
+};
 // ?follow=0.1: a kept chain (--keep) follows the tail's swing that many seconds late, at ?famp= of
 // its size (?fsign= flips its sense) - the big tail leads, the wisp follows through
 const FOLLOW = +(q.get('follow') || 0), FAMP = +(q.get('famp') || 0.8) * +(q.get('fsign') || 1);
@@ -57,7 +66,7 @@ const flapped = (name, pose, loop) => !FLAP ? pose : u => { const p = pose(u);
   if (BOB) { const b = BOB * s / 0.6 * (loop ? 1 : 0.4);
     if (p.tailAim) p.tailAim = [p.tailAim[0], p.tailAim[1] + b]; p.hind = (p.hind || 0) - b; }
   return p; };
-const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames, pose: flapped(k, twirled(k, swayed(k, followed(k, shaped(m.pose), m.loop), m.loop), m.loop), m.loop) }]));
+const MOVES = Object.fromEntries(Object.entries(ALL_MOVES).filter(([k]) => counts[k] !== 0).map(([k, m]) => [k, { ...m, frames: counts[k] ?? m.frames, pose: flapped(k, twirled(k, swayed(k, followed(k, shaped(k, m.pose), m.loop), m.loop), m.loop), m.loop) }]));
 const R = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 R.setPixelRatio(1); R.setSize(SIZE, SIZE);
 R.outputColorSpace = THREE.SRGBColorSpace; R.toneMapping = THREE.ACESFilmicToneMapping; R.toneMappingExposure = 1.05;

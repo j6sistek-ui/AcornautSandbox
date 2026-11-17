@@ -75,6 +75,10 @@ is the same `LEVEL` pose (`tailOut` 0.25), so the game can cut between banks.
 To dial a move in: edit its numbers in `moves.js`, re-run, and watch `preview/<move>.mp4`
 or scrub the clip in Blender before anything reaches the app.
 
+Per-model tuning goes in the render command. `--tailrest` sets the neutral tail aim in
+degrees and `--tailamp` scales the sweep. `--spineamp` scales the tap's spine bend
+around the level pose and defaults to `1`.
+
 ## Known limits
 
 - The look is a 3D render, not the painted style of the hand-made suits.
