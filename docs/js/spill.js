@@ -1,4 +1,4 @@
-import { VANGUARD_DEPOT_ART_GRACE, VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=332";
+import { VANGUARD_DEPOT_ART_GRACE, VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=334";
 // DEBRIS FIELD (mode id "spill") — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
@@ -23,14 +23,14 @@ import { VANGUARD_DEPOT_ART_GRACE, VANGUARD_DEPOT_SECONDS } from "./spill-depot-
 // DIRECT STEERING (owner, 2026-10-29). The stick commands climb/descent;
 // releasing it brakes to an altitude hold. Horizontal swipes dodge in
 // either direction. The earlier tap/gravity hand is retired for this mode.
-import { ENVS, LEGACY_DEBRIS_COUNT, PHYS } from "./catalog.js?v=332";
-import { spillPrimeEcho } from "./spill-builds.js?v=332";
-import { createSpillLoadout, restoreSpillLoadout, spillChassisStats } from "./spill-career.js?v=332";
-import { beginSpillExpedition, createSpillExpedition, restoreSpillExpedition, settleSpillExpedition } from "./spill-expeditions.js?v=332";
-import { admitSpillClimax, createSpillClimax, resizeSpillClimax, restoreSpillClimax, spillClimaxReserved, spillClimaxWave } from "./spill-climax.js?v=332";
-import { admitSpillHazards, beginSpillHazardWave, clearSpillHazards, createSpillHazards, resizeSpillHazards, restoreSpillHazards, spillGravityBend, spillGravityBendDelta, spillGravityDrift, spillHazardPathClear, spillHazardPlan, spillHazardPressure, stepSpillHazards, SPILL_HAZARDS } from "./spill-hazards.js?v=332";
-import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=332";
-import { admitSpillEnemies, beginSpillCombatWave, captureSpillCombatMotion, clearSpillCombat, createSpillCombat, resizeSpillCombat, restoreSpillCombat, spillCombatPressure, spillCombatPulse, spillCombatRockClear, spillClearFireInput, stepSpillCombat } from "./spill-combat.js?v=332";
+import { ENVS, LEGACY_DEBRIS_COUNT, PHYS } from "./catalog.js?v=334";
+import { spillPrimeEcho } from "./spill-builds.js?v=334";
+import { createSpillLoadout, restoreSpillLoadout, spillChassisStats } from "./spill-career.js?v=334";
+import { beginSpillExpedition, createSpillExpedition, restoreSpillExpedition, settleSpillExpedition } from "./spill-expeditions.js?v=334";
+import { admitSpillClimax, createSpillClimax, resizeSpillClimax, restoreSpillClimax, spillClimaxReserved, spillClimaxWave } from "./spill-climax.js?v=334";
+import { admitSpillHazards, beginSpillHazardWave, clearSpillHazards, createSpillHazards, resizeSpillHazards, restoreSpillHazards, spillGravityBend, spillGravityBendDelta, spillGravityDrift, spillHazardPathClear, spillHazardPlan, spillHazardPressure, stepSpillHazards, SPILL_HAZARDS } from "./spill-hazards.js?v=334";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=334";
+import { admitSpillEnemies, beginSpillCombatWave, captureSpillCombatMotion, clearSpillCombat, createSpillCombat, resizeSpillCombat, restoreSpillCombat, spillCombatPressure, spillCombatPulse, spillCombatRockClear, spillClearFireInput, stepSpillCombat } from "./spill-combat.js?v=334";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at

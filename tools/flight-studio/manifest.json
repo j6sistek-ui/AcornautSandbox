@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "artVer": "331",
-  "sourceCommit": "cc58ae0e3657792ee86277ae4d586f56192a5994",
+  "artVer": "333",
+  "sourceCommit": "c9eaaea6bb88ffc72c9f0547223e67824bb00383",
   "models": [
     {
       "id": "flight",
@@ -1348,23 +1348,23 @@
         "loop": []
       },
       "hashes": {
-        "suits/ferret.png": "6f0feed8559493a0684864c64b471846e5f9a598401914e90c05b5d09dd23c7b",
-        "suits/ferret-tap-1.png": "6f0feed8559493a0684864c64b471846e5f9a598401914e90c05b5d09dd23c7b",
-        "suits/ferret-tap-2.png": "aea109f53496f7bd35152146cfae1ac741030ed5da03423b06b481bd83e44ddb",
-        "suits/ferret-tap-3.png": "e3e79fbea407dde5b5d6179e23aefb97d13fde3b8ed06ab2ef0c6bd5c18d3b5c",
-        "suits/ferret-tap-4.png": "0241e35ffb2003da3018ebed00344b940076033400fb251b20f4b04e14f174f3",
-        "suits/ferret-tap-5.png": "373ad4646b8104ad1662f4e02dff9e31a93a765cfaad257bb2763a05a5b12292",
-        "suits/ferret-tap-6.png": "e895552a68d7a2cb133c1255678ecf373aa83afa4d256833efda13d5c5828fda",
-        "suits/ferret-tap-7.png": "42e8f2330b3552e7278e914a342f215c7756e3d5af27171a2de13c1b4624375c",
-        "suits/ferret-tap-8.png": "39ba1c3be1aac299ef7fd7f60fcc2dfe396f0ed4d786a61d6618cbee83c0fab5",
-        "suits/ferret-tap-9.png": "8ff0ad2b3e308059200036ad1247ba9f01aba0f695e3dba647e5228af84e9de7",
-        "suits/ferret-tap-10.png": "ae05d70204d00b3deb4c609df1399868d23dd6abe4cb515d1c12b87b9ccf8109",
-        "suits/ferret-tap-11.png": "e663b2fe75f37027cc9dd5e7a181156d1968e6edbd66e369f1bb76a5b3c2abed",
-        "suits/ferret-tap-12.png": "6f89b23b925858c58e05285d5a6371e82d9fa366fdc2b6592eea33fcfd39eddf",
-        "suits/ferret-desc-1.png": "6f0feed8559493a0684864c64b471846e5f9a598401914e90c05b5d09dd23c7b",
-        "suits/ferret-desc-2.png": "6fa53a4d6f03ce77b0a1ea3abacdf34b320b1590f305ef1e5ea4600813e5e173",
-        "suits/ferret-desc-3.png": "2b3fbc29ccecffae76b25c9f1e1eb13401257452c0e6f32c0aeb2265d120ff72",
-        "suits/ferret-desc-4.png": "741e3a9df14b18be4798083717a3bcbae2afbcd9ea97b85b4309391a2e5d960c"
+        "suits/ferret.png": "54e49747e49378ad6ba2421dc78448671367ffc584c385ce39dcc35689702fb7",
+        "suits/ferret-tap-1.png": "54e49747e49378ad6ba2421dc78448671367ffc584c385ce39dcc35689702fb7",
+        "suits/ferret-tap-2.png": "d07e6fe6acf033207e5ed7a12ce1589332ee914eba5ac884998173dad56579b8",
+        "suits/ferret-tap-3.png": "0d329f50ec2fb5eb5cf7d442a526908c278afec3128f53c9e4c8889106632dc2",
+        "suits/ferret-tap-4.png": "f9af5fc5774253909fa4209349eea5b58df2ef49750781cc600e8b61c0819c99",
+        "suits/ferret-tap-5.png": "f5a4dbea67a67f44b5c9506c64701c68d686452a80771ff1ac01553e978f13ae",
+        "suits/ferret-tap-6.png": "92ff821b2496ad8ddace73f25e9473409cb57b9d8bc2d95812549460c2d9985b",
+        "suits/ferret-tap-7.png": "569b4673aeccee16923392422e9ef75d370ec7b4dc128f65a223738f7d900a10",
+        "suits/ferret-tap-8.png": "a7e2847ba48bc91712144cb6c0a7b6e46a887f61f2dc379af8920e3141026e1a",
+        "suits/ferret-tap-9.png": "47c806dfaef8ac274bcabe469626b7862da9eccb98fefd2405c9a43ae08d9e60",
+        "suits/ferret-tap-10.png": "f1db365ac7c1d4f9ba88eab31c7c1415950e570f2dcfc4258d5623ecd271bf18",
+        "suits/ferret-tap-11.png": "851095d74e5722942f236d3a4af9f410f92f35eca6adf313ed1b4814a55e5dbf",
+        "suits/ferret-tap-12.png": "8cd52a6ea2f639890d362cf49943c18b21fe071816cf5703fb77837a8eef74ae",
+        "suits/ferret-desc-1.png": "54e49747e49378ad6ba2421dc78448671367ffc584c385ce39dcc35689702fb7",
+        "suits/ferret-desc-2.png": "c471953952181e60485b36477b4b6f0958d64960807113b798c59cc3fe243992",
+        "suits/ferret-desc-3.png": "3fce49512d3a38a7596a6dec9ca956d9f97e41757a8d6107246cd476ab8c8291",
+        "suits/ferret-desc-4.png": "09edfc2ee9ba41a9201534513ac4486cb0c98b9372b9215812b15c8e81f2aa25"
       }
     },
     {
