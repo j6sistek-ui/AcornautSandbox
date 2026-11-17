@@ -10,8 +10,17 @@ globalThis.performance={now:()=>now};globalThis.requestAnimationFrame=fn=>{frame
 globalThis.Image=class {set src(v){queueMicrotask(()=>this.onerror?.());}};
 globalThis.fetch=async()=>({ok:false,json:async()=>({})});
 let clears=0;
+let workshopBearDraws=0;
+const bearImage={width:256,height:240};
 const ctx=new Proxy({canvas:null,clearRect(){clears++;},measureText:t=>({width:t.length*7}),createLinearGradient:()=>({addColorStop(){}}),createRadialGradient:()=>({addColorStop(){}}),getImageData:()=>({data:new Uint8ClampedArray(4)}),getTransform:()=>({a:1,b:0,c:0,d:1,e:0,f:0})},{get:(o,k)=>k in o?o[k]:()=>{}});
-win.HTMLCanvasElement.prototype.getContext=function(){const canvas=this;return new Proxy(ctx,{get:(o,k)=>k==='clearRect'?()=>{if(canvas.classList.contains('ac-canvas'))clears++;}:o[k]});};let width=390;win.HTMLElement.prototype.getBoundingClientRect=function(){return {x:0,y:0,left:0,top:0,width,height:760,right:width,bottom:760};};
+win.HTMLCanvasElement.prototype.getContext=function(){
+  const canvas=this;
+  return new Proxy(ctx,{get:(o,k)=>{
+    if(k==='clearRect')return ()=>{if(canvas.classList.contains('ac-canvas'))clears++;};
+    if(k==='drawImage')return image=>{if(canvas.classList.contains('ac-workshop-preview')&&image===bearImage)workshopBearDraws++;};
+    return o[k];
+  }});
+};let width=390;win.HTMLElement.prototype.getBoundingClientRect=function(){return {x:0,y:0,left:0,top:0,width,height:760,right:width,bottom:760};};
 win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasElement.prototype.releasePointerCapture=function(){};
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');const Save=await import(new URL('../docs/js/save.js',import.meta.url).href),S=await import(new URL('../docs/js/spill.js',import.meta.url).href);const save=Save.defaultSave();save.tutorialDone=true;save.guide='done';save.introOff=true;save.musicOff=true;save.sfxOff=true;save.spillBest=20;Save.writeSave(save);
 const {bootStandalone}=await import(new URL('../docs/js/standalone.js',import.meta.url).href);const app=win.document.createElement('main');win.document.body.append(app);await bootStandalone(app);const engine=win.__sandbox;assert(engine);
@@ -59,7 +68,7 @@ assert.equal(app.querySelectorAll('[data-ship-color]').length,5);assert(ship('co
 engine.save.spillBest=30;engine.setShopTab('ship');assert.equal(ship('color','copper').getAttribute('aria-pressed'),'true','a new earned color does not replace the chosen color');
 ship('color','void').click();assert.equal(Save.loadSave().spillEngineColor,'void');ship('color','copper').click();
 assert(app.querySelector('.ac-caseplate')?.textContent.includes('Engine color'),'the case plate names the engine color');
-// ONE INSTRUCTIONS SHEET before an endless run: how to fly, the loop, the ship. Nothing to choose.
+// One briefing covers the controls, the loop and the ship before landing.
 engine.fly('spill');const setup=app.querySelector('.ac-spillsetup');assert(setup);assert(setup.querySelector('h2').textContent==='How to fly');assert(!app.textContent.includes('Your next ship'));
 assert.deepEqual(cardsOf(setup),STICK_CARDS,'the instructions sheet shows the three steering cards');
 const setupNotes=[...setup.querySelectorAll('.ac-spillhelp-controls small.ac-sub')].map(n=>n.textContent);assert.deepEqual(setupNotes,['W / S · ↑ / ↓','F · Space','A / D · ← / →']);
@@ -72,6 +81,14 @@ assert(!app.querySelector('[data-spill-upgrade]'),'upgrades are chosen at the De
 assert(!setup.querySelector('.ac-workshop-system, .ac-workshop-utility, [data-guide-utility]'),'no upgrade or utility choices on the instructions sheet');
 assert(!app.querySelector('.ac-setup-body [data-spill-control="land"]'),'Start stays outside the scrolling body');assert(setup.querySelector('.ac-setup-body .ac-spillhelp-controls'),'the cards scroll with the body');
 assert.equal(control('land').textContent,'START RUN');assert(button('MAIN MENU'));
+assert.equal(control('one-handed').getAttribute('aria-checked'),'false');
+control('one-handed').focus();
+control('one-handed').click();
+assert.equal(Save.loadSave().spillOneHanded,true,'the briefing saves the control layout');
+assert.equal(document.activeElement,control('one-handed'),'the setting keeps keyboard focus through render');
+assert.deepEqual(cardsOf(app.querySelector('.ac-spillsetup')),['HOLD + DRAG','FIRE BUTTON','FLICK ◀ ▶']);
+assert(control('fire').hidden,'the Fire button stays off the briefing');
+control('one-handed').click();
 assert.deepEqual(engine.world.spill.utilities,['magnet']);assert.equal(engine.save.spillEngineColor,'copper');
 assert.equal(engine.save.spillDepotGuideSeen,false,'a fresh save has not seen the briefing');
 const beforeBriefing=JSON.stringify(engine.world.spill);
@@ -110,6 +127,8 @@ assert.equal(control('launch').textContent,'START TRAINING FLIGHT');assert(!cont
 // TRAINING FLIGHT: a live but harmless field - flight, a dash, three pieces of debris, one patrol to evade and shoot down.
 {const d=engine.world.spill,cv=engine.canvas,skip=app.querySelector('.ac-drill-skip'),stepId=()=>S.spillDrillStep(d);
  assert.equal(d.phase,'wave');assert.equal(stepId(),'steer','a first run starts in training');
+ engine.setSpillOneHanded(true);
+ assert(!control('fire').hidden && control('fire').disabled,'Fire waits for its training exercise');
  tick(240);assert.equal(stepId(),'steer','training waits for the pilot');assert(!skip.hidden,'training can be skipped');
  const tp=(type,id,x,y,primary=true)=>cv.dispatchEvent(new win.PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:primary,clientX:x,clientY:y,bubbles:true,cancelable:true}));
  const key=(type,code)=>win.dispatchEvent(new win.KeyboardEvent(type,{code}));
@@ -123,10 +142,14 @@ assert.equal(control('launch').textContent,'START TRAINING FLIGHT');assert(!cont
  assert.equal(stepId(),'evade','three dodged pieces pass the debris stage');steer(0);
  guard=0;while(stepId()==='evade'&&guard++<5000){const e=d.combat.enemies.find(x=>!x.dead),shot=d.combat.shots.find(x=>!x.dead&&x.team==='enemy');
   const y=shot?shot.y:e&&e.telegraph>0?e.aimY:null;steer(y!=null&&Math.abs(y-d.pilot.y)<70?(d.pilot.y>d.H/2?-1:1):0);tick(1);}
- assert.equal(stepId(),'fire','evading a warned shot passes');steer(0);key('keydown','KeyF');
+ assert.equal(stepId(),'fire','evading a warned shot passes');steer(0);
+ assert(!control('fire').disabled,'the button is enabled for the firing lesson');
+ control('fire').dispatchEvent(new win.PointerEvent('pointerdown',{pointerId:32,pointerType:'touch',button:0,bubbles:true,cancelable:true}));
  guard=0;while(stepId()==='fire'&&guard++<5000){const e=d.combat.enemies.find(x=>!x.dead);if(e)steer(Math.abs(e.y-d.pilot.y)<12?0:e.y>d.pilot.y?1:-1);tick(1);}
- key('keyup','KeyF');steer(0);assert.equal(stepId(),'ready','shooting the patrol down passes');assert.equal(d.hull,hull,'training costs no health');
+ win.dispatchEvent(new win.PointerEvent('pointerup',{pointerId:32,bubbles:true}));steer(0);
+ assert.equal(stepId(),'ready','the Fire button completes the shooting lesson');assert.equal(d.hull,hull,'training costs no health');
  tick(90);assert(!d.drill,'training ends');assert.equal(d.phase,'countdown');assert.equal(Save.loadSave().spillDrillDone,true,'and is remembered');tick(1);assert(skip.hidden);
+ engine.setSpillOneHanded(false);
  assert.deepEqual([d.score,d.ore,d.combat.kills],[0,0,0],'nothing from training is kept');}
 tick(181);
 assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:1,pulse:0},'only the chosen starting upgrade is fitted');
@@ -153,7 +176,40 @@ touch(canvas,'pointerdown',12);engine.pause();assert(!engine.spillControls().act
 assert(!app.querySelector('[role="switch"][aria-label="On-screen buttons"]'),'no pad switch any more');
 assert(app.querySelector('.ac-spillloadout').textContent.startsWith('Rapid Laser I'),'the pause names the loadout');
 const pausedState=JSON.stringify(engine.world.spill);app.querySelector('[role="switch"][aria-label="Instructional prompts"]').click();assert.equal(Save.loadSave().spillPromptsOff,true);assert.equal(JSON.stringify(engine.world.spill),pausedState,'prompt setting does not alter wave pacing');
+const fire=control('fire');
+control('one-handed').click();
+assert.equal(Save.loadSave().spillOneHanded,true,'pause also saves the layout');
+assert(fire.hidden && stick.hidden,'pause keeps both controls off the field');
 engine.resume();
+assert(!fire.hidden && !fire.disabled && stick.classList.contains('ac-stick-idle'));
+sp.combat.cooldown=0;
+touch(fire,'pointerdown',21);
+assert(sp.combat.firing && !engine.spillControls().active,'one finger can fire without claiming steering');
+touch(win,'pointerup',21);
+assert(!sp.combat.firing && sp.combat.pendingFire>0,'a quick tap waits for the next tick');
+tick();
+assert(sp.combat.shots.some(shot=>shot.team==='player'),'the Fire tap launches a shot');
+touch(canvas,'pointerdown',22,100,300);
+touch(canvas,'pointermove',22,100,350);
+touch(fire,'pointerdown',23,330,715,false);
+tick();
+assert(sp.steerY>0 && sp.combat.firing,'Fire and the steering pointer operate independently');
+assert(!stick.classList.contains('ac-stick-idle'));
+assert.equal(parseFloat(stick.style.left),100/390*100,'the stick starts at the finger instead of at the idle marker');
+assert.equal(parseFloat(stick.style.top),300/760*100);
+touch(win,'pointercancel',23);
+assert(!sp.combat.firing && !sp.combat.pendingFire && engine.spillControls().active,'canceling Fire keeps the steering pointer and clears a queued shot');
+touch(win,'pointerup',22);
+tick();
+assert(stick.classList.contains('ac-stick-idle') && !stick.style.left && !stick.style.top,'release restores the corner marker');
+fire.click();
+assert(sp.combat.pendingFire>0,'keyboard or assistive activation also queues a shot');
+touch(fire,'pointerdown',24);
+engine.pause();
+assert(fire.hidden && !fire.classList.contains('held') && !sp.combat.firing && !sp.combat.pendingFire);
+control('one-handed').click();
+engine.resume();
+assert(fire.hidden && stick.hidden,'the original two-finger layout is available again');
 const Draw=await import(new URL('../docs/js/draw.js',import.meta.url).href);const labels=[];ctx.fillText=t=>labels.push(t);const flight=engine.world.spill;
 flight.hint='TEST INSTRUCTION';flight.hintT=5;flight.banner='HAZARD WARNING';flight.bannerT=1;
 Draw.drawHud(ctx,engine.world,engine.art,engine.save);assert(!labels.includes('TEST INSTRUCTION'));assert(labels.includes('HAZARD WARNING'));
@@ -212,15 +268,18 @@ for(const hz of [120,90,144]) {
 }
 // The actual engine admits the extra beat only after complete art readiness
 // and only for Vanguard. Its Depot overlay must remain closed throughout it.
+await engine.artReady;
 const scene={depot:{width:1536,height:1024,naturalWidth:1536,naturalHeight:1024},
- bear:Array.from({length:36},()=>({image:{width:256,height:240},footX:128,footY:230})),
+ bear:Array.from({length:36},()=>({image:bearImage,footX:128,footY:230})),
  vanguardDepot:{width:1280,height:1280,naturalWidth:1280,naturalHeight:1280}};
 engine.art.spillShip['hull-0']={width:256,height:256,box:{x:20,y:90,w:210,h:70},core:210,coreX:125,coreY:125};
 for(const [suit,motionOff,ready,plays] of [['vanguard',false,true,true],['flight',false,true,false],['vanguard',true,true,false],['vanguard',false,false,false]]){
  engine.save.equippedSuit=suit;engine.save.motionOff=motionOff;
  engine.art.spillScene={...scene,vanguardDepot:ready?scene.vanguardDepot:undefined};
  engine.fly('spill');control('land').click();const s=engine.world.spill;
- tick(145);
+ tick();
+ await new Promise(resolve=>setImmediate(resolve)); // the fake requests have failed or settled
+ tick(144);
  if(plays){
   assert.equal(s.phase,'docking');assert.equal(s.depotGag,true);
   assert(!app.querySelector('[data-spill-control="inspect-plating"]'));
@@ -231,5 +290,8 @@ for(const [suit,motionOff,ready,plays] of [['vanguard',false,true,true],['flight
  }
  assert.equal(s.phase,'depot');assert.equal(s.depotVisits,0);assert(s.freeUpgrade);
  assert(app.querySelector('[data-spill-control="inspect-plating"]'));
+ const draws=workshopBearDraws;
+ tick(3);
+ assert(workshopBearDraws>draws,'the workshop stage paints the landed marshal in front of its backdrop');
 }
 engine.stop();await win.happyDOM.close();console.log('spill UI: one instructions sheet, guide by request only, all utility cards, atomic swap/refit, purchases, scroll/focus, earned engine colors/migration, rematch selection, save/resume, input/pause, paint budget and Vanguard landing passed');

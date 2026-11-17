@@ -1,3 +1,15 @@
+export function paintDepotBear(ctx, frame, x, y, height) {
+    ctx.save();
+    ctx.fillStyle = "rgba(6,5,16,.45)";
+    ctx.beginPath();
+    ctx.ellipse(x, y, height * .28, height * .055, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.translate(x, y);
+    const scale = height / frame.image.height;
+    ctx.scale(-scale, scale);
+    ctx.drawImage(frame.image, -frame.footX, -frame.footY);
+    ctx.restore();
+}
 export function prepareDepotBear(sheet) {
     const width = sheet.naturalWidth || sheet.width, height = sheet.naturalHeight || sheet.height;
     const frames = [];

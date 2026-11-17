@@ -1,4 +1,4 @@
-import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag";
+import { VANGUARD_DEPOT_ART_GRACE, VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag";
 // DEBRIS FIELD (mode id "spill") — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
@@ -490,9 +490,11 @@ export type SpillState = {
   welcome?: boolean;
   openingEnabled?: boolean;
   freeUpgrade?: boolean;
-  /** Transient art readiness; latched once at touchdown, never mid-gag. */
+  /** Transient art readiness and the playback clock set once at landing. */
   depotGagReady?: boolean;
+  depotGagPending?: boolean;
   depotGag?: boolean;
+  depotGagStart?: number;
   phaseT: number;
   /** the wave being flown, or about to be */
   wave: number;
@@ -1199,7 +1201,8 @@ function endWave(s: SpillState) {
 
 export function spillDockTravelDuration(s: SpillState) { return s.welcome ? 2.4 : SPILL.dockTime; }
 export function spillDockDuration(s: SpillState) {
-  return spillDockTravelDuration(s) + (s.depotGag ? VANGUARD_DEPOT_SECONDS : 0);
+  const travel = spillDockTravelDuration(s);
+  return s.depotGag ? (s.depotGagStart ?? travel) + VANGUARD_DEPOT_SECONDS : travel;
 }
 
 function beginDocking(s: SpillState) {
@@ -1209,6 +1212,7 @@ function beginDocking(s: SpillState) {
   s.phase = "docking";
   s.phaseT = 0;
   s.depotGag = undefined;
+  s.depotGagStart = undefined;
   s.lunge = 0;
   s.knock = 0;
   s.pilot.vx = 0;
@@ -1636,8 +1640,15 @@ function stepSpillBody(s: SpillState, dt: number) {
   if (s.phase === "docking") {
     s.phaseT += dt;
     autopilot(s, dt);
-    if (s.depotGag === undefined && s.phaseT >= spillDockTravelDuration(s))
+    const travel = spillDockTravelDuration(s);
+    if (s.phaseT < travel) return;
+    if (s.depotGag === undefined) {
+      // A first arrival can beat the bear or atlas to the dock. Give an
+      // eligible AcorNut visit a short grace period while they finish.
+      if (s.depotGagPending && !s.depotGagReady && s.phaseT < travel + VANGUARD_DEPOT_ART_GRACE) return;
       s.depotGag = s.depotGagReady === true;
+      if (s.depotGag) s.depotGagStart = Math.max(travel, s.phaseT - dt);
+    }
     if (s.phaseT >= spillDockDuration(s)) openDepot(s);
     return;
   }
@@ -1869,7 +1880,7 @@ export function spillCheckpoint(s: SpillState): SpillCheckpoint | null {
   const state: SpillState = JSON.parse(JSON.stringify(s));
   clearSpillCombat(state);
   clearSpillHazards(state);
-  delete state.depotGag; delete state.depotGagReady;
+  delete state.depotGag; delete state.depotGagReady; delete state.depotGagPending; delete state.depotGagStart;
   state.rocks = []; state.nuts = []; state.bursts = []; state.cues = [];
   state.thrustT = 0; state.manual = false;
   state.steerY = 0; state.lunge = 0; state.lungeDir = 1;

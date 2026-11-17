@@ -1,7 +1,7 @@
-import { drawSprite } from "./art.js?v=331";
-import { SPILL } from "./spill.js?v=331";
-import { spillWeaponStats } from "./spill-combat.js?v=331";
-import { SPILL_ARTIFACTS } from "./spill-builds.js?v=331";
+import { drawSprite } from "./art.js?v=332";
+import { SPILL } from "./spill.js?v=332";
+import { spillWeaponStats } from "./spill-combat.js?v=332";
+import { SPILL_ARTIFACTS } from "./spill-builds.js?v=332";
 const TAU = Math.PI * 2;
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const flight = (s) => s.phase === "wave" || s.phase === "drain";
@@ -240,7 +240,7 @@ export function drawSpillCombat(ctx, s, art) {
 }
 /** The top-right slot begins below HULL/SHIELDS and finishes above status
  * banners. HUD caller already translates by the device's top safe area. */
-export function drawSpillCombatHud(ctx, s) {
+export function drawSpillCombatHud(ctx, s, oneHanded = false) {
     if (!s.combat || !flight(s))
         return;
     const c = s.combat, x = s.W - 104, y = 58, width = 92, height = 34;
@@ -266,7 +266,8 @@ export function drawSpillCombatHud(ctx, s) {
     ctx.fillStyle = c.firing ? color : "#b9c5d3";
     ctx.font = "600 10px Figtree, system-ui";
     const status = c.build.echo > 0 ? "ECHO READY" : artifact === "reclaimer" ? `COINS ${c.build.salvageDrops}/8`
-        : artifact === "siege" ? "SIEGE CORE" : artifact === "slipstream" ? "DODGE TO PRIME" : c.firing ? "FIRING" : "2ND TOUCH / F";
+        : artifact === "siege" ? "SIEGE CORE" : artifact === "slipstream" ? "DODGE TO PRIME"
+            : c.firing ? "FIRING" : oneHanded ? "FIRE / F" : "2ND TOUCH / F";
     ctx.fillText(status, x + 8, y + 24, width - 16);
     const duration = spillWeaponStats(s).cooldown;
     ctx.fillStyle = "rgba(255,255,255,.14)";

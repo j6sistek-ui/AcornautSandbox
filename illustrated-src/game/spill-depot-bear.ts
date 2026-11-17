@@ -2,6 +2,19 @@
  * decode its white matte once and anchor every frame to the bear's feet. */
 export type DepotBearFrame = { image: HTMLCanvasElement; footX: number; footY: number };
 
+export function paintDepotBear(ctx: CanvasRenderingContext2D, frame: DepotBearFrame, x: number, y: number, height: number) {
+  ctx.save();
+  ctx.fillStyle = "rgba(6,5,16,.45)";
+  ctx.beginPath();
+  ctx.ellipse(x, y, height * .28, height * .055, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.translate(x, y);
+  const scale = height / frame.image.height;
+  ctx.scale(-scale, scale);
+  ctx.drawImage(frame.image, -frame.footX, -frame.footY);
+  ctx.restore();
+}
+
 export function prepareDepotBear(sheet: HTMLImageElement): DepotBearFrame[] {
   const width = sheet.naturalWidth || sheet.width, height = sheet.naturalHeight || sheet.height;
   const frames: DepotBearFrame[] = [];

@@ -157,7 +157,7 @@ export function drawSpillCombat(ctx: CanvasRenderingContext2D, s: SpillState, ar
 
 /** The top-right slot begins below HULL/SHIELDS and finishes above status
  * banners. HUD caller already translates by the device's top safe area. */
-export function drawSpillCombatHud(ctx: CanvasRenderingContext2D, s: SpillState) {
+export function drawSpillCombatHud(ctx: CanvasRenderingContext2D, s: SpillState, oneHanded = false) {
   if (!s.combat || !flight(s)) return;
   const c = s.combat, x = s.W - 104, y = 58, width = 92, height = 34;
   const cannon = c.weapon === "cannon", level = c.levels[c.weapon];
@@ -173,7 +173,8 @@ export function drawSpillCombatHud(ctx: CanvasRenderingContext2D, s: SpillState)
   ctx.fillText(`${cannon ? "CANNON" : "LASER"} ${["", "I", "II", "III"][level] ?? "I"}`, x + 8, y + 13, width - 16);
   ctx.fillStyle = c.firing ? color : "#b9c5d3"; ctx.font = "600 10px Figtree, system-ui";
   const status = c.build.echo > 0 ? "ECHO READY" : artifact === "reclaimer" ? `COINS ${c.build.salvageDrops}/8`
-    : artifact === "siege" ? "SIEGE CORE" : artifact === "slipstream" ? "DODGE TO PRIME" : c.firing ? "FIRING" : "2ND TOUCH / F";
+    : artifact === "siege" ? "SIEGE CORE" : artifact === "slipstream" ? "DODGE TO PRIME"
+      : c.firing ? "FIRING" : oneHanded ? "FIRE / F" : "2ND TOUCH / F";
   ctx.fillText(status, x + 8, y + 24, width - 16);
   const duration = spillWeaponStats(s).cooldown;
   ctx.fillStyle = "rgba(255,255,255,.14)"; ctx.fillRect(x + 8, y + 29, width - 16, 2);
