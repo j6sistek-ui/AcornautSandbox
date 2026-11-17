@@ -206,7 +206,6 @@ export type Engine = {
   spillEndTrial: () => void;
   spillTrial: () => { id: SpillTrialId; build: SpillTrialBuildId; complete: boolean } | null;
   setSpillButtonsOff: (off: boolean) => void;
-  setSpillOneHanded: (on: boolean) => void;
   setSpillPromptsOff: (off: boolean) => void;
   spillBuy: (what: SpillBuyable) => string;
   spillLeaveDepot: () => void;
@@ -618,10 +617,6 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     setSpillButtonsOff(off) {
       if (off) clearSpillFire();
       save.spillButtonsOff = off;
-      writeSave(save); notify();
-    },
-    setSpillOneHanded(on) {
-      save.spillOneHanded = on;
       writeSave(save); notify();
     },
     setSpillPromptsOff(off) {

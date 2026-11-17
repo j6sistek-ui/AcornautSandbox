@@ -163,12 +163,12 @@ export type SpillDrill = {
 };
 export type SpillDrillStep = "steer" | "hold" | "dash" | "debris" | "evade" | "fire" | "ready";
 export const SPILL_DRILL: { id: SpillDrillStep; stage: string; title: string; touch: string; keys: string }[] = [
-  { id: "steer", stage: "FLIGHT", title: "STEER", touch: "Hold anywhere and drag up or down", keys: "W / S or ↑ / ↓" },
+  { id: "steer", stage: "FLIGHT", title: "STEER", touch: "Touch the field and drag up or down", keys: "W / S or ↑ / ↓" },
   { id: "hold", stage: "FLIGHT", title: "HOLD", touch: "Let go to hold your height", keys: "Release the key" },
   { id: "dash", stage: "DEBRIS", title: "DASH", touch: "Flick left or right", keys: "A / D or ← / →" },
   { id: "debris", stage: "DEBRIS", title: "DODGE THE DEBRIS", touch: "Steer or dash clear of three", keys: "" },
   { id: "evade", stage: "ENEMY", title: "EVADE", touch: "A dashed line warns before it fires. Move off it", keys: "" },
-  { id: "fire", stage: "ENEMY", title: "FIRE", touch: "Keep steering, tap or hold a second finger", keys: "F or Space" },
+  { id: "fire", stage: "ENEMY", title: "FIRE", touch: "Tap Fire or add a finger while steering", keys: "F or Space" },
   { id: "ready", stage: "", title: "READY", touch: "Good flying. Wave 1 is coming", keys: "" },
 ];
 export const SPILL_DRILL_DEBRIS = 3;

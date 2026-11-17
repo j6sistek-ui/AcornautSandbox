@@ -25,7 +25,7 @@ import { spillBuildFromState, spillBuildOre, spillPreviewState } from "./spill-p
 import { SPILL_WEAPONS } from "./spill-combat";
 import { SPILL_ARTIFACTS } from "./spill-builds";
 import { SPILL_RISKS } from "./spill-expeditions";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet, drawSpillDepthHelp, drawSpillOneHandedSwitch, spillControlSwitch, hazardGuide } from "./spill-workshop";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillStarters, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet, drawSpillDepthHelp, hazardGuide } from "./spill-workshop";
 import { SPILL_DRILL, SPILL_SHOP, restoreSpill, spillDrillStep, type SpillState } from "./spill";
 
 function el<K extends keyof HTMLElementTagNameMap>(
@@ -284,7 +284,6 @@ export async function bootStandalone(root: HTMLElement) {
   const endFirePress = (id: number | null, canceled: boolean) => {
     if (id === null || firePointer !== id) return;
     firePointer = null;
-    fireButton.classList.remove("held");
     engine.spillFire(false, `fire-button:${id}`, canceled);
     if (fireButton.hasPointerCapture?.(id)) fireButton.releasePointerCapture(id);
   };
@@ -292,7 +291,6 @@ export async function bootStandalone(root: HTMLElement) {
     if (fireButton.hidden || fireButton.disabled || event.button !== 0 || firePointer !== null) return;
     event.preventDefault();
     firePointer = event.pointerId;
-    fireButton.classList.add("held");
     try { fireButton.setPointerCapture(event.pointerId); } catch { /* window listens for release too */ }
     engine.spillFire(true, `fire-button:${event.pointerId}`);
   };
@@ -309,17 +307,18 @@ export async function bootStandalone(root: HTMLElement) {
   };
   function updateSpillControls() {
     const sp = engine.world.spill;
-    const activeFlight = engine.world.screen === "play" && !!sp && ["countdown", "wave", "drain"].includes(sp.phase);
+    const activeFlight = !!sp && engine.world.screen === "play" && ["countdown", "wave", "drain"].includes(sp.phase);
     canvas.classList.toggle("ac-flight-surface", activeFlight);
     drillSkip.hidden = !(activeFlight && !!sp?.drill && sp.drill.step < SPILL_DRILL.length - 1);
-    const oneHanded = activeFlight && !!engine.save.spillOneHanded;
-    const canFire = oneHanded && !!sp && sp.phase !== "countdown" && (!sp.drill || spillDrillStep(sp) === "fire");
-    if (fireButton.hidden === oneHanded) fireButton.hidden = !oneHanded;
+    const canFire = activeFlight && sp.phase !== "countdown" && (!sp.drill || spillDrillStep(sp) === "fire");
+    if (fireButton.hidden === activeFlight) fireButton.hidden = !activeFlight;
     if (fireButton.disabled === canFire) fireButton.disabled = !canFire;
     if (!canFire) endFirePress(firePointer, true);
+    // The fixed button acknowledges shots from either touch input.
+    fireButton.classList.toggle("firing", canFire && (sp.combat.firing || sp.combat.muzzleFlash > 0));
     const stick = engine.spillControls();
     const held = activeFlight && stick.active;
-    const key = held ? `${stick.x}:${stick.y}:${stick.dx}:${stick.dy}` : oneHanded ? "idle" : "hidden";
+    const key = held ? `${stick.x}:${stick.y}:${stick.dx}:${stick.dy}` : activeFlight ? "idle" : "hidden";
     if (key === controlState) return;
     controlState = key;
     joystick.hidden = key === "hidden";
@@ -359,8 +358,7 @@ export async function bootStandalone(root: HTMLElement) {
     const dockScroll = overlay.querySelector(".ac-ftdock")?.scrollTop ?? 0;
     const setupScroll = overlay.querySelector(".ac-setup-body")?.scrollTop ?? 0;
     const setupActive = document.activeElement as HTMLElement;
-    const setupFocus = setupActive?.dataset.spillControl === "one-handed" ? '[data-spill-control="one-handed"]'
-      : setupActive?.dataset.shipStarter ? `[data-ship-starter="${setupActive.dataset.shipStarter}"]`
+    const setupFocus = setupActive?.dataset.shipStarter ? `[data-ship-starter="${setupActive.dataset.shipStarter}"]`
       : setupActive?.dataset.shipColor ? `[data-ship-color="${setupActive.dataset.shipColor}"]` : "";
     const depotFocus = (document.activeElement as HTMLElement)?.dataset.spillControl;
     if (snap.screen !== "help" && !(snap.screen === "play" && engine.world.spill?.phase === "ready")) spillHelpOpen = false;
@@ -471,12 +469,20 @@ export async function bootStandalone(root: HTMLElement) {
       );
       if (engine.world.spill) {
         const settings = el("section", "ac-spillsettings");
-        settings.append(el("h3", "", "Flight controls"), drawSpillOneHandedSwitch(engine));
-        const prompts = spillControlSwitch("Instructional prompts", engine.save.helpOff ? "Help is disabled in Settings." : "Control tips and wave lessons. Hazard warnings stay visible.",
-          !engine.save.spillPromptsOff && !engine.save.helpOff, () => engine.setSpillPromptsOff(!engine.save.spillPromptsOff));
+        const prompts = el("button", "ac-spillsetting");
+        const promptsOn = !engine.save.spillPromptsOff && !engine.save.helpOff;
+        prompts.setAttribute("role", "switch");
+        prompts.setAttribute("aria-label", "Instructional prompts");
+        prompts.setAttribute("aria-checked", String(promptsOn));
         prompts.disabled = !!engine.save.helpOff;
-        const fire = engine.save.spillOneHanded ? "Fire button" : "second finger";
-        settings.append(prompts, el("p", "ac-sub", `Drag to steer · release to hold · flick ◀ ▶ to dodge · ${fire} or F / Space fires.`));
+        prompts.onkeydown = prompts.onkeyup = e => e.stopPropagation();
+        prompts.onclick = () => engine.setSpillPromptsOff(!engine.save.spillPromptsOff);
+        const caption = el("span");
+        caption.append(el("b", "", "Instructional prompts"), el("small", "", engine.save.helpOff
+          ? "Help is disabled in Settings." : "Control tips and wave lessons. Hazard warnings stay visible."));
+        prompts.append(caption, el("strong", "", promptsOn ? "ON" : "OFF"));
+        settings.append(el("h3", "", "Flight controls"), prompts,
+          el("p", "ac-sub", "Drag to steer · release to hold · flick ◀ ▶ to dodge. Tap Fire or use a second finger while steering. F / Space also fire."));
         // one line of loadout, so a pause answers "what am I flying?"
         const sp = engine.world.spill, combat = sp.combat;
         const artifact = combat.build.artifact ? SPILL_ARTIFACTS[combat.build.artifact].name : "No artifact";
@@ -505,7 +511,6 @@ export async function bootStandalone(root: HTMLElement) {
       } else act.append(resume, abort);
       sheet.append(act);
       overlay.append(sheet);
-      if (depotFocus === "one-handed") sheet.querySelector<HTMLElement>('[data-spill-control="one-handed"]')?.focus({ preventScroll: true });
       return;
     }
     if (snap.screen === "dead" && snap.dead) {
@@ -4938,7 +4943,7 @@ export async function bootStandalone(root: HTMLElement) {
     const debris = modeSection("spill", "Debris Field Mode", "m-spill");
     // Reuse the actual pad colors and input labels without the briefing's
     // explanatory paragraphs. The shared launch/briefing renderer stays intact.
-    const spillHelp = drawSpillFlightHelp(false, engine.save.spillOneHanded);
+    const spillHelp = drawSpillFlightHelp(false);
     const spillControls = spillHelp.querySelector<HTMLElement>(".ac-spillhelp-controls");
     if (spillControls) debris.append(spillControls);
     const extras = el("div", "ac-helpextras");

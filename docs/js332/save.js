@@ -487,7 +487,6 @@ export function loadSave() {
     s.spillSignal = s.spillEngineColor !== "stock";
     s.spillDepotGuideSeen = s.spillDepotGuideSeen === true;
     s.spillDrillDone = s.spillDrillDone === true;
-    s.spillOneHanded = s.spillOneHanded === true;
     s.palGuideSeen = s.palGuideSeen === true;
     s.chartGuideSeen = s.chartGuideSeen === true;
     // favourites are ids only; anything else in the array is a hand-edit

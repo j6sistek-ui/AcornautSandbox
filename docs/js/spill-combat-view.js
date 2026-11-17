@@ -240,7 +240,7 @@ export function drawSpillCombat(ctx, s, art) {
 }
 /** The top-right slot begins below HULL/SHIELDS and finishes above status
  * banners. HUD caller already translates by the device's top safe area. */
-export function drawSpillCombatHud(ctx, s, oneHanded = false) {
+export function drawSpillCombatHud(ctx, s) {
     if (!s.combat || !flight(s))
         return;
     const c = s.combat, x = s.W - 104, y = 58, width = 92, height = 34;
@@ -267,7 +267,7 @@ export function drawSpillCombatHud(ctx, s, oneHanded = false) {
     ctx.font = "600 10px Figtree, system-ui";
     const status = c.build.echo > 0 ? "ECHO READY" : artifact === "reclaimer" ? `COINS ${c.build.salvageDrops}/8`
         : artifact === "siege" ? "SIEGE CORE" : artifact === "slipstream" ? "DODGE TO PRIME"
-            : c.firing ? "FIRING" : oneHanded ? "FIRE / F" : "2ND TOUCH / F";
+            : c.firing ? "FIRING" : "FIRE / F";
     ctx.fillText(status, x + 8, y + 24, width - 16);
     const duration = spillWeaponStats(s).cooldown;
     ctx.fillStyle = "rgba(255,255,255,.14)";

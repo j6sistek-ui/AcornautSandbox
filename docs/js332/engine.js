@@ -430,11 +430,6 @@ export async function createEngine(canvas) {
             writeSave(save);
             notify();
         },
-        setSpillOneHanded(on) {
-            save.spillOneHanded = on;
-            writeSave(save);
-            notify();
-        },
         setSpillPromptsOff(off) {
             save.spillPromptsOff = off;
             writeSave(save);

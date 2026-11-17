@@ -2294,9 +2294,9 @@ function drawSpillHud(ctx, w, art, save) {
     const s = w.spill;
     const { W, H } = w;
     const hidePrompts = !!(save?.spillPromptsOff || save?.helpOff);
-    const oneHanded = !!save?.spillOneHanded;
+    const showControls = s.phase === "wave" || s.phase === "drain" || s.phase === "countdown";
     // Reserve the bottom corners for the 64 px controls and the device inset.
-    const hudBottom = H - (w.insetTop || 0) - (oneHanded ? 64 + (w.insetBottom || 0) : 0);
+    const hudBottom = H - (w.insetTop || 0) - (showControls ? 64 + (w.insetBottom || 0) : 0);
     ctx.textAlign = "center";
     // the wave sits where every other mode puts its score; a mission counts
     // it against the rung it has to reach
@@ -2380,7 +2380,7 @@ function drawSpillHud(ctx, w, art, save) {
     ctx.fillText("HEALTH", W - 58, 15);
     ctx.fillStyle = "#a3e6ff";
     ctx.fillText(`SHIELDS ${s.shield}`, W - 58, 44);
-    drawSpillCombatHud(ctx, s, oneHanded);
+    drawSpillCombatHud(ctx, s);
     // status lines stack under the meter
     let hudY = 100;
     const hudLine = (text, color) => {
@@ -2432,7 +2432,7 @@ function drawSpillHud(ctx, w, art, save) {
     }
     // THE RULE CHIP: the live rule sits beside the controls for the whole
     // wave, with a bar that fills as it phases in, so nothing is a surprise
-    if (names && (s.phase === "wave" || s.phase === "drain" || s.phase === "countdown")) {
+    if (names && showControls) {
         ctx.font = "800 11px Figtree, system-ui";
         const label = names;
         const tw = ctx.measureText(label).width;
@@ -2455,7 +2455,7 @@ function drawSpillHud(ctx, w, art, save) {
     // the free lesson, while it runs, above the rule chip; a hazard's own
     // warning takes the same slot when no lesson is showing
     if (!hidePrompts && s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
-        const bottom = oneHanded ? Math.min(H - 96, hudBottom - (names ? 64 : 24)) : H - 96;
+        const bottom = showControls ? Math.min(H - 96, hudBottom - (names ? 64 : 24)) : H - 96;
         drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), bottom);
     }
     if (!hidePrompts && s.hintT <= 0)
@@ -2474,7 +2474,7 @@ function drawSpillHud(ctx, w, art, save) {
             compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
                 : "DEPOT EVERY 5 WAVES · SPEND ACORN COINS",
             compact ? "DRAG ▲▼ STEER · FLICK ◀▶ DODGE"
-                : `DRAG ▲▼ STEER · FLICK ◀▶ DODGE · ${oneHanded ? "FIRE BUTTON" : "2ND FINGER FIRE"}`,
+                : "DRAG ▲▼ STEER · FLICK ◀▶ DODGE · FIRE BUTTON",
             "TAP TO LAUNCH",
         ];
         const oreLine = 1;
@@ -2519,7 +2519,7 @@ function drawSpillHud(ctx, w, art, save) {
         }
     }
     if (s.drill && (s.phase === "wave" || s.phase === "drain"))
-        drawSpillDrill(ctx, w, s, oneHanded);
+        drawSpillDrill(ctx, w, s);
     if (s.phase === "countdown") {
         // THE COUNT. The ship flies itself; the hand rests; control returns on
         // the GO and never before. The number is the biggest thing on screen
@@ -6271,7 +6271,7 @@ function drawPrompt(ctx, w, title, body, cy) {
 /** THE TRAINING CARD: one step at a time under the HUD, the same navy card
  *  and cyan edge as the lesson card, a dot per step. Kept short so the field
  *  below it stays readable while debris and the patrol ship are live. */
-function drawSpillDrill(ctx, w, s, oneHanded) {
+function drawSpillDrill(ctx, w, s) {
     const d = s.drill, last = SPILL_DRILL.length - 1, step = SPILL_DRILL[Math.min(d.step, last)];
     const ready = step.id === "ready", W = w.W, steps = last;
     const bw = Math.min(W - 24, 350), bh = ready ? 78 : 102, x = (W - bw) / 2, y = 104;
@@ -6293,7 +6293,7 @@ function drawSpillDrill(ctx, w, s, oneHanded) {
     ctx.fillText(step.title + progress, W / 2, y + 43, bw - 20);
     ctx.fillStyle = "rgba(225,236,250,.92)";
     ctx.font = "700 13px Figtree, system-ui";
-    ctx.fillText(oneHanded && step.id === "fire" ? "Tap or hold the Fire button" : step.touch, W / 2, y + 63, bw - 20);
+    ctx.fillText(step.touch, W / 2, y + 63, bw - 20);
     if (!ready) {
         if (step.keys) {
             ctx.fillStyle = "rgba(200,190,255,.75)";

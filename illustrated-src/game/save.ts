@@ -199,7 +199,6 @@ export type SaveData = {
   helpOff?: boolean;
   /** Debris Field control and help preferences. */
   spillButtonsOff?: boolean;
-  spillOneHanded?: boolean;
   spillPromptsOff?: boolean;
   motionOff?: boolean;
   introOff?: boolean;
@@ -619,7 +618,6 @@ export function loadSave(): SaveData {
   s.spillSignal = s.spillEngineColor !== "stock";
   s.spillDepotGuideSeen = s.spillDepotGuideSeen === true;
   s.spillDrillDone = s.spillDrillDone === true;
-  s.spillOneHanded = s.spillOneHanded === true;
   s.palGuideSeen = s.palGuideSeen === true;
   s.chartGuideSeen = s.chartGuideSeen === true;
   // favourites are ids only; anything else in the array is a hand-edit

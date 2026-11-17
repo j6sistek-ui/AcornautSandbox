@@ -35,17 +35,15 @@ opening Depot, which offers exactly one free system upgrade and nothing else.
 The Depot guide never opens on its own; its `?` replays it, with utilities as
 one compact row labelled for the wave 5 Depot, where they are first sold.
 
-- Hold anywhere on the field and drag to steer. The joystick opens at the
-  touch point, and releasing holds altitude. Flick left or right to dodge.
-  Tap or hold a second finger to fire. Keyboard controls use W/S or the
-  vertical arrows to steer, A/D or the horizontal arrows to dodge, and
-  F or Space to fire.
-- Turn on **One-handed controls** in the briefing or pause menu for a
-  bottom-right Fire button and a bottom-left idle joystick marker. Tap
-  Fire for one shot or hold to repeat. The marker follows the next touch
-  wherever it starts on the field.
-- Blur, visibility loss and resize pause the run and release held controls.
-  The layout and instructional prompt preferences are saved separately.
+- The joystick rests in the bottom left and opens at the first touch on
+  the field. Drag to steer, release to hold altitude, and flick left or
+  right to dodge.
+- Tap the bottom-right **Fire** button or tap anywhere on the field with a
+  second finger while steering. Hold either touch to repeat fire. The
+  button stays in the corner and lights when firing.
+- Use W/S or the vertical arrows to steer, A/D or the horizontal arrows
+  to dodge, and F or Space to fire. Blur, visibility loss and resize pause
+  the run and release held controls.
 - Simulation advances in 60 Hz steps independently of display refresh rate.
 - DRIFT changes debris velocity, while pilot, warnings and floor stay in the
   same screen coordinates used by collision detection.

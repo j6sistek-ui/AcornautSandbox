@@ -48,24 +48,6 @@ function systemIcon(id) {
     return svg;
 }
 function coin() { const im = el("img", "ac-workshop-coin"); im.src = artUrl("pickups/acorn-coin.svg"); im.alt = ""; im.draggable = false; return im; }
-export function spillControlSwitch(label, detail, on, toggle) {
-    const button = el("button", "ac-spillsetting");
-    button.setAttribute("role", "switch");
-    button.setAttribute("aria-label", label);
-    button.setAttribute("aria-checked", String(on));
-    button.onkeydown = button.onkeyup = e => e.stopPropagation();
-    const caption = el("span");
-    caption.append(el("b", "", label), el("small", "", detail));
-    button.append(caption, el("strong", "", on ? "ON" : "OFF"));
-    button.onclick = toggle;
-    return button;
-}
-export function drawSpillOneHandedSwitch(engine) {
-    const on = !!engine.save.spillOneHanded;
-    const button = spillControlSwitch("One-handed controls", "Adds a Fire button and an idle joystick marker.", on, () => engine.setSpillOneHanded(!on));
-    button.dataset.spillControl = "one-handed";
-    return button;
-}
 export function spillUtilityArt(id) {
     const im = el("img", "ac-utility-art");
     im.src = artUrl(`spill-ship/utilities/${id}.webp`);
@@ -197,9 +179,8 @@ export function drawSpillEnginePicker(engine) {
     return wrap;
 }
 /** THE ONE INSTRUCTIONS SHEET (owner, 10 Sep 2026: "a single instructions
- *  menu should pop up for gameplay mechanics"). It teaches the hand and the
- *  loop and lets the pilot pick a control layout. Ship upgrades wait at
- *  the Depot. */
+ *  menu should pop up for gameplay mechanics"). It teaches the controls and
+ *  the loop. Ship upgrades wait at the Depot. */
 export function drawSpillLaunchSetup(engine, onGuide) {
     const save = engine.save, wrap = el("div", "ac-spillprep ac-spillsetup");
     const pilot = SUITS.find(s => s.id === save.equippedSuit)?.name ?? "Pilot";
@@ -212,7 +193,7 @@ export function drawSpillLaunchSetup(engine, onGuide) {
     head.append(heading, help);
     wrap.append(head);
     const body = el("div", "ac-setup-body");
-    body.append(flightControlCards(save.spillOneHanded), harderKickNote(), drawSpillOneHandedSwitch(engine));
+    body.append(flightControlCards(), steeringNote());
     const loop = el("ol", "ac-setup-loop");
     loop.setAttribute("aria-label", "The run");
     for (const [text, withCoin] of [["Survive the waves", false], ["Collect Acorn Coins", true], ["Depot every 5 waves · upgrade your ship · first upgrade free", false]]) {
@@ -302,7 +283,7 @@ export function drawSpillGuideSheet(engine, onClose, closeLabel) {
     const wrap = el("div", "ac-lvlsheet ac-depotwrap ac-workshop ac-spillhelpwrap");
     wrap.style.setProperty("--workshop-art", `url("${artUrl("spill-scene/workshop.webp")}")`);
     const sheet = drawDepotGuide(engine, onClose, closeLabel);
-    sheet.querySelector(".ac-guide-collect")?.before(drawSpillFlightHelp(false, engine.save.spillOneHanded));
+    sheet.querySelector(".ac-guide-collect")?.before(drawSpillFlightHelp(false));
     wrap.append(sheet);
     wrap.onclick = e => { if (e.target === wrap)
         onClose(); };
@@ -322,27 +303,27 @@ export function drawSpillGuideSheet(engine, onClose, closeLabel) {
  *  (owner, 10 Sep 2026: help cards match the colours used in Debris Field). */
 const FLIGHT_CONTROLS = [
     ["HOLD + DRAG", "Steer · let go to hold", "W / S · ↑ / ↓", "thrust"],
-    ["2ND FINGER", "Fire · hold to repeat", "F · Space", "dive"],
+    ["FIRE BUTTON", "Or use a second finger", "F · Space", "dive"],
     ["FLICK ◀ ▶", "Dodge", "A / D · ← / →", "lunge"],
 ];
-function flightControlCards(oneHanded = false) {
+function flightControlCards() {
     const controls = el("div", "ac-spillhelp-controls");
     for (const [input, action, note, pad] of FLIGHT_CONTROLS) {
         const card = el("div", `ac-spillhelp-pad ac-spillhelp-${pad}`);
         const { light, edge } = SPILL_CONTROL_COLORS[pad];
         card.style.setProperty("--pad-light", light);
         card.style.setProperty("--pad-edge", edge);
-        card.append(el("b", "", oneHanded && pad === "dive" ? "FIRE BUTTON" : input), el("span", "", action), el("small", "ac-sub", note));
+        card.append(el("b", "", input), el("span", "", action), el("small", "ac-sub", note));
         controls.append(card);
     }
     return controls;
 }
-const harderKickNote = () => el("small", "ac-sub ac-spillhelp-extra", "Hold anywhere to steer · aim assist tracks enemies at your height");
+const steeringNote = () => el("small", "ac-sub ac-spillhelp-extra", "Your first touch on the field steers · aim assist tracks enemies at your height");
 /** The same instructions in Settings & Help and the replayable briefing. */
-export function drawSpillFlightHelp(includeHazards = true, oneHanded = false) {
+export function drawSpillFlightHelp(includeHazards = true) {
     const section = el("section", "ac-spillflighthelp");
     section.setAttribute("aria-label", "How to fly · Debris Field");
-    section.append(el("p", "ac-kicker ac-secthead", "HOW TO FLY · DEBRIS FIELD"), flightControlCards(oneHanded), harderKickNote(), el("p", "ac-sub", "Depot every 5 waves · spend Acorn Coins · first upgrade free."));
+    section.append(el("p", "ac-kicker ac-secthead", "HOW TO FLY · DEBRIS FIELD"), flightControlCards(), steeringNote(), el("p", "ac-sub", "Depot every 5 waves · spend Acorn Coins · first upgrade free."));
     if (includeHazards)
         section.append(hazardGuide());
     return section;
