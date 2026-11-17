@@ -2,6 +2,7 @@ import { spillDockTravelDuration } from "./spill";
 import { clipHelmetGlass } from "./helmet-openings";
 import { paintFittedHelmet } from "./helmet-fit";
 import { paintVanguardDepot, vanguardDepotPose } from "./spill-depot-gag";
+import { paintDepotBear, type DepotBearFrame } from "./spill-depot-bear";
 import { paintVanguard, paintVanguardShield, paintVanguardWake, paintVanguardContacts, vanguardPreview } from "./vanguard";
 import { paintArcflash, paintArcflashWake, paintArcflashCockpit, paintArcflashBootWake, isArcflashRig, type ArcflashTravel } from "./arcflash";
 import { arcflashPreview, type ArcflashMotion } from "./arcflash-motion";
@@ -2102,7 +2103,6 @@ function drawSpillScout(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
 // same layer behind the canvas the panorama uses. The approach itself -
 // the camera closing in, the fade, the Vanguard gag - still paints live,
 // because it moves.
-type DepotBearFrame = { image: HTMLCanvasElement | HTMLImageElement; footX: number; footY: number };
 let spillDepotPlate: HTMLCanvasElement | null = null;
 let spillDepotKey = "";
 function spillDepotPlateFor(ctx: CanvasRenderingContext2D, W: number, H: number, dock: HTMLImageElement,
@@ -2121,14 +2121,7 @@ function spillDepotPlateFor(ctx: CanvasRenderingContext2D, W: number, H: number,
   const shade = g.createLinearGradient(0, 0, 0, H);
   shade.addColorStop(0, "rgba(3,7,20,.38)"); shade.addColorStop(0.5, "rgba(3,7,20,0)"); shade.addColorStop(1, "rgba(3,7,20,.3)");
   g.fillStyle = shade; g.fillRect(0, 0, W, H);
-  if (bear) {
-    g.fillStyle = "rgba(6,5,16,.45)"; g.beginPath();
-    g.ellipse(marshal.x, marshal.y, marshal.height * .28, marshal.height * .055, 0, 0, Math.PI * 2); g.fill();
-    g.save(); g.translate(marshal.x, marshal.y);
-    const scale = marshal.height / bear.image.height;
-    g.scale(-scale, scale); // face the incoming ship
-    g.drawImage(bear.image, -bear.footX, -bear.footY); g.restore();
-  }
+  if (bear) paintDepotBear(g, bear, marshal.x, marshal.y, marshal.height);
   spillDepotPlate = c; spillDepotKey = key;
   return c;
 }
@@ -2147,7 +2140,7 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
     const hosted = plate && spillBackplateHost ? spillBackplateHost(plate, 0, W, H) : false;
     if (plate && !hosted) ctx.drawImage(plate, 0, 0, W, H);
   } else if (dock && s.phase === "docking") {
-    const gagTime = s.depotGag ? s.phaseT - spillDockTravelDuration(s) : -1;
+    const gagTime = s.depotGag ? s.phaseT - (s.depotGagStart ?? spillDockTravelDuration(s)) : -1;
     const cameo = gagTime >= 0 && !!art.spillScene?.vanguardDepot;
     const arrival = Math.min(SPILL.dockTime, s.phaseT * SPILL.dockTime / spillDockTravelDuration(s));
     const view = spillDockView(W, H, dock.naturalWidth || dock.width, dock.naturalHeight || dock.height, arrival, cameo ? gagTime : -1);
@@ -2174,14 +2167,7 @@ function drawSpillWorld(ctx: CanvasRenderingContext2D, w: World, save: SaveData,
         ctx.fillStyle = glow; ctx.fillRect(px - marshal.height, py - marshal.height, marshal.height * 2, marshal.height * 2);
       }
     }
-    if (bear) {
-      ctx.fillStyle = "rgba(6,5,16,.45)"; ctx.beginPath();
-      ctx.ellipse(marshal.x, marshal.y, marshal.height * .28, marshal.height * .055, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.save(); ctx.translate(marshal.x, marshal.y);
-      const scale = marshal.height / bear.image.height;
-      ctx.scale(-scale, scale); // face the incoming ship
-      ctx.drawImage(bear.image, -bear.footX, -bear.footY); ctx.restore();
-    }
+    if (bear) paintDepotBear(ctx, bear, marshal.x, marshal.y, marshal.height);
     if (cameo) {
       // The hull stays parked in the same world position as the camera
       // moves in; its cockpit is empty and its thruster is off.
@@ -2390,9 +2376,13 @@ function drawSpillHint(ctx: CanvasRenderingContext2D, w: World, text: string, al
   ctx.restore();
 }
 
-function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null, hidePrompts = false) {
+function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null, save?: SaveData) {
   const s = w.spill!;
   const { W, H } = w;
+  const hidePrompts = !!(save?.spillPromptsOff || save?.helpOff);
+  const showControls = s.phase === "wave" || s.phase === "drain" || s.phase === "countdown";
+  // Reserve the bottom corners for the 64 px controls and the device inset.
+  const hudBottom = H - (w.insetTop || 0) - (showControls ? 64 + (w.insetBottom || 0) : 0);
   ctx.textAlign = "center";
   // the wave sits where every other mode puts its score; a mission counts
   // it against the rung it has to reach
@@ -2508,12 +2498,11 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   }
   // THE RULE CHIP: the live rule sits beside the controls for the whole
   // wave, with a bar that fills as it phases in, so nothing is a surprise
-  if (names && (s.phase === "wave" || s.phase === "drain" || s.phase === "countdown")) {
+  if (names && showControls) {
     ctx.font = "800 11px Figtree, system-ui";
     const label = names;
     const tw = ctx.measureText(label).width;
-    // above the DIVE pad while the pads are on, the way the hint card is
-    const cx = 16, cy = H - (w.insetTop || 0) - 40;
+    const cx = 16, cy = hudBottom - 40;
     const cw = tw + 26;
     ctx.fillStyle = "rgba(14,20,38,.8)";
     round(ctx, cx, cy - 15, cw, 30, 15);
@@ -2532,9 +2521,10 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
   // the free lesson, while it runs, above the rule chip; a hazard's own
   // warning takes the same slot when no lesson is showing
   if (!hidePrompts && s.hintT > 0 && s.phase !== "ready" && s.phase !== "depot" && s.phase !== "docking" && s.phase !== "over") {
-    drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), H - 96);
+    const bottom = showControls ? Math.min(H - 96, hudBottom - (names ? 64 : 24)) : H - 96;
+    drawSpillHint(ctx, w, s.hint, Math.min(1, s.hintT * 2), bottom);
   }
-  if (!hidePrompts && s.hintT <= 0) drawSpillHazardHint(ctx, s, H - (w.insetTop || 0) - 64);
+  if (!hidePrompts && s.hintT <= 0) drawSpillHazardHint(ctx, s, hudBottom - 64);
   if (s.phase === "ready" && s.target) {
     const compact = W < 520;
     // a phone gets the same briefing in shorter lines, never a clipped one
@@ -2549,7 +2539,7 @@ function drawSpillHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | n
       compact ? "DEPOT EVERY 5 WAVES · UPGRADE THE SHIP"
               : "DEPOT EVERY 5 WAVES · SPEND ACORN COINS",
       compact ? "DRAG ▲▼ STEER · FLICK ◀▶ DODGE"
-              : "DRAG ▲▼ STEER · FLICK ◀▶ DODGE · 2ND FINGER FIRE",
+              : "DRAG ▲▼ STEER · FLICK ◀▶ DODGE · FIRE BUTTON",
       "TAP TO LAUNCH",
     ];
     const oreLine = 1;
@@ -5994,7 +5984,7 @@ export function drawHud(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank |
 function drawHudBody(ctx: CanvasRenderingContext2D, w: World, art?: ArtBank | null, save?: SaveData) {
   const { W } = w;
   if (w.spill) {
-    drawSpillHud(ctx, w, art, !!save?.spillPromptsOff || !!save?.helpOff);
+    drawSpillHud(ctx, w, art, save);
     return;
   }
   if (w.race) {

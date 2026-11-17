@@ -1,31 +1,31 @@
-import { selectShopCycle } from "./shop-cycle.js?v=333";
-import { suitPitchFor, tapShapeFor, tailSpringFor, tapAccentStrengthFor } from "./save.js?v=333";
-import { platform } from "./platform.js?v=333";
-import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=333";
-import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=333";
-import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=333";
-import { addChartScenery } from "./star-map-view.js?v=333";
-import { mapDebrisIndex } from "./zone-visuals.js?v=333";
-import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=333";
-import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=333";
-import { repeatTapMode, FLIGHT_TEST_PATTERNS } from "./sim.js?v=333";
-import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=333";
-import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=333";
-import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, REMOVE_ADS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, ACORNS_PER_DUST } from "./catalog.js?v=333";
-import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=333";
-import { bundleQuote } from "./catalog.js?v=333";
-import { drawSprite as drawSpriteOn } from "./art.js?v=333";
-import { createEngine } from "./engine.js?v=333";
-import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=333";
-import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=333";
-import { formatRaceTicks } from "./race.js?v=333";
-import { SPILL_UTILITIES, spillMastery, spillEngineColor } from "./spill-content.js?v=333";
-import { spillPreviewState } from "./spill-presentation.js?v=333";
-import { SPILL_WEAPONS } from "./spill-combat.js?v=333";
-import { SPILL_DRILL } from "./spill.js?v=333";
-import { SPILL_ARTIFACTS } from "./spill-builds.js?v=333";
-import { SPILL_RISKS } from "./spill-expeditions.js?v=333";
-import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet, drawSpillDepthHelp, hazardGuide } from "./spill-workshop.js?v=333";
+import { selectShopCycle } from "./shop-cycle.js?v=334";
+import { suitPitchFor, tapShapeFor, tailSpringFor, tapAccentStrengthFor } from "./save.js?v=334";
+import { platform } from "./platform.js?v=334";
+import { trailWornBy, canWearTrail, builtInTrailSuit } from "./catalog.js?v=334";
+import { isHighOrbit, HIGH_ORBIT_PROFILES } from "./high-orbit-config.js?v=334";
+import { PLANNED_STAR_REWARDS } from "./star-map-rewards.js?v=334";
+import { addChartScenery } from "./star-map-view.js?v=334";
+import { mapDebrisIndex } from "./zone-visuals.js?v=334";
+import { missionCredit, verifiedMask, routeMasks, rewardId } from "./campaign-progress.js?v=334";
+import { STAR_MAP_PREVIEW, suitPitchDefault } from "./catalog.js?v=334";
+import { repeatTapMode, FLIGHT_TEST_PATTERNS } from "./sim.js?v=334";
+import { suitLean, TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAIL_SPRING_SUITS, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=334";
+import { CHART_LEVELS, CHART_MAX_STARS, nextLevel, levelAt, reachedGate, SUB_ACORNS } from "./campaign.js?v=334";
+import { ART_VER, BUILD, ENVS, GUIDE_HELM, GUIDE_SUIT, HELMETS, HELMET_SHELF, SUIT_SHELF, IAP_ITEMS, IS_BETA, MOD_SHIELD_COST, MODS, PALS, PHYS, SUITS, TRAILS, helmetWornBy, isIap, wearsOwnHead, BUNDLES, bundleIds, idDust, SET_TRAIL, fixedHeadTag, fixedHeadLine, fixedHeadDescription, DUST_PACKS, CASH_PACKS, REMOVE_ADS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN, BOOSTS, BOOST_IDS, DEV_STAMP, ACORNS_PER_DUST } from "./catalog.js?v=334";
+import { paintPortrait, paintTrailPreview, paintPalPreview, paintFlightPreview, paintShipPreview } from "./draw.js?v=334";
+import { bundleQuote } from "./catalog.js?v=334";
+import { drawSprite as drawSpriteOn } from "./art.js?v=334";
+import { createEngine } from "./engine.js?v=334";
+import { dualPalUnlocked, equippedPals, deepUnlocked, helmetRevealed, lostUnlocked, palUnlocked, startShieldUnlocked, suitRevealed, starsOf, trailUnlocked, PILOT_NAME_MAX, boostReady, skipEligible, rewardOwned, ownsPremium } from "./save.js?v=334";
+import { HYPER_RUN_MAX_ACORNS, HYPER_RUN_MISSION, STAR_REWARDS, STAR_UNLOCKS, countBits, fxText, goalText, levelUnlocked, starTitle, RACE_GATES } from "./campaign.js?v=334";
+import { formatRaceTicks } from "./race.js?v=334";
+import { SPILL_UTILITIES, spillMastery, spillEngineColor } from "./spill-content.js?v=334";
+import { spillPreviewState } from "./spill-presentation.js?v=334";
+import { SPILL_WEAPONS } from "./spill-combat.js?v=334";
+import { SPILL_ARTIFACTS } from "./spill-builds.js?v=334";
+import { SPILL_RISKS } from "./spill-expeditions.js?v=334";
+import { createDepotView, drawDepotWorkshop, drawSpillLaunchSetup, drawSpillEnginePicker, drawSpillFlightHelp, drawSpillGuideSheet, drawSpillDepthHelp, hazardGuide } from "./spill-workshop.js?v=334";
+import { SPILL_DRILL, spillDrillStep } from "./spill.js?v=334";
 function el(tag, cls = "", text) {
     const n = document.createElement(tag);
     if (cls)
@@ -110,6 +110,11 @@ export async function bootStandalone(root) {
     joystick.setAttribute("aria-hidden", "true");
     const stickKnob = el("span", "ac-floating-stick-knob");
     joystick.append(stickKnob);
+    const fireButton = el("button", "ac-spill-fire", "Fire");
+    fireButton.type = "button";
+    fireButton.hidden = true;
+    fireButton.disabled = true;
+    fireButton.dataset.spillControl = "fire";
     // The launch film lives on the STAGE, not in the overlay: render() clears
     // the overlay wholesale on every notify, and a film mounted inside it
     // would restart from frame one each time the engine so much as ticked.
@@ -119,7 +124,7 @@ export async function bootStandalone(root) {
     drillSkip.hidden = true;
     drillSkip.dataset.spillControl = "skip-drill";
     drillSkip.onclick = () => engine.spillSkipDrill();
-    stage.append(canvas, overlay, joystick, drillSkip, filmHost);
+    stage.append(canvas, overlay, joystick, fireButton, drillSkip, filmHost);
     root.append(stage);
     // Screen 1 of the cold open. The acorn IS the progress bar: a drained
     // shell with the full-colour acorn revealed from the base up as the art
@@ -282,22 +287,62 @@ export async function bootStandalone(root) {
     let disposeChart = () => { };
     let disposeHomeWallet = () => { };
     let controlState = "";
+    let firePointer = null;
+    const endFirePress = (id, canceled) => {
+        if (id === null || firePointer !== id)
+            return;
+        firePointer = null;
+        engine.spillFire(false, `fire-button:${id}`, canceled);
+        if (fireButton.hasPointerCapture?.(id))
+            fireButton.releasePointerCapture(id);
+    };
+    fireButton.onpointerdown = event => {
+        if (fireButton.hidden || fireButton.disabled || event.button !== 0 || firePointer !== null)
+            return;
+        event.preventDefault();
+        firePointer = event.pointerId;
+        try {
+            fireButton.setPointerCapture(event.pointerId);
+        }
+        catch { /* window listens for release too */ }
+        engine.spillFire(true, `fire-button:${event.pointerId}`);
+    };
+    const releaseFire = (event) => endFirePress(event.pointerId, event.type !== "pointerup");
+    window.addEventListener("pointerup", releaseFire);
+    window.addEventListener("pointercancel", releaseFire);
+    fireButton.addEventListener("lostpointercapture", releaseFire);
+    fireButton.onclick = event => {
+        // Keyboard and assistive activation have no pointerdown. Pointer clicks
+        // have already sent their tap, even when released before the next tick.
+        if (event.detail !== 0 || fireButton.hidden || fireButton.disabled)
+            return;
+        engine.spillFire(true, "fire-button-activation");
+        engine.spillFire(false, "fire-button-activation");
+    };
     function updateSpillControls() {
         const sp = engine.world.spill;
-        const activeFlight = engine.world.screen === "play" && !!sp && ["countdown", "wave", "drain"].includes(sp.phase);
+        const activeFlight = !!sp && engine.world.screen === "play" && ["countdown", "wave", "drain"].includes(sp.phase);
         canvas.classList.toggle("ac-flight-surface", activeFlight);
         drillSkip.hidden = !(activeFlight && !!sp?.drill && sp.drill.step < SPILL_DRILL.length - 1);
+        const canFire = activeFlight && sp.phase !== "countdown" && (!sp.drill || spillDrillStep(sp) === "fire");
+        if (fireButton.hidden === activeFlight)
+            fireButton.hidden = !activeFlight;
+        if (fireButton.disabled === canFire)
+            fireButton.disabled = !canFire;
+        if (!canFire)
+            endFirePress(firePointer, true);
+        // The fixed button acknowledges shots from either touch input.
+        fireButton.classList.toggle("firing", canFire && (sp.combat.firing || sp.combat.muzzleFlash > 0));
         const stick = engine.spillControls();
-        const visible = activeFlight && stick.active;
-        const key = visible ? `${stick.x}:${stick.y}:${stick.dx}:${stick.dy}` : "hidden";
+        const held = activeFlight && stick.active;
+        const key = held ? `${stick.x}:${stick.y}:${stick.dx}:${stick.dy}` : activeFlight ? "idle" : "hidden";
         if (key === controlState)
             return;
         controlState = key;
-        joystick.hidden = !visible;
-        if (!visible)
-            return;
-        joystick.style.left = `${stick.x * 100}%`;
-        joystick.style.top = `${stick.y * 100}%`;
+        joystick.hidden = key === "hidden";
+        joystick.classList.toggle("ac-stick-idle", key === "idle");
+        joystick.style.left = held ? `${stick.x * 100}%` : "";
+        joystick.style.top = held ? `${stick.y * 100}%` : "";
         stickKnob.style.transform = `translate(${stick.dx * 25}px, ${stick.dy * 25}px)`;
     }
     engine.subscribeFrame(updateSpillControls);
@@ -403,8 +448,6 @@ export async function bootStandalone(root) {
                 if (dockScroll)
                     dock.scrollTop = dockScroll;
             }
-            // THE SPILL's LUNGE button rides the bottom-right corner for anyone
-            // who misses the swipe. When the Depot is open it takes the screen.
             const sp = engine.world.spill;
             if (sp) {
                 if (sp.phase === "depot") {
@@ -434,9 +477,6 @@ export async function bootStandalone(root) {
                         overlay.append(spillHelpSheet());
                     return;
                 }
-                if (sp.phase === "docking")
-                    return;
-                // The persistent button layer handles flight; Pulse fires automatically.
             }
             return;
         }
@@ -473,24 +513,19 @@ export async function bootStandalone(root) {
                     : `Score ${engine.world.score}`));
             if (engine.world.spill) {
                 const settings = el("section", "ac-spillsettings");
-                settings.append(el("h3", "", "Flight controls"));
-                const option = (label, detail, on, hit) => {
-                    const b = el("button", "ac-spillsetting");
-                    b.setAttribute("role", "switch");
-                    b.setAttribute("aria-label", label);
-                    b.setAttribute("aria-checked", String(on));
-                    b.addEventListener("keydown", e => e.stopPropagation());
-                    b.addEventListener("keyup", e => e.stopPropagation());
-                    const text = el("span");
-                    text.append(el("b", "", label), el("small", "", detail));
-                    b.append(text, el("strong", "", on ? "ON" : "OFF"));
-                    b.onclick = hit;
-                    settings.append(b);
-                    return b;
-                };
-                const prompts = option("Instructional prompts", engine.save.helpOff ? "Help is disabled in Settings." : "Control tips and wave lessons. Hazard warnings stay visible.", !engine.save.spillPromptsOff && !engine.save.helpOff, () => engine.setSpillPromptsOff(!engine.save.spillPromptsOff));
+                const prompts = el("button", "ac-spillsetting");
+                const promptsOn = !engine.save.spillPromptsOff && !engine.save.helpOff;
+                prompts.setAttribute("role", "switch");
+                prompts.setAttribute("aria-label", "Instructional prompts");
+                prompts.setAttribute("aria-checked", String(promptsOn));
                 prompts.disabled = !!engine.save.helpOff;
-                settings.append(el("p", "ac-sub", "Drag to steer · release to hold · flick ◀ ▶ to dodge · second finger or F / Space fires."));
+                prompts.onkeydown = prompts.onkeyup = e => e.stopPropagation();
+                prompts.onclick = () => engine.setSpillPromptsOff(!engine.save.spillPromptsOff);
+                const caption = el("span");
+                caption.append(el("b", "", "Instructional prompts"), el("small", "", engine.save.helpOff
+                    ? "Help is disabled in Settings." : "Control tips and wave lessons. Hazard warnings stay visible."));
+                prompts.append(caption, el("strong", "", promptsOn ? "ON" : "OFF"));
+                settings.append(el("h3", "", "Flight controls"), prompts, el("p", "ac-sub", "Drag to steer · release to hold · flick ◀ ▶ to dodge. Tap Fire or use a second finger while steering. F / Space also fire."));
                 // one line of loadout, so a pause answers "what am I flying?"
                 const sp = engine.world.spill, combat = sp.combat;
                 const artifact = combat.build.artifact ? SPILL_ARTIFACTS[combat.build.artifact].name : "No artifact";

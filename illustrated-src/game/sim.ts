@@ -434,6 +434,7 @@ export type World = {
   /** SAFE AREA (8 Sep 2026): the notch or status bar height in CSS px,
    *  read from the page at resize; the HUD's top row keeps clear of it */
   insetTop: number;
+  insetBottom?: number;
   /** SPACE PUPPY (owner, 7 Sep 2026): the run is a bounce house - no debris,
    *  no pickups, no gate count, giant planets, a floor that bounces */
   bounceHouse: boolean;

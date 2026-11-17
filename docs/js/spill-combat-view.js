@@ -1,7 +1,7 @@
-import { drawSprite } from "./art.js?v=333";
-import { SPILL } from "./spill.js?v=333";
-import { spillWeaponStats } from "./spill-combat.js?v=333";
-import { SPILL_ARTIFACTS } from "./spill-builds.js?v=333";
+import { drawSprite } from "./art.js?v=334";
+import { SPILL } from "./spill.js?v=334";
+import { spillWeaponStats } from "./spill-combat.js?v=334";
+import { SPILL_ARTIFACTS } from "./spill-builds.js?v=334";
 const TAU = Math.PI * 2;
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const flight = (s) => s.phase === "wave" || s.phase === "drain";
@@ -266,7 +266,8 @@ export function drawSpillCombatHud(ctx, s) {
     ctx.fillStyle = c.firing ? color : "#b9c5d3";
     ctx.font = "600 10px Figtree, system-ui";
     const status = c.build.echo > 0 ? "ECHO READY" : artifact === "reclaimer" ? `COINS ${c.build.salvageDrops}/8`
-        : artifact === "siege" ? "SIEGE CORE" : artifact === "slipstream" ? "DODGE TO PRIME" : c.firing ? "FIRING" : "2ND TOUCH / F";
+        : artifact === "siege" ? "SIEGE CORE" : artifact === "slipstream" ? "DODGE TO PRIME"
+            : c.firing ? "FIRING" : "FIRE / F";
     ctx.fillText(status, x + 8, y + 24, width - 16);
     const duration = spillWeaponStats(s).cooldown;
     ctx.fillStyle = "rgba(255,255,255,.14)";

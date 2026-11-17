@@ -1,19 +1,20 @@
-import { SUITS } from "./catalog.js?v=333";
-import { SPILL_CONTROL_COLORS } from "./spill-control-art.js?v=333";
-import { artUrl } from "./art.js?v=333";
-import { spillAppearance } from "./spill-appearance.js?v=333";
-import { paintShipPreview } from "./draw.js?v=333";
-import { writeSave } from "./save.js?v=333";
-import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, SPILL_EVENTS, spillEngineColor, spillEventFor } from "./spill-content.js?v=333";
-import { spillBuildFromState } from "./spill-presentation.js?v=333";
-import { SPILL_SHOP, spillPrice } from "./spill.js?v=333";
-import { SPILL_WEAPONS, spillWeaponPrice, spillWeaponStats, spillAccuracyLabel } from "./spill-combat.js?v=333";
-import { SPILL_ARTIFACTS } from "./spill-builds.js?v=333";
-import { spillShelf, spillSlotCap, spillFittedCount, spillFittedItems, spillItemInfo, spillItemFitted, spillItemPrice, spillShelfUndoable, itemKey } from "./spill-shop.js?v=333";
-import { SPILL_HAZARDS, SPILL_HAZARD_IDS, spillHazardPlan } from "./spill-hazards.js?v=333";
-import { SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS } from "./spill-career.js?v=333";
-import { SPILL_RISKS } from "./spill-expeditions.js?v=333";
-import { spillClimaxWave } from "./spill-climax.js?v=333";
+import { SUITS } from "./catalog.js?v=334";
+import { SPILL_CONTROL_COLORS } from "./spill-control-art.js?v=334";
+import { artUrl } from "./art.js?v=334";
+import { spillAppearance } from "./spill-appearance.js?v=334";
+import { paintShipPreview } from "./draw.js?v=334";
+import { writeSave } from "./save.js?v=334";
+import { SPILL_ENGINE_COLORS, SPILL_UTILITIES, SPILL_UTILITY_IDS, SPILL_SPECIALTIES, SPILL_EVENTS, spillEngineColor, spillEventFor } from "./spill-content.js?v=334";
+import { spillBuildFromState } from "./spill-presentation.js?v=334";
+import { paintDepotBear } from "./spill-depot-bear.js?v=334";
+import { SPILL_SHOP, spillPrice } from "./spill.js?v=334";
+import { SPILL_WEAPONS, spillWeaponPrice, spillWeaponStats, spillAccuracyLabel } from "./spill-combat.js?v=334";
+import { SPILL_ARTIFACTS } from "./spill-builds.js?v=334";
+import { spillShelf, spillSlotCap, spillFittedCount, spillFittedItems, spillItemInfo, spillItemFitted, spillItemPrice, spillShelfUndoable, itemKey } from "./spill-shop.js?v=334";
+import { SPILL_HAZARDS, SPILL_HAZARD_IDS, spillHazardPlan } from "./spill-hazards.js?v=334";
+import { SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS } from "./spill-career.js?v=334";
+import { SPILL_RISKS } from "./spill-expeditions.js?v=334";
+import { spillClimaxWave } from "./spill-climax.js?v=334";
 const el = (tag, cls = "", text = "") => {
     const n = document.createElement(tag);
     n.className = cls;
@@ -55,7 +56,7 @@ export function spillUtilityArt(id) {
     im.width = im.height = 64;
     return im;
 }
-function shipPreview(engine, pick, height, flashAt = -10000, scale = 3.2) {
+function shipPreview(engine, pick, height, flashAt = -10000, scale = 3.2, showMarshal = false) {
     const canvas = el("canvas", "ac-workshop-preview"), dpr = Math.min(2, window.devicePixelRatio || 1);
     canvas.width = 344 * dpr;
     canvas.height = height * dpr;
@@ -81,6 +82,10 @@ function shipPreview(engine, pick, height, flashAt = -10000, scale = 3.2) {
                     ctx.fillRect(0, 0, 344, height);
                 }
                 paintShipPreview(ctx, engine.art, engine.save, 189, height * .55, scale, reduced ? 0 : now / 1000, pick);
+                const frames = showMarshal ? engine.art?.spillScene?.bear : undefined;
+                const marshal = frames?.[reduced ? 0 : frames.length - 1];
+                if (marshal)
+                    paintDepotBear(ctx, marshal, 185, height - 7, 60);
             }
             if (!reduced)
                 requestAnimationFrame(paint);
@@ -174,9 +179,8 @@ export function drawSpillEnginePicker(engine) {
     return wrap;
 }
 /** THE ONE INSTRUCTIONS SHEET (owner, 10 Sep 2026: "a single instructions
- *  menu should pop up for gameplay mechanics"). It teaches the hand and the
- *  loop, shows the ship the pilot is about to fly, and offers nothing to
- *  choose: the free upgrade waits at the Depot, utilities at wave 5. */
+ *  menu should pop up for gameplay mechanics"). It teaches the controls and
+ *  the loop. Ship upgrades wait at the Depot. */
 export function drawSpillLaunchSetup(engine, onGuide) {
     const save = engine.save, wrap = el("div", "ac-spillprep ac-spillsetup");
     const pilot = SUITS.find(s => s.id === save.equippedSuit)?.name ?? "Pilot";
@@ -189,7 +193,7 @@ export function drawSpillLaunchSetup(engine, onGuide) {
     head.append(heading, help);
     wrap.append(head);
     const body = el("div", "ac-setup-body");
-    body.append(flightControlCards(), harderKickNote());
+    body.append(flightControlCards(), steeringNote());
     const loop = el("ol", "ac-setup-loop");
     loop.setAttribute("aria-label", "The run");
     for (const [text, withCoin] of [["Survive the waves", false], ["Collect Acorn Coins", true], ["Depot every 5 waves · upgrade your ship · first upgrade free", false]]) {
@@ -299,7 +303,7 @@ export function drawSpillGuideSheet(engine, onClose, closeLabel) {
  *  (owner, 10 Sep 2026: help cards match the colours used in Debris Field). */
 const FLIGHT_CONTROLS = [
     ["HOLD + DRAG", "Steer · let go to hold", "W / S · ↑ / ↓", "thrust"],
-    ["2ND FINGER", "Fire · hold to repeat", "F · Space", "dive"],
+    ["FIRE BUTTON", "Or use a second finger", "F · Space", "dive"],
     ["FLICK ◀ ▶", "Dodge", "A / D · ← / →", "lunge"],
 ];
 function flightControlCards() {
@@ -314,12 +318,12 @@ function flightControlCards() {
     }
     return controls;
 }
-const harderKickNote = () => el("small", "ac-sub ac-spillhelp-extra", "Hold anywhere to steer · aim assist tracks enemies at your height");
+const steeringNote = () => el("small", "ac-sub ac-spillhelp-extra", "Your first touch on the field steers · aim assist tracks enemies at your height");
 /** The same instructions in Settings & Help and the replayable briefing. */
 export function drawSpillFlightHelp(includeHazards = true) {
     const section = el("section", "ac-spillflighthelp");
     section.setAttribute("aria-label", "How to fly · Debris Field");
-    section.append(el("p", "ac-kicker ac-secthead", "HOW TO FLY · DEBRIS FIELD"), flightControlCards(), harderKickNote(), el("p", "ac-sub", "Depot every 5 waves · spend Acorn Coins · first upgrade free."));
+    section.append(el("p", "ac-kicker ac-secthead", "HOW TO FLY · DEBRIS FIELD"), flightControlCards(), steeringNote(), el("p", "ac-sub", "Depot every 5 waves · spend Acorn Coins · first upgrade free."));
     if (includeHazards)
         section.append(hazardGuide());
     return section;
@@ -507,7 +511,7 @@ export function drawDepotWorkshop(engine, view, rerender) {
     // run's outfitting (weapons, artifacts, routes, forecast, utilities).
     const bay = sheet, outfitting = sheet;
     const stage = el("div", "ac-workshop-stage");
-    stage.append(shipPreview(engine, spillBuildFromState(sp), 192, view.flashAt));
+    stage.append(shipPreview(engine, spillBuildFromState(sp), 192, view.flashAt, 3.2, true));
     // the arrows point at the four options until the pilot taps one of them
     if (hinting && !view.picked)
         stage.classList.add("ac-workshop-hint-arrows");

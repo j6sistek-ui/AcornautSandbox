@@ -173,7 +173,8 @@ export function drawSpillCombatHud(ctx: CanvasRenderingContext2D, s: SpillState)
   ctx.fillText(`${cannon ? "CANNON" : "LASER"} ${["", "I", "II", "III"][level] ?? "I"}`, x + 8, y + 13, width - 16);
   ctx.fillStyle = c.firing ? color : "#b9c5d3"; ctx.font = "600 10px Figtree, system-ui";
   const status = c.build.echo > 0 ? "ECHO READY" : artifact === "reclaimer" ? `COINS ${c.build.salvageDrops}/8`
-    : artifact === "siege" ? "SIEGE CORE" : artifact === "slipstream" ? "DODGE TO PRIME" : c.firing ? "FIRING" : "2ND TOUCH / F";
+    : artifact === "siege" ? "SIEGE CORE" : artifact === "slipstream" ? "DODGE TO PRIME"
+      : c.firing ? "FIRING" : "FIRE / F";
   ctx.fillText(status, x + 8, y + 24, width - 16);
   const duration = spillWeaponStats(s).cooldown;
   ctx.fillStyle = "rgba(255,255,255,.14)"; ctx.fillRect(x + 8, y + 29, width - 16, 2);

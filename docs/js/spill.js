@@ -1,4 +1,4 @@
-import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=333";
+import { VANGUARD_DEPOT_ART_GRACE, VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=334";
 // DEBRIS FIELD (mode id "spill") — wave survival authority.
 //
 // An acorn mining rig let go one system over. What reached us is a front of
@@ -23,14 +23,14 @@ import { VANGUARD_DEPOT_SECONDS } from "./spill-depot-gag.js?v=333";
 // DIRECT STEERING (owner, 2026-10-29). The stick commands climb/descent;
 // releasing it brakes to an altitude hold. Horizontal swipes dodge in
 // either direction. The earlier tap/gravity hand is retired for this mode.
-import { ENVS, LEGACY_DEBRIS_COUNT, PHYS } from "./catalog.js?v=333";
-import { spillPrimeEcho } from "./spill-builds.js?v=333";
-import { createSpillLoadout, restoreSpillLoadout, spillChassisStats } from "./spill-career.js?v=333";
-import { beginSpillExpedition, createSpillExpedition, restoreSpillExpedition, settleSpillExpedition } from "./spill-expeditions.js?v=333";
-import { admitSpillClimax, createSpillClimax, resizeSpillClimax, restoreSpillClimax, spillClimaxReserved, spillClimaxWave } from "./spill-climax.js?v=333";
-import { admitSpillHazards, beginSpillHazardWave, clearSpillHazards, createSpillHazards, resizeSpillHazards, restoreSpillHazards, spillGravityBend, spillGravityBendDelta, spillGravityDrift, spillHazardPathClear, spillHazardPlan, spillHazardPressure, stepSpillHazards, SPILL_HAZARDS } from "./spill-hazards.js?v=333";
-import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=333";
-import { admitSpillEnemies, beginSpillCombatWave, captureSpillCombatMotion, clearSpillCombat, createSpillCombat, resizeSpillCombat, restoreSpillCombat, spillCombatPressure, spillCombatPulse, spillCombatRockClear, spillClearFireInput, stepSpillCombat } from "./spill-combat.js?v=333";
+import { ENVS, LEGACY_DEBRIS_COUNT, PHYS } from "./catalog.js?v=334";
+import { spillPrimeEcho } from "./spill-builds.js?v=334";
+import { createSpillLoadout, restoreSpillLoadout, spillChassisStats } from "./spill-career.js?v=334";
+import { beginSpillExpedition, createSpillExpedition, restoreSpillExpedition, settleSpillExpedition } from "./spill-expeditions.js?v=334";
+import { admitSpillClimax, createSpillClimax, resizeSpillClimax, restoreSpillClimax, spillClimaxReserved, spillClimaxWave } from "./spill-climax.js?v=334";
+import { admitSpillHazards, beginSpillHazardWave, clearSpillHazards, createSpillHazards, resizeSpillHazards, restoreSpillHazards, spillGravityBend, spillGravityBendDelta, spillGravityDrift, spillHazardPathClear, spillHazardPlan, spillHazardPressure, stepSpillHazards, SPILL_HAZARDS } from "./spill-hazards.js?v=334";
+import { SPILL_EVENTS, SPILL_SPECIALTIES, SPILL_UTILITIES, SPILL_UTILITY_IDS, spillContractOffers, spillEventFor } from "./spill-content.js?v=334";
+import { admitSpillEnemies, beginSpillCombatWave, captureSpillCombatMotion, clearSpillCombat, createSpillCombat, resizeSpillCombat, restoreSpillCombat, spillCombatPressure, spillCombatPulse, spillCombatRockClear, spillClearFireInput, stepSpillCombat } from "./spill-combat.js?v=334";
 // ---------------------------------------------------------------- tuning
 export const SPILL = {
     /** the ship may roam this share of the width. The right edge stops at
@@ -132,12 +132,12 @@ export const SPILL_MOD_INFO = {
     },
 };
 export const SPILL_DRILL = [
-    { id: "steer", stage: "FLIGHT", title: "STEER", touch: "Hold anywhere and drag up or down", keys: "W / S or ↑ / ↓" },
+    { id: "steer", stage: "FLIGHT", title: "STEER", touch: "Touch the field and drag up or down", keys: "W / S or ↑ / ↓" },
     { id: "hold", stage: "FLIGHT", title: "HOLD", touch: "Let go to hold your height", keys: "Release the key" },
     { id: "dash", stage: "DEBRIS", title: "DASH", touch: "Flick left or right", keys: "A / D or ← / →" },
     { id: "debris", stage: "DEBRIS", title: "DODGE THE DEBRIS", touch: "Steer or dash clear of three", keys: "" },
     { id: "evade", stage: "ENEMY", title: "EVADE", touch: "A dashed line warns before it fires. Move off it", keys: "" },
-    { id: "fire", stage: "ENEMY", title: "FIRE", touch: "Keep steering, tap or hold a second finger", keys: "F or Space" },
+    { id: "fire", stage: "ENEMY", title: "FIRE", touch: "Tap Fire or add a finger while steering", keys: "F or Space" },
     { id: "ready", stage: "", title: "READY", touch: "Good flying. Wave 1 is coming", keys: "" },
 ];
 export const SPILL_DRILL_DEBRIS = 3;
@@ -1036,7 +1036,8 @@ function endWave(s) {
 // ---------------------------------------------------------------- depot
 export function spillDockTravelDuration(s) { return s.welcome ? 2.4 : SPILL.dockTime; }
 export function spillDockDuration(s) {
-    return spillDockTravelDuration(s) + (s.depotGag ? VANGUARD_DEPOT_SECONDS : 0);
+    const travel = spillDockTravelDuration(s);
+    return s.depotGag ? (s.depotGagStart ?? travel) + VANGUARD_DEPOT_SECONDS : travel;
 }
 function beginDocking(s) {
     clearSpillCombat(s);
@@ -1046,6 +1047,7 @@ function beginDocking(s) {
     s.phase = "docking";
     s.phaseT = 0;
     s.depotGag = undefined;
+    s.depotGagStart = undefined;
     s.lunge = 0;
     s.knock = 0;
     s.pilot.vx = 0;
@@ -1551,8 +1553,18 @@ function stepSpillBody(s, dt) {
     if (s.phase === "docking") {
         s.phaseT += dt;
         autopilot(s, dt);
-        if (s.depotGag === undefined && s.phaseT >= spillDockTravelDuration(s))
+        const travel = spillDockTravelDuration(s);
+        if (s.phaseT < travel)
+            return;
+        if (s.depotGag === undefined) {
+            // A first arrival can beat the bear or atlas to the dock. Give an
+            // eligible AcorNut visit a short grace period while they finish.
+            if (s.depotGagPending && !s.depotGagReady && s.phaseT < travel + VANGUARD_DEPOT_ART_GRACE)
+                return;
             s.depotGag = s.depotGagReady === true;
+            if (s.depotGag)
+                s.depotGagStart = Math.max(travel, s.phaseT - dt);
+        }
         if (s.phaseT >= spillDockDuration(s))
             openDepot(s);
         return;
@@ -1799,6 +1811,8 @@ export function spillCheckpoint(s) {
     clearSpillHazards(state);
     delete state.depotGag;
     delete state.depotGagReady;
+    delete state.depotGagPending;
+    delete state.depotGagStart;
     state.rocks = [];
     state.nuts = [];
     state.bursts = [];

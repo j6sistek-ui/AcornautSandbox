@@ -6,7 +6,7 @@ import { isPremiumFrames, isPremiumSuit } from "./high-orbit-config";
 import { spillAppearance, type SpillAppearance } from "./spill-appearance";
 import { routeMasks, rewardId } from "./campaign-progress";
 import { reachedGate } from "./campaign";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks, type ArtBank } from "./art";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, spillDepotArtPending, loadZoneArt, prefetchArtBanks, type ArtBank } from "./art";
 import { vanguardDepotEligible } from "./spill-depot-gag";
 import { sfx, unlockAudio, music, setSfxMuted } from "./audio";
 import { wearsOwnHead, GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN} from "./catalog";
@@ -185,7 +185,7 @@ export type Engine = {
   afterLevel: (next: () => void) => void;
   /** Pointer and keyboard controls share the same flight authority. */
   spillLunge: (direction?: -1 | 1) => void;
-  spillFire: (held: boolean, owner?: string) => void;
+  spillFire: (held: boolean, owner?: string, canceled?: boolean) => void;
   spillControls: () => { active: boolean; x: number; y: number; dx: number; dy: number };
   /** skip the first-run controls drill (counts as done) */
   spillSkipDrill: () => void;
@@ -865,14 +865,16 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       if (!due || adBusy) { next(); return; }
       playInterstitial("level", next);
     },
-    spillFire(held, owner = "manual") {
+    spillFire(held, owner = "manual", canceled = false) {
       if (held) {
         if (!running || world.screen !== "play" || !world.spill
             || !["wave", "drain"].includes(world.spill.phase)) return;
         if (!fireOwners.has(owner)) spillTapFire(world.spill);
         fireOwners.add(owner);
         unlockAudio();
-      } else fireOwners.delete(owner);
+      } else if (fireOwners.delete(owner) && canceled && !fireOwners.size && world.spill) {
+        spillClearFireInput(world.spill);
+      }
       if (world.spill) spillSetFiring(world.spill, fireOwners.size > 0);
     },
     spillSkipDrill() {
@@ -1626,7 +1628,9 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
     // globalThis outside a real browser, so every harness test that boots the
     // engine threw here (audit, 8 Sep 2026) - which is exactly the six tests
     // that cover engine.ts and standalone.ts at all.
-    world.insetTop = parseFloat(window.getComputedStyle(parent).getPropertyValue("--sat")) || 0;
+    const stageStyle = window.getComputedStyle(parent);
+    world.insetTop = parseFloat(stageStyle.getPropertyValue("--sat")) || 0;
+    world.insetBottom = parseFloat(stageStyle.getPropertyValue("--sab")) || 0;
     const sizeChanged = W > 0 && H > 0 && (W !== world.W || H !== world.H);
     const ownedRaceResize = sizeChanged && world.race !== null && world.screen === "play"
       && raceGesture.owner !== null;
@@ -1817,11 +1821,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       const steering = spillStick?.owner === e.pointerId, firing = fireOwners.has(`pointer:${e.pointerId}`);
       if (!steering && !firing) return;
       e.preventDefault();
-      if (e.type !== "pointerup") clearSpillFire();
-      else {
-        if (steering) { spillStick = null; updateSpillSteering(); }
-        if (firing) engine.spillFire(false, `pointer:${e.pointerId}`);
-      }
+      if (steering) { spillStick = null; updateSpillSteering(); }
+      if (firing) engine.spillFire(false, `pointer:${e.pointerId}`, e.type !== "pointerup");
       return;
     }
     if (raceGesture.owner === e.pointerId) {
@@ -2026,6 +2027,7 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
   function dispatchSpillCues(cues: SpillCue[]) {
     if (!cues.length) return;
     const spill = world.spill;
+    if (cues.includes("dock")) void loadSpillScene(engine.art, save.equippedSuit).then(notify);
     if (cues.includes("drill-done") && !trial && !save.spillDrillDone) { save.spillDrillDone = true; writeSave(save); }
     if (spill && !trial && cues.some(c => ["dead", "mission"].includes(c))) {
       bankSpill(save, spill, true);
@@ -2085,6 +2087,8 @@ export async function createEngine(canvas: HTMLCanvasElement): Promise<Engine> {
       const scene = engine.art.spillScene;
       world.spill.depotGagReady = vanguardDepotEligible(save.equippedSuit, !!save.motionOff,
         !!scene?.depot && scene?.bear?.length === 36 && !!scene?.vanguardDepot && !!engine.art.spillShip[`hull-${world.spill.up.plating}`]);
+      world.spill.depotGagPending = vanguardDepotEligible(save.equippedSuit, !!save.motionOff,
+        spillDepotArtPending(engine.art));
       if (save.motionOff && world.spill.depotGag) world.spill.depotGag = false;
     }
     // ONE FIXED 1/60 STEP FOR EVERY MODE. Race and Spill always ran here;

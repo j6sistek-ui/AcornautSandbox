@@ -1,10 +1,10 @@
-import { VANGUARD_FRAMES } from "./vanguard.js?v=333";
-import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=333";
-import { prepareDepotBear } from "./spill-depot-bear.js?v=333";
-import { SPILL_UTILITY_IDS } from "./spill-content.js?v=333";
-import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumFrames, isHighOrbitRig } from "./high-orbit-config.js?v=333";
-import { isArcflashRig } from "./arcflash.js?v=333";
-import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=333";
+import { VANGUARD_FRAMES } from "./vanguard.js?v=334";
+import { ENVS, PAL_ANIM, DEBRIS_COUNT, HUB_PLANET, LEGACY_DEBRIS_COUNT, PLANET_COUNT, ART_VER, HYPER_RUN_ENABLED } from "./catalog.js?v=334";
+import { prepareDepotBear } from "./spill-depot-bear.js?v=334";
+import { SPILL_UTILITY_IDS } from "./spill-content.js?v=334";
+import { ORBIT_PILOT_IDS, PREMIUM_SUIT_IDS, isPremiumFrames, isHighOrbitRig } from "./high-orbit-config.js?v=334";
+import { isArcflashRig } from "./arcflash.js?v=334";
+import { bindSpriteDetails, spriteImageFor } from "./sprite-detail.js?v=334";
 export const SPILL_SHIP_IDS = [
     "hull-0", "hull-1", "hull-2", "hull-3",
     "thrust-1", "thrust-2", "thrust-3",
@@ -38,7 +38,8 @@ function loadImg(src) {
         img.src = url;
     });
 }
-const spillSceneLoads = new WeakMap();
+const spillPanoramaLoads = new WeakMap();
+const spillDepotLoads = new WeakMap();
 export const SPILL_ENEMY_IDS = ["pursuer", "flanker"];
 function asCombatSprite(img) {
     const width = img.naturalWidth || img.width, height = img.naturalHeight || img.height;
@@ -91,32 +92,40 @@ export function loadSpillCombat(bank) {
     return promise;
 }
 const vanguardDepotLoads = new WeakMap();
+export function spillDepotArtPending(bank) {
+    return spillDepotLoads.has(bank) || vanguardDepotLoads.has(bank);
+}
 /** Mode art loads only when this mode is opened, without holding its launch. */
 export function loadSpillScene(bank, suit = "") {
     void loadSpillCombat(bank);
-    bank.spillScene ?? (bank.spillScene = {});
-    let cameo = vanguardDepotLoads.get(bank) ?? Promise.resolve();
-    if (suit === "vanguard" && !vanguardDepotLoads.has(bank)) {
+    const scene = bank.spillScene ?? (bank.spillScene = {});
+    let cameo = vanguardDepotLoads.get(bank);
+    if (suit === "vanguard" && !scene.vanguardDepot && !cameo) {
         cameo = loadImg(artUrl("spill-scene/vanguard-depot.png")).then(sheet => {
             if ((sheet.naturalWidth || sheet.width) !== 1280 || (sheet.naturalHeight || sheet.height) !== 1280)
                 throw new Error("Invalid Vanguard depot atlas");
-            bank.spillScene.vanguardDepot = sheet;
-        }).catch(() => { vanguardDepotLoads.delete(bank); /* normal arrival stays usable */ });
+            scene.vanguardDepot = sheet;
+        }).catch(() => { }).finally(() => { vanguardDepotLoads.delete(bank); });
         vanguardDepotLoads.set(bank, cameo);
     }
-    const existing = spillSceneLoads.get(bank);
-    if (existing)
-        return Promise.all([existing, cameo]).then(() => { });
-    const promise = Promise.all([...["depot", "panorama"].map(async (name) => {
-            try {
-                bank.spillScene[name] = await loadImg(artUrl(`spill-scene/${name}.png`));
-            }
-            catch { /* the procedural field stays playable */ }
-        }), loadImg(artUrl("spill-scene/depot-bear.jpg"))
-            .then(sheet => { bank.spillScene.bear = prepareDepotBear(sheet); })
-            .catch(() => { })]).then(() => { });
-    spillSceneLoads.set(bank, promise);
-    return Promise.all([promise, cameo]).then(() => { });
+    let depot = spillDepotLoads.get(bank);
+    if (!depot && (!scene.depot || !scene.bear?.length)) {
+        const plate = scene.depot ? undefined : loadImg(artUrl("spill-scene/depot.png"))
+            .then(image => { scene.depot = image; }).catch(() => { });
+        const bear = scene.bear?.length ? undefined : loadImg(artUrl("spill-scene/depot-bear.jpg"))
+            .then(sheet => { scene.bear = prepareDepotBear(sheet); }).catch(() => { });
+        // Share requests for this visit but let a later arrival retry missing art.
+        depot = Promise.all([plate, bear]).then(() => { spillDepotLoads.delete(bank); });
+        spillDepotLoads.set(bank, depot);
+    }
+    let panorama = spillPanoramaLoads.get(bank);
+    if (!scene.panorama && !panorama) {
+        panorama = loadImg(artUrl("spill-scene/panorama.png"))
+            .then(image => { scene.panorama = image; }).catch(() => { })
+            .finally(() => { spillPanoramaLoads.delete(bank); });
+        spillPanoramaLoads.set(bank, panorama);
+    }
+    return Promise.all([depot, panorama, cameo]).then(() => { });
 }
 function measureSprite(img) {
     const w = img.naturalWidth || img.width;

@@ -35,11 +35,13 @@ rigging, bounding-box resizing, hue animation, stretching or crossfading.
 The resulting 1280×1280 RGBA atlas is about 1.5 MB compressed / 6.25 MiB
 decoded. It loads only when entering Spill with Vanguard equipped.
 
-Readiness is latched once at touchdown. Incomplete or failed scene assets,
-other suits and reduced motion use the normal arrival without an extra wait.
-Pause freezes the scene. Optional presentation flags are excluded from saved
-checkpoints. Repairs, visit credit and shop arming still occur once, when the
-Depot actually opens. The first free upgrade cannot be purchased early.
+If AcorNut's scene is still loading at touchdown, the ship waits up to two
+seconds for the dock, bear, and actor art. The scene then plays from its
+first pose. Failed or stalled requests fall back to the ordinary arrival,
+and missing art retries on a later approach. Other suits and the reduced
+motion setting keep the ordinary timing. Pause freezes the scene, and the
+playback state stays out of saved checkpoints. Repairs, visit credit and
+shop arming apply once when the Depot opens.
 
 ## Verification
 

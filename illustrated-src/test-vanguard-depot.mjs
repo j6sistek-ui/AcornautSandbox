@@ -27,9 +27,32 @@ for(const welcome of [false,true])for(const ready of [false,true]){
   assert.equal(S.spillBuy(s,'shield'),'arming');assert(!S.spillLeaveDepot(s));
   const cp=S.spillCheckpoint(s);assert(cp);assert(!('depotGag' in cp.state));assert(!('depotGagReady' in cp.state));
 }
-// Late art never inserts an animation into a visit whose touchdown already passed.
+// A settled failure still opens the Depot at the ordinary time.
 const late=S.createSpill(390,760,11);late.phase='docking';late.welcome=true;late.depotGagReady=false;
 ticks(late,146);assert.equal(late.phase,'depot');late.depotGagReady=true;ticks(late,60);assert.equal(late.phase,'depot');
+// Loading at touchdown holds the scene briefly. Play the entire cameo once
+// the art arrives, starting from its first frame.
+const waiting=S.createSpill(390,760,12);
+waiting.phase='docking';waiting.welcome=true;waiting.depotGagPending=true;
+ticks(waiting,180);
+assert.equal(waiting.phase,'docking');
+assert.equal(waiting.depotGag,undefined);
+assert.equal(S.spillBuy(waiting,'shield'),'closed');
+waiting.depotGagReady=true;waiting.depotGagPending=false;
+ticks(waiting,1);
+assert(waiting.depotGag);
+assert(waiting.depotGagStart>S.spillDockTravelDuration(waiting));
+assert(waiting.phaseT-waiting.depotGagStart<1/30,'the late scene starts at the first pose');
+ticks(waiting,Math.floor(G.VANGUARD_DEPOT_SECONDS*60)-2);
+assert.equal(waiting.phase,'docking','late art receives the entire playback window');
+assert.equal(ticks(waiting,3).filter(c=>c==='depot').length,1);
+const checkpoint=S.spillCheckpoint(waiting);
+assert(checkpoint && !Object.keys(checkpoint.state).some(key=>key.startsWith('depotGag')));
+const stalled=S.createSpill(390,760,13);
+stalled.phase='docking';stalled.welcome=true;stalled.depotGagPending=true;
+ticks(stalled,Math.ceil((S.spillDockTravelDuration(stalled)+G.VANGUARD_DEPOT_ART_GRACE)*60)+1);
+assert.equal(stalled.phase,'depot','a stalled download cannot strand the pilot');
+assert.equal(stalled.depotGag,false);
 // Pause freezes the production simulation clock while the cameo is active.
 const save=Save.defaultSave();save.equippedSuit='vanguard';save.tutorialDone=true;
 const world=Sim.makeWorld(390,760);Sim.resetRun(world,save,'spill',false);world.ready=false;
@@ -42,10 +65,18 @@ assert.equal(G.vanguardDepotPose(1.7).beat,'laugh');assert.equal(G.vanguardDepot
 assert.equal(G.vanguardDepotPose(3.2).enter,0);assert.equal(G.vanguardDepotPose(3.8).opacity,0);
 for(let t=0;t<=3.8;t+=1/120){const p=G.vanguardDepotPose(t);assert(p.frame>=0&&p.frame<16);assert(p.opacity>=0&&p.opacity<=1);}
 // The extra atlas loads for Vanguard only, deduplicates, and can retry a failure.
-const requests=[];let failAtlas=false;
+const requests=[];let failAtlas=false;let failDock=false;let releasePanorama;
 globalThis.Image=class{
   naturalWidth=1280;naturalHeight=1280;
-  set src(url){requests.push(url);queueMicrotask(()=>url.includes('vanguard-depot')&&!failAtlas?this.onload():this.onerror());}
+  set src(url){
+    requests.push(url);
+    if(url.includes('panorama') && releasePanorama===null) {
+      releasePanorama=()=>this.onload();
+      return;
+    }
+    const works=url.includes('vanguard-depot')&&!failAtlas||url.includes('/depot.png')&&!failDock;
+    queueMicrotask(()=>works?this.onload():this.onerror());
+  }
 };
 const Art=await import('../docs/js/art.js');const bank=Art.emptyArt();
 await Art.loadSpillScene(bank,'flight');assert(!requests.some(x=>x.includes('vanguard-depot')));
@@ -53,4 +84,13 @@ await Promise.all([Art.loadSpillScene(bank,'vanguard'),Art.loadSpillScene(bank,'
 assert(bank.spillScene.vanguardDepot);assert.equal(requests.filter(x=>x.includes('vanguard-depot')).length,1);
 const retry=Art.emptyArt();failAtlas=true;await Art.loadSpillScene(retry,'vanguard');assert(!retry.spillScene.vanguardDepot);
 failAtlas=false;await Art.loadSpillScene(retry,'vanguard');assert(retry.spillScene.vanguardDepot);
-console.log('Vanguard Depot: eligibility, both arrival lengths, one-time repair/credit, input lock, arming, late/failed art, pause, beat order, checkpoint exclusion and lazy loading passed');
+const dockRetry=Art.emptyArt();
+failDock=true;await Art.loadSpillScene(dockRetry,'flight');assert(!dockRetry.spillScene.depot);
+failDock=false;releasePanorama=null;
+const dockLoad=Art.loadSpillScene(dockRetry,'vanguard');
+assert(Art.spillDepotArtPending(dockRetry),'the loader signals actual landing assets in flight');
+await new Promise(resolve=>setImmediate(resolve));
+assert(dockRetry.spillScene.depot && dockRetry.spillScene.vanguardDepot);
+assert(!Art.spillDepotArtPending(dockRetry),'the view can land while the unrelated panorama is pending');
+releasePanorama();await dockLoad;
+console.log('Vanguard Depot: arrival timing, one-time repair and credit, input lock, pause, late and failed art, checkpoint exclusion and lazy loading passed');

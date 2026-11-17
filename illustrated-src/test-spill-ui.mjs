@@ -10,8 +10,17 @@ globalThis.performance={now:()=>now};globalThis.requestAnimationFrame=fn=>{frame
 globalThis.Image=class {set src(v){queueMicrotask(()=>this.onerror?.());}};
 globalThis.fetch=async()=>({ok:false,json:async()=>({})});
 let clears=0;
+let workshopBearDraws=0;
+const bearImage={width:256,height:240};
 const ctx=new Proxy({canvas:null,clearRect(){clears++;},measureText:t=>({width:t.length*7}),createLinearGradient:()=>({addColorStop(){}}),createRadialGradient:()=>({addColorStop(){}}),getImageData:()=>({data:new Uint8ClampedArray(4)}),getTransform:()=>({a:1,b:0,c:0,d:1,e:0,f:0})},{get:(o,k)=>k in o?o[k]:()=>{}});
-win.HTMLCanvasElement.prototype.getContext=function(){const canvas=this;return new Proxy(ctx,{get:(o,k)=>k==='clearRect'?()=>{if(canvas.classList.contains('ac-canvas'))clears++;}:o[k]});};let width=390;win.HTMLElement.prototype.getBoundingClientRect=function(){return {x:0,y:0,left:0,top:0,width,height:760,right:width,bottom:760};};
+win.HTMLCanvasElement.prototype.getContext=function(){
+  const canvas=this;
+  return new Proxy(ctx,{get:(o,k)=>{
+    if(k==='clearRect')return ()=>{if(canvas.classList.contains('ac-canvas'))clears++;};
+    if(k==='drawImage')return image=>{if(canvas.classList.contains('ac-workshop-preview')&&image===bearImage)workshopBearDraws++;};
+    return o[k];
+  }});
+};let width=390;win.HTMLElement.prototype.getBoundingClientRect=function(){return {x:0,y:0,left:0,top:0,width,height:760,right:width,bottom:760};};
 win.HTMLCanvasElement.prototype.setPointerCapture=function(){};win.HTMLCanvasElement.prototype.releasePointerCapture=function(){};
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');const Save=await import(new URL('../docs/js/save.js',import.meta.url).href),S=await import(new URL('../docs/js/spill.js',import.meta.url).href);const save=Save.defaultSave();save.tutorialDone=true;save.guide='done';save.introOff=true;save.musicOff=true;save.sfxOff=true;save.spillBest=20;Save.writeSave(save);
 const {bootStandalone}=await import(new URL('../docs/js/standalone.js',import.meta.url).href);const app=win.document.createElement('main');win.document.body.append(app);await bootStandalone(app);const engine=win.__sandbox;assert(engine);
@@ -26,12 +35,14 @@ engine.open('help');
 assert(app.textContent.includes('SWIPE DOWN'));assert(button('REPLAY TUTORIAL'));
 assert.deepEqual([...app.querySelectorAll('.ac-helprow')].slice(0,3).map(r=>r.querySelector('p').textContent),['ACORN','STAR DUST','ACORN COINS']);
 // TAP TO FLY in Settings & Help: the same three cards as the instructions sheet, and no hold left anywhere.
-const STICK_CARDS=['HOLD + DRAG','2ND FINGER','FLICK ◀ ▶'],OLD_WORDS=['SWIPE DOWN','Throttle','throttle','Tap to fly','tap to fly','LUNGE'];
+const STICK_CARDS=['HOLD + DRAG','FIRE BUTTON','FLICK ◀ ▶'],OLD_WORDS=['SWIPE DOWN','Throttle','throttle','Tap to fly','tap to fly','LUNGE'];
 function cardsOf(root){return [...root.querySelectorAll('.ac-spillhelp-controls > div')].map(c=>c.querySelector('b').textContent);}
 const helpFlight=app.querySelector('[data-help-mode="spill"]');assert(helpFlight);assert.deepEqual(cardsOf(helpFlight),STICK_CARDS);
 assert(helpFlight.textContent.includes('W / S · ↑ / ↓'));assert(helpFlight.textContent.includes('F · Space'));assert(helpFlight.textContent.includes('A / D · ← / →'));
 assert([...helpFlight.querySelectorAll('small.ac-sub')].some(n=>n.textContent.includes('Space')));
-assert(helpFlight.textContent.includes('Hold anywhere to steer'));assert(helpFlight.querySelector('.ac-spilldepth'),'Help sums up weapons, patrols, artifacts and routes');assert(helpFlight.querySelector('.ac-hazard-guide'),'and carries the hazard field guide');assert(!helpFlight.textContent.includes('Depot every 5 waves · spend Acorn Coins · first upgrade free.'),'long loop explanation stays in the briefing, not the compact Help controls');
+assert(helpFlight.textContent.includes('Your first touch on the field steers'));
+assert(helpFlight.textContent.includes('Or use a second finger'),'Help teaches both fire inputs');
+assert(helpFlight.querySelector('.ac-spilldepth'),'Help sums up weapons, patrols, artifacts and routes');assert(helpFlight.querySelector('.ac-hazard-guide'),'and carries the hazard field guide');assert(!helpFlight.textContent.includes('Depot every 5 waves · spend Acorn Coins · first upgrade free.'),'long loop explanation stays in the briefing, not the compact Help controls');
 for(const word of OLD_WORDS) assert(!helpFlight.textContent.includes(word),`Help never says ${word} about the Debris Field`);
 const beforeHelp=JSON.stringify(engine.save);
 const helpBriefing=helpFlight.querySelector('[data-spill-briefing]');assert(helpBriefing);helpBriefing.click();assert(app.querySelector('.ac-spillhelpwrap'));
@@ -59,7 +70,7 @@ assert.equal(app.querySelectorAll('[data-ship-color]').length,5);assert(ship('co
 engine.save.spillBest=30;engine.setShopTab('ship');assert.equal(ship('color','copper').getAttribute('aria-pressed'),'true','a new earned color does not replace the chosen color');
 ship('color','void').click();assert.equal(Save.loadSave().spillEngineColor,'void');ship('color','copper').click();
 assert(app.querySelector('.ac-caseplate')?.textContent.includes('Engine color'),'the case plate names the engine color');
-// ONE INSTRUCTIONS SHEET before an endless run: how to fly, the loop, the ship. Nothing to choose.
+// One briefing covers the controls, the loop and the ship before landing.
 engine.fly('spill');const setup=app.querySelector('.ac-spillsetup');assert(setup);assert(setup.querySelector('h2').textContent==='How to fly');assert(!app.textContent.includes('Your next ship'));
 assert.deepEqual(cardsOf(setup),STICK_CARDS,'the instructions sheet shows the three steering cards');
 const setupNotes=[...setup.querySelectorAll('.ac-spillhelp-controls small.ac-sub')].map(n=>n.textContent);assert.deepEqual(setupNotes,['W / S · ↑ / ↓','F · Space','A / D · ← / →']);
@@ -72,6 +83,9 @@ assert(!app.querySelector('[data-spill-upgrade]'),'upgrades are chosen at the De
 assert(!setup.querySelector('.ac-workshop-system, .ac-workshop-utility, [data-guide-utility]'),'no upgrade or utility choices on the instructions sheet');
 assert(!app.querySelector('.ac-setup-body [data-spill-control="land"]'),'Start stays outside the scrolling body');assert(setup.querySelector('.ac-setup-body .ac-spillhelp-controls'),'the cards scroll with the body');
 assert.equal(control('land').textContent,'START RUN');assert(button('MAIN MENU'));
+assert(!setup.querySelector('[role="switch"]'),'the briefing needs no control switch');
+assert(setup.textContent.includes('Or use a second finger'));
+assert(control('fire').hidden,'the Fire button stays off the briefing');
 assert.deepEqual(engine.world.spill.utilities,['magnet']);assert.equal(engine.save.spillEngineColor,'copper');
 assert.equal(engine.save.spillDepotGuideSeen,false,'a fresh save has not seen the briefing');
 const beforeBriefing=JSON.stringify(engine.world.spill);
@@ -110,6 +124,7 @@ assert.equal(control('launch').textContent,'START TRAINING FLIGHT');assert(!cont
 // TRAINING FLIGHT: a live but harmless field - flight, a dash, three pieces of debris, one patrol to evade and shoot down.
 {const d=engine.world.spill,cv=engine.canvas,skip=app.querySelector('.ac-drill-skip'),stepId=()=>S.spillDrillStep(d);
  assert.equal(d.phase,'wave');assert.equal(stepId(),'steer','a first run starts in training');
+ assert(!control('fire').hidden && control('fire').disabled,'Fire waits for its training exercise');
  tick(240);assert.equal(stepId(),'steer','training waits for the pilot');assert(!skip.hidden,'training can be skipped');
  const tp=(type,id,x,y,primary=true)=>cv.dispatchEvent(new win.PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:primary,clientX:x,clientY:y,bubbles:true,cancelable:true}));
  const key=(type,code)=>win.dispatchEvent(new win.KeyboardEvent(type,{code}));
@@ -123,25 +138,41 @@ assert.equal(control('launch').textContent,'START TRAINING FLIGHT');assert(!cont
  assert.equal(stepId(),'evade','three dodged pieces pass the debris stage');steer(0);
  guard=0;while(stepId()==='evade'&&guard++<5000){const e=d.combat.enemies.find(x=>!x.dead),shot=d.combat.shots.find(x=>!x.dead&&x.team==='enemy');
   const y=shot?shot.y:e&&e.telegraph>0?e.aimY:null;steer(y!=null&&Math.abs(y-d.pilot.y)<70?(d.pilot.y>d.H/2?-1:1):0);tick(1);}
- assert.equal(stepId(),'fire','evading a warned shot passes');steer(0);key('keydown','KeyF');
+ assert.equal(stepId(),'fire','evading a warned shot passes');steer(0);
+ assert(!control('fire').disabled,'the button is enabled for the firing lesson');
+ control('fire').dispatchEvent(new win.PointerEvent('pointerdown',{pointerId:32,pointerType:'touch',button:0,bubbles:true,cancelable:true}));
  guard=0;while(stepId()==='fire'&&guard++<5000){const e=d.combat.enemies.find(x=>!x.dead);if(e)steer(Math.abs(e.y-d.pilot.y)<12?0:e.y>d.pilot.y?1:-1);tick(1);}
- key('keyup','KeyF');steer(0);assert.equal(stepId(),'ready','shooting the patrol down passes');assert.equal(d.hull,hull,'training costs no health');
+ win.dispatchEvent(new win.PointerEvent('pointerup',{pointerId:32,bubbles:true}));steer(0);
+ assert.equal(stepId(),'ready','the Fire button completes the shooting lesson');assert.equal(d.hull,hull,'training costs no health');
  tick(90);assert(!d.drill,'training ends');assert.equal(d.phase,'countdown');assert.equal(Save.loadSave().spillDrillDone,true,'and is remembered');tick(1);assert(skip.hidden);
  assert.deepEqual([d.score,d.ore,d.combat.kills],[0,0,0],'nothing from training is kept');}
 tick(181);
 assert.deepEqual(engine.world.spill.up,{plating:0,thrusters:1,pulse:0},'only the chosen starting upgrade is fitted');
-// DEBRIS FIELD STEERING (3 Nov 2026): hold + drag steers, release holds altitude, a second
-// finger fires, a flick or A/D dodges, W/S steer and F/Space fire. The pads are retired.
+// The idle stick moves under the first field touch. Fire accepts either the
+// fixed button or a second touch on the field.
 assert(!app.querySelector('.ac-spillcontrols')&&!app.querySelector('.ac-thrust'),'the on-screen pads are retired');
-const stick=app.querySelector('.ac-floating-stick');assert(stick&&stick.hidden,'the stick waits for a finger');
+const stick=app.querySelector('.ac-floating-stick'),fire=control('fire');
+assert(stick&&!stick.hidden&&stick.classList.contains('ac-stick-idle'),'the joystick starts at its idle position');
+assert(!fire.hidden&&!fire.disabled,'Fire is available on the default layout');
 const sp=engine.world.spill,canvas=engine.canvas;
+const playerShots=()=>sp.combat.shots.filter(shot=>shot.team==='player').length;
 function touch(target,type,id,x=100,y=300,primary=true){target.dispatchEvent(new win.PointerEvent(type,{pointerId:id,pointerType:'touch',isPrimary:primary,clientX:x,clientY:y,bubbles:true,cancelable:true}));}
 touch(canvas,'pointerdown',10,100,300);tick(2);assert(engine.spillControls().active&&!stick.hidden,'a held finger shows the stick');
+assert(!stick.classList.contains('ac-stick-idle'));
+assert.equal(parseFloat(stick.style.left),100/390*100,'the joystick starts at the touch point');
+assert.equal(parseFloat(stick.style.top),300/760*100);
 touch(canvas,'pointermove',10,100,350);tick(2);assert(sp.steerY>0,'dragging down steers down');
 tick(3);assert(!stick.hidden,'HUD updates keep the stick');
-touch(canvas,'pointerdown',11,260,300,false);assert(sp.combat.firing,'a second finger fires');
+const beforeSecondTouch=playerShots(),steering=engine.spillControls();
+touch(canvas,'pointerdown',11,260,420,false);assert(sp.combat.firing,'a second finger anywhere on the field fires');
+touch(canvas,'pointermove',11,200,470,false);
 touch(win,'pointerup',11);assert(!sp.combat.firing,'lifting it stops firing');assert(engine.spillControls().active,'and the steering finger keeps the stick');
-touch(win,'pointerup',10);tick(2);assert.equal(sp.steerY,0,'release holds altitude');assert(stick.hidden);
+assert.deepEqual(engine.spillControls(),steering,'the firing touch does not take over the joystick');
+tick();
+assert.equal(playerShots(),beforeSecondTouch+1,'a quick second-finger tap launches one shot');
+assert(fire.classList.contains('firing'),'the fixed button acknowledges the second-finger shot');
+touch(win,'pointerup',10);tick(2);assert.equal(sp.steerY,0,'release holds altitude');
+assert(stick.classList.contains('ac-stick-idle')&&!stick.style.left&&!stick.style.top,'the joystick returns to the corner');
 win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'KeyW'}));assert(sp.steerY<0,'W steers up');
 win.dispatchEvent(new win.KeyboardEvent('keyup',{code:'KeyW'}));assert.equal(sp.steerY,0,'and letting go holds');
 win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'KeyF'}));assert(sp.combat.firing,'F fires');
@@ -150,10 +181,38 @@ const charges=sp.lungeCharges;win.dispatchEvent(new win.KeyboardEvent('keydown',
 win.dispatchEvent(new win.KeyboardEvent('keyup',{code:'KeyA'}));
 touch(canvas,'pointerdown',12);engine.pause();assert(!engine.spillControls().active&&!sp.combat.firing,'a pause drops every held input');
 // Pause preferences persist. Hiding text changes no simulation state or hazard warnings.
-assert(!app.querySelector('[role="switch"][aria-label="On-screen buttons"]'),'no pad switch any more');
+assert.deepEqual([...app.querySelectorAll('.ac-spillsettings [role="switch"]')].map(node=>node.getAttribute('aria-label')),
+  ['Instructional prompts'],'pause has only the prompts switch');
 assert(app.querySelector('.ac-spillloadout').textContent.startsWith('Rapid Laser I'),'the pause names the loadout');
 const pausedState=JSON.stringify(engine.world.spill);app.querySelector('[role="switch"][aria-label="Instructional prompts"]').click();assert.equal(Save.loadSave().spillPromptsOff,true);assert.equal(JSON.stringify(engine.world.spill),pausedState,'prompt setting does not alter wave pacing');
+assert(fire.hidden && stick.hidden,'pause keeps both controls off the field');
 engine.resume();
+assert(!fire.hidden && !fire.disabled && stick.classList.contains('ac-stick-idle'));
+sp.combat.cooldown=0;
+const beforeButtonTap=playerShots();
+touch(fire,'pointerdown',21);
+assert(sp.combat.firing && !engine.spillControls().active,'one finger can fire without claiming steering');
+touch(win,'pointerup',21);
+assert(!sp.combat.firing && sp.combat.pendingFire>0,'a quick tap waits for the next tick');
+tick();
+assert.equal(playerShots(),beforeButtonTap+1,'the button tap launches one shot');
+touch(fire,'pointerdown',22,330,715);
+touch(canvas,'pointerdown',23,100,300,false);
+touch(canvas,'pointermove',23,100,350,false);
+tick();
+assert(sp.steerY>0 && sp.combat.firing,'the first touch on the field steers even when the button is already held');
+touch(win,'pointercancel',22);
+assert(!sp.combat.firing && !sp.combat.pendingFire && engine.spillControls().active,'canceling Fire keeps the steering pointer and clears a queued shot');
+touch(win,'pointerup',23);
+tick();
+assert(stick.classList.contains('ac-stick-idle') && !stick.style.left && !stick.style.top,'release restores the corner marker');
+fire.click();
+assert(sp.combat.pendingFire>0,'keyboard or assistive activation also queues a shot');
+touch(fire,'pointerdown',24);
+engine.pause();
+assert(fire.hidden && !fire.classList.contains('firing') && !sp.combat.firing && !sp.combat.pendingFire);
+engine.resume();
+assert(!fire.hidden && !stick.hidden && stick.classList.contains('ac-stick-idle'),'resuming shows both controls');
 const Draw=await import(new URL('../docs/js/draw.js',import.meta.url).href);const labels=[];ctx.fillText=t=>labels.push(t);const flight=engine.world.spill;
 flight.hint='TEST INSTRUCTION';flight.hintT=5;flight.banner='HAZARD WARNING';flight.bannerT=1;
 Draw.drawHud(ctx,engine.world,engine.art,engine.save);assert(!labels.includes('TEST INSTRUCTION'));assert(labels.includes('HAZARD WARNING'));
@@ -212,15 +271,18 @@ for(const hz of [120,90,144]) {
 }
 // The actual engine admits the extra beat only after complete art readiness
 // and only for Vanguard. Its Depot overlay must remain closed throughout it.
+await engine.artReady;
 const scene={depot:{width:1536,height:1024,naturalWidth:1536,naturalHeight:1024},
- bear:Array.from({length:36},()=>({image:{width:256,height:240},footX:128,footY:230})),
+ bear:Array.from({length:36},()=>({image:bearImage,footX:128,footY:230})),
  vanguardDepot:{width:1280,height:1280,naturalWidth:1280,naturalHeight:1280}};
 engine.art.spillShip['hull-0']={width:256,height:256,box:{x:20,y:90,w:210,h:70},core:210,coreX:125,coreY:125};
 for(const [suit,motionOff,ready,plays] of [['vanguard',false,true,true],['flight',false,true,false],['vanguard',true,true,false],['vanguard',false,false,false]]){
  engine.save.equippedSuit=suit;engine.save.motionOff=motionOff;
  engine.art.spillScene={...scene,vanguardDepot:ready?scene.vanguardDepot:undefined};
  engine.fly('spill');control('land').click();const s=engine.world.spill;
- tick(145);
+ tick();
+ await new Promise(resolve=>setImmediate(resolve)); // the fake requests have failed or settled
+ tick(144);
  if(plays){
   assert.equal(s.phase,'docking');assert.equal(s.depotGag,true);
   assert(!app.querySelector('[data-spill-control="inspect-plating"]'));
@@ -231,5 +293,8 @@ for(const [suit,motionOff,ready,plays] of [['vanguard',false,true,true],['flight
  }
  assert.equal(s.phase,'depot');assert.equal(s.depotVisits,0);assert(s.freeUpgrade);
  assert(app.querySelector('[data-spill-control="inspect-plating"]'));
+ const draws=workshopBearDraws;
+ tick(3);
+ assert(workshopBearDraws>draws,'the workshop stage paints the landed marshal in front of its backdrop');
 }
 engine.stop();await win.happyDOM.close();console.log('spill UI: one instructions sheet, guide by request only, all utility cards, atomic swap/refit, purchases, scroll/focus, earned engine colors/migration, rematch selection, save/resume, input/pause, paint budget and Vanguard landing passed');

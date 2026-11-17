@@ -197,7 +197,7 @@ export type SaveData = {
    *  - introOff: the launch film is skipped */
   sfxOff?: boolean;
   helpOff?: boolean;
-  /** Spill-only comfort controls. Old saves show buttons and instructions. */
+  /** Debris Field control and help preferences. */
   spillButtonsOff?: boolean;
   spillPromptsOff?: boolean;
   motionOff?: boolean;

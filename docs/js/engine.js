@@ -1,32 +1,32 @@
-import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, AD_RULES, REMOVE_ADS } from "./catalog.js?v=333";
-import { platform } from "./platform.js?v=333";
-import { beginFlightTest } from "./sim.js?v=333";
-import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=333";
-import { isPremiumFrames, isPremiumSuit } from "./high-orbit-config.js?v=333";
-import { spillAppearance } from "./spill-appearance.js?v=333";
-import { routeMasks, rewardId } from "./campaign-progress.js?v=333";
-import { reachedGate } from "./campaign.js?v=333";
-import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, loadZoneArt, prefetchArtBanks } from "./art.js?v=333";
-import { vanguardDepotEligible } from "./spill-depot-gag.js?v=333";
-import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=333";
-import { wearsOwnHead, GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=333";
-import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=333";
-import { setVanguardPitchTrim } from "./vanguard.js?v=333";
-import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=333";
-import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=333";
-import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, canRevive, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, updateWorld, } from "./sim.js?v=333";
-import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=333";
-import { raceViewport } from "./race-viewport.js?v=333";
-import { spillSkipDrill } from "./spill.js?v=333";
-import { spillBuy, spillLeaveDepot, spillLunge, spillSteer, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill, createSpill, spillWaveSpec, SPILL } from "./spill.js?v=333";
-import { applySpillTrialBuild, SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS, SPILL_TRIAL_BUILDS, createSpillCareer, restoreSpillCareer, spillChassisStats } from "./spill-career.js?v=333";
-import { spillSelectRisk } from "./spill-expeditions.js?v=333";
-import { spillSetFiring, spillTapFire, spillClearFireInput, spillSelectWeapon, spillUpgradeWeapon } from "./spill-combat.js?v=333";
-import { spillClaimArtifact, spillEquipArtifact } from "./spill-builds.js?v=333";
-import { spillShelfAction, spillShelfUndo } from "./spill-shop.js?v=333";
-import { createSpillStick, moveSpillStick, sampleSpillStick, spillStickAxis } from "./spill-gesture.js?v=333";
-import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=333";
-import { bankSpill, cloneSaveForTrial, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards, sealSave } from "./save.js?v=333";
+import { canWearTrail, builtInTrailSuit, STAR_MAP_PREVIEW, ENV_GATES, palsClash, AD_RULES, REMOVE_ADS } from "./catalog.js?v=334";
+import { platform } from "./platform.js?v=334";
+import { beginFlightTest } from "./sim.js?v=334";
+import { TAP_SHAPE_MIN, TAP_SHAPE_MAX, TAIL_SPRING_MIN, TAIL_SPRING_MAX, TAP_ACCENT_STRENGTH, TAP_ACCENT_MIN, TAP_ACCENT_MAX } from "./control-constants.js?v=334";
+import { isPremiumFrames, isPremiumSuit } from "./high-orbit-config.js?v=334";
+import { spillAppearance } from "./spill-appearance.js?v=334";
+import { routeMasks, rewardId } from "./campaign-progress.js?v=334";
+import { reachedGate } from "./campaign.js?v=334";
+import { emptyArt, loadArt, loadPalBank, loadSuitBank, loadSpillScene, spillDepotArtPending, loadZoneArt, prefetchArtBanks } from "./art.js?v=334";
+import { vanguardDepotEligible } from "./spill-depot-gag.js?v=334";
+import { sfx, unlockAudio, music, setSfxMuted } from "./audio.js?v=334";
+import { wearsOwnHead, GUIDE_HELM, GUIDE_SUIT, TUTORIAL_SUIT, HELMETS, IAP_ITEMS, HYPER_RUN_ENABLED, IS_BETA, isIap, MOD_BATTERY_COST, MOD_SHIELD_COST, MODS, SUITS, TRAILS, TUT_ARM, BUNDLES, bundleIds, bundlePrice, idDust, idGrants, featurePrice, DUST_PACKS, DAILY_DUST, DAILY_STREAK_BONUS, DAILY_STREAK_LEN } from "./catalog.js?v=334";
+import { drawHud, drawWorld, setSpillBackplateHost } from "./draw.js?v=334";
+import { setVanguardPitchTrim } from "./vanguard.js?v=334";
+import { batteryUnlocked, deepUnlocked, helmetRevealed, trailUnlocked, eraseSave, lostUnlocked, modsUnlocked, loadSave, grantTutorialKit, palUnlocked, startShieldUnlocked, starsOf, suitRevealed, writeSave, cleanPilotName, dualPalUnlocked, } from "./save.js?v=334";
+import { hyperRunById, levelById, levelUnlocked, STAR_REWARDS } from "./campaign.js?v=334";
+import { dive, envIndexFor, flap, initStars, makeWorld, pausePlay, planRaceCueEffects, resizeWorld, resetRun, resumePlay, reviveCost, reviveRun, canRevive, setRaceInput, snapshot, takeRaceCueEffects, takeSpillCues, updateWorld, } from "./sim.js?v=334";
+import { canonicalRaceY, cancelRaceGesture, createRaceGestureState, dropRaceGesture, moveRaceDragGesture, moveRaceGesture, neutralizeOwnedRaceGesture, pressRaceDragGesture, pressRaceGesture, pressRaceKeyboardDragGesture, releaseRaceGesture, } from "./race-gesture.js?v=334";
+import { raceViewport } from "./race-viewport.js?v=334";
+import { spillSkipDrill } from "./spill.js?v=334";
+import { spillBuy, spillLeaveDepot, spillLunge, spillSteer, spillUtility, spillSpecialize, spillTakeContract, spillCheckpoint, restoreSpill, createSpill, spillWaveSpec, SPILL } from "./spill.js?v=334";
+import { applySpillTrialBuild, SPILL_CHASSIS, SPILL_WEAPON_MODULES, SPILL_TRIALS, SPILL_TRIAL_BUILDS, createSpillCareer, restoreSpillCareer, spillChassisStats } from "./spill-career.js?v=334";
+import { spillSelectRisk } from "./spill-expeditions.js?v=334";
+import { spillSetFiring, spillTapFire, spillClearFireInput, spillSelectWeapon, spillUpgradeWeapon } from "./spill-combat.js?v=334";
+import { spillClaimArtifact, spillEquipArtifact } from "./spill-builds.js?v=334";
+import { spillShelfAction, spillShelfUndo } from "./spill-shop.js?v=334";
+import { createSpillStick, moveSpillStick, sampleSpillStick, spillStickAxis } from "./spill-gesture.js?v=334";
+import { SPILL_UTILITIES, SPILL_ENGINE_COLORS, spillEngineColor } from "./spill-content.js?v=334";
+import { bankSpill, cloneSaveForTrial, suitPitchFor, takeReceipt, buyBoost, skipLevel, unlockReward, ownsPremium, settleStarRewards, sealSave } from "./save.js?v=334";
 export async function createEngine(canvas) {
     // THE SPILL'S BACKPLATE (owner, 5 Sep 2026: "choppy laggy sometimes").
     // draw.ts bakes the Spill's gradient-and-panorama plate once per sector;
@@ -731,7 +731,7 @@ export async function createEngine(canvas) {
             }
             playInterstitial("level", next);
         },
-        spillFire(held, owner = "manual") {
+        spillFire(held, owner = "manual", canceled = false) {
             if (held) {
                 if (!running || world.screen !== "play" || !world.spill
                     || !["wave", "drain"].includes(world.spill.phase))
@@ -741,8 +741,9 @@ export async function createEngine(canvas) {
                 fireOwners.add(owner);
                 unlockAudio();
             }
-            else
-                fireOwners.delete(owner);
+            else if (fireOwners.delete(owner) && canceled && !fireOwners.size && world.spill) {
+                spillClearFireInput(world.spill);
+            }
             if (world.spill)
                 spillSetFiring(world.spill, fireOwners.size > 0);
         },
@@ -1723,7 +1724,9 @@ export async function createEngine(canvas) {
         // globalThis outside a real browser, so every harness test that boots the
         // engine threw here (audit, 8 Sep 2026) - which is exactly the six tests
         // that cover engine.ts and standalone.ts at all.
-        world.insetTop = parseFloat(window.getComputedStyle(parent).getPropertyValue("--sat")) || 0;
+        const stageStyle = window.getComputedStyle(parent);
+        world.insetTop = parseFloat(stageStyle.getPropertyValue("--sat")) || 0;
+        world.insetBottom = parseFloat(stageStyle.getPropertyValue("--sab")) || 0;
         const sizeChanged = W > 0 && H > 0 && (W !== world.W || H !== world.H);
         const ownedRaceResize = sizeChanged && world.race !== null && world.screen === "play"
             && raceGesture.owner !== null;
@@ -1931,16 +1934,12 @@ export async function createEngine(canvas) {
             if (!steering && !firing)
                 return;
             e.preventDefault();
-            if (e.type !== "pointerup")
-                clearSpillFire();
-            else {
-                if (steering) {
-                    spillStick = null;
-                    updateSpillSteering();
-                }
-                if (firing)
-                    engine.spillFire(false, `pointer:${e.pointerId}`);
+            if (steering) {
+                spillStick = null;
+                updateSpillSteering();
             }
+            if (firing)
+                engine.spillFire(false, `pointer:${e.pointerId}`, e.type !== "pointerup");
             return;
         }
         if (raceGesture.owner === e.pointerId) {
@@ -2195,6 +2194,8 @@ export async function createEngine(canvas) {
         if (!cues.length)
             return;
         const spill = world.spill;
+        if (cues.includes("dock"))
+            void loadSpillScene(engine.art, save.equippedSuit).then(notify);
         if (cues.includes("drill-done") && !trial && !save.spillDrillDone) {
             save.spillDrillDone = true;
             writeSave(save);
@@ -2269,6 +2270,7 @@ export async function createEngine(canvas) {
         if (world.spill) {
             const scene = engine.art.spillScene;
             world.spill.depotGagReady = vanguardDepotEligible(save.equippedSuit, !!save.motionOff, !!scene?.depot && scene?.bear?.length === 36 && !!scene?.vanguardDepot && !!engine.art.spillShip[`hull-${world.spill.up.plating}`]);
+            world.spill.depotGagPending = vanguardDepotEligible(save.equippedSuit, !!save.motionOff, spillDepotArtPending(engine.art));
             if (save.motionOff && world.spill.depotGag)
                 world.spill.depotGag = false;
         }
@@ -2413,4 +2415,4 @@ export async function createEngine(canvas) {
     notify();
     return engine;
 }
-export { deepUnlocked, lostUnlocked } from "./save.js?v=333";
+export { deepUnlocked, lostUnlocked } from "./save.js?v=334";
